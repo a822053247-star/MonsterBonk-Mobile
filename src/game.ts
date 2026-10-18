@@ -27,7 +27,8 @@ export class Game {
   private renderer: THREE.WebGLRenderer;
   private scene = new THREE.Scene();
   private camera = new THREE.OrthographicCamera(-15, 15, 8.5, -8.5, 0.1, 180);
-  private monster = new Monster();
+  // Visual experiment only; append ?character=3d to retain the original model.
+  private monster = new Monster(new URLSearchParams(window.location.search).get('character') === '3d' ? 'procedural' : 'sprite');
   private world: World;
   private combat: Combat;
   private combatView: CombatView;
@@ -251,6 +252,7 @@ export class Game {
     this.jumpHeight = this.previousJump = this.jumpVelocity = 0;
     this.elapsed = this.cooldown = this.dashRemaining = this.distance = 0;
     this.combat.reset();
+    this.monster.resetVisual();
     this.hideUpgrade();
     this.combatView.clear();
     this.combatView.group.visible = true;
@@ -296,6 +298,7 @@ export class Game {
   }
 
   private showMenu() {
+    this.monster.resetVisual();
     this.mode = 'menu';
     this.jumpHeight = this.previousJump = this.jumpVelocity = 0;
     this.input.setEnabled(false);
@@ -521,6 +524,7 @@ export class Game {
   private placeCamera(snap = false, dt = STEP) {
     const player = this.monster.root.position;
     resize25DCamera(this.camera, window.innerWidth / Math.max(1, window.innerHeight), this.mode === 'menu');
+    this.monster.updateView(window.innerHeight, this.camera.top - this.camera.bottom, this.mode === 'menu');
     if (this.mode === 'menu') {
       this.lookTarget.set(-3.2, 0.8, 0);
       this.monster.body.rotation.y = 0.55 + Math.sin(this.visualTime * 0.35) * 0.09;

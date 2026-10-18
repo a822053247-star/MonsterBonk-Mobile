@@ -7,14 +7,15 @@ const state = (page: Page) => page.evaluate(() => (window as unknown as Harness)
 test.use({ viewport: { width: 844, height: 390 }, hasTouch: true, isMobile: true });
 
 test.beforeEach(async ({ page }) => {
-  await page.route('**/25d-harness', route => route.fulfill({ contentType: 'text/html; charset=utf-8', body: `<!doctype html><html><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/></head><body><div id="app"></div><script type="module">
+  await page.route('**/25d-harness*', route => route.fulfill({ contentType: 'text/html; charset=utf-8', body: `<!doctype html><html><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/></head><body><div id="app"></div><script type="module">
     import '/src/style.css';import {createUI} from '/src/ui.ts';import {Game} from '/src/game.ts';
     createUI(document.getElementById('app'));const g=window.testGame=new Game();
     window.sceneCheck=()=>{const enemyFeet=[];const matrix=g.monster.body.matrix.clone(),pos=g.position.clone(),scale=g.position.clone(),rot=g.monster.body.quaternion.clone();for(let i=0;i<g.combatView.body.count;i++){g.combatView.body.getMatrixAt(i,matrix);matrix.decompose(pos,rot,scale);enemyFeet.push(pos.y-scale.y);}return {rootY:g.position.y,foliage:['leaf','leafLight'].map(name=>g.world.group.getObjectByName('scenery-'+name).material.opacity),regions:['中央草场','风语林地','岩晶遗迹'].filter(name=>g.world.group.getObjectByName(name)),enemyFeet}};
     window.equipPreview=()=>{g.monster.equipOrgan('charge-horns');g.monster.equipOrgan('hardened-shell');};
     window.spawnPreviewEnemies=()=>{g.combat.spawn('tank',0,6,0);g.combat.spawn('normal',-3,4,0);g.combat.spawn('fast',4,6,0);};
   </script></body></html>` })) ;
-  await page.goto('/25d-harness'); await page.waitForFunction(() => 'testGame' in window);
+  // Keep validating the original procedural fallback and its existing socket props.
+  await page.goto('/25d-harness?character=3d'); await page.waitForFunction(() => 'testGame' in window);
 });
 
 test('mobile touches follow all screen directions with fixed orientation and ground height', async ({ page, context }, info) => {

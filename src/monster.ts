@@ -2,6 +2,9 @@ import * as THREE from 'three';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { ORGAN_DEFINITIONS, YANRONG_SOCKETS, type OrganId, type OrganSlot, type SocketLayout } from './creature-data';
 import { OrganVisuals } from './organ-view';
+import { MonsterSprite } from './monster-sprite';
+
+export type CreatureVisual = 'procedural' | 'sprite';
 
 /** 焰绒: a small quadruped built from shared, faceted primitives; +Z is forward. */
 export class Monster {
@@ -20,8 +23,12 @@ export class Monster {
   private orange = new THREE.MeshLambertMaterial({ color: '#f58b32', flatShading: true });
   private normalOrange = new THREE.Color('#f58b32');
   private flashColor = new THREE.Color('#fff5df');
+  private procedural = new THREE.Group();
+  private spriteView?: MonsterSprite;
+  private requestedVisual: CreatureVisual;
 
-  constructor() {
+  constructor(visual: CreatureVisual = 'procedural') {
+    this.requestedVisual = visual;
     this.root.name = 'CreatureRoot'; this.body.name = 'Body';
     this.evolutionEffects.name = 'EvolutionEffects'; this.combatEffects.name = 'CombatEffects';
     this.root.add(this.body, this.evolutionEffects, this.combatEffects);
@@ -95,6 +102,10 @@ export class Monster {
     this.shadow.rotation.x = -Math.PI / 2; this.shadow.position.y = 0.035; this.shadow.scale.y = 1.35; this.root.add(this.shadow);
     this.ring = new THREE.Mesh(new THREE.RingGeometry(1.05, 1.08, 24), new THREE.MeshBasicMaterial({ color: '#fff2be', transparent: true, opacity: 0.5, side: THREE.DoubleSide, depthWrite: false }));
     this.ring.rotation.x = -Math.PI / 2; this.ring.position.y = 0.04; this.root.add(this.ring);
+    this.procedural.name = 'ProceduralFallback';
+    this.procedural.add(...this.body.children);
+    this.body.add(this.procedural);
+    this.setVisual(visual);
   }
 
   /** Applying a future form's poses never rebuilds or clears equipped organs. */
@@ -116,10 +127,33 @@ export class Monster {
     delete this.equipped[slot];
   }
 
-  inspect() { return { name: '焰绒', legs: this.feet.length, slots: Object.keys(this.sockets), equipped: { ...this.equipped } }; }
-  dispose() { this.organs.dispose(); }
+  setVisual(visual: CreatureVisual) {
+    this.requestedVisual = visual;
+    if (visual === 'sprite' && !this.spriteView) {
+      this.spriteView = new MonsterSprite(() => this.syncVisual());
+      this.root.add(this.spriteView.group);
+    }
+    this.resetVisual(); this.syncVisual();
+  }
+
+  private syncVisual() {
+    const sprite = this.requestedVisual === 'sprite' && !!this.spriteView?.ready;
+    this.procedural.visible = this.shadow.visible = !sprite;
+    if (this.spriteView) this.spriteView.group.visible = sprite;
+  }
+
+  updateView(viewportHeight: number, frustumHeight: number, menu: boolean) { this.spriteView?.resize(viewportHeight, frustumHeight, menu); }
+  resetVisual() { this.spriteView?.reset(); }
+
+  inspect() { return { name: '焰绒', legs: this.feet.length, slots: Object.keys(this.sockets), equipped: { ...this.equipped }, visual: this.procedural.visible ? 'procedural' : 'sprite', sprite: this.spriteView?.inspect() }; }
+  dispose() { this.organs.dispose(); this.spriteView?.dispose(); }
 
   animate(dt: number, moving: number, dashing: boolean, time: number, jump = 0, hurt = 0) {
+    if (!this.procedural.visible && this.spriteView) {
+      this.spriteView.animate(dt, moving, dashing, time, jump, hurt, this.body.rotation.y, this.root.position);
+      this.ring.scale.setScalar(dashing ? 1.2 : 1);
+      return;
+    }
     this.phase += dt * (moving > 0.08 ? 13 : 2.6);
     const stride = moving > 0.08 ? moving : 0, walk = Math.sin(this.phase);
     this.body.position.y = jump + (stride ? Math.abs(walk) * 0.07 : Math.sin(this.phase) * 0.025);
