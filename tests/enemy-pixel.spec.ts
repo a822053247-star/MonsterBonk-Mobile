@@ -19,10 +19,10 @@ test.beforeEach(async ({ page }) => {
       const normal=g.combat.spawn('normal',-3,3,0),fast=g.combat.spawn('fast',3,3,0);g.combat.spawn('tank',0,6,0);g.combat.spawn('normal',-4,6,.75);
       normal.hp=15;fast.intent='windup';g.combat.targetId=normal.id;
       // A stable arranged render scene: resize must not restart the simulation.
-      g.mode='paused';g.welcome.style.opacity='0';document.getElementById('trial-status').hidden=true;
+      g.mode='paused';g.welcome.style.display='none';document.getElementById('trial-status').hidden=true;
       const before=JSON.stringify({c:g.combat.inspect(),p:g.party.inspect()});draw();const v=g.combatView;
       const shapes=[];if(v.pixelEnemies)for(const [kind,batch] of v.pixelEnemies.batches){if(!batch.mesh.count)continue;const m=new THREE.Matrix4(),p=new THREE.Vector3(),q=new THREE.Quaternion(),s=new THREE.Vector3();batch.mesh.getMatrixAt(0,m);m.decompose(p,q,s);const e=g.combat.enemies.find(e=>e.active&&e.kind===kind&&e.spawnTime===0);const foot=p.clone().project(g.camera),ground=new THREE.Vector3(e.x,0,e.z).project(g.camera);shapes.push({kind,ratio:s.x/s.y,footError:Math.abs(foot.y-ground.y)*innerHeight/2})}
-      return {unchanged:before===JSON.stringify({c:g.combat.inspect(),p:g.party.inspect()}),body:v.body.count,eyes:v.eyes.count,horns:v.horns.count,armor:v.armor.count,shadows:v.shadows.count,warnings:v.warnings.count,bars:v.healthBack.count,target:v.target.count,lanes:v.pounceLanes.count,arrows:v.pounceArrows.count,shapes}};
+      return {unchanged:before===JSON.stringify({c:g.combat.inspect(),p:g.party.inspect()}),body:v.body.count,eyes:v.eyes.count,horns:v.horns.count,armor:v.armor?.count??0,shadows:v.shadows.count,warnings:v.warnings.count,bars:v.healthBack.count,target:v.target.count,lanes:v.pounceLanes.count,arrows:v.pounceArrows.count,shapes}};
     window.parity=()=>{g.start('classic',true);g.sleep();let seed=123;const random=()=>((seed=Math.imul(seed,1664525)+1013904223>>>0)/4294967296);g.combat.random=g.combat.progression.random=random;
       g.combat.spawn('normal',0,6,0);g.combat.spawn('fast',3,6,0);g.combat.spawn('tank',-5,6,0);g.input.keys.add('KeyD');for(let i=0;i<150;i++)g.step(1/60);
       return JSON.stringify({p:g.inspect().position,c:g.inspect().combat,party:g.inspect().party})};
@@ -40,21 +40,21 @@ test.beforeEach(async ({ page }) => {
     window.destroy=()=>{const v=g.combatView.pixelEnemies;g.dispose();return {...v.inspect(),children:v.group.children.length}};
   </script></body></html>` })) ;
 });
-async function open(page: Page, query = '') { await page.goto('/enemy-pixel-harness' + query); await page.waitForFunction(() => 'game' in window); await page.locator('#start-party').tap(); }
-async function ready(page: Page) { await expect.poll(async () => (await state(page)).enemyVisual.batches?.filter(b => b.loaded).length).toBe(2); }
+async function open(page: Page, query = '') { await page.goto('/enemy-pixel-harness' + (query ? query + '&world=fixed' : '?world=fixed')); await page.waitForFunction(() => 'game' in window); await page.locator('#start-party').tap(); }
+async function ready(page: Page) { const enabled = (await state(page)).enemyVisual.enabled; await expect.poll(async () => (await state(page)).enemyVisual.batches?.filter(b => b.loaded).length).toBe(enabled ? 3 : 1); }
 
-test('two fixed-capacity pixel batches preserve proportions, anchors and all existing enemy cues', async ({ page }, info) => {
+test('three fixed-capacity pixel batches preserve proportions, anchors and all existing enemy cues', async ({ page }, info) => {
   await open(page); await ready(page);
-  await expect.poll(async () => (await state(page)).partyVisual.members.filter(m => m?.loaded).length).toBe(3);
+  await expect.poll(async () => (await state(page)).partyVisual.members.filter(m => m?.loaded).length).toBe(1);
   await page.waitForTimeout(100);
   for (const viewport of [{ width: 844, height: 390 }, { width: 568, height: 320 }]) {
     await page.setViewportSize(viewport);
     const probe = await page.evaluate(() => (window as unknown as Fixture).arrange());
     const { shapes, ...cues } = probe;
-    expect(cues).toEqual({ unchanged: true, body: 1, eyes: 2, horns: 2, armor: 1, shadows: 3, warnings: 1, bars: 1, target: 1, lanes: 1, arrows: 1 });
+    expect(cues).toEqual({ unchanged: true, body: 0, eyes: 0, horns: 0, armor: 0, shadows: 3, warnings: 1, bars: 1, target: 1, lanes: 1, arrows: 1 });
     const visual = (await state(page)).enemyVisual;
-    expect(visual.cache).toEqual({ textures: 2, references: 2 });
-    expect(visual.batches!.map(b => b.count)).toEqual([1, 1]);
+    expect(visual.cache).toEqual({ textures: 3, references: 3 });
+    expect(visual.batches!.map(b => b.count)).toEqual([1, 1, 1]);
     for (const b of visual.batches!) {
       expect(b.capacity).toBe(48); expect(b.nearest).toBe(true); expect(b.mipmaps).toBe(false);
       expect(b.depthTest && b.depthWrite).toBe(true); expect(b.alphaTest).toBeGreaterThan(0);
@@ -63,7 +63,7 @@ test('two fixed-capacity pixel batches preserve proportions, anchors and all exi
       expect(shapes.find(s => s.kind === b.kind)!.footError).toBeLessThan(1);
       expect(b.height / (await state(page)).camera.height * viewport.height).toBeGreaterThan(25);
     }
-    if (info.project.name === 'chromium') await page.screenshot({ path: 'artifacts/enemy-pixel-layout-' + viewport.width + '.png' });
+    if (info.project.name === 'chromium') await page.screenshot({ path: 'artifacts/enemy-tank-layout-' + viewport.width + '.png' });
   }
 });
 
@@ -78,8 +78,8 @@ test('one missing enemy texture only falls back that kind and retains original b
   await open(page);
   await expect.poll(async () => (await state(page)).enemyVisual.batches?.find(b => b.kind === 'normal')?.failed).toBe(true);
   await expect.poll(async () => (await state(page)).enemyVisual.batches?.find(b => b.kind === 'fast')?.loaded).toBe(true);
-  expect(await page.evaluate(() => (window as unknown as Fixture).arrange())).toMatchObject({ body: 2, eyes: 4, horns: 4, armor: 1 });
-  expect((await state(page)).enemyVisual.batches!.map(b => b.count)).toEqual([0, 1]);
+  expect(await page.evaluate(() => (window as unknown as Fixture).arrange())).toMatchObject({ body: 1, eyes: 2, horns: 2, armor: 0 });
+  expect((await state(page)).enemyVisual.batches!.map(b => b.count)).toEqual([0, 1, 1]);
 });
 
 test('real depth buffer handles transparent cutouts, foreground cover and visible per-instance hit flash', async ({ page }) => {
@@ -94,10 +94,10 @@ test('real depth buffer handles transparent cutouts, foreground cover and visibl
 
 test('48 enemies reuse the same batches and textures, clear on reset and release on disposal', async ({ page }) => {
   await open(page); await ready(page);
-  await expect.poll(async () => (await state(page)).partyVisual.members.filter(m => m?.loaded).length).toBe(3);
+  await expect.poll(async () => (await state(page)).partyVisual.members.filter(m => m?.loaded).length).toBe(1);
   const p = await page.evaluate(() => (window as unknown as Fixture).pool());
-  expect(p.counts).toEqual([48, 0]); expect(p.calls[1]).toBe(p.calls[0]); expect(p.stable).toBe(true);
-  expect(p.cleared).toBe(0); expect(p.cache).toEqual({ textures: 2, references: 2 });
+  expect(p.counts).toEqual([48, 0, 0]); expect(p.calls[1]).toBe(p.calls[0]); expect(p.stable).toBe(true);
+  expect(p.cleared).toBe(0); expect(p.cache).toEqual({ textures: 3, references: 3 });
   expect(await page.evaluate(() => (window as unknown as Fixture).destroy())).toEqual({ cache: { textures: 0, references: 0 }, batches: [], children: 0 });
 });
 
@@ -107,4 +107,18 @@ test('disposing during enemy PNG loading prevents late resource attachment', asy
   expect(await page.evaluate(() => (window as unknown as Fixture).destroy())).toMatchObject({ cache: { textures: 0, references: 0 }, batches: [], children: 0 });
   await page.waitForTimeout(600);
   expect((await state(page)).enemyVisual.batches).toBeUndefined();
+});
+
+
+test('tank never uses removed blue geometry in legacy mode or after PNG failure', async ({ page }) => {
+  await open(page, '?enemyVisual=legacy'); await ready(page);
+  expect(await page.evaluate(() => (window as unknown as Fixture).arrange())).toMatchObject({ body: 2, eyes: 4, horns: 4, armor: 0 });
+  expect((await state(page)).enemyVisual.batches!.map(b => b.count)).toEqual([0, 0, 1]);
+  expect(await page.evaluate(() => 'armor' in (window as unknown as { game: any }).game.combatView)).toBe(false);
+  await page.route('**/enemies/rock-armor-bug.png', route => route.abort());
+  await open(page);
+  await expect.poll(async () => (await state(page)).enemyVisual.batches?.find(b => b.kind === 'tank')?.failed).toBe(true);
+  await expect.poll(async () => (await state(page)).enemyVisual.batches?.filter(b => b.loaded).length).toBe(2);
+  expect(await page.evaluate(() => (window as unknown as Fixture).arrange())).toMatchObject({ body: 0, eyes: 0, horns: 0, armor: 0 });
+  expect((await state(page)).enemyVisual.batches!.map(b => b.count)).toEqual([1, 1, 1]);
 });

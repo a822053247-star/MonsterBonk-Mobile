@@ -1,0 +1,645 @@
+{
+  "frameSize": [
+    384,
+    256
+  ],
+  "foot": [
+    192,
+    240
+  ],
+  "alphaCutoff": 24,
+  "sources": {
+    "yacishou-animation-sheet": {
+      "path": "public/assets/pixel/skills/animation/yacishou-animation-sheet.png",
+      "sha256": "4b1aebb129c0d216dc7e6796bb070bfe96637cd0c4448a32927913ab78adb1a3",
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "grid": [
+        4,
+        4
+      ],
+      "discardedDisconnectedNoisePixels": 1,
+      "frames": [
+        {
+          "box": [
+            20,
+            15,
+            320,
+            336
+          ],
+          "pixels": 62362,
+          "foot": [
+            161.0,
+            336
+          ],
+          "touchesSourceEdge": 0,
+          "row": 0,
+          "column": 0,
+          "scale": 0.6853582554517134,
+          "usable": true,
+          "destination": [
+            95,
+            20,
+            206,
+            220
+          ],
+          "reason": null
+        },
+        {
+          "box": [
+            339,
+            18,
+            628,
+            336
+          ],
+          "pixels": 60856,
+          "foot": [
+            504.5,
+            336
+          ],
+          "touchesSourceEdge": 0,
+          "row": 0,
+          "column": 1,
+          "scale": 0.6853582554517134,
+          "usable": true,
+          "destination": [
+            79,
+            22,
+            198,
+            218
+          ],
+          "reason": null
+        },
+        {
+          "box": [
+            644,
+            15,
+            945,
+            336
+          ],
+          "pixels": 61745,
+          "foot": [
+            804.0,
+            336
+          ],
+          "touchesSourceEdge": 0,
+          "row": 0,
+          "column": 2,
+          "scale": 0.6853582554517134,
+          "usable": true,
+          "destination": [
+            82,
+            20,
+            206,
+            220
+          ],
+          "reason": null
+        },
+        {
+          "box": [
+            961,
+            15,
+            1254,
+            332
+          ],
+          "pixels": 60411,
+          "foot": [
+            1063.0,
+            332
+          ],
+          "touchesSourceEdge": 13,
+          "row": 0,
+          "column": 3,
+          "scale": 0.6853582554517134,
+          "usable": false,
+          "destination": [
+            122,
+            23,
+            201,
+            217
+          ],
+          "reason": "Subject touches original image edge; clipped original cannot be recovered"
+        },
+        {
+          "box": [
+            18,
+            341,
+            316,
+            642
+          ],
+          "pixels": 58028,
+          "foot": [
+            170.5,
+            642
+          ],
+          "touchesSourceEdge": 0,
+          "row": 1,
+          "column": 0,
+          "scale": 0.7308970099667774,
+          "usable": true,
+          "destination": [
+            81,
+            20,
+            218,
+            220
+          ],
+          "reason": null
+        },
+        {
+          "box": [
+            337,
+            346,
+            627,
+            644
+          ],
+          "pixels": 55256,
+          "foot": [
+            464.0,
+            644
+          ],
+          "touchesSourceEdge": 0,
+          "row": 1,
+          "column": 1,
+          "scale": 0.7308970099667774,
+          "usable": true,
+          "destination": [
+            99,
+            22,
+            212,
+            218
+          ],
+          "reason": null
+        },
+        {
+          "box": [
+            643,
+            342,
+            941,
+            642
+          ],
+          "pixels": 56844,
+          "foot": [
+            774.0,
+            642
+          ],
+          "touchesSourceEdge": 0,
+          "row": 1,
+          "column": 2,
+          "scale": 0.7308970099667774,
+          "usable": true,
+          "destination": [
+            96,
+            21,
+            218,
+            219
+          ],
+          "reason": null
+        },
+        {
+          "box": [
+            953,
+            344,
+            1252,
+            643
+          ],
+          "pixels": 56566,
+          "foot": [
+            1084.5,
+            643
+          ],
+          "touchesSourceEdge": 0,
+          "row": 1,
+          "column": 3,
+          "scale": 0.7308970099667774,
+          "usable": true,
+          "destination": [
+            96,
+            21,
+            219,
+            219
+          ],
+          "reason": null
+        },
+        {
+          "box": [
+            12,
+            651,
+            325,
+            931
+          ],
+          "pixels": 59212,
+          "foot": [
+            210.5,
+            931
+          ],
+          "touchesSourceEdge": 0,
+          "row": 2,
+          "column": 0,
+          "scale": 0.7857142857142857,
+          "usable": true,
+          "destination": [
+            36,
+            20,
+            246,
+            220
+          ],
+          "reason": null
+        },
+        {
+          "box": [
+            337,
+            651,
+            638,
+            930
+          ],
+          "pixels": 56982,
+          "foot": [
+            553.5,
+            930
+          ],
+          "touchesSourceEdge": 0,
+          "row": 2,
+          "column": 1,
+          "scale": 0.7857142857142857,
+          "usable": true,
+          "destination": [
+            22,
+            21,
+            236,
+            219
+          ],
+          "reason": null
+        },
+        {
+          "box": [
+            647,
+            654,
+            956,
+            930
+          ],
+          "pixels": 56627,
+          "foot": [
+            854.0,
+            930
+          ],
+          "touchesSourceEdge": 0,
+          "row": 2,
+          "column": 2,
+          "scale": 0.7857142857142857,
+          "usable": true,
+          "destination": [
+            29,
+            23,
+            243,
+            217
+          ],
+          "reason": null
+        },
+        {
+          "box": [
+            964,
+            655,
+            1252,
+            930
+          ],
+          "pixels": 53993,
+          "foot": [
+            1149.0,
+            930
+          ],
+          "touchesSourceEdge": 0,
+          "row": 2,
+          "column": 3,
+          "scale": 0.7857142857142857,
+          "usable": true,
+          "destination": [
+            47,
+            24,
+            226,
+            216
+          ],
+          "reason": null
+        },
+        {
+          "box": [
+            18,
+            943,
+            312,
+            1239
+          ],
+          "pixels": 58661,
+          "foot": [
+            155.0,
+            1239
+          ],
+          "touchesSourceEdge": 0,
+          "row": 3,
+          "column": 0,
+          "scale": 0.7189542483660131,
+          "usable": true,
+          "destination": [
+            94,
+            27,
+            211,
+            213
+          ],
+          "reason": null
+        },
+        {
+          "box": [
+            332,
+            938,
+            625,
+            1240
+          ],
+          "pixels": 58935,
+          "foot": [
+            469.0,
+            1240
+          ],
+          "touchesSourceEdge": 0,
+          "row": 3,
+          "column": 1,
+          "scale": 0.7189542483660131,
+          "usable": true,
+          "destination": [
+            94,
+            23,
+            211,
+            217
+          ],
+          "reason": null
+        },
+        {
+          "box": [
+            644,
+            933,
+            942,
+            1239
+          ],
+          "pixels": 60722,
+          "foot": [
+            782.0,
+            1239
+          ],
+          "touchesSourceEdge": 0,
+          "row": 3,
+          "column": 2,
+          "scale": 0.7189542483660131,
+          "usable": true,
+          "destination": [
+            93,
+            20,
+            214,
+            220
+          ],
+          "reason": null
+        },
+        {
+          "box": [
+            958,
+            935,
+            1251,
+            1239
+          ],
+          "pixels": 59779,
+          "foot": [
+            1095.0,
+            1239
+          ],
+          "touchesSourceEdge": 0,
+          "row": 3,
+          "column": 3,
+          "scale": 0.7189542483660131,
+          "usable": true,
+          "destination": [
+            94,
+            21,
+            211,
+            219
+          ],
+          "reason": null
+        }
+      ]
+    },
+    "yacishou-diagonal-walk": {
+      "path": "public/assets/pixel/skills/animation/yacishou-diagonal-walk.png",
+      "sha256": "84bc193d5e910ee4fa42d145185f63309e312b39600f607b8c75821b88c52ab3",
+      "size": [
+        1774,
+        887
+      ],
+      "mode": "RGBA",
+      "grid": [
+        4,
+        2
+      ],
+      "discardedDisconnectedNoisePixels": 1,
+      "frames": [
+        {
+          "box": [
+            41,
+            44,
+            436,
+            438
+          ],
+          "pixels": 99453,
+          "foot": [
+            218.0,
+            438
+          ],
+          "touchesSourceEdge": 0,
+          "row": 0,
+          "column": 0,
+          "scale": 0.5583756345177665,
+          "usable": true,
+          "destination": [
+            93,
+            20,
+            221,
+            220
+          ],
+          "reason": null
+        },
+        {
+          "box": [
+            483,
+            48,
+            878,
+            430
+          ],
+          "pixels": 97491,
+          "foot": [
+            643.5,
+            430
+          ],
+          "touchesSourceEdge": 0,
+          "row": 0,
+          "column": 1,
+          "scale": 0.5583756345177665,
+          "usable": true,
+          "destination": [
+            102,
+            27,
+            221,
+            213
+          ],
+          "reason": null
+        },
+        {
+          "box": [
+            926,
+            48,
+            1320,
+            427
+          ],
+          "pixels": 98209,
+          "foot": [
+            1107.5,
+            427
+          ],
+          "touchesSourceEdge": 0,
+          "row": 0,
+          "column": 2,
+          "scale": 0.5583756345177665,
+          "usable": true,
+          "destination": [
+            91,
+            28,
+            220,
+            212
+          ],
+          "reason": null
+        },
+        {
+          "box": [
+            1375,
+            48,
+            1765,
+            436
+          ],
+          "pixels": 99377,
+          "foot": [
+            1558.0,
+            436
+          ],
+          "touchesSourceEdge": 0,
+          "row": 0,
+          "column": 3,
+          "scale": 0.5583756345177665,
+          "usable": true,
+          "destination": [
+            90,
+            23,
+            218,
+            217
+          ],
+          "reason": null
+        },
+        {
+          "box": [
+            41,
+            469,
+            428,
+            818
+          ],
+          "pixels": 91894,
+          "foot": [
+            315.0,
+            818
+          ],
+          "touchesSourceEdge": 0,
+          "row": 1,
+          "column": 0,
+          "scale": 0.6214689265536724,
+          "usable": true,
+          "destination": [
+            22,
+            23,
+            241,
+            217
+          ],
+          "reason": null
+        },
+        {
+          "box": [
+            488,
+            465,
+            873,
+            818
+          ],
+          "pixels": 90364,
+          "foot": [
+            575.0,
+            818
+          ],
+          "touchesSourceEdge": 0,
+          "row": 1,
+          "column": 1,
+          "scale": 0.6214689265536724,
+          "usable": true,
+          "destination": [
+            138,
+            21,
+            239,
+            219
+          ],
+          "reason": null
+        },
+        {
+          "box": [
+            933,
+            472,
+            1316,
+            812
+          ],
+          "pixels": 90313,
+          "foot": [
+            1115.0,
+            812
+          ],
+          "touchesSourceEdge": 0,
+          "row": 1,
+          "column": 2,
+          "scale": 0.6214689265536724,
+          "usable": true,
+          "destination": [
+            79,
+            29,
+            238,
+            211
+          ],
+          "reason": null
+        },
+        {
+          "box": [
+            1375,
+            469,
+            1760,
+            823
+          ],
+          "pixels": 89997,
+          "foot": [
+            1475.5,
+            823
+          ],
+          "touchesSourceEdge": 0,
+          "row": 1,
+          "column": 3,
+          "scale": 0.6214689265536724,
+          "usable": true,
+          "destination": [
+            130,
+            20,
+            239,
+            220
+          ],
+          "reason": null
+        }
+      ]
+    }
+  }
+}

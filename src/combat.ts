@@ -1,6 +1,9 @@
+import { ENEMY_MOTION } from './enemy-motion';
 import { Progression, SKILL_RULES, type SkillId } from './progression';
 import { HORN, POUNCE, type DashStep, type EnemyIntent, type Ruleset } from './trial';
-import type { PartySystem, SpeciesId } from './party';
+import { CREATURES, type PartySystem, type SpeciesId } from './party';
+import { GroundNavigation } from './navigation';
+import { BURST_SEED, resolveFusions, DEEP_BUBBLE, CHAIN_BUBBLE, THORN_SCATTER, ELEMENTAL_RULES, type FusionId } from './fusion';
 
 /** Combat owns no DOM/GPU state. Every clock and movement is measured in seconds. */
 export const COMBAT_LIMITS = { enemies: 48, projectiles: 24, orbs: 96, effects: 48, shockwaves: 2 } as const;
@@ -8,17 +11,17 @@ export type EnemyKind = 'normal' | 'fast' | 'tank';
 export const ENEMY_TYPES = {
   normal: { name: '赤团', hp: 30, speed: 1.25, radius: 0.55, damage: 8, xp: 3, color: '#e59472' },
   fast: { name: '疾芽', hp: 18, speed: 2.7, radius: 0.4, damage: 6, xp: 2, color: '#edd779' },
-  tank: { name: '岩甲', hp: 100, speed: 0.75, radius: 0.85, damage: 16, xp: 8, color: '#799fbc' },
+  tank: { name: '岩甲', hp: 100, speed: 0.75, radius: 0.85, damage: 16, xp: 8, color: '#a58b6e' },
 } as const;
 export const WEAPON = { range: 10.5, interval: 0.44, speed: 18, damage: 18, lifetime: 0.8, radius: 0.2 } as const;
 type Point = { x: number; z: number };
 type Obstacle = Point & { radius: number };
 type Moving = Point & { previousX: number; previousZ: number; active: boolean };
-export interface Enemy extends Moving { id: number; kind: EnemyKind; hp: number; age: number; spawnTime: number; flash: number; knockX: number; knockZ: number; facing: number; orbitCooldown: number; intent: EnemyIntent; intentTime: number; intentCooldown: number; aimX: number; aimZ: number; stagger: number; hornDash: number }
-export interface Projectile extends Moving { vx: number; vz: number; life: number; damage: number; distance: number; sourceId?: number; species?: SpeciesId }
+export interface Enemy extends Moving { id: number; kind: EnemyKind; hp: number; age: number; spawnTime: number; flash: number; knockX: number; knockZ: number; facing: number; orbitCooldown: number; intent: EnemyIntent; intentTime: number; intentCooldown: number; aimX: number; aimZ: number; stagger: number; hornDash: number; slowTime?: number; walkPhase?: number; walkAmount?: number; steerX?: number; steerZ?: number }
+export interface Projectile extends Moving { vx: number; vz: number; life: number; damage: number; distance: number; sourceId?: number; species?: SpeciesId; generation?: number; bornTick?: number; ignoreEnemyId?: number; burst?: boolean; age?: number; elemental?: boolean; fusionIds?: FusionId[]; hitIds?: number[]; pierces?: number; bounces?: number; scatter?: boolean }
 export interface Shockwave { active: boolean; x: number; z: number; age: number; radius: number; previousRadius: number; maxRadius: number; damage: number; hitIds: Int32Array }
 export interface ExperienceOrb extends Moving { value: number; magnetized: boolean }
-export interface CombatEffect extends Point { active: boolean; time: number; duration: number; kind: 'hit' | 'death' | 'collect' | 'hurt'; enemyKind: EnemyKind }
+export interface CombatEffect extends Point { active: boolean; time: number; duration: number; kind: 'hit' | 'death' | 'collect' | 'hurt' | 'burst' | 'water' | 'thorn'; enemyKind: EnemyKind; radius?: number }
 
 /** Earliest segment / circle intersection, including shots that start inside a circle. */
 export function segmentHit(ax: number, az: number, bx: number, bz: number, x: number, z: number, radius: number) {
@@ -34,6 +37,14 @@ export function segmentHit(ax: number, az: number, bx: number, bz: number, x: nu
 }
 
 export class Combat {
+  /** Enabled by the map prototype; preserved legacy modes keep their steering. */
+  useNavigation = false;
+  fusionEnabled = false;
+  private tick = 0;
+  bursts = 0;
+  childShots = 0;
+  private navigation: GroundNavigation;
+  private navigationGoal = { x: 0, z: 0 };
   /** Optional P1 context; absent for all preserved legacy modes. */
   party?: PartySystem;
   readonly enemies: Enemy[] = Array.from({ length: COMBAT_LIMITS.enemies }, () => ({ active: false, id: 0, kind: 'normal', hp: 0, x: 0, z: 0, previousX: 0, previousZ: 0, age: 0, spawnTime: 0, flash: 0, knockX: 0, knockZ: 0, facing: 0, orbitCooldown: 0, intent: 'chase', intentTime: 0, intentCooldown: 0, aimX: 0, aimZ: 1, stagger: 0, hornDash: 0 }));
@@ -69,7 +80,10 @@ export class Combat {
   hornKills = 0;
   interrupts = 0;
 
-  constructor(private obstacles: readonly Obstacle[] = [], private boundary = 32.3, private random: () => number = Math.random, ruleset: Ruleset = 'classic') { this.ruleset = ruleset; this.progression = new Progression(random); }
+  constructor(private obstacles: readonly Obstacle[] = [], private boundary = 32.3, private random: () => number = Math.random, ruleset: Ruleset = 'classic') {
+    this.ruleset = ruleset; this.progression = new Progression(random);
+    this.navigation = new GroundNavigation(obstacles, boundary);
+  }
 
   get isTrial() { return this.ruleset !== 'classic'; }
   get isChallenge() { return this.ruleset === 'horn-challenge'; }
@@ -77,6 +91,9 @@ export class Combat {
   get xp() { return this.progression.totalExperience; }
   get stats() { return this.progression.stats; }
   get maxHp() { return this.stats.maxHp; }
+  get baseAttack() { return CREATURES[this.party?.leader.species ?? 'yanrong'].skill; }
+  get fusions() { return this.fusionEnabled ? resolveFusions(this.baseAttack, this.progression.ranks) : []; }
+  get fusion() { return this.fusions[0]; }
 
   chooseUpgrade(id: SkillId) {
     if (this.hp <= 0) return false;
@@ -90,6 +107,8 @@ export class Combat {
   }
 
   reset(ruleset: Ruleset = this.ruleset) {
+    this.navigation.invalidate();
+    this.tick = this.bursts = this.childShots = 0;
     if (this.party) this.party.reset(this.party.members.map(member => member.species));
     this.ruleset = ruleset;
     this.dashSerial = this.hornHits = this.hornKills = this.interrupts = 0;
@@ -97,7 +116,8 @@ export class Combat {
       for (const item of pool) item.active = false;
     }
     this.hp = 100;
-    this.progression.reset();
+    this.progression.fusionBase = this.baseAttack;
+    this.progression.reset(this.fusionEnabled);
     this.kills = this.invulnerability = this.hurtFlash = this.targetId = this.elapsed = 0;
     this.shotsFired = this.hits = this.spawned = this.collected = 0;
     this.spawnClock = 2.6;
@@ -113,12 +133,21 @@ export class Combat {
   spawn(kind: EnemyKind, x: number, z: number, spawnTime = 0.75): Enemy | undefined {
     const enemy = this.enemies.find((candidate) => !candidate.active);
     if (!enemy) return;
-    Object.assign(enemy, { active: true, id: this.nextId++, kind, x, z, previousX: x, previousZ: z, hp: this.enemyMaxHp(kind), age: 0, spawnTime, flash: 0, knockX: 0, knockZ: 0, facing: 0, orbitCooldown: 0, intent: 'chase', intentTime: 0, intentCooldown: 0, aimX: 0, aimZ: 1, stagger: 0, hornDash: 0 });
+    Object.assign(enemy, { active: true, id: this.nextId++, kind, x, z, previousX: x, previousZ: z, hp: this.enemyMaxHp(kind), age: 0, spawnTime, flash: 0, knockX: 0, knockZ: 0, facing: 0, orbitCooldown: 0, intent: 'chase', intentTime: 0, intentCooldown: 0, aimX: 0, aimZ: 1, stagger: 0, hornDash: 0, slowTime: 0, walkPhase: (this.nextId * 2.399963) % (Math.PI * 2), walkAmount: 0, steerX: undefined, steerZ: undefined });
     this.spawned++;
     return enemy;
   }
 
   private spawnNear(player: Point) {
+    if (this.enemies.every(enemy => enemy.active)) return;
+    if (this.useNavigation) {
+      const point = this.spawnPosition(player, 8, 12, ENEMY_TYPES.tank.radius);
+      if (!point) return;
+      const roll = this.random();
+      const kind = this.spawned === 0 ? 'normal' : this.spawned === 1 ? 'fast' : this.spawned === 2 ? 'tank' : roll < .58 ? 'normal' : roll < .86 ? 'fast' : 'tank';
+      this.spawn(kind, point.x, point.z);
+      return;
+    }
     for (let attempt = 0; attempt < 24; attempt++) {
       const angle = this.random() * Math.PI * 2, distance = 8 + this.random() * 4;
       const x = player.x + Math.sin(angle) * distance, z = player.z + Math.cos(angle) * distance;
@@ -134,6 +163,10 @@ export class Combat {
 
   /** Finite encounters use the same pool, spawn warning, collision and enemy data. */
   spawnEncounter(kind: EnemyKind, player: Point) {
+    if (this.useNavigation) {
+      const point = this.spawnPosition(player, 6, 9, ENEMY_TYPES[kind].radius);
+      return point ? this.spawn(kind, point.x, point.z) : undefined;
+    }
     for (let attempt = 0; attempt < 24; attempt++) {
       const angle = this.random() * Math.PI * 2, distance = 6 + this.random() * 3;
       const x = player.x + Math.sin(angle) * distance, z = player.z + Math.cos(angle) * distance;
@@ -142,6 +175,27 @@ export class Combat {
       if (this.obstacles.some(o => Math.hypot(x - o.x, z - o.z) < o.radius + radius + .3)) continue;
       if (this.enemies.some(e => e.active && Math.hypot(x - e.x, z - e.z) < radius + ENEMY_TYPES[e.kind].radius + .3)) continue;
       return this.spawn(kind, x, z);
+    }
+    return undefined;
+  }
+
+  private spawnPosition(player: Point, min: number, max: number, radius: number): Point | undefined {
+    const candidate = (angle: number, distance: number) => {
+      const x = player.x + Math.sin(angle) * distance, z = player.z + Math.cos(angle) * distance;
+      if (Math.hypot(x, z) > this.boundary - radius - .2) return;
+      if (this.obstacles.some(o => Math.hypot(x - o.x, z - o.z) < o.radius + radius + .3)) return;
+      if (this.enemies.some(e => e.active && Math.hypot(x - e.x, z - e.z) < radius + ENEMY_TYPES[e.kind].radius + .3)) return;
+      const point = { x, z };
+      return this.navigation.reachable(point, player) ? point : undefined;
+    };
+    for (let attempt = 0; attempt < 24; attempt++) {
+      const point = candidate(this.random() * Math.PI * 2, min + this.random() * (max - min));
+      if (point) return point;
+    }
+    // Bounded deterministic fallback avoids losing a wave beside water or edges.
+    for (const distance of [(min + max) / 2, min, max]) for (let i = 0; i < 24; i++) {
+      const point = candidate(i * Math.PI / 12 + this.spawned * 2.399963, distance);
+      if (point) return point;
     }
     return undefined;
   }
@@ -162,6 +216,7 @@ export class Combat {
 
   update(dt: number, player: Point, dash?: DashStep) {
     if (this.hp <= 0 || dt <= 0 || this.progression.awaitingChoice) return;
+    this.tick++;
     if (this.isTrial && dash?.active && dash.started) this.dashSerial++;
     this.previousAnchorX = this.anchorInitialized ? this.anchorX : player.x;
     this.previousAnchorZ = this.anchorInitialized ? this.anchorZ : player.z;
@@ -183,6 +238,7 @@ export class Combat {
       if (!enemy.active) continue;
       enemy.previousX = enemy.x;
       enemy.previousZ = enemy.z;
+      enemy.slowTime = Math.max(0, (enemy.slowTime ?? 0) - dt);
       enemy.age += dt;
       enemy.flash = Math.max(0, enemy.flash - dt);
       enemy.orbitCooldown = Math.max(0, enemy.orbitCooldown - dt);
@@ -192,17 +248,27 @@ export class Combat {
       const dx = player.x - enemy.x, dz = player.z - enemy.z;
       const length = Math.max(0.001, Math.hypot(dx, dz));
       let steerX = dx / length, steerZ = dz / length;
+      const guided = this.useNavigation && this.navigation.guide(enemy, player, type.radius, this.navigationGoal);
+      if (guided) {
+        const gx = this.navigationGoal.x - enemy.x, gz = this.navigationGoal.z - enemy.z;
+        const distance = Math.max(.001, Math.hypot(gx, gz));
+        steerX = gx / distance; steerZ = gz / distance;
+      }
       for (const other of this.enemies) {
         if (!other.active || other === enemy || other.spawnTime > 0) continue;
         const ox = enemy.x - other.x, oz = enemy.z - other.z;
         const distance = Math.hypot(ox, oz), avoid = type.radius + ENEMY_TYPES[other.kind].radius;
-        if (distance < avoid && distance > 0.001) {
+        if (distance <= .001) {
+          // An antisymmetric, stable direction also separates exactly coincident spawns.
+          const angle = Math.min(enemy.id, other.id) * 2.399963, sign = enemy.id < other.id ? 1 : -1;
+          steerX += Math.cos(angle) * sign * 1.7; steerZ += Math.sin(angle) * sign * 1.7;
+        } else if (distance < avoid) {
           const strength = (avoid - distance) / avoid * 1.7;
           steerX += ox / distance * strength;
           steerZ += oz / distance * strength;
         }
       }
-      for (const obstacle of this.obstacles) {
+      if (!guided) for (const obstacle of this.obstacles) {
         const ox = enemy.x - obstacle.x, oz = enemy.z - obstacle.z;
         const distance = Math.hypot(ox, oz), avoid = obstacle.radius + type.radius + 0.7;
         if (distance < avoid && distance > 0.001) {
@@ -213,7 +279,11 @@ export class Combat {
         }
       }
       const steeringLength = Math.max(1, Math.hypot(steerX, steerZ));
-      let moveX = steerX / steeringLength * type.speed, moveZ = steerZ / steeringLength * type.speed;
+      const desiredX = steerX / steeringLength, desiredZ = steerZ / steeringLength, smoothing = 1 - Math.exp(-14 * dt);
+      enemy.steerX = (enemy.steerX ?? desiredX) + (desiredX - (enemy.steerX ?? desiredX)) * smoothing;
+      enemy.steerZ = (enemy.steerZ ?? desiredZ) + (desiredZ - (enemy.steerZ ?? desiredZ)) * smoothing;
+      const smoothLength = Math.max(1, Math.hypot(enemy.steerX, enemy.steerZ));
+      let moveX = enemy.steerX / smoothLength * type.speed, moveZ = enemy.steerZ / smoothLength * type.speed;
       if (this.isTrial) {
         enemy.stagger = Math.max(0, enemy.stagger - dt);
         if (enemy.stagger > 0) { moveX = moveZ = 0; }
@@ -223,22 +293,18 @@ export class Combat {
           else if (enemy.intent !== 'chase') { moveX = moveZ = 0; }
         }
       }
-      enemy.x += (moveX + enemy.knockX) * dt;
-      enemy.z += (moveZ + enemy.knockZ) * dt;
+      if ((enemy.slowTime ?? 0) > 0) { moveX *= ELEMENTAL_RULES.slowFactor; moveZ *= ELEMENTAL_RULES.slowFactor; }
+      this.moveEnemy(enemy, (moveX + enemy.knockX) * dt, (moveZ + enemy.knockZ) * dt, type.radius);
       const decay = Math.exp(-14 * dt);
       enemy.knockX *= decay;
       enemy.knockZ *= decay;
       enemy.facing = this.isTrial && (enemy.intent === 'windup' || enemy.intent === 'pounce') ? Math.atan2(enemy.aimX, enemy.aimZ) : Math.atan2(dx, dz);
-      for (const obstacle of this.obstacles) {
-        const ox = enemy.x - obstacle.x, oz = enemy.z - obstacle.z, distance = Math.hypot(ox, oz);
-        const radius = type.radius + obstacle.radius;
-        if (distance < radius) {
-          enemy.x = obstacle.x + (distance > 0.001 ? ox / distance : 1) * radius;
-          enemy.z = obstacle.z + (distance > 0.001 ? oz / distance : 0) * radius;
-        }
-      }
       const boundaryDistance = Math.hypot(enemy.x, enemy.z), limit = this.boundary - type.radius;
       if (boundaryDistance > limit) { enemy.x *= limit / boundaryDistance; enemy.z *= limit / boundaryDistance; }
+      const travelled = Math.hypot(enemy.x - enemy.previousX, enemy.z - enemy.previousZ);
+      const moving = Math.min(1, travelled / Math.max(.001, type.speed * dt));
+      enemy.walkAmount = (enemy.walkAmount ?? 0) + (moving - (enemy.walkAmount ?? 0)) * (1 - Math.exp(-12 * dt));
+      enemy.walkPhase = ((enemy.walkPhase ?? 0) + travelled * ENEMY_MOTION[enemy.kind].cadence) % (Math.PI * 2);
     }
 
     if (this.isTrial && dash?.active && this.dashSerial > 0) this.resolveHorn(player, dash);
@@ -263,7 +329,8 @@ export class Combat {
       }
     }
     for (const shot of this.projectiles) {
-      if (!shot.active) continue;
+      if (!shot.active || (shot.generation === BURST_SEED.maxGeneration && shot.bornTick === this.tick)) continue;
+      shot.age = (shot.age ?? 0) + dt;
       shot.previousX = shot.x;
       shot.previousZ = shot.z;
       const travelTime = Math.min(dt, shot.life);
@@ -271,12 +338,13 @@ export class Combat {
       shot.z += shot.vz * travelTime;
       shot.life -= dt;
       shot.distance += WEAPON.speed * travelTime;
+      if (shot.elemental) { this.elementalHit(shot); continue; }
       let earliest = Infinity, victim: Enemy | undefined;
       for (const obstacle of this.obstacles) {
         earliest = Math.min(earliest, segmentHit(shot.previousX, shot.previousZ, shot.x, shot.z, obstacle.x, obstacle.z, obstacle.radius + WEAPON.radius));
       }
       for (const enemy of this.enemies) {
-        if (!enemy.active || enemy.spawnTime > 0) continue;
+        if (!enemy.active || enemy.spawnTime > 0 || enemy.id === shot.ignoreEnemyId) continue;
         const t = segmentHit(shot.previousX, shot.previousZ, shot.x, shot.z, enemy.x, enemy.z, ENEMY_TYPES[enemy.kind].radius + WEAPON.radius);
         if (t < earliest) { earliest = t; victim = enemy; }
       }
@@ -286,6 +354,7 @@ export class Combat {
         this.effect(x, z, 'hit');
         if (victim) {
           this.damageEnemy(victim, shot.damage, shot.vx / WEAPON.speed, shot.vz / WEAPON.speed);
+          if (shot.burst && (shot.generation ?? 0) < BURST_SEED.maxGeneration) this.burstSeed(shot, victim, x, z);
         }
       } else if (shot.life <= 0) shot.active = false;
     }
@@ -340,10 +409,117 @@ export class Combat {
       // Retain a center shot even for an even number of fan projectiles.
       const spread = i === 0 ? 0 : Math.ceil(i / 2) * (i % 2 ? 1 : -1) * 0.11;
       const angle = Math.atan2(x / length, z / length) + spread;
-      Object.assign(shot, { active: true, x: origin.x, z: origin.z, previousX: origin.x, previousZ: origin.z, vx: Math.sin(angle) * WEAPON.speed, vz: Math.cos(angle) * WEAPON.speed, distance: 0, life: Math.max(WEAPON.lifetime, range / WEAPON.speed + 0.12), damage, sourceId, species });
+      Object.assign(shot, { active: true, x: origin.x, z: origin.z, previousX: origin.x, previousZ: origin.z, vx: Math.sin(angle) * WEAPON.speed, vz: Math.cos(angle) * WEAPON.speed, distance: 0, life: Math.max(WEAPON.lifetime, range / WEAPON.speed + 0.12), damage, sourceId, species, generation: 0, bornTick: this.tick, ignoreEnemyId: 0, burst: this.fusions.some(f => f.id === 'burst-seed') && species === 'yanrong', age: 0, elemental: this.fusionEnabled && (species === 'bubblesalamander' || species === 'sproutspike'), fusionIds: this.fusions.map(f => f.id), hitIds: [], pierces: this.fusionEnabled && species === 'sproutspike' ? ELEMENTAL_RULES.leafPierces : 0, bounces: this.fusions.some(f => f.id === 'chain-bubble' || f.id === 'jump-thorn') ? ELEMENTAL_RULES.chainHops : 0, scatter: this.fusions.some(f => f.id === 'thorn-scatter') });
       this.shotsFired++;
     }
     return true;
+  }
+
+  /** Instant one-pass AoE. Children share the 24-slot pool and start next tick. */
+  private burstSeed(parent: Projectile, original: Enemy, x: number, z: number) {
+    const damage = parent.damage, angle = Math.atan2(parent.vx, parent.vz), sourceId = parent.sourceId;
+    this.bursts++;
+    this.effect(x, z, 'burst', original.kind, BURST_SEED.explosionRadius);
+    for (const enemy of this.enemies) {
+      if (!enemy.active || enemy.spawnTime > 0 || enemy.id === original.id) continue;
+      const dx = enemy.x - x, dz = enemy.z - z, distance = Math.hypot(dx, dz);
+      if (distance > BURST_SEED.explosionRadius + ENEMY_TYPES[enemy.kind].radius) continue;
+      this.damageEnemy(enemy, damage * BURST_SEED.explosionDamage, dx / Math.max(.001, distance), dz / Math.max(.001, distance));
+    }
+    // Cache parent data before its just-freed slot can be reused by a child.
+    for (let i = 0; i < BURST_SEED.childCount; i++) {
+      const child = this.projectiles.find(shot => !shot.active);
+      if (!child) break;
+      const direction = angle + (i === 0 ? -1 : 1) * BURST_SEED.childAngle;
+      Object.assign(child, { active: true, x, z, previousX: x, previousZ: z, vx: Math.sin(direction) * WEAPON.speed, vz: Math.cos(direction) * WEAPON.speed,
+        life: BURST_SEED.childLifetime, damage: damage * BURST_SEED.childDamage, distance: 0, sourceId, species: 'yanrong', generation: BURST_SEED.maxGeneration,
+        bornTick: this.tick, ignoreEnemyId: original.id, burst: false, age: 0, elemental: false, fusionIds: [], hitIds: [], pierces: 0, bounces: 0, scatter: false });
+      this.childShots++;
+    }
+  }
+
+  /** Swept circle contact plus bounded tangent sliding; never project a crowd through cover. */
+  private moveEnemy(enemy: Enemy, dx: number, dz: number, radius: number) {
+    for (let pass = 0; pass < 3 && Math.hypot(dx, dz) > 1e-8; pass++) {
+      let earliest = Infinity, blocker: Obstacle | undefined;
+      for (const obstacle of this.obstacles) {
+        const ox = enemy.x - obstacle.x, oz = enemy.z - obstacle.z;
+        // Invalid external fixtures can start inside cover: allow only outward recovery.
+        if (ox * ox + oz * oz < (obstacle.radius + radius) ** 2 && ox * dx + oz * dz > 0) continue;
+        const t = segmentHit(enemy.x, enemy.z, enemy.x + dx, enemy.z + dz, obstacle.x, obstacle.z, obstacle.radius + radius);
+        if (t < earliest) { earliest = t; blocker = obstacle; }
+      }
+      if (!blocker) { enemy.x += dx; enemy.z += dz; return; }
+      const safe = Math.max(0, earliest - .0001);
+      enemy.x += dx * safe; enemy.z += dz * safe;
+      const ox = enemy.x - blocker.x, oz = enemy.z - blocker.z, length = Math.max(.0001, Math.hypot(ox, oz));
+      const nx = ox / length, nz = oz / length;
+      dx *= 1 - earliest; dz *= 1 - earliest;
+      const inward = Math.min(0, dx * nx + dz * nz);
+      dx -= nx * inward; dz -= nz * inward;
+    }
+  }
+
+  /** One swept segment, bounded by the enemy pool. Hit history survives piercing and hops. */
+  private elementalHit(shot: Projectile) {
+    const ids = shot.hitIds ?? (shot.hitIds = []);
+    const wall = this.obstacles.reduce((t, o) => Math.min(t, segmentHit(shot.previousX, shot.previousZ, shot.x, shot.z, o.x, o.z, o.radius + WEAPON.radius)), Infinity);
+    const contacts = this.enemies.filter(e => e.active && e.spawnTime <= 0 && !ids.includes(e.id) && e.id !== shot.ignoreEnemyId)
+      .map(enemy => ({ enemy, t: segmentHit(shot.previousX, shot.previousZ, shot.x, shot.z, enemy.x, enemy.z, ENEMY_TYPES[enemy.kind].radius + WEAPON.radius) }))
+      .filter(c => c.t < wall && c.t !== Infinity).sort((a, b) => a.t - b.t || a.enemy.id - b.enemy.id);
+    for (const { enemy, t } of contacts) {
+      if (!enemy.active) continue;
+      const x = shot.previousX + (shot.x - shot.previousX) * t, z = shot.previousZ + (shot.z - shot.previousZ) * t;
+      ids.push(enemy.id);
+      this.damageEnemy(enemy, shot.damage, shot.vx / WEAPON.speed, shot.vz / WEAPON.speed);
+      this.effect(x, z, shot.species === 'bubblesalamander' ? 'water' : 'thorn');
+      if (shot.species === 'bubblesalamander') {
+        if (enemy.active) enemy.slowTime = ELEMENTAL_RULES.slowDuration;
+        const deep = shot.fusionIds?.includes('deep-bubble'), chain = shot.fusionIds?.includes('chain-bubble');
+        if (deep || chain) {
+          const rule = deep ? DEEP_BUBBLE : CHAIN_BUBBLE;
+          this.effect(x, z, 'water', enemy.kind, rule.radius);
+          for (const other of this.enemies) {
+            if (!other.active || other.spawnTime > 0 || other.id === enemy.id || Math.hypot(other.x - x, other.z - z) > rule.radius + ENEMY_TYPES[other.kind].radius) continue;
+            // One AoE per impact; two water recipes share that impact, never double-stack it.
+            this.damageEnemy(other, shot.damage * rule.damage, 0, 0);
+            if (other.active) other.slowTime = ELEMENTAL_RULES.slowDuration;
+          }
+        }
+      }
+      if (shot.scatter && (shot.generation ?? 0) === 0) {
+        shot.scatter = false;
+        this.scatterThorns(shot, x, z, enemy.id);
+      }
+      if ((shot.bounces ?? 0) > 0) {
+        const target = this.enemies.filter(e => e.active && e.spawnTime <= 0 && !ids.includes(e.id) && Math.hypot(e.x-x,e.z-z) <= ELEMENTAL_RULES.chainRange && !this.obstacles.some(o => segmentHit(x,z,e.x,e.z,o.x,o.z,o.radius+WEAPON.radius) !== Infinity))
+          .sort((a,b) => Math.hypot(a.x-x,a.z-z)-Math.hypot(b.x-x,b.z-z) || a.id-b.id)[0];
+        if (target) {
+          const distance = Math.max(.001, Math.hypot(target.x-x,target.z-z));
+          shot.bounces = (shot.bounces ?? 0) - 1; shot.pierces = 0; shot.damage *= ELEMENTAL_RULES.chainDecay;
+          shot.x = shot.previousX = x; shot.z = shot.previousZ = z;
+          shot.vx = (target.x-x)/distance*WEAPON.speed; shot.vz = (target.z-z)/distance*WEAPON.speed;
+          shot.life = Math.max(shot.life, ELEMENTAL_RULES.chainLife);
+          return;
+        }
+      }
+      if ((shot.pierces ?? 0) > 0) { shot.pierces = (shot.pierces ?? 0) - 1; continue; }
+      shot.active = false; return;
+    }
+    if (wall !== Infinity || shot.life <= 0) shot.active = false;
+  }
+
+  private scatterThorns(parent: Projectile, x: number, z: number, originalId: number) {
+    const angle = Math.atan2(parent.vx, parent.vz);
+    for (let i=0;i<THORN_SCATTER.childCount;i++) {
+      const child = this.projectiles.find(s => !s.active);
+      if (!child) break;
+      const direction = angle + (i-1)*THORN_SCATTER.angle;
+      Object.assign(child, { active:true,x,z,previousX:x,previousZ:z,vx:Math.sin(direction)*WEAPON.speed,vz:Math.cos(direction)*WEAPON.speed,
+        life:THORN_SCATTER.lifetime,damage:parent.damage*THORN_SCATTER.childDamage,distance:0,sourceId:parent.sourceId,species:'sproutspike',
+        generation:1,bornTick:this.tick,ignoreEnemyId:originalId,burst:false,age:0,elemental:true,fusionIds:[],hitIds:[originalId],pierces:0,bounces:0,scatter:false });
+      this.childShots++;
+    }
   }
 
   private updatePounce(enemy: Enemy, dt: number, dx: number, dz: number, distance: number) {
@@ -462,14 +638,16 @@ export class Combat {
     Object.assign(orb, { active: true, x, z, previousX: x, previousZ: z, value, magnetized: false });
   }
 
-  private effect(x: number, z: number, kind: CombatEffect['kind'], enemyKind: EnemyKind = 'normal') {
+  private effect(x: number, z: number, kind: CombatEffect['kind'], enemyKind: EnemyKind = 'normal', radius = 0) {
     const effect = this.effects.find((candidate) => !candidate.active);
-    if (effect) Object.assign(effect, { active: true, x, z, kind, enemyKind, duration: kind === 'death' ? 0.55 : 0.32, time: kind === 'death' ? 0.55 : 0.32 });
+    const duration = kind === 'burst' ? BURST_SEED.explosionDuration : kind === 'death' ? 0.55 : 0.32;
+    if (effect) Object.assign(effect, { active: true, x, z, kind, enemyKind, radius, duration, time: duration });
   }
 
   inspect() {
     return {
       hp: this.hp, kills: this.kills, xp: this.xp, shotsFired: this.shotsFired, hits: this.hits,
+      fusion: { enabled: this.fusionEnabled, active: this.fusion?.id ?? null, recipes: this.fusions.map(f => f.id), bursts: this.bursts, childShots: this.childShots, children: this.projectiles.filter(shot => shot.active && shot.generation === 1).length },
       spawned: this.spawned, collected: this.collected, invulnerability: this.invulnerability,
       enemies: this.enemies.filter((enemy) => enemy.active).map((enemy) => ({ id: enemy.id, kind: enemy.kind, x: enemy.x, z: enemy.z, hp: enemy.hp, spawning: enemy.spawnTime > 0 })),
       projectiles: this.projectiles.filter((shot) => shot.active).length,

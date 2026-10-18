@@ -1,4 +1,4 @@
-import { SKILLS, upgradePreview, type Progression } from './progression';
+import { upgradePreview, type Progression } from './progression';
 
 const icons = {
   settings: '<path d="M4 6h16M4 12h16M4 18h16"/><circle cx="9" cy="6" r="2" fill="currentColor"/><circle cx="15" cy="12" r="2" fill="currentColor"/><circle cx="9" cy="18" r="2" fill="currentColor"/>',
@@ -27,32 +27,44 @@ export function createUI(root: HTMLElement) {
     <div class="vignette" aria-hidden="true"></div>
     <div id="damage-overlay" class="damage-overlay" aria-hidden="true"></div>
     <section id="menu" class="menu screen" aria-label="主菜单">
-      <header class="menu-header"><div class="studio-mark">${icon('leaf')}<span>幻兽幸存者 <b>MOBILE</b></span></div><span class="version">V4.0 <i></i> P1 编队原型</span></header>
+      <header class="menu-header"><div class="studio-mark">${icon('leaf')}<span>幻兽幸存者 <b>MOBILE</b></span></div><span class="version">V5.0 <i></i> 技能融合</span></header>
       <div class="menu-copy">
         <div class="eyebrow"><span></span> 小小怪兽，大大冒险</div>
         <h1>幻兽<br/><span>幸存者</span><em>MOBILE</em></h1>
-        <p class="menu-description">一只主控，两位伙伴，自动迎战。<br/>本次原型预置三兽，摇杆轻松走位。</p>
-        <div class="menu-actions"><button id="start-party" class="primary">三兽编队原型 ${icon('arrow')}</button><button id="help" class="secondary" aria-label="操作指南">${icon('help')}<span>操作指南</span></button><button id="menu-settings" class="secondary settings-entry" aria-label="画质与声音设置">${icon('settings')}</button></div>
+        <p class="menu-description">一只焰绒，从火花到爆裂火种。<br/>自动迎战，升级组合你的魔法。</p>
+        <div class="menu-actions"><button id="start-fusion" class="primary">开始挑战 ${icon('arrow')}</button><button id="choose-creature" class="secondary creature-select-entry" aria-label="选择出战幻兽">选择幻兽</button><button id="help" class="secondary" aria-label="操作指南">${icon('help')}<span>操作指南</span></button><button id="menu-settings" class="secondary settings-entry" aria-label="画质与声音设置">${icon('settings')}</button></div>
+        <div class="prototype-entries"><button id="start-party" class="text-button">随机草场冒险</button><button id="start-legacy-party" class="text-button">三兽编队原型 <small>兼容</small></button></div>
         <div class="menu-hint"><span class="key">W A S D</span><span>或虚拟摇杆移动</span><span class="dot">·</span><span>随时来一小段冒险</span></div>
       </div>
       <div class="character-tag"><span class="tag-line"></span><div><small>MEET YOUR LITTLE MONSTER</small><strong>焰绒 <span>YANRONG</span></strong><p>一团勇敢又好奇的小火焰</p></div><span class="tag-star">✧</span></div>
       <footer class="menu-footer" aria-label="旧版兼容回归入口"><button id="start" class="trial-entry practice-entry">单兽回归 <small>旧版</small></button><div class="mode-entries"><button id="start-trial" class="trial-entry practice-entry">${icon('dash')} 犄角试炼 <small>旧版 · 自由练习</small></button><button id="start-challenge" class="trial-entry">${icon('battle')} 三波闯关 <small>旧版 · 赢取星级</small></button></div></footer>
     </section>
+    <section id="creature-picker" class="modal-screen" role="dialog" aria-modal="true" aria-labelledby="creature-picker-title" hidden>
+      <div class="creature-picker-card"><header><div><small>每局一只 · 自动攻击</small><h2 id="creature-picker-title">选择出战幻兽</h2></div><button id="close-creature-picker" class="icon-button" aria-label="关闭幻兽选择">${icon('close')}</button></header>
+        <div class="creature-options" role="group" aria-label="可选幻兽">
+          <button type="button" class="creature-option" data-creature="yanrong" aria-pressed="true"><img data-creature-src="${import.meta.env.BASE_URL}assets/pixel/creatures/yanrong-base.png" alt=""/><strong>焰绒</strong><span>火花弹 · 爆炸分裂</span></button>
+          <button type="button" class="creature-option" data-creature="bubblesalamander" aria-pressed="false"><img data-creature-src="${import.meta.env.BASE_URL}assets/pixel/creatures/paopaoyuan.png" alt=""/><strong>泡泡螈</strong><span>水泡弹 · 减速扩散</span></button>
+          <button type="button" class="creature-option" data-creature="sproutspike" aria-pressed="false"><img data-creature-src="${import.meta.env.BASE_URL}assets/pixel/creatures/yacishou.png" alt=""/><strong>芽刺兽</strong><span>叶刃 · 穿透连锁</span></button>
+        </div>
+        <button id="start-selected-creature" class="primary">焰绒 · 开始挑战 ${icon('arrow')}</button>
+      </div>
+    </section>
     <section id="hud" class="hud screen" aria-label="游戏操作与状态" hidden>
       <div class="hud-top">
-        <div class="health-block"><div class="health-panel">${portrait}<div class="health-copy"><div class="health-title"><strong>焰绒</strong><span id="level-value">Lv. 01</span></div><div class="health-track" role="progressbar" aria-label="生命值" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100"><div id="health-fill"></div></div><div class="health-values">${icon('heart')}<span id="health-value">100 / 100</span><small>YANRONG</small></div></div></div><div class="combat-stats"><div>${icon('battle')}<span>击败</span><strong id="kill-value">0</strong></div><div>${icon('spark')}<span>经验</span><strong id="xp-value">0</strong></div></div><div class="xp-row"><div id="xp-track" class="xp-track" role="progressbar" aria-label="升级经验" aria-valuemin="0" aria-valuemax="8" aria-valuenow="0"><div id="xp-fill"></div></div><span id="xp-progress">0 / 8</span></div></div>
+        <div class="health-block"><div class="health-panel">${portrait}<img id="creature-portrait" class="portrait" alt="" hidden style="object-fit:contain;image-rendering:pixelated"/><div class="health-copy"><div class="health-title"><strong id="creature-name">焰绒</strong><span id="level-value">Lv. 01</span></div><div class="health-track" role="progressbar" aria-label="生命值" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100"><div id="health-fill"></div></div><div class="health-values">${icon('heart')}<span id="health-value">100 / 100</span><small id="creature-code">YANRONG</small></div></div></div><div class="combat-stats"><div>${icon('battle')}<span>击败</span><strong id="kill-value">0</strong></div><div>${icon('spark')}<span>经验</span><strong id="xp-value">0</strong></div></div><div class="xp-row"><div id="xp-track" class="xp-track" role="progressbar" aria-label="升级经验" aria-valuemin="0" aria-valuemax="8" aria-valuenow="0"><div id="xp-fill"></div></div><span id="xp-progress">0 / 8</span></div></div>
         <div class="run-status"><span class="run-label">${icon('compass')} 中央草场</span><strong id="timer">00:00</strong><span class="explore-label"><i></i> 草原遭遇</span></div>
         <div class="hud-actions"><button id="settings" class="icon-button" aria-label="画质与声音设置">${icon('settings')}</button><button id="fullscreen" class="icon-button" aria-label="切换全屏">${icon('expand')}</button><button id="pause" class="icon-button" aria-label="暂停游戏">${icon('pause')}</button></div>
       </div>
       <div id="welcome" class="welcome"><span class="eyebrow">A LITTLE SPARK OF MAGIC</span><h2>小小魔法，准备就绪。</h2><p>移动躲避敌人，焰绒会自动施法 · 靠近拾取经验</p></div>
-      <div id="party-status" class="party-status" hidden><strong>三兽编队 · 共享生命</strong><span>主控 焰绒 · 伙伴 泡泡螈 / 芽刺兽</span></div>
-      <div id="trial-status" class="trial-status" hidden><strong id="trial-title">冲锋犄角 · 开局已装备</strong><span id="trial-progress" aria-live="polite"></span><small id="trial-hint">黄线蓄力时侧移躲开；冲刺命中可打断，青环期间可反击</small></div><div class="location-label"><span>01</span><div>中央草场<small>WINDSONG MEADOW</small></div></div>
+      <div id="party-status" class="party-status" hidden><strong>草场战斗样板</strong><span>焰绒 · 单兽自动攻击</span></div>
+      <div id="fusion-status" class="fusion-status" role="status" hidden><span id="fusion-spark-icon">${fireIcon(0)}</span><span id="fusion-burst-icon" hidden>${fireIcon(2)}</span><div><strong id="fusion-title">火花弹</strong><small id="fusion-hint">升级寻找「命中分裂」</small></div></div>
+      <div id="trial-status" class="trial-status" hidden><strong id="trial-title">冲锋犄角 · 开局已装备</strong><span id="trial-progress" aria-live="polite"></span><small id="trial-hint">黄线蓄力时侧移躲开；冲刺命中可打断，青环期间可反击</small></div><div class="location-label"><span>01</span><div>中央草场<small id="map-seed">WINDSONG MEADOW</small></div></div>
       <div class="movement-control"><div id="joystick" class="joystick" role="group" aria-label="虚拟摇杆：按住并拖动以移动"><span class="joystick-cross horizontal"></span><span class="joystick-cross vertical"></span><span class="joystick-knob"><span></span></span></div><span class="control-caption">移动 <b>W A S D</b></span></div>
       <div class="dash-control"><button id="dash" class="dash-button" aria-label="冲刺">${icon('dash')}<strong>冲刺</strong><span id="dash-status">就绪</span></button><span class="control-caption">轻点冲刺 <b>SPACE</b></span></div>
       <div id="boundary-hint" class="boundary-hint" hidden>草原边界 · 换个方向继续探索吧</div>
       <div class="stage-note">2.5D 原型 <span>·</span> 幻兽幸存者</div>
     </section>
-    <section id="pause-screen" class="modal-screen" aria-label="暂停菜单" hidden><div class="modal pause-card"><div class="modal-symbol">${icon('leaf')}</div><span class="eyebrow">TAKE A LITTLE BREATH</span><h2>冒险，歇一小会。</h2><p id="pause-reason">草原会在这里等你。</p><button id="resume" class="primary">继续冒险 ${icon('arrow')}</button><button id="pause-settings" class="text-button">画质与声音</button><div class="pause-links"><button id="restart" class="text-button">重新开始</button><button id="back-menu" class="text-button">返回主菜单</button></div></div></section>
+    <section id="pause-screen" class="modal-screen" aria-label="暂停菜单" hidden><div class="modal pause-card"><div class="modal-symbol">${icon('leaf')}</div><span class="eyebrow">TAKE A LITTLE BREATH</span><h2>冒险，歇一小会。</h2><p id="pause-reason">草原会在这里等你。</p><button id="resume" class="primary">继续冒险 ${icon('arrow')}</button><button id="pause-settings" class="text-button">画质与声音</button><div class="pause-links"><button id="restart" class="text-button">重新开始</button><button id="back-menu" class="text-button">返回主菜单</button></div><a id="map-replay" class="map-replay" hidden></a></div></section>
     <section id="gameover-screen" class="modal-screen" aria-label="本局结束" hidden><div class="modal result-card"><div class="modal-symbol">${icon('spark')}</div><span id="result-eyebrow" class="eyebrow">EVERY SPROUT GETS ANOTHER CHANCE</span><h2 id="result-heading">小火焰，休息一下。</h2><p id="result-message">带着这次冒险的勇气，再出发吧。</p><div id="result-challenge" class="result-challenge" hidden></div><div class="result-stats"><div><strong id="result-time">00:00</strong><span>生存时间</span></div><div><strong id="result-kills">0</strong><span>击败怪物</span></div><div><strong id="result-xp">0</strong><span>收集经验</span></div></div><div class="result-actions"><button id="gameover-restart" class="primary">再来一次 ${icon('arrow')}</button><button id="gameover-menu" class="text-button">返回主菜单</button></div></div></section>
     <section id="upgrade-screen" class="upgrade-screen" role="dialog" aria-modal="true" aria-labelledby="upgrade-heading" hidden>
       <div id="upgrade-panel" class="upgrade-panel" tabindex="-1">
@@ -62,7 +74,7 @@ export function createUI(root: HTMLElement) {
         <footer class="upgrade-footer"><span>${icon('spark')} <span id="upgrade-queue">本次选择后继续冒险</span></span><span>轻点卡牌选择 · 强化仅在本局生效</span></footer>
       </div>
     </section>
-    <section id="help-screen" class="modal-screen" aria-label="操作指南" hidden><div class="modal help-card"><button id="close-help" class="icon-button close-button" aria-label="关闭操作指南">${icon('close')}</button><span class="eyebrow">A SMALL FIELD GUIDE</span><h2>出发前，认识一下。</h2><div class="guide-row"><span>01</span><div><strong>走位与闪避</strong><p>左下角摇杆控制方向。电脑使用 WASD 或方向键。避开橙色出生预警圈。</p></div></div><div class="guide-row"><span>02</span><div><strong>三兽同行</strong><p>主控焰绒由摇杆控制，泡泡螈与芽刺兽自动跟随和攻击。全队共享生命，仅主控受击；受伤后短暂无敌。</p></div></div><div class="guide-row"><span>03</span><div><strong>收集经验，选择魔法</strong><p>自动施法击败敌人，靠近吸收经验。升级会暂停战斗，轻点卡牌叠加强化，也能习得环绕球与冲击波。</p></div></div><p class="guide-tip">手机请横屏，摇杆是编队原型唯一战斗操作。升级后重新按住摇杆；底部三个旧版入口保留原操作。</p></div></section>
+    <section id="help-screen" class="modal-screen" aria-label="操作指南" hidden><div class="modal help-card"><button id="close-help" class="icon-button close-button" aria-label="关闭操作指南">${icon('close')}</button><span class="eyebrow">A SMALL FIELD GUIDE</span><h2>出发前，认识一下。</h2><div class="guide-row"><span>01</span><div><strong>走位与闪避</strong><p>左下角摇杆控制方向。电脑使用 WASD 或方向键。避开橙色出生预警圈。</p></div></div><div class="guide-row"><span>02</span><div><strong>自动迎战</strong><p>焰绒自动锁定射程内、未被障碍遮挡的敌人。水面、树干和岩石阻挡移动，沿宽路绕行。</p></div></div><div class="guide-row"><span>03</span><div><strong>收集经验，选择魔法</strong><p>自动施法击败敌人，靠近吸收经验。升级会暂停战斗，轻点卡牌叠加强化，融合原型中选择「命中分裂」，自动解锁爆裂火种；可与分枝魔法共存。</p></div></div><p class="guide-tip">手机请横屏，摇杆是草场样板唯一战斗操作。升级后重新按住摇杆；三兽兼容与底部旧版入口保留历史规则。</p></div></section>
     <section id="settings-screen" class="modal-screen settings-screen" role="dialog" aria-modal="true" aria-labelledby="settings-heading" hidden>
       <div class="settings-card"><header><div><span class="eyebrow">MAKE YOURSELF AT HOME</span><h2 id="settings-heading">按你的节奏冒险</h2></div><button id="close-settings" class="icon-button" aria-label="关闭设置">${icon('close')}</button></header>
       <div class="settings-grid"><div class="graphics-setting"><label for="quality">画面品质</label><select id="quality"><option value="auto">自动 · 优先流畅</option><option value="battery">省电 · 30 帧目标</option><option value="high">清晰 · 60 帧目标</option></select><p id="quality-description">根据运行负载动态调整清晰度。</p><small>帧率为目标，实际表现取决于设备。</small></div>
@@ -73,6 +85,7 @@ export function createUI(root: HTMLElement) {
     <section id="error-screen" class="error-screen" hidden><h2>草原暂时没有打开</h2><p id="error-message"></p><button id="retry" class="primary">重新加载</button></section>
     <div id="toast" class="toast" role="status" hidden></div>
   `;
+  bindFireIcons(root);
 }
 
 export function renderUpgradeCards(progression: Progression, version: number) {
@@ -81,11 +94,11 @@ export function renderUpgradeCards(progression: Progression, version: number) {
   document.getElementById('upgrade-instruction')!.textContent = offered.length < 3 ? `还有 ${offered.length} 种技能可强化，选择一项继续成长。` : '三选一，让这次冒险更不一样。';
   document.getElementById('upgrade-queue')!.textContent = progression.pendingChoices > 1 ? `还有 ${progression.pendingChoices} 次成长选择 · 逐次选择后继续` : '本次选择后继续冒险';
   document.getElementById('upgrade-cards')!.innerHTML = offered.map((id) => {
-    const skill = SKILLS.find((candidate) => candidate.id === id)!;
+    const skill = progression.skills.find((candidate) => candidate.id === id)!;
     const rank = progression.ranks[id];
     return `<button class="skill-card" data-skill="${id}" data-offer="${version}" style="--skill-color:${skill.color}" disabled aria-label="${skill.title}：${skill.benefit}，提升到 ${rank + 1} 级">
       <span class="skill-card-meta"><span>${rank === 0 && skill.effect.type === 'spell' ? '新技能' : '魔法强化'}</span><span>Lv. ${rank} → ${rank + 1}<small> / ${skill.maxRank}</small></span></span>
-      <span class="skill-emblem">${icon(skill.icon)}</span>
+      <span class="skill-emblem">${id === 'split-on-hit' && progression.fusionBase === 'spark' ? fireIcon(1) : icon(skill.icon)}</span>
       <h3>${skill.title}</h3><strong class="skill-benefit">${skill.benefit}</strong>
       <p class="skill-description">${skill.description}</p>
       <span class="skill-preview">${upgradePreview(skill, progression.ranks)}</span>
@@ -93,4 +106,16 @@ export function renderUpgradeCards(progression: Progression, version: number) {
       <span class="skill-pick">点击选择 ${icon('arrow')}</span>
     </button>`;
   }).join('');
+  bindFireIcons(document.getElementById('upgrade-cards')!);
+}
+
+function fireIcon(index: 0 | 1 | 2) {
+  return `<span class="fire-icon" data-icon="${index}">${icon('spark')}<img src="/assets/pixel/skills/yanrong/fire-skill-icons.normalized.png" alt="" style="left:-${index * 100}%" draggable="false"/></span>`;
+}
+
+function bindFireIcons(root: HTMLElement) {
+  root.querySelectorAll<HTMLImageElement>('.fire-icon img').forEach(image => {
+    const sync = () => image.parentElement!.classList.toggle('ready', image.complete && image.naturalWidth > 0);
+    image.addEventListener('load', sync, { once: true }); image.addEventListener('error', sync, { once: true }); sync();
+  });
 }

@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { CREATURES, type PartySystem } from './party';
 import { PixelSpriteRenderer, PixelTextureCache } from './pixel-sprite';
+import { ANIMATION_RULES } from './creature-animation';
 
 /** Pixel party views with the original P1 primitives retained as per-member fallbacks. */
 export class PartyView {
@@ -16,6 +17,8 @@ export class PartyView {
   private leaderRing: THREE.Mesh;
   private height = 2.65;
   private disposed = false;
+  private animatedLeader = false;
+  private screenBasis = { rightX: 1, rightZ: 0, upX: 0, upZ: -Math.SQRT1_2 };
 
   constructor(private party: PartySystem, private usePixels = true) {
     const shadowMaterial = new THREE.MeshBasicMaterial({ color: '#25472d', transparent: true, opacity: 0.18, depthWrite: false });
@@ -43,6 +46,25 @@ export class PartyView {
 
   get hasPixelLeader() { return !!this.pixels[0]?.ready; }
 
+  setAnimatedLeader(enabled: boolean) {
+    this.animatedLeader = enabled;
+    this.pixels[0]?.setAnimationEnabled(enabled);
+    this.pixels.forEach(pixel => pixel?.resetAnimation());
+  }
+  setCamera(camera: THREE.Camera) {
+    camera.updateMatrixWorld(); const m = camera.matrixWorld.elements;
+    this.screenBasis.rightX = m[0]; this.screenBasis.rightZ = m[2];
+    this.screenBasis.upX = m[4]; this.screenBasis.upZ = m[6];
+  }
+  stepAnimation(dt: number, vx: number, vz: number) {
+    if (dt <= 0) return;
+    this.pixels.forEach((pixel, i) => {
+      const member = this.party.members[i];
+      if (member) pixel?.stepAnimation(dt, i === 0 ? vx : (member.x - member.previousX) / dt, i === 0 ? vz : (member.z - member.previousZ) / dt, this.screenBasis);
+    });
+  }
+  stopAnimation() { this.pixels.forEach(pixel => pixel?.stopAnimation()); }
+
   resize(viewportHeight: number, frustumHeight: number) {
     this.height = THREE.MathUtils.clamp(56 * frustumHeight / Math.max(1, viewportHeight), 2.65, 3.2);
   }
@@ -54,12 +76,14 @@ export class PartyView {
       if (pixel && (!member || pixel.species !== member.species)) { pixel.dispose(); this.pixels[i] = pixel = undefined; }
       if (member && this.usePixels && !pixel) {
         pixel = this.pixels[i] = new PixelSpriteRenderer(member.species, this.cache);
+        pixel.setAnimationEnabled(i === 0 ? this.animatedLeader : member.species !== 'yanrong');
         this.group.add(pixel.group);
       }
       if (!member || !pixel) continue;
       pixel.group.position.set(THREE.MathUtils.lerp(member.previousX, member.x, alpha), 0, THREE.MathUtils.lerp(member.previousZ, member.z, alpha));
       const moving = Math.hypot(member.x - member.previousX, member.z - member.previousZ) > 0.001;
-      pixel.render(this.height * (i === 0 ? 1 : 0.82), moving, time, i === 0 ? hurt : 0);
+      const scale = i === 0 ? (this.animatedLeader ? ANIMATION_RULES.displayScale : 1) : 0.82;
+      pixel.render(this.height * scale, moving, time, i === 0 ? hurt : 0);
     }
     const leader = this.party.leader;
     const x = THREE.MathUtils.lerp(leader.previousX, leader.x, alpha), z = THREE.MathUtils.lerp(leader.previousZ, leader.z, alpha);

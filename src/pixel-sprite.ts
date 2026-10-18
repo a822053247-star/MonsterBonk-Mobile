@@ -1,14 +1,23 @@
 import * as THREE from 'three';
 import type { SpeciesId } from './party';
+import { ANIMATION_LAYOUT, CreatureAnimator, clipFrame, type AnimationAsset, type ScreenBasis, type CreatureClip } from './creature-animation';
 
 export const PIXEL_CREATURE_ASSETS: Readonly<Record<SpeciesId, string>> = {
   yanrong: 'creatures/yanrong-base.png',
   bubblesalamander: 'creatures/paopaoyuan.png',
   sproutspike: 'creatures/yacishou.png',
 };
-export const PIXEL_ENEMY_ASSETS = { 'enemy-normal': 'enemies/grass-monster.png', 'enemy-fast': 'enemies/runner-bug.png' } as const;
-type PixelAssetId = SpeciesId | keyof typeof PIXEL_ENEMY_ASSETS;
-const PIXEL_ASSETS: Readonly<Record<PixelAssetId, string>> = { ...PIXEL_CREATURE_ASSETS, ...PIXEL_ENEMY_ASSETS };
+export const PIXEL_ENEMY_ASSETS = { 'enemy-normal': 'enemies/grass-monster.png', 'enemy-fast': 'enemies/runner-bug.png', 'enemy-tank': 'enemies/rock-armor-bug.png' } as const;
+export const PIXEL_ANIMATION_ASSETS = {
+  'yanrong-walk': 'creatures/animation/yanrong-animation-sheet.normalized.png',
+  'yanrong-diagonal': 'creatures/animation/yanrong-diagonal-walk.normalized.png',
+  'paopaoyuan-walk': 'creatures/animation/paopaoyuan-animation-sheet.normalized.png',
+  'paopaoyuan-diagonal': 'creatures/animation/paopaoyuan-diagonal-walk.normalized.png',
+  'yacishou-walk': 'creatures/animation/yacishou-animation-sheet.normalized.png',
+  'yacishou-diagonal': 'creatures/animation/yacishou-diagonal-walk.normalized.png',
+} as const;
+type PixelAssetId = SpeciesId | keyof typeof PIXEL_ENEMY_ASSETS | AnimationAsset;
+const PIXEL_ASSETS: Readonly<Record<PixelAssetId, string>> = { ...PIXEL_CREATURE_ASSETS, ...PIXEL_ENEMY_ASSETS, ...PIXEL_ANIMATION_ASSETS };
 export const PIXEL_ALPHA = 24 / 255;
 
 /** Crop only transparent padding. Never resample or modify the original PNG. */
@@ -42,25 +51,32 @@ export function preparePixelTexture(image: HTMLImageElement) {
 interface TextureEntry {
   texture: THREE.Texture; ready: boolean; failed: boolean; disposed: boolean; refs: number;
   aspect: number; sourceSize: number[]; crop: number[]; listeners: Set<() => void>;
+  start: () => void;
 }
 
 /** One texture per asset, shared by repeated members/instances, owned by each view. */
 export class PixelTextureCache {
   private entries = new Map<PixelAssetId, TextureEntry>();
 
-  acquire(species: PixelAssetId, onChange: () => void) {
+  acquire(species: PixelAssetId, onChange: () => void, autoLoad = true) {
     let entry = this.entries.get(species);
     if (!entry) {
-      const created: TextureEntry = { texture: new THREE.Texture(), ready: false, failed: false, disposed: false, refs: 0, aspect: 1, sourceSize: [], crop: [], listeners: new Set() };
+      const created: TextureEntry = { texture: new THREE.Texture(), ready: false, failed: false, disposed: false, refs: 0, aspect: 1, sourceSize: [], crop: [], listeners: new Set(), start: () => {} };
       entry = created;
       this.entries.set(species, created);
       // The URL honors Vite's base path; failed loads leave existing views visible.
       const url = `${import.meta.env?.BASE_URL ?? './'}assets/pixel/${PIXEL_ASSETS[species]}`;
-      const loader = new THREE.ImageLoader();
-      loader.load(url, image => {
+      let started = false;
+      created.start = () => {
+        if (started || created.disposed) return;
+        started = true;
+        const loader = new THREE.ImageLoader();
+        loader.load(url, image => {
         if (created.disposed) return;
         try {
-          const prepared = preparePixelTexture(image);
+          const atlas = species in PIXEL_ANIMATION_ASSETS;
+          if (atlas && (image.naturalWidth !== ANIMATION_LAYOUT.frameWidth * 4 || image.naturalHeight !== ANIMATION_LAYOUT.frameHeight * (species.endsWith('-walk') ? 4 : 2))) throw new Error('Invalid animation atlas dimensions');
+          const prepared = atlas ? { canvas: image, aspect: 1, sourceSize: [image.naturalWidth, image.naturalHeight], crop: [0, 0, image.naturalWidth, image.naturalHeight] } : preparePixelTexture(image);
           created.texture.image = prepared.canvas;
           created.texture.colorSpace = THREE.SRGBColorSpace;
           created.texture.magFilter = created.texture.minFilter = THREE.NearestFilter;
@@ -75,14 +91,17 @@ export class PixelTextureCache {
         if (created.disposed) return;
         created.failed = true;
         for (const notify of created.listeners) notify();
-      });
+        });
+      };
     }
     const acquired = entry;
     acquired.refs++;
     acquired.listeners.add(onChange);
+    if (autoLoad) acquired.start();
     let released = false;
     return {
       entry: acquired,
+      start: acquired.start,
       release: () => {
         if (released) return;
         released = true;
@@ -106,8 +125,25 @@ export class PixelSpriteRenderer {
   private lease: ReturnType<PixelTextureCache['acquire']>;
   private height = 2.65;
   private disposed = false;
+  private animator: CreatureAnimator;
+  private animations = new Map<AnimationAsset, ReturnType<PixelTextureCache['acquire']>>();
+  private animated = false;
+  private frameUv = new THREE.Vector4(0, 0, 1, 1);
+  private selectedFrame = -1;
+  private selectedAsset: PixelAssetId;
 
-  constructor(readonly species: SpeciesId, cache: PixelTextureCache) {
+  constructor(readonly species: SpeciesId, private cache: PixelTextureCache) {
+    this.animator = new CreatureAnimator(species);
+    this.selectedAsset = species;
+    this.material.onBeforeCompile = shader => {
+      shader.uniforms.pixelFrame = { value: this.frameUv };
+      shader.vertexShader = 'uniform vec4 pixelFrame;\n' + shader.vertexShader;
+      shader.vertexShader = shader.vertexShader.replace('#include <uv_vertex>', `#include <uv_vertex>
+        #ifdef USE_MAP
+          vMapUv = vMapUv * pixelFrame.zw + pixelFrame.xy;
+        #endif`);
+    };
+    this.material.customProgramCacheKey = () => 'pixel-sprite-frame-v1';
     this.group.name = `PixelCreature:${species}`;
     this.group.visible = false;
     this.sprite.name = 'PixelBillboard';
@@ -118,14 +154,46 @@ export class PixelSpriteRenderer {
     this.sync();
   }
 
-  get ready() { return this.lease.entry.ready && !this.disposed; }
+  get ready() { return !this.disposed && (this.animations.get(this.selectedAsset as AnimationAsset)?.entry ?? this.lease.entry).ready; }
+
+  setAnimationEnabled(enabled: boolean) {
+    if (this.disposed) return;
+    this.animated = enabled;
+    if (this.animated && !this.animations.size) for (const asset of this.animator.clips.assets) {
+      this.animations.set(asset, this.cache.acquire(asset, () => this.sync()));
+    }
+    this.sync();
+  }
+  stepAnimation(dt: number, vx: number, vz: number, basis: ScreenBasis) { if (this.animated && !this.disposed) this.animator.step(dt, vx, vz, basis); }
+  resetAnimation() { this.animator.reset(); this.sync(); }
+  stopAnimation() { this.animator.stop(); this.sync(); }
+
+  private animationClip(): CreatureClip | undefined {
+    if (!this.animated) return;
+    const clip = this.animator.clip;
+    if (this.animations.get(clip.asset)?.entry.ready) return clip;
+    // Missing diagonal art keeps movement direction and uses a matching side view.
+    if (clip.asset.endsWith('-diagonal') && this.animations.get(this.animator.clips.assets[0])?.entry.ready) {
+      const side = this.animator.clips.walks[clip.facing.endsWith('left') ? 'left' : 'right'];
+      return this.animator.moving ? side : this.animator.clips.idles[side.facing];
+    }
+  }
 
   private sync() {
     if (this.disposed) return;
-    if (this.ready) {
-      this.material.map = this.lease.entry.texture;
-      this.material.needsUpdate = true;
-      this.sprite.scale.set(this.height * this.lease.entry.aspect, this.height, 1);
+    const clip = this.animationClip(), entry = clip ? this.animations.get(clip.asset)!.entry : this.lease.entry;
+    this.selectedAsset = clip?.asset ?? this.species;
+    const texture = entry.ready ? entry.texture : null;
+    if (this.material.map !== texture) { this.material.map = texture; this.material.needsUpdate = true; }
+    if (clip) {
+      const frame = clipFrame(clip, this.animator.time), rows = clip.asset.endsWith('-walk') ? 4 : 2;
+      this.selectedFrame = frame;
+      this.frameUv.set((frame % 4 + (clip.mirror ? 1 : 0)) / 4, (rows - 1 - Math.floor(frame / 4)) / rows, (clip.mirror ? -1 : 1) / 4, 1 / rows);
+      this.sprite.center.set(...clip.anchor);
+      this.sprite.scale.set(this.height * ANIMATION_LAYOUT.frameWidth / ANIMATION_LAYOUT.bodyHeight, this.height * ANIMATION_LAYOUT.frameHeight / ANIMATION_LAYOUT.bodyHeight, 1);
+    } else {
+      this.selectedFrame = -1; this.frameUv.set(0, 0, 1, 1);
+      this.sprite.center.set(.5, 0); this.sprite.scale.set(this.height * entry.aspect, this.height, 1);
     }
     this.group.visible = this.ready;
   }
@@ -133,8 +201,8 @@ export class PixelSpriteRenderer {
   render(height: number, moving: boolean, time: number, hurt = 0) {
     this.height = height;
     // Uniform scale retains the source silhouette at rest and while moving.
-    this.sprite.scale.set(height * this.lease.entry.aspect, height, 1);
-    this.sprite.position.y = 0.035 + (moving ? Math.abs(Math.sin(time * 11)) * 0.025 : 0);
+    this.sync();
+    this.sprite.position.y = 0.035 + (!this.animated && moving ? Math.abs(Math.sin(time * 11)) * 0.025 : 0);
     this.material.color.set(hurt > 0 ? '#ffd8c4' : '#ffffff');
     this.group.visible = this.ready;
   }
@@ -144,12 +212,15 @@ export class PixelSpriteRenderer {
     return { species: this.species, loaded: entry.ready, failed: entry.failed, aspect: entry.aspect, height: this.height,
       width: this.sprite.scale.x, sourceSize: [...entry.sourceSize], crop: [...entry.crop], center: this.sprite.center.toArray(),
       footOffset: this.sprite.position.y, nearest: entry.texture.magFilter === THREE.NearestFilter && entry.texture.minFilter === THREE.NearestFilter,
+      animation: { enabled: this.animated, ...this.animator.inspect(), renderedFrame: this.selectedFrame, asset: this.selectedAsset, uv: this.frameUv.toArray(),
+        atlases: [...this.animations].map(([asset, lease]) => ({ asset, loaded: lease.entry.ready, failed: lease.entry.failed, nearest: lease.entry.texture.magFilter === THREE.NearestFilter, mipmaps: lease.entry.texture.generateMipmaps })) },
       mipmaps: entry.texture.generateMipmaps, depthTest: this.material.depthTest, depthWrite: this.material.depthWrite, alphaTest: this.material.alphaTest };
   }
 
   dispose() {
     if (this.disposed) return;
     this.disposed = true;
-    this.lease.release(); this.material.dispose(); this.group.clear(); this.group.removeFromParent();
+    this.lease.release(); for (const lease of this.animations.values()) lease.release(); this.animations.clear();
+    this.material.dispose(); this.group.clear(); this.group.removeFromParent();
   }
 }

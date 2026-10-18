@@ -1,14 +1,21 @@
 # 幻兽幸存者（原 MonsterBonk Mobile）
 
-正式玩法约束以 [V4.0 GDD](docs/GDD.md) 为准。主菜单点击「三兽编队原型」：摇杆操控焰绒，泡泡螈与芽刺兽自动跟随、独立攻击，共享生命，战斗没有冲刺/跳跃操作。三兽现已使用 `public/assets/pixel/creatures/` 的首批原创像素 PNG；主控稍大并带脚环。原型仍预置三只用于技术验证；正式单兽开局和等级槽位解锁安排在 P3。
+当前正式方向为 V5.0：一只幻兽上场、单摇杆移动、自动攻击、随机升级强化与技能融合。主菜单「单兽技能融合原型」使用焰绒像素 PNG，获得「命中分裂」升级卡后自动解锁「爆裂火种」：主弹命中爆炸，并派生最多两枚不会再次分裂的小火种。它与同时发射更多主弹的「分枝魔法」可以共存。
 
-[迁移审查、备份与后续计划](docs/MIGRATION.md) · [P0/P1 验收记录](docs/P0-P1-REPORT.md) · [首批像素素材接入验收](docs/PIXEL-IMPORT-REPORT.md)
+焰绒在融合原型中已接入八方向逐帧行走和正面待机，停止保留朝向；原始 PNG、旧模式与缺图回退保留。[动画验收与源图缺帧说明](docs/YANRONG-ANIMATION-REPORT.md)。
 
-两类基础敌人的像素显示已接入三兽原型，详见 [敌人像素显示验收](docs/ENEMY-PIXEL-REPORT.md)。后续范围、分轮任务、验收标准和待定参数见 [后续开发计划](docs/DEVELOPMENT-PLAN.md)，下一轮为 P3-A 的正式开局、等级槽位、金币与波次骨架；尚未实施。
+本轮只完成 P0 安全迁移和 P1 焰绒融合链。规则见 [V5 GDD](docs/GDD.md)，实施与环境限制见 [V5 P0/P1 验收](docs/V5-P0-P1-REPORT.md)，备份见 [迁移记录](docs/MIGRATION.md)。V4 GDD、迁移和开发计划均已完整归档，历史测试及模型素材保留。
 
-沿用现有地图、经验曲线与强化卡。未开发新商店、随机区域、警戒、稀有蛋、羁绊或新进化。编队原型中普通怪与快速怪使用像素图，坦克继续占位；菜单与旧模式保留原显示。URL 加 `?partyVisual=legacy` 回退三兽外观，加 `?enemyVisual=legacy` 回退敌人外观，两项可以组合；单张像素图加载失败时也会局部回退。底部「单兽回归」「犄角试炼」「三波闯关」保留旧规则供回归使用。
+菜单同时保留「随机草场冒险」（原单兽地图样板）、「三兽编队原型」（伙伴跟随及独立自动攻击的兼容入口），以及「单兽回归」「犄角试炼」「三波闯关」。融合模式只有一个摇杆，没有主动攻击、冲刺、跳跃或额外技能按钮；旧模式维持原卡池。
 
-以下为保留的旧版工程与实验记录，不代表 V4.0 正式玩法方向。
+既有随机草场保留中央出生区、4.8 单位宽主路及连通检查。暂停菜单可复制种子链接；URL 加 `?seed=forest-42` 固定布局，`?world=fixed` 使用固定样板，`?world=legacy` 使用旧地图。地图验收见 [WORLD-SAMPLE.md](docs/WORLD-SAMPLE.md)。三类基础敌人已接入像素显示，岩甲使用 `public/assets/pixel/enemies/rock-armor-bug.png`；蓝色坦克几何模型已删除。
+
+技能原图保留不改，运行时使用 `public/assets/pixel/skills/yanrong/` 下的 normalized 图集。载入失败时保留程序化特效和文字。暂停、升级、后台和死亡冻结模拟及动画，重开清除本局融合。投射物仍为 24 槽，池满少派生，不丢主弹和爆炸伤害。
+
+[开发计划](docs/DEVELOPMENT-PLAN.md) · [历史像素角色验收](docs/PIXEL-IMPORT-REPORT.md) · [敌人像素显示验收](docs/ENEMY-PIXEL-REPORT.md)
+
+以下为旧版工程与实验记录，不代表 V5.0 正式玩法方向。
+
 
 当前角色默认使用用户 Tripo 模型的独立修复版 `public/assets/characters/yanrong-repaired.glb`：重建简化四足骨架、蒙皮权重与原地行走循环，保留原几何和 UV。原始 `fire+fox+3d+model_Clone1.glb` 不覆盖。详见 [模型与步态修复验收](artifacts/角色骨骼与步态修复.md)。开发服务器运行时可访问 <http://localhost:5173/artifacts/fox-probe.html?fixed>，切换原始/修复动画、后腿视角和骨骼显示。
 
@@ -189,3 +196,9 @@ Three.js 使用 MIT 许可，全文保留在 `public/THIRD_PARTY_LICENSES.txt`�
 4. 分别开关音乐/音效并刷新，确认保存；切后台、旋转、升级与失败后不能继续响。iPhone 上确认点击开始能解锁声音，并测试静音拨片、蓝牙耳机和 App 切换。
 5. 在刘海屏横屏检查右上角设置/暂停、跳跃和冲刺能轻松点击，设置面板未被安全区域遮住。
 6. 分别用自动/省电/清晰游玩至少 5 分钟，记录实际设备型号、浏览器版本、帧率波动、发热和续航。当前未做 Android/iPhone 真机帧率测试，不能把桌面自动化结果当成手机性能数据。
+
+泡泡螈、芽刺兽已接入八方向移动动画，可从“三兽编队原型”入口查看；素材审查与接入说明见 [COMPANION-ANIMATION-REPORT.md](docs/COMPANION-ANIMATION-REPORT.md)。
+
+水草四融合已提供独立单兽开发入口：`/?fusionDev=paopaoyuan`、`/?fusionDev=yacishou`，打开后点击「单兽技能融合原型」。主菜单现已支持「选择幻兽」直接出战，开发参数继续兼容。规则与验证见 [WATER-GRASS-FUSIONS.md](docs/WATER-GRASS-FUSIONS.md)。
+
+主菜单「选择幻兽」→ 选择焰绒／泡泡螈／芽刺兽 →「开始挑战」。默认焰绒，重开保留选择；详见 [CREATURE-SELECTION.md](docs/CREATURE-SELECTION.md)。

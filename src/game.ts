@@ -11,7 +11,8 @@ import { GameAudio } from './audio';
 import { resize25DCamera, screenToGround, VIEW_25D } from './camera-25d';
 import { HORN, type DashStep, type Ruleset } from './trial';
 import { Challenge, CHALLENGE, CHALLENGE_WAVES } from './challenge';
-import { PartySystem } from './party';
+import { PartySystem, CREATURES, type SpeciesId } from './party';
+import { PIXEL_CREATURE_ASSETS } from './pixel-sprite';
 import { PartyView } from './party-view';
 
 type Mode = 'menu' | 'playing' | 'paused' | 'gameover' | 'upgrading' | 'settings';
@@ -37,6 +38,8 @@ export class Game {
   private pixelPartyEnabled = new URLSearchParams(window.location.search).get('partyVisual') !== 'legacy';
   private partyView = new PartyView(this.party, this.pixelPartyEnabled);
   private partyPrototype = false;
+  private selectedSpecies: SpeciesId = 'yanrong';
+  private prototypeVariant: 'sample' | 'fusion' | 'legacy-party' = 'sample';
   private world: World;
   private combat: Combat;
   private combatView: CombatView;
@@ -111,6 +114,9 @@ export class Game {
       this.scene.add(mesh);
     }
     this.input = new Input(document.querySelector<HTMLElement>('#joystick')!, this.dashButton);
+    const dev = new URLSearchParams(window.location.search).get('fusionDev');
+    this.selectedSpecies = dev === 'paopaoyuan' ? 'bubblesalamander' : dev === 'yacishou' ? 'sproutspike' : 'yanrong';
+    this.syncCreatureSelection();
     this.bindEvents(canvas);
     this.syncSettings();
     this.resize();
@@ -132,7 +138,23 @@ export class Game {
       this.preferences.sound = (document.getElementById('sound-toggle') as HTMLInputElement).checked;
       this.audio.configure(this.preferences.music, this.preferences.sound); this.saveSettings();
     }, options);
-    click('start-party', () => this.start('classic', true));
+    click('start-party', () => this.start('classic', true, true, 'sample'));
+    click('start-fusion', () => this.start('classic', true, true, 'fusion'));
+    click('choose-creature', () => {
+      document.getElementById('menu')!.inert = true;
+      for (const image of document.querySelectorAll<HTMLImageElement>('[data-creature-src]')) if (!image.src) image.src = image.dataset.creatureSrc!;
+      document.getElementById('creature-picker')!.hidden = false;
+      document.querySelector<HTMLButtonElement>(`[data-creature="${this.selectedSpecies}"]`)!.focus();
+    });
+    click('close-creature-picker', () => this.closeCreaturePicker());
+    click('start-selected-creature', () => this.start('classic', true, true, 'fusion'));
+    document.getElementById('creature-picker')!.addEventListener('keydown', event => {
+      if (event.key === 'Escape') { event.stopPropagation(); this.closeCreaturePicker(); }
+    }, options);
+    for (const species of ['yanrong', 'bubblesalamander', 'sproutspike'] as const) {
+      document.querySelector<HTMLButtonElement>(`[data-creature="${species}"]`)!.addEventListener('click', () => { this.selectedSpecies = species; this.syncCreatureSelection(); }, options);
+    }
+    click('start-legacy-party', () => this.start('classic', true, false, 'legacy-party'));
     click('start', () => this.start('classic', false));
     click('start-trial', () => this.start('horn-trial', false));
     click('start-challenge', () => this.start('horn-challenge', false));
@@ -257,14 +279,37 @@ export class Game {
     else this.wake();
   }
 
-  private start(ruleset: Ruleset = this.runRuleset, partyPrototype = this.partyPrototype) {
+  private closeCreaturePicker() {
+    document.getElementById('creature-picker')!.hidden = true;
+    document.getElementById('menu')!.inert = false;
+    document.getElementById('choose-creature')!.focus();
+  }
+
+  private syncCreatureSelection() {
+    const definition = CREATURES[this.selectedSpecies];
+    for (const button of document.querySelectorAll<HTMLButtonElement>('[data-creature]')) button.setAttribute('aria-pressed', String(button.dataset.creature === this.selectedSpecies));
+    document.querySelector('.menu-description')!.textContent = `${definition.name}出战 · 自动迎战，升级组合你的魔法。`;
+    document.getElementById('start-selected-creature')!.firstChild!.textContent = `${definition.name} · 开始挑战 `;
+    document.getElementById('choose-creature')!.setAttribute('aria-label', `选择出战幻兽，当前${definition.name}`);
+  }
+
+  private start(ruleset: Ruleset = this.runRuleset, partyPrototype = this.partyPrototype, newMap = false, variant = this.prototypeVariant) {
     if (this.portrait || this.contextLost) return;
     this.runRuleset = ruleset;
     this.partyPrototype = partyPrototype;
+    this.prototypeVariant = partyPrototype ? variant : 'sample';
+    this.combat.fusionEnabled = partyPrototype && variant === 'fusion';
+    this.combatView.setFusion(this.combat.fusionEnabled && this.selectedSpecies === 'yanrong');
+    this.world.setSample(partyPrototype && new URLSearchParams(window.location.search).get('world') !== 'legacy', newMap);
+    this.combat.useNavigation = partyPrototype && this.world.sampleActive;
     this.combat.party = partyPrototype ? this.party : undefined;
-    this.party.reset(partyPrototype ? ['yanrong', 'bubblesalamander', 'sproutspike'] : ['yanrong']);
+    const species: SpeciesId = this.combat.fusionEnabled ? this.selectedSpecies : 'yanrong';
+    document.getElementById('creature-picker')!.hidden = true;
+    document.getElementById('menu')!.inert = false;
+    this.party.reset(partyPrototype && variant === 'legacy-party' ? ['yanrong', 'bubblesalamander', 'sproutspike'] : [species]);
     this.input.setMovementOnly(partyPrototype);
     document.getElementById('hud')!.classList.toggle('party-prototype', partyPrototype);
+    document.getElementById('hud')!.classList.toggle('fusion-prototype', this.combat.fusionEnabled);
     document.getElementById('game-canvas')!.classList.toggle('pixel-party', partyPrototype && this.pixelPartyEnabled);
     this.partyView.group.visible = partyPrototype;
     this.combatView.setPixelEnemies(partyPrototype && new URLSearchParams(window.location.search).get('enemyVisual') !== 'legacy');
@@ -281,6 +326,7 @@ export class Game {
     this.combat.reset(ruleset);
     this.party.syncLeader(this.position, this.facing);
     this.party.placeCompanions(this.world.obstacles, WORLD_RADIUS - 0.7);
+    this.partyView.setAnimatedLeader((this.combat.fusionEnabled || this.prototypeVariant === 'legacy-party') && new URLSearchParams(window.location.search).get('creatureAnimation') !== 'static');
     if (partyPrototype) this.partyView.render(1, 0);
     this.monster.root.visible = !partyPrototype || !this.partyView.hasPixelLeader;
     if (this.trialHornMounted) this.monster.unequipOrgan('head');
@@ -302,8 +348,8 @@ export class Game {
     document.getElementById('gameover-screen')!.hidden = true;
     (document.activeElement as HTMLElement | null)?.blur();
     this.welcome.classList.remove('faded');
-    this.welcome.querySelector('h2')!.textContent = partyPrototype ? '三兽同行，自动迎战。' : this.challenge ? '三波迎战，冲出一条路。' : this.combat.isTrial ? '犄角已就绪，冲出一条路。' : '小小魔法，准备就绪。';
-    this.welcome.querySelector('p')!.textContent = partyPrototype ? '摇杆操控焰绒 · 泡泡螈与芽刺兽自动跟随攻击' : this.challenge ? '击败三波即可通关 · 冲锋命中 6 次、打断 2 次各加一星' : this.combat.isTrial ? '冲刺命中可击退和打断 · 留意黄色扑击预警线' : '移动躲避敌人，焰绒会自动施法 · 靠近拾取经验';
+    this.welcome.querySelector('h2')!.textContent = this.combat.fusionEnabled && species !== 'yanrong' ? `${CREATURES[species].name}，准备出发。` : this.combat.fusionEnabled ? '一簇火花，生长成烈焰。' : partyPrototype ? '草场已就绪，出发吧。' : this.challenge ? '三波迎战，冲出一条路。' : this.combat.isTrial ? '犄角已就绪，冲出一条路。' : '小小魔法，准备就绪。';
+    this.welcome.querySelector('p')!.textContent = this.combat.fusionEnabled && species !== 'yanrong' ? `${CREATURES[species].name}出战 · 摇杆移动 · 自动攻击 · 升级三选一` : this.combat.fusionEnabled ? '击败敌人收集经验 · 选择命中分裂，自动融合爆裂火种' : partyPrototype && variant === 'legacy-party' ? '三兽兼容模式 · 主控移动，伙伴跟随并自动攻击' : partyPrototype ? '摇杆操控焰绒 · 自动攻击 · 沿泥路绕过林地与水岸' : this.challenge ? '击败三波即可通关 · 冲锋命中 6 次、打断 2 次各加一星' : this.combat.isTrial ? '冲刺命中可击退和打断 · 留意黄色扑击预警线' : '移动躲避敌人，焰绒会自动施法 · 靠近拾取经验';
     this.accumulator = 0;
     this.placeCamera(true);
     this.updateHUD();
@@ -335,9 +381,14 @@ export class Game {
   }
 
   private showMenu() {
+    this.world.setSample(false);
+    this.combat.useNavigation = false;
     this.monster.root.visible = true;
     document.getElementById('game-canvas')!.classList.remove('pixel-party');
     this.partyPrototype = false;
+    this.prototypeVariant = 'sample';
+    this.combat.fusionEnabled = false;
+    this.combatView.setFusion(false);
     this.combat.party = undefined;
     this.party.reset();
     this.partyView.group.visible = false;
@@ -391,6 +442,8 @@ export class Game {
   }
 
   private step(dt: number) {
+    if (this.mode !== 'playing') return;
+    this.combat.useNavigation = this.partyPrototype && this.world.sampleActive;
     if (this.combat.progression.awaitingChoice) { this.openUpgrade(); return; }
     this.previousPosition.copy(this.position);
     this.previousJump = this.jumpHeight;
@@ -469,9 +522,10 @@ export class Game {
     if (this.partyPrototype) {
       // The original Player movement is now the controlled creature adapter.
       this.party.syncLeader(this.position, this.facing);
-      this.party.follow(dt, this.world.obstacles, WORLD_RADIUS - 0.7);
+      if (this.prototypeVariant === 'legacy-party') this.party.follow(dt, this.world.obstacles, WORLD_RADIUS - 0.7);
     }
     this.combat.update(dt, this.position, this.dashAttack);
+    if (this.partyPrototype && this.combat.hp > 0) this.partyView.stepAnimation(dt, (this.position.x - this.previousPosition.x) / dt, (this.position.z - this.previousPosition.z) / dt);
     if (this.combat.shotsFired > shots) this.audio.play('cast');
     if (this.combat.hits > hits) this.audio.play('hit');
     if (this.combat.collected > collected) this.audio.play('collect');
@@ -542,6 +596,7 @@ export class Game {
   }
 
   private endRun(outcome: 'victory' | 'defeat' = 'defeat') {
+    this.partyView.stopAnimation();
     this.hideUpgrade();
     this.mode = 'gameover';
     this.outcome = outcome;
@@ -575,7 +630,37 @@ export class Game {
   }
 
   private updateHUD() {
-    document.getElementById('party-status')!.hidden = !this.partyPrototype;
+    const fusionStatus = document.getElementById('fusion-status')!;
+    fusionStatus.hidden = !this.combat.fusionEnabled;
+    const fused = !!this.combat.fusion;
+    fusionStatus.classList.toggle('activated', fused);
+    const title = document.getElementById('fusion-title')!, hint = document.getElementById('fusion-hint')!;
+    const base = this.combat.baseAttack;
+    const titleText = fused ? this.combat.fusions.map(f => f.title).join(' / ') + ' · 已融合' : base === 'bubble' ? '水泡弹' : base === 'leaf' ? '叶刃' : '火花弹';
+    const hintText = base === 'spark' ? (fused ? '命中爆炸 · 两枚小火种' : '升级寻找「命中分裂」') : base === 'bubble' ? '升级寻找「范围扩大」「连锁弹射」' : '升级寻找「命中分裂」「连锁弹射」';
+    const species = this.party.leader.species;
+    document.getElementById('creature-name')!.textContent = CREATURES[species].name;
+    document.getElementById('creature-code')!.textContent = species === 'yanrong' ? 'YANRONG' : species === 'bubblesalamander' ? 'PAOPAOYUAN' : 'YACISHOU';
+    const portrait = document.getElementById('creature-portrait') as HTMLImageElement;
+    portrait.hidden = species === 'yanrong';
+    if (species !== 'yanrong' && portrait.dataset.species !== species) { portrait.src = `${import.meta.env.BASE_URL}assets/pixel/${PIXEL_CREATURE_ASSETS[species]}`; portrait.dataset.species = species; }
+    (document.querySelector('.health-panel svg.portrait') as SVGElement).style.display = species === 'yanrong' ? '' : 'none';
+    if (title.textContent !== titleText) title.textContent = titleText;
+    if (hint.textContent !== hintText) hint.textContent = hintText;
+    document.getElementById('fusion-spark-icon')!.hidden = fused || base !== 'spark';
+    document.getElementById('fusion-burst-icon')!.hidden = !fused || base !== 'spark';
+    const map = this.world.inspect();
+    const replay = document.getElementById('map-replay') as HTMLAnchorElement;
+    replay.hidden = !this.partyPrototype || !map.seed;
+    if (map.seed && replay.dataset.seed !== map.seed) {
+      const url = new URL(window.location.href);
+      url.searchParams.delete('world'); url.searchParams.set('seed', map.seed);
+      replay.href = url.href; replay.textContent = '复现地图 · 种子 ' + map.seed;
+      replay.dataset.seed = map.seed;
+    }
+    const seedCharacters = Array.from(map.seed ?? '');
+    document.getElementById('map-seed')!.textContent = map.seed ? '种子 ' + (seedCharacters.length > 18 ? seedCharacters.slice(0, 18).join('') + '…' : map.seed) : 'WINDSONG MEADOW';
+    document.getElementById('party-status')!.hidden = !this.partyPrototype || this.party.members.length < 2;
     const trialStatus = document.getElementById('trial-status')!;
     trialStatus.hidden = !this.combat.isTrial;
     document.getElementById('hud')!.classList.toggle('horn-trial', this.combat.isTrial);
@@ -647,6 +732,7 @@ export class Game {
     // Position and look point share one smoothed anchor, so pitch never changes.
     this.camera.lookAt(this.cameraAnchor);
     this.combatView.updateView(this.camera, window.innerHeight, this.camera.top - this.camera.bottom);
+    this.partyView.setCamera(this.camera);
   }
 
   private frame = (time: number) => {
@@ -676,6 +762,7 @@ export class Game {
       }
     this.monster.animate(renderDt, Math.min(1, this.velocity.length() / 4.6), this.dashRemaining > 0, this.visualTime, THREE.MathUtils.lerp(this.previousJump, this.jumpHeight, this.accumulator / STEP), this.combat.hurtFlash / 0.25);
       this.placeCamera(false, renderDt);
+      this.world.update(this.position.x, this.position.z);
       this.monster.root.visible = !this.partyPrototype || !this.partyView.hasPixelLeader;
       this.renderer.render(this.scene, this.camera);
     }
@@ -720,6 +807,9 @@ export class Game {
       ruleset: this.runRuleset,
       outcome: this.outcome,
       partyPrototype: this.partyPrototype,
+      prototypeVariant: this.prototypeVariant,
+      fusionVisual: this.combatView.inspectFusion(),
+      world: this.world.inspect(),
       party: this.party.inspect(),
       partyVisual: this.partyView.inspect(),
       enemyVisual: this.combatView.inspect(),
@@ -752,6 +842,7 @@ export class Game {
     this.partyView.dispose();
     this.combatView.dispose();
     this.audio.dispose();
+    this.world.dispose();
     const geometries = new Set<THREE.BufferGeometry>();
     const materials = new Set<THREE.Material>();
     const textures = new Set<THREE.Texture>();

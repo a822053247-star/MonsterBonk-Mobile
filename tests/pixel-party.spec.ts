@@ -30,21 +30,21 @@ test.beforeEach(async ({ page }) => {
 });
 
 async function open(page: Page, query = '') {
-  await page.goto('/pixel-harness' + query);
+  await page.goto('/pixel-harness' + (query ? query + '&world=fixed' : '?world=fixed'));
   await page.waitForFunction(() => 'game' in window);
   await page.locator('#start-party').tap();
 }
 async function ready(page: Page) {
-  await expect.poll(async () => (await state(page)).partyVisual.members.filter(m => m?.loaded).length).toBe(3);
+  await expect.poll(async () => (await state(page)).partyVisual.members.filter(m => m?.loaded).length).toBe(1);
 }
 
-test('all three PNGs retain aspect, nearest sampling, foot anchors and readable phone scale', async ({ page }) => {
+test('single Yanrong PNG retains aspect, nearest sampling, foot anchor and readable phone scale', async ({ page }) => {
   await open(page); await ready(page);
   for (const viewport of [{ width: 844, height: 390 }, { width: 568, height: 320 }]) {
     await page.setViewportSize(viewport); await page.waitForTimeout(100);
     const s = await state(page), members = s.partyVisual.members;
     expect(s.partyVisual.leader).toBe('pixel');
-    expect(s.partyVisual.cache).toEqual({ textures: 3, references: 3 });
+    expect(s.partyVisual.cache).toEqual({ textures: 1, references: 1 });
     for (const m of members) {
       expect(m).toBeDefined();
       expect(m!.width / m!.height).toBeCloseTo(m!.aspect, 6);
@@ -54,8 +54,7 @@ test('all three PNGs retain aspect, nearest sampling, foot anchors and readable 
       expect(m!.nearest).toBe(true); expect(m!.mipmaps).toBe(false);
       expect(m!.depthTest && m!.depthWrite).toBe(true); expect(m!.alphaTest).toBeGreaterThan(0);
     }
-    expect(members[0]!.height / members[1]!.height).toBeCloseTo(1 / .82, 5);
-    expect(members[1]!.height).toBe(members[2]!.height);
+    expect(s.party).toHaveLength(1);
     expect(members[0]!.height / s.camera.height * viewport.height).toBeGreaterThanOrEqual(55);
   }
   expect(await page.evaluate(() => (window as unknown as Fixture).visualProbe())).toEqual({ unchanged: true, originalHidden: true, placeholderCount: 0 });
@@ -80,9 +79,9 @@ test('transparent corners reveal terrain, opaque art writes depth and real cover
 test('missing art falls back per creature while movement and auto attacks continue', async ({ page }) => {
   await page.route('**/assets/pixel/creatures/*.png', route => route.abort());
   await open(page);
-  await expect.poll(async () => (await state(page)).partyVisual.members.filter(m => m?.failed).length).toBe(3);
+  await expect.poll(async () => (await state(page)).partyVisual.members.filter(m => m?.failed).length).toBe(1);
   expect((await state(page)).partyVisual.leader).toBe('original');
-  expect(await page.evaluate(() => (window as unknown as Fixture).visualProbe())).toMatchObject({ originalHidden: false, placeholderCount: 2 });
+  expect(await page.evaluate(() => (window as unknown as Fixture).visualProbe())).toMatchObject({ originalHidden: false, placeholderCount: 0 });
   const result = JSON.parse(await page.evaluate(() => (window as unknown as Fixture).parity()));
   expect(result.p.x).toBeGreaterThan(2); expect(result.party.every((m: { shotsFired: number }) => m.shotsFired > 0)).toBe(true);
 });

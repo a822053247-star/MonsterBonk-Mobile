@@ -1,20 +1,23 @@
 import * as THREE from 'three';
+import { enemyPose } from './enemy-motion';
 import { Combat, COMBAT_LIMITS, ENEMY_TYPES } from './combat';
 import { SKILL_RULES } from './progression';
 import { POUNCE } from './trial';
 import { CREATURES } from './party';
 import { EnemyPixelView } from './enemy-pixel-view';
+import { FirePixelView } from './fire-pixel-view';
+import { BURST_SEED } from './fusion';
 
 /** All enemies and effects use shared instanced batches: no per-kill GPU allocations. */
 export class CombatView {
   readonly group = new THREE.Group();
   private dummy = new THREE.Object3D();
   private color = new THREE.Color();
+  private enemyPose = { bob: 0, lean: 0, squash: 0 };
   private batches: THREE.InstancedMesh[] = [];
   private body: THREE.InstancedMesh;
   private eyes: THREE.InstancedMesh;
   private horns: THREE.InstancedMesh;
-  private armor: THREE.InstancedMesh;
   private shadows: THREE.InstancedMesh;
   private warnings: THREE.InstancedMesh;
   private healthBack: THREE.InstancedMesh;
@@ -37,6 +40,8 @@ export class CombatView {
   private recoveryRings: THREE.InstancedMesh;
   private pixelEnemies?: EnemyPixelView;
   private pixelsEnabled = false;
+  private firePixels?: FirePixelView;
+  private burstRings: THREE.InstancedMesh;
 
   constructor(private combat: Combat) {
     const lambert = (color: string) => new THREE.MeshLambertMaterial({ color, flatShading: true });
@@ -56,7 +61,6 @@ export class CombatView {
     this.body = make(sphere, lambert('#ffffff'), COMBAT_LIMITS.enemies);
     this.eyes = make(new THREE.SphereGeometry(1, 6, 4), basic('#253e38'), COMBAT_LIMITS.enemies * 2);
     this.horns = make(new THREE.ConeGeometry(1, 2, 5), lambert('#fff0c4'), COMBAT_LIMITS.enemies * 2);
-    this.armor = make(new THREE.DodecahedronGeometry(1), lambert('#ffffff'), COMBAT_LIMITS.enemies);
     this.shadows = make(new THREE.CircleGeometry(1, 16), new THREE.MeshBasicMaterial({ color: '#25472d', transparent: true, opacity: 0.18, depthWrite: false }), COMBAT_LIMITS.enemies);
     this.warnings = make(ring, new THREE.MeshBasicMaterial({ color: '#ffbb89', transparent: true, opacity: 0.7, side: THREE.DoubleSide, depthWrite: false }), COMBAT_LIMITS.enemies);
     this.healthBack = make(plane, basic('#653d3b'), COMBAT_LIMITS.enemies);
@@ -73,12 +77,14 @@ export class CombatView {
     this.orbitCores = make(sphere, basic('#effffe'), SKILL_RULES.maxOrbitBalls);
     this.orbitPath = make(new THREE.RingGeometry(0.993, 1, 64), new THREE.MeshBasicMaterial({ color: '#b8edf0', transparent: true, opacity: 0.3, side: THREE.DoubleSide, depthWrite: false }), 1);
     this.waveRings = make(new THREE.RingGeometry(0.9, 1, 48), new THREE.MeshBasicMaterial({ color: '#e9f5b0', transparent: true, opacity: 0.65, side: THREE.DoubleSide, depthWrite: false }), COMBAT_LIMITS.shockwaves);
+    this.burstRings = make(ring, new THREE.MeshBasicMaterial({ color: '#ffffff', transparent: true, opacity: 0.8, side: THREE.DoubleSide, depthWrite: false }), COMBAT_LIMITS.effects);
     this.pounceLanes = make(plane, new THREE.MeshBasicMaterial({ color: '#ffad43', transparent: true, opacity: 0.48, side: THREE.DoubleSide, depthWrite: false }), COMBAT_LIMITS.enemies);
     this.pounceArrows = make(new THREE.CircleGeometry(1, 3), new THREE.MeshBasicMaterial({ color: '#ffef9c', side: THREE.DoubleSide, depthWrite: false }), COMBAT_LIMITS.enemies);
     this.recoveryRings = make(ring, new THREE.MeshBasicMaterial({ color: '#a5f5da', transparent: true, opacity: 0.7, side: THREE.DoubleSide, depthWrite: false }), COMBAT_LIMITS.enemies);
     this.pounceLanes.visible = this.pounceArrows.visible = this.recoveryRings.visible = false;
     // Allocate color attributes before the first render, including empty pooled batches.
-    for (const mesh of [this.body, this.armor, this.sparks, this.dissolving, this.bolts, this.boltTrails]) mesh.setColorAt(0, this.color.set('#ffffff'));
+    for (const mesh of [this.body, this.sparks, this.dissolving, this.bolts, this.boltTrails]) mesh.setColorAt(0, this.color.set('#ffffff'));
+    this.pixelEnemies = new EnemyPixelView(); this.group.add(this.pixelEnemies.group);
     this.group.visible = false;
   }
 
@@ -95,14 +101,21 @@ export class CombatView {
   setPixelEnemies(enabled: boolean) {
     this.pixelsEnabled = enabled;
     if (enabled && !this.pixelEnemies) { this.pixelEnemies = new EnemyPixelView(); this.group.add(this.pixelEnemies.group); }
-    if (this.pixelEnemies) { this.pixelEnemies.group.visible = enabled; this.pixelEnemies.begin(); }
+    if (enabled) this.pixelEnemies?.enableBasics();
+    if (this.pixelEnemies) { this.pixelEnemies.group.visible = true; this.pixelEnemies.begin(); }
   }
 
-  updateView(camera: THREE.Camera, viewportHeight: number, frustumHeight: number) { this.pixelEnemies?.setView(camera, viewportHeight, frustumHeight); }
+  updateView(camera: THREE.Camera, viewportHeight: number, frustumHeight: number) { this.pixelEnemies?.setView(camera, viewportHeight, frustumHeight); this.firePixels?.setView(camera); }
+
+  setFusion(enabled: boolean) {
+    if (enabled && !this.firePixels) { this.firePixels = new FirePixelView(); this.group.add(this.firePixels.mesh); }
+    this.firePixels?.begin();
+  }
 
   render(alpha: number, time: number, player: { x: number; z: number } = { x: this.combat.anchorX, z: this.combat.anchorZ }) {
     for (const mesh of this.batches) mesh.count = 0;
     this.pixelEnemies?.begin();
+    this.firePixels?.begin();
     for (const enemy of this.combat.enemies) {
       if (!enemy.active) continue;
       const type = ENEMY_TYPES[enemy.kind], size = type.radius;
@@ -112,28 +125,28 @@ export class CombatView {
         this.put(this.warnings, x, 0.05, z, (size + 0.5) * pulse, (size + 0.5) * pulse, 1, -Math.PI / 2);
         continue;
       }
-      const tall = enemy.kind === 'fast' ? 1.55 : enemy.kind === 'tank' ? 1.15 : 1.3;
-      const bob = Math.abs(Math.sin(enemy.age * (enemy.kind === 'fast' ? 14 : 7))) * 0.07;
+      const tall = enemy.kind === 'fast' ? 1.55 : 1.3;
+      const motion = enemyPose(enemy.kind, enemy.walkPhase ?? 0, enemy.walkAmount ?? 0, this.enemyPose);
+      const bob = motion.bob;
       const y = size * tall + bob;
       const color = enemy.flash > 0 ? '#fff5d6' : this.combat.isTrial && enemy.intent === 'windup' ? '#ffba5c' : this.combat.isTrial && enemy.intent === 'recover' ? '#a3ccb5' : type.color;
-      const pixel = this.pixelsEnabled && this.pixelEnemies?.ready(enemy.kind);
-      if (pixel && enemy.kind !== 'tank') {
+      const pixel = (this.pixelsEnabled || enemy.kind === 'tank') && this.pixelEnemies?.ready(enemy.kind);
+      if (pixel) {
         const tint = this.combat.isTrial && enemy.intent === 'windup' ? '#ffba5c' : this.combat.isTrial && enemy.intent === 'recover' ? '#a3ccb5' : '#ffffff';
-        this.pixelEnemies!.put(enemy.kind, x, z, bob, enemy.flash > 0, tint);
-      } else this.put(this.body, x, y, z, size, size * tall, size, 0, enemy.facing, 0, color);
+        this.pixelEnemies!.put(enemy.kind, x, z, bob, enemy.flash > 0, tint, motion.lean, motion.squash);
+      } else if (enemy.kind !== 'tank') this.put(this.body, x, y, z, size, size * tall, size, 0, enemy.facing, 0, color);
       this.put(this.shadows, x, 0.04, z, size * 1.1, size * 0.8, 1, -Math.PI / 2);
       const fx = Math.sin(enemy.facing), fz = Math.cos(enemy.facing);
-      if (!pixel) for (const side of [-1, 1]) {
+      if (!pixel && enemy.kind !== 'tank') for (const side of [-1, 1]) {
         this.put(this.eyes, x + fx * size * 0.87 + fz * size * 0.35 * side, y + size * 0.25, z + fz * size * 0.87 - fx * size * 0.35 * side, size * 0.105, size * 0.18, size * 0.105);
         const hornSize = enemy.kind === 'fast' ? 0.35 : 0.18;
         this.put(this.horns, x + side * fz * size * 0.6, y + size * tall * 0.85, z - side * fx * size * 0.6, size * 0.22, hornSize, size * 0.22, 0, enemy.facing, -side * 0.3);
       }
-      if (enemy.kind === 'tank') this.put(this.armor, x - fx * size * 0.25, y + size * 0.45, z - fz * size * 0.25, size * 1.08, size * 0.85, size * 0.95, 0, enemy.facing, 0, enemy.flash > 0 ? '#fff5d6' : '#536e83');
       const maxHp = this.combat.enemyMaxHp(enemy.kind);
       if (enemy.hp < maxHp) {
         const fraction = enemy.hp / maxHp, width = size * 2;
         let bx = x, by = y + size * tall + 0.35, bz = z;
-        if (pixel && enemy.kind !== 'tank') { const head = this.pixelEnemies!.head(enemy.kind, x, z, bob); bx = head.x; by = head.y; bz = head.z; }
+        if (pixel) { const head = this.pixelEnemies!.head(enemy.kind, x, z, bob); bx = head.x; by = head.y; bz = head.z; }
         this.put(this.healthBack, bx, by, bz, width, 0.075, 1, -0.55);
         this.put(this.healthFill, bx - width * (1 - fraction) / 2, by + 0.005, bz + 0.01, width * fraction, 0.052, 1, -0.55);
       }
@@ -152,13 +165,17 @@ export class CombatView {
       const x = THREE.MathUtils.lerp(shot.previousX, shot.x, alpha), z = THREE.MathUtils.lerp(shot.previousZ, shot.z, alpha), angle = Math.atan2(shot.vx, shot.vz);
       const color = shot.species ? CREATURES[shot.species].color : '#a594f2';
       const bubble = shot.species === 'bubblesalamander', leaf = shot.species === 'sproutspike';
-      this.put(this.bolts, x, 1.15, z, bubble ? 0.34 : 0.22, leaf ? 0.09 : bubble ? 0.34 : 0.22, bubble ? 0.34 : leaf ? 0.65 : 0.48, 0, angle, 0, color);
-      this.put(this.boltCores, x + Math.sin(angle) * 0.12, 1.15, z + Math.cos(angle) * 0.12, 0.12, 0.12, 0.3, 0, angle);
+      const child = shot.generation === 1, scale = child ? BURST_SEED.childSize : 1;
+      if (this.combat.fusionEnabled && !bubble && !leaf && this.firePixels?.loaded) this.firePixels.put(child ? 1 : 0, Math.floor((shot.age ?? 0) * 12) % 4, x, 1.15, z, child ? 0.7 : shot.burst ? 1.15 : 0.9, shot.vx, shot.vz);
+      else {
+        this.put(this.bolts, x, 1.15, z, (bubble ? 0.34 : 0.22) * scale, (leaf ? 0.09 : bubble ? 0.34 : 0.22) * scale, (bubble ? 0.34 : leaf ? 0.65 : 0.48) * scale, 0, angle, 0, color);
+        this.put(this.boltCores, x + Math.sin(angle) * 0.12, 1.15, z + Math.cos(angle) * 0.12, 0.12 * scale, 0.12 * scale, 0.3 * scale, 0, angle);
+      }
       // Fixed-capacity instance slots: a tapered trail, no per-shot meshes or textures.
       for (let i = 1; i <= this.detail + 1; i++) {
         const distance = i * 0.28;
         if (distance > shot.distance) break;
-        const size = 0.17 * (1 - i / 7);
+        const size = 0.17 * (1 - i / 7) * scale;
         this.put(this.boltTrails, x - Math.sin(angle) * distance, 1.15, z - Math.cos(angle) * distance, size, size, 0.24, 0, angle, 0, shot.species ? color : '#cfb7ff');
       }
     }
@@ -189,14 +206,33 @@ export class CombatView {
     for (const effect of this.combat.effects) {
       if (!effect.active) continue;
       const progress = 1 - effect.time / effect.duration;
+      if (effect.kind === 'burst') {
+        const radius = effect.radius ?? BURST_SEED.explosionRadius;
+        if (this.firePixels?.loaded) {
+          const frame = Math.min(3, Math.floor(progress * 4));
+          this.firePixels.put(2, frame, effect.x, 1.7, effect.z, radius * 2);
+          this.firePixels.put(3, frame, effect.x, 0.12, effect.z, radius * 2, 0, 0, true);
+          continue;
+        }
+        this.put(this.burstRings, effect.x, 0.1, effect.z, radius * (0.3 + progress * 0.7), radius * (0.3 + progress * 0.7), 1, -Math.PI / 2, 0, 0, '#ffab43');
+      }
+      if (effect.kind === 'water' || effect.kind === 'thorn') {
+        const radius = effect.radius || .45, tint = effect.kind === 'water' ? '#65dcff' : '#a5ec69';
+        this.put(this.burstRings, effect.x, .12, effect.z, radius * (.3 + progress * .7), radius * (.3 + progress * .7), 1, -Math.PI/2, 0, 0, tint);
+      }
       if (effect.kind === 'death') {
+        if ((this.pixelsEnabled || effect.enemyKind === 'tank') && this.pixelEnemies?.ready(effect.enemyKind)) {
+          const fade = Math.max(0, 1 - progress);
+          this.pixelEnemies.put(effect.enemyKind, effect.x, effect.z, 0, false, '#ffffff', 0, 0, .35 + fade * .65, fade);
+          continue;
+        }
         const type = ENEMY_TYPES[effect.enemyKind];
         for (let i = 0; i < this.detail; i++) {
           const angle = i / this.detail * Math.PI * 2, size = type.radius * 0.65 * (1 - progress) ** 1.4;
           this.put(this.dissolving, effect.x + Math.sin(angle) * progress * 0.7, type.radius + progress * 0.9, effect.z + Math.cos(angle) * progress * 0.7, size, size * 1.2, size, progress * 3, angle, progress * 4, type.color);
         }
       }
-      const color = effect.kind === 'hurt' ? '#f7a08d' : effect.kind === 'collect' ? '#9cffe2' : effect.kind === 'death' ? '#ffe3a6' : '#f4ddff';
+      const color = effect.kind === 'water' ? '#65dcff' : effect.kind === 'thorn' ? '#a5ec69' : effect.kind === 'burst' ? '#ffac48' : effect.kind === 'hurt' ? '#f7a08d' : effect.kind === 'collect' ? '#9cffe2' : effect.kind === 'death' ? '#ffe3a6' : '#f4ddff';
       for (let i = 0; i < this.detail; i++) {
         const angle = i / this.detail * Math.PI * 2 + 0.4, size = (1 - progress) * 0.15;
         this.put(this.sparks, effect.x + Math.sin(angle) * progress * 0.9, 0.7 + Math.sin(progress * Math.PI) * 0.6, effect.z + Math.cos(angle) * progress * 0.9, size, size * 1.7, size, 0, angle, progress * 5, color);
@@ -208,9 +244,11 @@ export class CombatView {
     }
     for (const mesh of [this.pounceLanes, this.pounceArrows, this.recoveryRings]) mesh.visible = mesh.count > 0;
     this.pixelEnemies?.finish();
+    this.firePixels?.finish();
   }
 
-  clear() { for (const mesh of this.batches) mesh.count = 0; this.pixelEnemies?.begin(); }
+  clear() { for (const mesh of this.batches) mesh.count = 0; this.pixelEnemies?.begin(); this.firePixels?.begin(); }
+  inspectFusion() { return this.firePixels?.inspect(); }
   inspect() { return { enabled: this.pixelsEnabled, ...this.pixelEnemies?.inspect() }; }
-  dispose() { this.pixelEnemies?.dispose(); this.pixelEnemies = undefined; }
+  dispose() { this.pixelEnemies?.dispose(); this.pixelEnemies = undefined; this.firePixels?.dispose(); this.firePixels = undefined; }
 }
