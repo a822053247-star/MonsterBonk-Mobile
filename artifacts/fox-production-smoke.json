@@ -1,0 +1,23 @@
+{
+  "environment": "Windows desktop Playwright, 844x390 simulated phone; no physical phone FPS test",
+  "results": [
+    {
+      "browser": "chromium",
+      "assetStatus": 200,
+      "diagnosticsAbsent": true,
+      "autoKillObserved": true,
+      "trialRestart": true,
+      "errorScreen": false,
+      "errors": []
+    },
+    {
+      "browser": "webkit",
+      "assetStatus": 200,
+      "diagnosticsAbsent": true,
+      "autoKillObserved": true,
+      "trialRestart": true,
+      "errorScreen": false,
+      "errors": []
+    }
+  ]
+}

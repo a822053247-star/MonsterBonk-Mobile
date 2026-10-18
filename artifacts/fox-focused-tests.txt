@@ -1,0 +1,18 @@
+
+Running 11 tests using 1 worker
+
+(node:53660) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  1 [chromium] › tests\25d-model.spec.ts:7:1 › screen input maps to projected ground direction without changing speed or analog strength (32ms)
+  ok  2 [chromium] › tests\25d-model.spec.ts:17:1 › landscape frustum keeps horizontal and vertical combat visibility across phone sizes (4ms)
+  ok  3 [chromium] › tests\25d-model.spec.ts:27:1 › independent organs replace once, survive form socket changes, reuse resources, and dispose detached props (28ms)
+  ok  4 [chromium] › tests\horn-ui.spec.ts:19:1 › phone trial equips horns, touch dash damages and interrupts; restart and classic clear it (6.1s)
+  ok  5 [chromium] › tests\horn-ui.spec.ts:48:1 › telegraph has real instanced geometry, trial upgrades freeze and resume without losing horns (3.3s)
+  ok  6 [chromium] › tests\horn-ui.spec.ts:61:1 › trial entry and instructions fit small phone safe areas without covering joystick (4.5s)
+  ok  7 [chromium] › tests\sprite.spec.ts:32:1 › complete sprite keeps its aspect, ground anchor, soft shadow and phone size (2.2s)
+  ok  8 [chromium] › tests\sprite.spec.ts:47:1 › sprite and 3D fallback give identical movement, targeting, damage and XP results (1.8s)
+  ok  9 [chromium] › tests\sprite.spec.ts:52:1 › real depth buffer occludes behind cover and transparent corners reveal the scene (1.9s)
+  ok 10 [chromium] › tests\sprite.spec.ts:60:1 › dash afterimages, stretch and hurt flash affect visuals only and restart clears them (2.7s)
+  ok 11 [chromium] › tests\sprite.spec.ts:72:1 › missing PNG falls back safely and explicit 3D mode does not request the image (2.6s)
+
+  11 passed (27.3s)

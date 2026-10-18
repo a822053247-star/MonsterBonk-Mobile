@@ -1,0 +1,15 @@
+
+Running 6 tests using 1 worker
+
+(node:42196) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 1 [chromium] › tests\fox-model.spec.ts:29:1 › all four repaired paws stride and lift, weights normalize, soles stay grounded and the loop closes (2.1s)
+  ok 2 [chromium] › tests\fox-model.spec.ts:38:1 › real game model has phone size, movement blending, pause and restart without resource growth (5.6s)
+  ok 3 [chromium] › tests\fox-model.spec.ts:53:1 › GLB and procedural views give identical gameplay; missing model falls back to sprite (4.0s)
+(node:492) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 4 [webkit] › tests\fox-model.spec.ts:29:1 › all four repaired paws stride and lift, weights normalize, soles stay grounded and the loop closes (2.6s)
+  ok 5 [webkit] › tests\fox-model.spec.ts:38:1 › real game model has phone size, movement blending, pause and restart without resource growth (4.5s)
+  ok 6 [webkit] › tests\fox-model.spec.ts:53:1 › GLB and procedural views give identical gameplay; missing model falls back to sprite (2.8s)
+
+  6 passed (24.7s)

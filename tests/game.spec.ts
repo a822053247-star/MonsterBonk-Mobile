@@ -31,7 +31,8 @@ test('main menu renders a real 3D world and starts exploration without errors', 
   await expect.poll(async () => (await inspect(page)).elapsed).toBeGreaterThan(0.5);
   const state = await inspect(page);
   expect(state.drawCalls).toBeLessThan(100);
-  expect(state.textures).toBeLessThan(5);
+  // The GLB adds three material maps and GPU skinning data to the shared shadows.
+  expect(state.textures).toBeLessThanOrEqual(8);
   expect(errors).toEqual([]);
   expect(await page.locator('#error-screen').isVisible()).toBe(false);
   console.log(`${testInfo.project.name} render budget:`, JSON.stringify(state));

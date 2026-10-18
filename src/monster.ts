@@ -3,8 +3,9 @@ import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { ORGAN_DEFINITIONS, YANRONG_SOCKETS, type OrganId, type OrganSlot, type SocketLayout } from './creature-data';
 import { OrganVisuals } from './organ-view';
 import { MonsterSprite } from './monster-sprite';
+import { MonsterModel } from './monster-model';
 
-export type CreatureVisual = 'procedural' | 'sprite';
+export type CreatureVisual = 'procedural' | 'sprite' | 'gltf';
 
 /** 焰绒: a small quadruped built from shared, faceted primitives; +Z is forward. */
 export class Monster {
@@ -25,6 +26,7 @@ export class Monster {
   private flashColor = new THREE.Color('#fff5df');
   private procedural = new THREE.Group();
   private spriteView?: MonsterSprite;
+  private modelView?: MonsterModel;
   private requestedVisual: CreatureVisual;
 
   constructor(visual: CreatureVisual = 'procedural') {
@@ -111,6 +113,7 @@ export class Monster {
   /** Applying a future form's poses never rebuilds or clears equipped organs. */
   configureSockets(layout: SocketLayout) {
     for (const slot of ['head', 'back', 'tail'] as const) { this.sockets[slot].position.set(...layout[slot].position); this.sockets[slot].scale.setScalar(layout[slot].scale); }
+    this.modelView?.configureSockets(layout);
   }
 
   equipOrgan(id: OrganId) {
@@ -119,16 +122,23 @@ export class Monster {
     const slot = ORGAN_DEFINITIONS[id].slot;
     this.unequipOrgan(slot);
     this.sockets[slot].add(visual); this.equipped[slot] = id;
+    this.modelView?.equip(id);
     return true;
   }
 
   unequipOrgan(slot: OrganSlot) {
     for (const child of [...this.sockets[slot].children]) if (child.name.startsWith('Organ:')) child.removeFromParent();
     delete this.equipped[slot];
+    this.modelView?.unequip(slot);
   }
 
   setVisual(visual: CreatureVisual) {
     this.requestedVisual = visual;
+    if (visual === 'gltf' && !this.modelView) {
+      this.modelView = new MonsterModel(() => this.syncVisual());
+      this.body.add(this.modelView.group);this.root.add(this.modelView.shadow);
+      for(const id of Object.values(this.equipped))if(id)this.modelView.equip(id);
+    }
     if (visual === 'sprite' && !this.spriteView) {
       this.spriteView = new MonsterSprite(() => this.syncVisual());
       this.root.add(this.spriteView.group);
@@ -137,18 +147,26 @@ export class Monster {
   }
 
   private syncVisual() {
-    const sprite = this.requestedVisual === 'sprite' && !!this.spriteView?.ready;
-    this.procedural.visible = this.shadow.visible = !sprite;
+    const model = this.requestedVisual === 'gltf' && !!this.modelView?.ready;
+    const wantsSprite = this.requestedVisual === 'sprite' || (this.requestedVisual === 'gltf' && !!this.modelView?.failed);
+    if(wantsSprite && !this.spriteView){this.spriteView=new MonsterSprite(()=>this.syncVisual());this.root.add(this.spriteView.group);}
+    const sprite = wantsSprite && !!this.spriteView?.ready;
+    this.procedural.visible = this.shadow.visible = !sprite && !model;
+    if(this.modelView){this.modelView.group.visible=model;this.modelView.shadow.visible=model;}
     if (this.spriteView) this.spriteView.group.visible = sprite;
   }
 
-  updateView(viewportHeight: number, frustumHeight: number, menu: boolean) { this.spriteView?.resize(viewportHeight, frustumHeight, menu); }
-  resetVisual() { this.spriteView?.reset(); }
+  updateView(viewportHeight: number, frustumHeight: number, menu: boolean) { this.spriteView?.resize(viewportHeight, frustumHeight, menu);this.modelView?.resize(viewportHeight,frustumHeight,menu); }
+  resetVisual() { this.spriteView?.reset();this.modelView?.reset();this.body.position.y=0;this.body.scale.set(1,1,1);this.body.rotation.x=this.body.rotation.z=0; }
 
-  inspect() { return { name: '焰绒', legs: this.feet.length, slots: Object.keys(this.sockets), equipped: { ...this.equipped }, visual: this.procedural.visible ? 'procedural' : 'sprite', sprite: this.spriteView?.inspect() }; }
-  dispose() { this.organs.dispose(); this.spriteView?.dispose(); }
+  inspect() { return { name: '焰绒', legs: this.feet.length, slots: Object.keys(this.sockets), equipped: { ...this.equipped }, visual: this.modelView?.group.visible ? 'gltf' : this.procedural.visible ? 'procedural' : 'sprite', sprite: this.spriteView?.inspect(),model:this.modelView?.inspect() }; }
+  dispose() { this.organs.dispose(); this.spriteView?.dispose();this.modelView?.dispose(); }
 
   animate(dt: number, moving: number, dashing: boolean, time: number, jump = 0, hurt = 0) {
+    if(this.modelView?.group.visible){
+      this.body.position.y=jump;this.body.rotation.x=this.body.rotation.z=0;this.body.scale.set(1,1,1);
+      this.modelView.animate(dt,moving,dashing,time,hurt);this.ring.scale.setScalar(dashing?1.2:1);return;
+    }
     if (!this.procedural.visible && this.spriteView) {
       this.spriteView.animate(dt, moving, dashing, time, jump, hurt, this.body.rotation.y, this.root.position);
       this.ring.scale.setScalar(dashing ? 1.2 : 1);

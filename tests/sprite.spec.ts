@@ -24,7 +24,7 @@ test.beforeEach(async ({ page }) => {
 });
 
 async function openSprite(page: Page) {
-  await page.goto('/sprite-harness');
+  await page.goto('/sprite-harness?character=sprite');
   await expect.poll(async () => (await state(page))?.creature.sprite?.loaded).toBe(true);
   await page.locator('#start').tap();
 }
@@ -71,7 +71,7 @@ test('dash afterimages, stretch and hurt flash affect visuals only and restart c
 
 test('missing PNG falls back safely and explicit 3D mode does not request the image', async ({ page }) => {
   await page.route('**/assets/characters/yanrong-base.png', route => route.abort());
-  await page.goto('/sprite-harness');
+  await page.goto('/sprite-harness?character=sprite');
   await expect.poll(async () => (await state(page))?.creature.sprite?.failed).toBe(true);
   expect((await state(page)).creature.visual).toBe('procedural');
   await page.locator('#start').tap(); await expect.poll(async () => (await state(page)).elapsed).toBeGreaterThan(0.1);

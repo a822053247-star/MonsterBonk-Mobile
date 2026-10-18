@@ -1,0 +1,15 @@
+{
+  "originalSha256": "6609ea35f26bce4274a4e451795ba2d8b67b000bec428f6bfbb7c04a4f3e429f",
+  "repairedSha256": "fae86c21719896d19648dd0e9370552b6a44ebc13d9fb5475584be6a85e23771",
+  "originalBytes": 8158820,
+  "repairedBytes": 3219284,
+  "originalPreserved": true,
+  "positionUvAndTrianglesUnchanged": true,
+  "vertices": 12311,
+  "triangles": 9948,
+  "bones": 14,
+  "clip": "WalkInPlace",
+  "noHorizontalRootMotion": true,
+  "maxJointStepDegrees": 5.02048297895255,
+  "images": 3
+}

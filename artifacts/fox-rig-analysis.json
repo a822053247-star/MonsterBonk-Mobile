@@ -1,0 +1,773 @@
+{
+  "clips": [
+    {
+      "name": "preset:quadruped:walk",
+      "duration": 2.5416667461395264,
+      "tracks": [
+        {
+          "name": "tripoRoot.position",
+          "keys": 62
+        },
+        {
+          "name": "tripoRoot.quaternion",
+          "keys": 2
+        },
+        {
+          "name": "tripoRoot.scale",
+          "keys": 2
+        },
+        {
+          "name": "tripoHead_0.position",
+          "keys": 2
+        },
+        {
+          "name": "tripoHead_0.quaternion",
+          "keys": 2
+        },
+        {
+          "name": "tripoHead_0.scale",
+          "keys": 2
+        },
+        {
+          "name": "tripoSpine_0.position",
+          "keys": 2
+        },
+        {
+          "name": "tripoSpine_0.quaternion",
+          "keys": 2
+        },
+        {
+          "name": "tripoSpine_0.scale",
+          "keys": 2
+        },
+        {
+          "name": "bone_3.position",
+          "keys": 2
+        },
+        {
+          "name": "bone_3.quaternion",
+          "keys": 2
+        },
+        {
+          "name": "bone_3.scale",
+          "keys": 2
+        },
+        {
+          "name": "bone_4.position",
+          "keys": 2
+        },
+        {
+          "name": "bone_4.quaternion",
+          "keys": 2
+        },
+        {
+          "name": "bone_4.scale",
+          "keys": 2
+        },
+        {
+          "name": "tripo1_Right_Limb_0.position",
+          "keys": 2
+        },
+        {
+          "name": "tripo1_Right_Limb_0.quaternion",
+          "keys": 62
+        },
+        {
+          "name": "tripo1_Right_Limb_0.scale",
+          "keys": 2
+        },
+        {
+          "name": "tripo1_Right_Limb_1.position",
+          "keys": 2
+        },
+        {
+          "name": "tripo1_Right_Limb_1.quaternion",
+          "keys": 62
+        },
+        {
+          "name": "tripo1_Right_Limb_1.scale",
+          "keys": 2
+        },
+        {
+          "name": "tripo1_Right_Limb_2.position",
+          "keys": 2
+        },
+        {
+          "name": "tripo1_Right_Limb_2.quaternion",
+          "keys": 62
+        },
+        {
+          "name": "tripo1_Right_Limb_2.scale",
+          "keys": 2
+        },
+        {
+          "name": "bone_8.position",
+          "keys": 2
+        },
+        {
+          "name": "bone_8.quaternion",
+          "keys": 2
+        },
+        {
+          "name": "bone_8.scale",
+          "keys": 2
+        },
+        {
+          "name": "bone_9.position",
+          "keys": 2
+        },
+        {
+          "name": "bone_9.quaternion",
+          "keys": 2
+        },
+        {
+          "name": "bone_9.scale",
+          "keys": 2
+        },
+        {
+          "name": "bone_10.position",
+          "keys": 2
+        },
+        {
+          "name": "bone_10.quaternion",
+          "keys": 2
+        },
+        {
+          "name": "bone_10.scale",
+          "keys": 2
+        },
+        {
+          "name": "bone_11.position",
+          "keys": 2
+        },
+        {
+          "name": "bone_11.quaternion",
+          "keys": 2
+        },
+        {
+          "name": "bone_11.scale",
+          "keys": 2
+        },
+        {
+          "name": "tripo1_Left_Limb_0.position",
+          "keys": 2
+        },
+        {
+          "name": "tripo1_Left_Limb_0.quaternion",
+          "keys": 62
+        },
+        {
+          "name": "tripo1_Left_Limb_0.scale",
+          "keys": 2
+        },
+        {
+          "name": "tripo1_Left_Limb_1.position",
+          "keys": 2
+        },
+        {
+          "name": "tripo1_Left_Limb_1.quaternion",
+          "keys": 62
+        },
+        {
+          "name": "tripo1_Left_Limb_1.scale",
+          "keys": 2
+        },
+        {
+          "name": "tripo1_Left_Limb_2.position",
+          "keys": 2
+        },
+        {
+          "name": "tripo1_Left_Limb_2.quaternion",
+          "keys": 62
+        },
+        {
+          "name": "tripo1_Left_Limb_2.scale",
+          "keys": 2
+        },
+        {
+          "name": "bone_15.position",
+          "keys": 2
+        },
+        {
+          "name": "bone_15.quaternion",
+          "keys": 2
+        },
+        {
+          "name": "bone_15.scale",
+          "keys": 2
+        },
+        {
+          "name": "tripo0_Right_Limb_0.position",
+          "keys": 2
+        },
+        {
+          "name": "tripo0_Right_Limb_0.quaternion",
+          "keys": 62
+        },
+        {
+          "name": "tripo0_Right_Limb_0.scale",
+          "keys": 2
+        },
+        {
+          "name": "tripo0_Right_Limb_1.position",
+          "keys": 2
+        },
+        {
+          "name": "tripo0_Right_Limb_1.quaternion",
+          "keys": 62
+        },
+        {
+          "name": "tripo0_Right_Limb_1.scale",
+          "keys": 2
+        },
+        {
+          "name": "tripo0_Right_Limb_2.position",
+          "keys": 2
+        },
+        {
+          "name": "tripo0_Right_Limb_2.quaternion",
+          "keys": 62
+        },
+        {
+          "name": "tripo0_Right_Limb_2.scale",
+          "keys": 2
+        },
+        {
+          "name": "tripo0_Right_Limb_3.position",
+          "keys": 2
+        },
+        {
+          "name": "tripo0_Right_Limb_3.quaternion",
+          "keys": 62
+        },
+        {
+          "name": "tripo0_Right_Limb_3.scale",
+          "keys": 2
+        },
+        {
+          "name": "tripo0_Left_Limb_0.position",
+          "keys": 2
+        },
+        {
+          "name": "tripo0_Left_Limb_0.quaternion",
+          "keys": 62
+        },
+        {
+          "name": "tripo0_Left_Limb_0.scale",
+          "keys": 2
+        },
+        {
+          "name": "tripo0_Left_Limb_1.position",
+          "keys": 2
+        },
+        {
+          "name": "tripo0_Left_Limb_1.quaternion",
+          "keys": 62
+        },
+        {
+          "name": "tripo0_Left_Limb_1.scale",
+          "keys": 2
+        },
+        {
+          "name": "tripo0_Left_Limb_2.position",
+          "keys": 2
+        },
+        {
+          "name": "tripo0_Left_Limb_2.quaternion",
+          "keys": 62
+        },
+        {
+          "name": "tripo0_Left_Limb_2.scale",
+          "keys": 2
+        },
+        {
+          "name": "bone_23.position",
+          "keys": 2
+        },
+        {
+          "name": "bone_23.quaternion",
+          "keys": 2
+        },
+        {
+          "name": "bone_23.scale",
+          "keys": 2
+        },
+        {
+          "name": "bone_24.position",
+          "keys": 2
+        },
+        {
+          "name": "bone_24.quaternion",
+          "keys": 2
+        },
+        {
+          "name": "bone_24.scale",
+          "keys": 2
+        },
+        {
+          "name": "bone_25.position",
+          "keys": 2
+        },
+        {
+          "name": "bone_25.quaternion",
+          "keys": 2
+        },
+        {
+          "name": "bone_25.scale",
+          "keys": 2
+        },
+        {
+          "name": "bone_26.position",
+          "keys": 2
+        },
+        {
+          "name": "bone_26.quaternion",
+          "keys": 2
+        },
+        {
+          "name": "bone_26.scale",
+          "keys": 2
+        },
+        {
+          "name": "bone_27.position",
+          "keys": 2
+        },
+        {
+          "name": "bone_27.quaternion",
+          "keys": 2
+        },
+        {
+          "name": "bone_27.scale",
+          "keys": 2
+        }
+      ]
+    }
+  ],
+  "meshes": [
+    {
+      "vertices": 12311,
+      "bones": [
+        {
+          "name": "tripoRoot",
+          "world": [
+            7.450581897068539e-8,
+            0.033629477024059246,
+            -7.450581012119951e-8
+          ],
+          "vertices": 986,
+          "weight": 742.8156971274875,
+          "center": [
+            0.04042499462252986,
+            0.262292609613882,
+            -0.11058303184000123
+          ]
+        },
+        {
+          "name": "tripoHead_0",
+          "world": [
+            0.008052438136651198,
+            0.20209099945260797,
+            -0.06304912900130365
+          ],
+          "vertices": 0,
+          "weight": 0,
+          "center": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "name": "tripoSpine_0",
+          "world": [
+            0.007159863508091472,
+            0.20046983984868086,
+            0.014060751821224751
+          ],
+          "vertices": 156,
+          "weight": 86.91764896316454,
+          "center": [
+            0.016809951858401027,
+            0.25525456905830796,
+            0.010456636343170338
+          ]
+        },
+        {
+          "name": "bone_3",
+          "world": [
+            0.007159809385136429,
+            0.21184531410383026,
+            0.10885644788157813
+          ],
+          "vertices": 759,
+          "weight": 468.1568724536337,
+          "center": [
+            -0.024199167404297273,
+            0.20110628101994343,
+            0.15327486658113199
+          ]
+        },
+        {
+          "name": "bone_4",
+          "world": [
+            0.007159870548420531,
+            0.28389006987146304,
+            0.17331751126582534
+          ],
+          "vertices": 771,
+          "weight": 444.4000107194297,
+          "center": [
+            0.003279074926232089,
+            0.18890916740830485,
+            0.2582103745347636
+          ]
+        },
+        {
+          "name": "tripo1_Right_Limb_0",
+          "world": [
+            0.12470632918199942,
+            0.21942901565193468,
+            0.17331761871634824
+          ],
+          "vertices": 359,
+          "weight": 232.72941656922922,
+          "center": [
+            0.14883339114135105,
+            0.1695050247701088,
+            0.21660533635825605
+          ]
+        },
+        {
+          "name": "tripo1_Right_Limb_1",
+          "world": [
+            0.15504091132039438,
+            0.10946616416630135,
+            0.23019504166043492
+          ],
+          "vertices": 216,
+          "weight": 141.23529735347256,
+          "center": [
+            0.18073400582293514,
+            0.10029994485487731,
+            0.2546567394062488
+          ]
+        },
+        {
+          "name": "tripo1_Right_Limb_2",
+          "world": [
+            0.1777917313874772,
+            0.037421551798083735,
+            0.2908643449255499
+          ],
+          "vertices": 324,
+          "weight": 296.38431461993605,
+          "center": [
+            0.16377635423609677,
+            0.036075871295268486,
+            0.3322944620898031
+          ]
+        },
+        {
+          "name": "bone_8",
+          "world": [
+            0.0068734069140999115,
+            0.28352550481778405,
+            0.17449421165694357
+          ],
+          "vertices": 0,
+          "weight": 61.97647203551605,
+          "center": [
+            -0.01475388769188794,
+            0.2978729011685081,
+            0.18839308587501463
+          ]
+        },
+        {
+          "name": "bone_9",
+          "world": [
+            -0.008007357027285833,
+            0.45073032013788655,
+            0.2150276674365419
+          ],
+          "vertices": 5688,
+          "weight": 5130.329437902197,
+          "center": [
+            -0.025696744810646377,
+            0.47621294368843864,
+            0.2561252325483103
+          ]
+        },
+        {
+          "name": "bone_10",
+          "world": [
+            0.007159938978763786,
+            0.5910277324382065,
+            0.14677482650536972
+          ],
+          "vertices": 580,
+          "weight": 444.80000714724883,
+          "center": [
+            0.040658738137063236,
+            0.7485911704195094,
+            0.08968361411317388
+          ]
+        },
+        {
+          "name": "bone_11",
+          "world": [
+            0.14745750338531322,
+            0.4924404253260432,
+            0.09748109472355354
+          ],
+          "vertices": 351,
+          "weight": 242.72157299425453,
+          "center": [
+            0.22961091946971793,
+            0.619563658695348,
+            0.08269301234636149
+          ]
+        },
+        {
+          "name": "tripo1_Left_Limb_0",
+          "world": [
+            -0.13313769587087332,
+            0.2383881829188565,
+            0.14677464561985226
+          ],
+          "vertices": 424,
+          "weight": 308.3372596716508,
+          "center": [
+            -0.19801624056364764,
+            0.17209639574324634,
+            0.1749457405071629
+          ]
+        },
+        {
+          "name": "tripo1_Left_Limb_1",
+          "world": [
+            -0.19001512489744424,
+            0.12084170988763428,
+            0.15815004511131908
+          ],
+          "vertices": 225,
+          "weight": 132.4823568817228,
+          "center": [
+            -0.2320846095007763,
+            0.09184192902981253,
+            0.19497299028721238
+          ]
+        },
+        {
+          "name": "tripo1_Left_Limb_2",
+          "world": [
+            -0.23172528779559692,
+            0.03362973025340349,
+            0.21123559671609787
+          ],
+          "vertices": 353,
+          "weight": 302.56862932024524,
+          "center": [
+            -0.23752787178496884,
+            0.04072838284776848,
+            0.24975704329031895
+          ]
+        },
+        {
+          "name": "bone_15",
+          "world": [
+            0.0071598352361298195,
+            0.3142245927334859,
+            0.2529458357085225
+          ],
+          "vertices": 0,
+          "weight": 36.368627961725,
+          "center": [
+            -0.030351257990801645,
+            0.15640073272377172,
+            0.2996094090444251
+          ]
+        },
+        {
+          "name": "tripo0_Right_Limb_0",
+          "world": [
+            0.13987385357380408,
+            0.20046984788571426,
+            -0.07315125459753961
+          ],
+          "vertices": 308,
+          "weight": 180.0862786769867,
+          "center": [
+            0.17015157851515358,
+            0.16786199668768717,
+            -0.12060542606674043
+          ]
+        },
+        {
+          "name": "tripo0_Right_Limb_1",
+          "world": [
+            0.17020842995454183,
+            0.10946605836647556,
+            -0.1148614247310094
+          ],
+          "vertices": 113,
+          "weight": 52.33333472069353,
+          "center": [
+            0.17223802052506462,
+            0.12723095801798412,
+            -0.1882243228414452
+          ]
+        },
+        {
+          "name": "tripo0_Right_Limb_2",
+          "world": [
+            0.18537576464020958,
+            0.13980063630428174,
+            -0.20207343597739763
+          ],
+          "vertices": 216,
+          "weight": 168.67843422666192,
+          "center": [
+            0.19774649816033812,
+            0.08656614182255058,
+            -0.21414307263705074
+          ]
+        },
+        {
+          "name": "tripo0_Right_Limb_3",
+          "world": [
+            0.20812673786171365,
+            0.04879685202672818,
+            -0.2134489958686875
+          ],
+          "vertices": 324,
+          "weight": 272.02353149978444,
+          "center": [
+            0.2191187260385736,
+            0.040372712344730326,
+            -0.15916172254886313
+          ]
+        },
+        {
+          "name": "tripo0_Left_Limb_0",
+          "world": [
+            -0.08384395083118786,
+            0.19667804283707066,
+            -0.08452680786006811
+          ],
+          "vertices": 261,
+          "weight": 145.99216025229543,
+          "center": [
+            -0.07613388823257122,
+            0.15782478377221323,
+            -0.15677390397857807
+          ]
+        },
+        {
+          "name": "tripo0_Left_Limb_1",
+          "world": [
+            -0.06488484134602264,
+            0.10946612550198799,
+            -0.13761228781269447
+          ],
+          "vertices": 4,
+          "weight": 37.18039278592914,
+          "center": [
+            -0.04489802126675681,
+            0.11431892774771858,
+            -0.21489679998450115
+          ]
+        },
+        {
+          "name": "tripo0_Left_Limb_2",
+          "world": [
+            -0.042133862146294984,
+            0.1360088787211937,
+            -0.2210325173306245
+          ],
+          "vertices": 510,
+          "weight": 460.0117668504827,
+          "center": [
+            -0.0712624375186805,
+            0.05387708057682631,
+            -0.20758530868192773
+          ]
+        },
+        {
+          "name": "bone_23",
+          "world": [
+            0.05645361922897289,
+            0.2459717766751945,
+            -0.17553059976118918
+          ],
+          "vertices": 135,
+          "weight": 66.95686488458887,
+          "center": [
+            0.0869350005950695,
+            0.2710456561440467,
+            -0.24212477475376043
+          ]
+        },
+        {
+          "name": "bone_24",
+          "world": [
+            0.08678825026667511,
+            0.23838811734157536,
+            -0.23999173801197554
+          ],
+          "vertices": 267,
+          "weight": 171.47059254907072,
+          "center": [
+            0.11229498459801206,
+            0.2323065095726781,
+            -0.2785828129204611
+          ]
+        },
+        {
+          "name": "bone_25",
+          "world": [
+            0.1512492587228359,
+            0.2004698329840549,
+            -0.3120363947008488
+          ],
+          "vertices": 483,
+          "weight": 334.1686354735866,
+          "center": [
+            0.20960405020149134,
+            0.2350627445104249,
+            -0.37084454703737746
+          ]
+        },
+        {
+          "name": "bone_26",
+          "world": [
+            0.2157101896112188,
+            0.26113898015265097,
+            -0.3764975082871155
+          ],
+          "vertices": 601,
+          "weight": 315.28236041311175,
+          "center": [
+            0.2230114689365891,
+            0.31964264992301944,
+            -0.3978407229164166
+          ]
+        },
+        {
+          "name": "bone_27",
+          "world": [
+            0.22329388734730152,
+            0.35972642494661555,
+            -0.40304034033774744
+          ],
+          "vertices": 1209,
+          "weight": 1034.59216306312,
+          "center": [
+            0.20797638360616713,
+            0.4920869269791425,
+            -0.3972937917456302
+          ]
+        }
+      ]
+    }
+  ]
+}

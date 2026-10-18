@@ -13,7 +13,7 @@ test.beforeEach(async ({ page }) => {
   </script></body></html>` }));
   await page.goto('/horn-harness');
   await expect(page.locator('#start-trial')).toBeVisible();
-  await expect.poll(async () => (await state(page))?.creature.sprite?.loaded).toBe(true);
+  await expect.poll(async () => (await state(page))?.creature.model?.loaded).toBe(true);
 });
 
 test('phone trial equips horns, touch dash damages and interrupts; restart and classic clear it', async ({ page }) => {
