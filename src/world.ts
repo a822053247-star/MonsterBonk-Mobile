@@ -1,15 +1,13 @@
 import * as THREE from 'three';
-import type { CameraVolume } from './camera-collision';
 
 export const WORLD_RADIUS = 33;
 export interface Obstacle { x: number; z: number; radius: number }
-export interface World { group: THREE.Group; obstacles: Obstacle[]; cameraVolumes: CameraVolume[] }
+export interface World { group: THREE.Group; obstacles: Obstacle[] }
 
 /** Seeded scenery and shared, instanced geometry keep draw calls and memory bounded. */
 export function createWorld(): World {
   const group = new THREE.Group();
   const obstacles: Obstacle[] = [];
-  const cameraVolumes: CameraVolume[] = [];
   let seed = 78123;
   const random = () => { seed = (1664525 * seed + 1013904223) >>> 0; return seed / 4294967296; };
   const material = (color: string) => new THREE.MeshLambertMaterial({ color, flatShading: true });
@@ -22,13 +20,12 @@ export function createWorld(): World {
   const rock = new THREE.DodecahedronGeometry(1, 0);
   const cylinder = new THREE.CylinderGeometry(0.7, 1, 1, 6);
   register('trunk', cylinder, material('#81634e'));
-  register('leaf', sphere, material('#4bba7a'));
-  register('leafLight', sphere, material('#a6d46d'));
+  const foliage = (color: string) => new THREE.MeshLambertMaterial({ color, flatShading: true, transparent: true, opacity: 0.42, depthWrite: false });
+  register('leaf', sphere, foliage('#4bba7a'));
+  register('leafLight', sphere, foliage('#a6d46d'));
   register('rock', rock, material('#a4bfc3'));
   register('moss', rock, material('#86b775'));
   register('pinkFlower', new THREE.IcosahedronGeometry(0.13, 0), material('#f1afc9'));
-  register('cloud', sphere, new THREE.MeshBasicMaterial({ color: '#fff9e8', fog: false }));
-  register('hill', sphere, material('#89bca6'));
   register('grass', new THREE.ConeGeometry(0.11, 0.55, 3), material('#9bd05e'));
   register('flower', new THREE.IcosahedronGeometry(0.12, 0), material('#ffdf9c'));
   register('whiteFlower', new THREE.IcosahedronGeometry(0.1, 0), material('#f2ebcd'));
@@ -38,6 +35,16 @@ export function createWorld(): World {
   const ground = new THREE.Mesh(new THREE.PlaneGeometry(240, 240), material('#8bc869'));
   ground.rotation.x = -Math.PI / 2;
   group.add(ground);
+  // Visual regions only. Existing obstacles, boundary and combat rules stay intact.
+  const regionGeometry = new THREE.CircleGeometry(1, 32);
+  for (const region of [
+    { name: '风语林地', x: -20, z: -8, sx: 15, sz: 23, color: '#78b98b' },
+    { name: '岩晶遗迹', x: 21, z: -6, sx: 14, sz: 22, color: '#a6c3bd' },
+  ]) {
+    const mesh = new THREE.Mesh(regionGeometry, material(region.color));
+    mesh.name = region.name; mesh.rotation.x = -Math.PI / 2; mesh.position.set(region.x, 0.004, region.z); mesh.scale.set(region.sx, region.sz, 1); group.add(mesh);
+  }
+  ground.name = '中央草场';
   const patchMaterial = material('#a1d47b');
   const patchGeometry = new THREE.CircleGeometry(1, 12);
   register('patch', patchGeometry, patchMaterial);
@@ -58,24 +65,22 @@ export function createWorld(): World {
     const x = Math.sin(angle) * distance;
     const z = Math.cos(angle) * distance;
     const s = 0.8 + random() * 0.85;
-    add('trunk', x, 1.2 * s, z, 0.3 * s, 2.4 * s, 0.3 * s);
-    add('leaf', x, 3.0 * s, z, 1.6 * s, 1.7 * s, 1.5 * s, random() * 5);
-    add('leafLight', x - 0.35 * s, 4.0 * s, z + 0.05, 1.25 * s, 1.25 * s, 1.2 * s);
+    add('trunk', x, 0.36 * s, z, 0.3 * s, 0.72 * s, 0.3 * s);
+    add('leaf', x, 0.95 * s, z, 0.85 * s, 0.55 * s, 0.8 * s, random() * 5);
+    add('leafLight', x - 0.15 * s, 1.25 * s, z + 0.05, 0.65 * s, 0.4 * s, 0.6 * s);
     add('shadow', x + 0.4, 0.015, z + 0.3, 5 * s, 5 * s, 1);
     obstacles.push({ x, z, radius: 0.45 * s });
-    cameraVolumes.push({ x, y: 1.2 * s, z, rx: 0.3 * s, ry: 1.2 * s, rz: 0.3 * s }, { x, y: 3 * s, z, rx: 1.6 * s, ry: 1.7 * s, rz: 1.5 * s }, { x: x - 0.35 * s, y: 4 * s, z: z + 0.05, rx: 1.25 * s, ry: 1.25 * s, rz: 1.2 * s });
   }
   for (let i = 0; i < 48; i++) {
     const x = (random() - 0.5) * 96, z = (random() - 0.5) * 96;
     if (Math.hypot(x, z) < 5) continue;
     const s = 0.4 + random() * 0.8;
-    add('rock', x, s * 0.35, z, s, s * 0.7, s * 0.8, random() * 6);
+    add('rock', x, s * 0.18, z, s, s * 0.3, s * 0.8, random() * 6);
     add('shadow', x, 0.019, z, s * 3, s * 2.5, 1);
     obstacles.push({ x, z, radius: s * 0.9 });
-    cameraVolumes.push({ x, y: s * 0.35, z, rx: s, ry: s * 0.7, rz: s * 0.8 });
-    add('moss', x - s * 0.2, s * 0.85, z, s * 0.65, s * 0.12, s * 0.5);
+    add('moss', x - s * 0.2, s * 0.42, z, s * 0.65, s * 0.08, s * 0.5);
   }
-  for (let i = 0; i < 1400; i++) {
+  for (let i = 0; i < 320; i++) {
     const x = (random() - 0.5) * 105, z = (random() - 0.5) * 105;
     if (Math.hypot(x, z) < 2.8) continue;
     const s = 0.6 + random() * 0.7;
@@ -92,10 +97,6 @@ export function createWorld(): World {
     add('stem', x, s * 0.45, z, s * 0.3, s, s * 0.3);
     add('mushroom', x, s, z, s, s * 0.7, s);
   }
-  for (let i = 0; i < 32; i++) {
-    const a = i / 32 * Math.PI * 2;
-    add('hill', Math.sin(a) * 90, -1, Math.cos(a) * 90, 14 + random() * 12, 8 + random() * 7, 14);
-  }
   for (let i = 0; i < 50; i++) {
     add('patch', (random() - 0.5) * 100, 0.006, (random() - 0.5) * 100, 1 + random() * 4, 0.7 + random() * 2, 1);
   }
@@ -103,11 +104,6 @@ export function createWorld(): World {
   for (let i = 0; i < 9; i++) {
     const x = Math.sin(i * 0.8) * 0.9 - 2.5, z = -i * 1.3 - 1;
     add('rock', x, 0.02, z, 0.5, 0.09, 0.4, i);
-  }
-  // One instanced batch for all soft, faceted cloud clusters.
-  for (let i = 0; i < 18; i++) {
-    const a = i / 18 * Math.PI * 2, x = Math.sin(a) * 72, z = Math.cos(a) * 72, y = 22 + random() * 10;
-    for (let j = 0; j < 3; j++) add('cloud', x + j * 2.5, y + (j === 1 ? 0.8 : 0), z, 3.5, 1.3 + random(), 2.2);
   }
   for (const [name, batch] of batches) {
     const mesh = new THREE.InstancedMesh(batch.geometry, batch.material, batch.data.length);
@@ -126,15 +122,5 @@ export function createWorld(): World {
   boundary.rotation.x = -Math.PI / 2;
   boundary.position.y = 0.025;
   group.add(boundary);
-  // Sky dome: vertex colors, no texture download, no full-screen postprocessing.
-  const skyGeometry = new THREE.SphereGeometry(155, 16, 8);
-  const position = skyGeometry.attributes.position, colors = new Float32Array(position.count * 3);
-  const horizon = new THREE.Color('#e4f4ce'), zenith = new THREE.Color('#8fd6ef'), color = new THREE.Color();
-  for (let i = 0; i < position.count; i++) {
-    color.copy(horizon).lerp(zenith, Math.max(0, position.getY(i) / 155));
-    colors.set([color.r, color.g, color.b], i * 3);
-  }
-  skyGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-  group.add(new THREE.Mesh(skyGeometry, new THREE.MeshBasicMaterial({ vertexColors: true, side: THREE.BackSide, fog: false, depthWrite: false })));
-  return { group, obstacles, cameraVolumes };
+  return { group, obstacles };
 }

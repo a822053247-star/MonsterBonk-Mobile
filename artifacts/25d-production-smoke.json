@@ -1,0 +1,33 @@
+{
+  "environment": "Windows desktop Playwright; no physical phone FPS measurement",
+  "results": [
+    {
+      "browser": "chromium",
+      "diagnosticsAbsent": true,
+      "health": "100 / 100",
+      "xp": "0 / 8",
+      "kills": "0",
+      "preferences": {
+        "quality": "battery",
+        "music": false,
+        "sound": false
+      },
+      "errorScreen": false,
+      "errors": []
+    },
+    {
+      "browser": "webkit",
+      "diagnosticsAbsent": true,
+      "health": "100 / 100",
+      "xp": "0 / 8",
+      "kills": "0",
+      "preferences": {
+        "quality": "battery",
+        "music": false,
+        "sound": false
+      },
+      "errorScreen": false,
+      "errors": []
+    }
+  ]
+}

@@ -3,17 +3,16 @@ import { mkdir } from 'node:fs/promises';
 import type { Game } from '../src/game';
 import type { Combat } from '../src/combat';
 
-type Harness = { testGame: { inspect: Game['inspect']; combat: Combat }; cameraCheck: () => { blockedZ: number; restoredZ: number; fraction: number }; visualCounts: () => { trails: number; fragments: number; enemiesInstanced: boolean } };
+type Harness = { testGame: { inspect: Game['inspect']; combat: Combat }; cameraCheck: () => { before: number[]; after: number[]; x: number; z: number; originalZ: number; type: string }; visualCounts: () => { trails: number; fragments: number; enemiesInstanced: boolean } };
 const state = (page: Page) => page.evaluate(() => (window as unknown as Harness).testGame.inspect());
 test.use({ viewport: { width: 844, height: 390 }, hasTouch: true, isMobile: true });
 
 test.beforeEach(async ({ page }) => {
   await page.route('**/presentation-harness', (route) => route.fulfill({ contentType: 'text/html', body: `<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/></head><body><div id="app"></div><script type="module">
-    import '/src/style.css';import {createUI} from '/src/ui.ts';import {Game} from '/src/game.ts';import {cameraFraction} from '/src/camera-collision.ts';
+    import '/src/style.css';import {createUI} from '/src/ui.ts';import {Game} from '/src/game.ts';
     createUI(document.getElementById('app'));const g=window.testGame=new Game();
-    window.cameraCheck=()=>{g.world.cameraVolumes=[{x:0,y:5,z:7,rx:3,ry:3,rz:1}];g.placeCamera(true);const blockedZ=g.camera.position.z;
-      const fraction=cameraFraction(g.cameraAnchor,g.camera.position,g.world.cameraVolumes);g.world.cameraVolumes=[];for(let i=0;i<180;i++)g.placeCamera(false,1/60);return {blockedZ,restoredZ:g.camera.position.z,fraction}};
-    window.visualCounts=()=>({trails:g.combatView.boltTrails.count,fragments:g.combatView.dissolving.count,enemiesInstanced:g.combatView.body.isInstancedMesh});
+    window.cameraCheck=()=>{g.placeCamera(true);const before=g.camera.quaternion.toArray();const z=g.camera.position.z;
+      g.monster.root.position.set(5,0,-7);for(let i=0;i<180;i++)g.placeCamera(false,1/60);return {before,after:g.camera.quaternion.toArray(),x:g.camera.position.x,z:g.camera.position.z,originalZ:z,type:g.camera.type}};    window.visualCounts=()=>({trails:g.combatView.boltTrails.count,fragments:g.combatView.dissolving.count,enemiesInstanced:g.combatView.body.isInstancedMesh});
   </script></body></html>` }));
   await page.goto('/presentation-harness');
   await page.waitForFunction(() => 'testGame' in window);
@@ -26,7 +25,7 @@ test('audio waits for a gesture; settings persist and gameplay remains paused on
   await page.locator('#start').tap();
   await expect.poll(async () => (await state(page)).audio.state).toBe(supported ? 'running' : 'unavailable');
   if (supported) {
-    await page.locator('#jump').tap();
+    await page.keyboard.press('j');
     await expect.poll(async () => (await state(page)).audio.played).toBeGreaterThan(0);
   }
   await page.locator('#settings').tap();
@@ -59,7 +58,7 @@ test('audio waits for a gesture; settings persist and gameplay remains paused on
 
 test('jump is cosmetic, freezes on pause/upgrade, lands, and restart clears it', async ({ page }) => {
   await page.locator('#start').tap();
-  await page.locator('#jump').tap();
+  await page.keyboard.press('j');
   await expect.poll(async () => (await state(page)).jumpHeight).toBeGreaterThan(0.1);
   await page.locator('#pause').tap();
   const frozen = await state(page);
@@ -86,16 +85,13 @@ test('jump is cosmetic, freezes on pause/upgrade, lands, and restart clears it',
   expect((await state(page)).combat.kills).toBe(0);
 });
 
-test('camera retracts before cover and smoothly restores its follow distance', async ({ page }) => {
-  await page.locator('#start').tap();
-  await page.locator('#pause').tap();
+test('orthographic camera follows with a fixed pitch and orientation', async ({ page }) => {
+  await page.locator('#start').tap(); await page.locator('#pause').tap();
   const camera = await page.evaluate(() => (window as unknown as Harness).cameraCheck());
-  expect(camera.blockedZ).toBeGreaterThan(1);
-  expect(camera.blockedZ).toBeLessThan(7);
-  expect(camera.fraction).toBe(1);
-  expect(camera.restoredZ).toBeCloseTo(13.5, 2);
+  expect(camera.type).toBe('OrthographicCamera');
+  camera.after.forEach((value,i)=>expect(value).toBeCloseTo(camera.before[i],8));
+  expect(camera.x).toBeCloseTo(5,3); expect(camera.z).toBeCloseTo(camera.originalZ-7,3);
 });
-
 test('pooled trails, hit flash and dissolving corpses render through the real loop', async ({ page }, testInfo) => {
   await page.locator('#start').tap();
   await page.evaluate(() => (window as unknown as Harness).testGame.combat.spawn('normal', 0, 6, 0));
@@ -114,7 +110,7 @@ test('small landscape HUD and settings fit safe areas with thumb-size touch targ
   await page.setViewportSize({ width: 568, height: 320 });
   await page.addStyleTag({ content: ':root{--safe-left:44px;--safe-right:44px;--safe-bottom:21px}' });
   await page.locator('#start').tap();
-  const bounds = await page.locator('#settings,#pause,#jump,#dash,#joystick').evaluateAll((elements) => elements.map((e) => { const b = e.getBoundingClientRect(); return { id: e.id, x: b.x, y: b.y, right: b.right, bottom: b.bottom, width: b.width, height: b.height }; }));
+  const bounds = await page.locator('#settings,#pause,#dash,#joystick').evaluateAll((elements) => elements.map((e) => { const b = e.getBoundingClientRect(); return { id: e.id, x: b.x, y: b.y, right: b.right, bottom: b.bottom, width: b.width, height: b.height }; }));
   for (const b of bounds) { expect(b.width, b.id).toBeGreaterThanOrEqual(44); expect(b.height, b.id).toBeGreaterThanOrEqual(44); expect(b.x, b.id).toBeGreaterThanOrEqual(44); expect(b.right, b.id).toBeLessThanOrEqual(524); expect(b.bottom, b.id).toBeLessThanOrEqual(299); }
   await page.locator('#settings').tap();
   for (const selector of ['.settings-card', '#save-settings', '#quality', '.setting-toggle']) {
@@ -123,25 +119,21 @@ test('small landscape HUD and settings fit safe areas with thumb-size touch targ
   if (testInfo.project.name === 'chromium') await page.screenshot({ path: 'artifacts/phase4-settings-small.png' });
 });
 
-test('independent touch pointers keep moving while jumping and dashing', async ({ page, context }, testInfo) => {
+test('independent touch pointers keep moving while dashing', async ({ page, context }, testInfo) => {
   test.skip(testInfo.project.name !== 'chromium', 'Native multi-touch injection uses Chromium CDP.');
   await page.locator('#start').tap();
-  const joy = (await page.locator('#joystick').boundingBox())!, jump = (await page.locator('#jump').boundingBox())!, dash = (await page.locator('#dash').boundingBox())!;
+  const joy = (await page.locator('#joystick').boundingBox())!, dash = (await page.locator('#dash').boundingBox())!;
   const cdp = await context.newCDPSession(page);
-  const a = { id: 1, x: joy.x + joy.width / 2, y: joy.y + joy.height / 2 }, b = { id: 2, x: jump.x + jump.width / 2, y: jump.y + jump.height / 2 }, c = { id: 3, x: dash.x + dash.width / 2, y: dash.y + dash.height / 2 };
+  const a = { id: 1, x: joy.x + joy.width / 2, y: joy.y + joy.height / 2 }, b = { id: 2, x: dash.x + dash.width / 2, y: dash.y + dash.height / 2 };
   await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [a] });
   a.x += 35; await cdp.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [a] });
   await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [a, b] });
-  await expect.poll(async () => (await state(page)).jumpHeight).toBeGreaterThan(0.1);
-  await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [a, b, c] });
   await expect.poll(async () => (await state(page)).cooldown).toBeGreaterThan(0.5);
-  await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [b, c] });
+  await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [b] });
   expect((await state(page)).movement.x).toBeGreaterThan(0.5);
   await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
   await expect.poll(async () => (await state(page)).movement.x).toBe(0);
 });
-
-
 test('missing Web Audio fails gracefully and never blocks combat or settings', async ({ page }) => {
   const errors: string[] = []; page.on('pageerror', error => errors.push(error.message));
   await page.evaluate(() => {

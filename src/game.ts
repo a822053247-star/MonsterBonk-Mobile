@@ -8,7 +8,7 @@ import { renderUpgradeCards } from './ui';
 import type { SkillId } from './progression';
 import { AdaptiveQuality, loadPreferences, savePreferences, type QualityMode } from './quality';
 import { GameAudio } from './audio';
-import { cameraFraction } from './camera-collision';
+import { resize25DCamera, screenToGround, VIEW_25D } from './camera-25d';
 
 type Mode = 'menu' | 'playing' | 'paused' | 'gameover' | 'upgrading' | 'settings';
 const STEP = 1 / 60;
@@ -24,10 +24,9 @@ export class Game {
   private previousJump = 0;
   private jumpVelocity = 0;
   private cameraAnchor = new THREE.Vector3();
-  private cameraCandidate = new THREE.Vector3();
   private renderer: THREE.WebGLRenderer;
   private scene = new THREE.Scene();
-  private camera = new THREE.PerspectiveCamera(43, 1, 0.1, 180);
+  private camera = new THREE.OrthographicCamera(-15, 15, 8.5, -8.5, 0.1, 180);
   private monster = new Monster();
   private world: World;
   private combat: Combat;
@@ -37,6 +36,7 @@ export class Game {
   private position = new THREE.Vector3();
   private previousPosition = new THREE.Vector3();
   private velocity = new THREE.Vector2();
+  private groundInput = new THREE.Vector2();
   private dashDirection = new THREE.Vector2(0, 1);
   private cameraTarget = new THREE.Vector3();
   private lookTarget = new THREE.Vector3();
@@ -96,7 +96,7 @@ export class Game {
       this.trails.push({ mesh, remaining: 0 });
       this.scene.add(mesh);
     }
-    this.input = new Input(document.querySelector<HTMLElement>('#joystick')!, this.dashButton, document.querySelector<HTMLButtonElement>('#jump')!);
+    this.input = new Input(document.querySelector<HTMLElement>('#joystick')!, this.dashButton);
     this.bindEvents(canvas);
     this.syncSettings();
     this.resize();
@@ -328,8 +328,7 @@ export class Game {
       this.input.reset();
       this.sleep();
     }
-    this.camera.aspect = width / Math.max(1, height);
-    this.camera.updateProjectionMatrix();
+    resize25DCamera(this.camera, width / Math.max(1, height), this.mode === 'menu');
     this.applyGraphics();
     this.renderer.setSize(width, height, false);
     this.placeCamera(true);
@@ -349,7 +348,9 @@ export class Game {
       this.jumpHeight = Math.max(0, this.jumpHeight + this.jumpVelocity * dt);
       if (this.jumpHeight === 0) this.jumpVelocity = 0;
     }
-    const movement = this.input.sample();
+    const screenInput = this.input.sample();
+    // All simulation stays on XZ; only visuals use height, including cosmetic J.
+    const movement = screenToGround(screenInput.x, screenInput.y, this.groundInput);
     const magnitude = Math.hypot(movement.x, movement.y);
     this.elapsed += dt;
     this.cooldown = Math.max(0, this.cooldown - dt);
@@ -519,28 +520,20 @@ export class Game {
 
   private placeCamera(snap = false, dt = STEP) {
     const player = this.monster.root.position;
+    resize25DCamera(this.camera, window.innerWidth / Math.max(1, window.innerHeight), this.mode === 'menu');
     if (this.mode === 'menu') {
-      // Right-side hero leaves a natural left column for menu typography.
-      this.cameraTarget.set(6.8, 4.9, 10.8);
-      this.lookTarget.set(-2.3, 1.0, 0);
+      this.lookTarget.set(-3.2, 0.8, 0);
       this.monster.body.rotation.y = 0.55 + Math.sin(this.visualTime * 0.35) * 0.09;
     } else {
-      this.cameraTarget.set(player.x, 10.2, player.z + 13.5);
-      this.lookTarget.set(player.x, 0.8, player.z - 1.5);
+      this.lookTarget.set(player.x, 0.6, player.z);
       this.monster.body.rotation.y = this.facing;
     }
-    this.cameraCandidate.copy(this.camera.position);
-    if (snap) this.cameraCandidate.copy(this.cameraTarget);
-    else this.cameraCandidate.lerp(this.cameraTarget, 1 - Math.exp(-7 * dt));
-    if (this.mode !== 'menu') {
-      // Test the entire view segment, not just the destination. Move inward
-      // immediately when blocked; the ordinary damping smoothly restores distance.
-      this.cameraAnchor.set(player.x, 0.45, player.z);
-      const fraction = cameraFraction(this.cameraAnchor, this.cameraCandidate, this.world.cameraVolumes);
-      if (fraction < 1) this.cameraCandidate.lerpVectors(this.cameraAnchor, this.cameraCandidate, fraction);
-    }
-    this.camera.position.copy(this.cameraCandidate);
-    this.camera.lookAt(this.lookTarget);
+    if (snap) this.cameraAnchor.copy(this.lookTarget);
+    else this.cameraAnchor.lerp(this.lookTarget, 1 - Math.exp(-7 * dt));
+    this.cameraTarget.set(0, VIEW_25D.distance * Math.sin(VIEW_25D.pitch), VIEW_25D.distance * Math.cos(VIEW_25D.pitch)).add(this.cameraAnchor);
+    this.camera.position.copy(this.cameraTarget);
+    // Position and look point share one smoothed anchor, so pitch never changes.
+    this.camera.lookAt(this.cameraAnchor);
   }
 
   private frame = (time: number) => {
@@ -615,7 +608,8 @@ export class Game {
       jumpHeight: this.jumpHeight,
       graphics: { mode: this.quality.mode, scale: this.quality.scale, targetFps: this.quality.targetFps, pixelRatio: this.renderer.getPixelRatio(), particles: this.combatView.detail },
       audio: this.audio.inspect(),
-      camera: { x: this.camera.position.x, y: this.camera.position.y, z: this.camera.position.z },
+      camera: { x: this.camera.position.x, y: this.camera.position.y, z: this.camera.position.z, type: this.camera.type, pitch: VIEW_25D.pitch * 180 / Math.PI, quaternion: this.camera.quaternion.toArray(), width: this.camera.right - this.camera.left, height: this.camera.top - this.camera.bottom },
+      creature: this.monster.inspect(),
       portrait: this.portrait, rendering: !!this.frameId,
       drawCalls: this.renderer.info.render.calls,
       triangles: this.renderer.info.render.triangles,
@@ -632,6 +626,7 @@ export class Game {
     clearTimeout(this.choiceTimer);
     this.events.abort();
     this.input.dispose();
+    this.monster.dispose();
     this.audio.dispose();
     const geometries = new Set<THREE.BufferGeometry>();
     const materials = new Set<THREE.Material>();
