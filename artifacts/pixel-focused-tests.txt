@@ -1,0 +1,28 @@
+
+> monsterbonk-mobile@0.4.0 test
+> playwright test --grep PNGs retain|pixel view and|transparent corners reveal terrain|missing art falls|same-species sprites|disposing during --reporter=line
+
+
+Running 12 tests using 1 worker
+
+
+
+(node:22028) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[1/12] [chromium] › tests\pixel-party.spec.ts:41:1 › all three PNGs retain aspect, nearest sampling, foot anchors and readable phone scale
+[2/12] [chromium] › tests\pixel-party.spec.ts:64:1 › pixel view and original fallback produce identical party movement, collisions, attacks and XP
+[3/12] [chromium] › tests\pixel-party.spec.ts:72:1 › transparent corners reveal terrain, opaque art writes depth and real cover occludes it
+[4/12] [chromium] › tests\pixel-party.spec.ts:80:1 › missing art falls back per creature while movement and auto attacks continue
+[5/12] [chromium] › tests\pixel-party.spec.ts:90:1 › same-species sprites share textures and disposal releases leases, materials and groups
+[6/12] [chromium] › tests\pixel-party.spec.ts:96:1 › disposing during PNG loading never reattaches late resources
+(node:15704) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[7/12] [webkit] › tests\pixel-party.spec.ts:41:1 › all three PNGs retain aspect, nearest sampling, foot anchors and readable phone scale
+[8/12] [webkit] › tests\pixel-party.spec.ts:64:1 › pixel view and original fallback produce identical party movement, collisions, attacks and XP
+[9/12] [webkit] › tests\pixel-party.spec.ts:72:1 › transparent corners reveal terrain, opaque art writes depth and real cover occludes it
+[10/12] [webkit] › tests\pixel-party.spec.ts:80:1 › missing art falls back per creature while movement and auto attacks continue
+[11/12] [webkit] › tests\pixel-party.spec.ts:90:1 › same-species sprites share textures and disposal releases leases, materials and groups
+[12/12] [webkit] › tests\pixel-party.spec.ts:96:1 › disposing during PNG loading never reattaches late resources
+  12 passed (46.4s)

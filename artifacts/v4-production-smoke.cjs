@@ -1,0 +1,50 @@
+const { chromium } = require('@playwright/test');
+const fs = require('node:fs');
+const assert = require('node:assert/strict');
+
+(async () => {
+  const browser = await chromium.launch({ headless: true, args: ['--enable-unsafe-swiftshader'] });
+  const context = await browser.newContext({ viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true });
+  const page = await context.newPage();
+  const errors = [], failures = [], observations = [];
+  page.on('pageerror', error => errors.push(error.message));
+  page.on('response', response => { if (response.status() >= 400) failures.push({ url: response.url(), status: response.status() }); });
+  try {
+    await page.goto('http://127.0.0.1:4174');
+    await page.locator('#start-party').waitFor();
+    assert.match(await page.title(), /幻兽幸存者/);
+    await page.screenshot({ path: 'artifacts/v4-production-menu.png' });
+    await page.locator('#start-party').tap();
+    await page.waitForTimeout(6500);
+    assert.equal(await page.locator('.dash-control').isVisible(), false);
+    assert.equal(await page.locator('#party-status').isVisible(), true);
+    assert.equal(await page.evaluate(() => '__monsterbonk' in window), false);
+    const stick = await page.locator('#joystick').boundingBox();
+    const x = stick.x + stick.width / 2, y = stick.y + stick.height / 2;
+    const cdp = await context.newCDPSession(page);
+    await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x, y, id: 1 }] });
+    await cdp.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x: x + 35, y, id: 1 }] });
+    await page.waitForTimeout(700);
+    await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+    await page.waitForTimeout(200);
+    await page.screenshot({ path: 'artifacts/v4-production-gameplay.png' });
+    observations.push({ viewport: '844x390', hp: await page.locator('#health-value').textContent(), kills: await page.locator('#kill-value').textContent(), time: await page.locator('#timer').textContent() });
+    await page.locator('#pause').tap();
+    const frozen = await page.locator('#timer').textContent();
+    await page.waitForTimeout(200);
+    assert.equal(await page.locator('#timer').textContent(), frozen);
+    await page.locator('#restart').tap();
+    assert.equal(await page.locator('#health-value').textContent(), '100 / 100');
+    assert.equal(await page.locator('#kill-value').textContent(), '0');
+    await page.locator('#pause').tap(); await page.locator('#back-menu').tap();
+    await page.setViewportSize({ width: 568, height: 320 });
+    await page.screenshot({ path: 'artifacts/v4-production-menu-568.png' });
+    await page.locator('#start-party').tap();
+    await page.waitForTimeout(5600);
+    await page.screenshot({ path: 'artifacts/v4-production-gameplay-568.png' });
+    observations.push({ viewport: '568x320', hp: await page.locator('#health-value').textContent(), kills: await page.locator('#kill-value').textContent(), time: await page.locator('#timer').textContent() });
+    assert.deepEqual(errors, []); assert.deepEqual(failures, []);
+    fs.writeFileSync('artifacts/v4-production-smoke.json', JSON.stringify({ passed: true, browser: 'headless Chromium / software WebGL', actualPhoneTest: false, errors, failures, observations }, null, 2));
+    console.log(JSON.stringify({ passed: true, errors, failures, observations }));
+  } finally { await browser.close(); }
+})().catch(error => { console.error(error); process.exitCode = 1; });

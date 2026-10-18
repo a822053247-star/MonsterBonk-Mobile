@@ -1,0 +1,28 @@
+
+> monsterbonk-mobile@0.4.0 test
+> playwright test --grep two fixed-capacity|pixel and legacy enemy|one missing enemy|real depth buffer handles|48 enemies reuse|disposing during enemy --reporter=line
+
+
+Running 12 tests using 1 worker
+
+
+
+(node:64148) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[1/12] [chromium] › tests\enemy-pixel.spec.ts:42:1 › two fixed-capacity pixel batches preserve proportions, anchors and all existing enemy cues
+[2/12] [chromium] › tests\enemy-pixel.spec.ts:60:1 › pixel and legacy enemy displays give identical movement, combat and experience with no new monster types
+[3/12] [chromium] › tests\enemy-pixel.spec.ts:66:1 › one missing enemy texture only falls back that kind and retains original body parts
+[4/12] [chromium] › tests\enemy-pixel.spec.ts:75:1 › real depth buffer handles transparent cutouts, foreground cover and visible per-instance hit flash
+[5/12] [chromium] › tests\enemy-pixel.spec.ts:84:1 › 48 enemies reuse the same batches and textures, clear on reset and release on disposal
+[6/12] [chromium] › tests\enemy-pixel.spec.ts:93:1 › disposing during enemy PNG loading prevents late resource attachment
+
+
+(node:65528) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[7/12] [webkit] › tests\enemy-pixel.spec.ts:42:1 › two fixed-capacity pixel batches preserve proportions, anchors and all existing enemy cues
+[8/12] [webkit] › tests\enemy-pixel.spec.ts:60:1 › pixel and legacy enemy displays give identical movement, combat and experience with no new monster types
+[9/12] [webkit] › tests\enemy-pixel.spec.ts:66:1 › one missing enemy texture only falls back that kind and retains original body parts
+[10/12] [webkit] › tests\enemy-pixel.spec.ts:75:1 › real depth buffer handles transparent cutouts, foreground cover and visible per-instance hit flash
+[11/12] [webkit] › tests\enemy-pixel.spec.ts:84:1 › 48 enemies reuse the same batches and textures, clear on reset and release on disposal
+[12/12] [webkit] › tests\enemy-pixel.spec.ts:93:1 › disposing during enemy PNG loading prevents late resource attachment
+  12 passed (51.0s)

@@ -10,6 +10,7 @@ export class Input {
   private jumpQueued = false;
   private jumpPointer: number | null = null;
   private enabled = false;
+  private movementOnly = false;
   private events = new AbortController();
   private knob: HTMLElement;
 
@@ -39,7 +40,7 @@ export class Input {
       }, options);
     }
     dash.addEventListener('pointerdown', (event) => {
-      if (!this.enabled || this.dashPointer !== null || event.button > 0) return;
+      if (!this.enabled || this.movementOnly || this.dashPointer !== null || event.button > 0) return;
       event.preventDefault();
       this.dashPointer = event.pointerId;
       dash.setPointerCapture(event.pointerId);
@@ -47,7 +48,7 @@ export class Input {
       this.dashQueued = true;
     }, options);
     jump?.addEventListener('pointerdown', (event) => {
-      if (!this.enabled || this.jumpPointer !== null || event.button > 0) return;
+      if (!this.enabled || this.movementOnly || this.jumpPointer !== null || event.button > 0) return;
       event.preventDefault(); this.jumpPointer = event.pointerId;
       jump.setPointerCapture(event.pointerId); jump.classList.add('pressed'); this.jumpQueued = true;
     }, options);
@@ -58,6 +59,7 @@ export class Input {
     jump?.addEventListener('contextmenu', (event) => event.preventDefault(), options);
     window.addEventListener('keydown', (event) => {
       if (!this.enabled) return;
+      if (this.movementOnly && ['Space', 'ShiftLeft', 'ShiftRight', 'KeyJ'].includes(event.code)) return;
       if (['KeyW', 'KeyA', 'KeyS', 'KeyD', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space', 'ShiftLeft', 'ShiftRight', 'KeyJ'].includes(event.code)) {
         event.preventDefault();
         this.keys.add(event.code);
@@ -129,6 +131,8 @@ export class Input {
     this.enabled = enabled;
     this.reset();
   }
+
+  setMovementOnly(enabled: boolean) { this.movementOnly = enabled; this.reset(); }
 
   dispose() { this.reset(); this.events.abort(); }
 }

@@ -1,0 +1,179 @@
+
+> monsterbonk-mobile@0.4.0 test
+> playwright test --reporter=line
+
+
+Running 150 tests using 1 worker
+
+
+
+(node:58912) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[1/150] [chromium] › tests\25d-model.spec.ts:7:1 › screen input maps to projected ground direction without changing speed or analog strength
+[2/150] [chromium] › tests\25d-model.spec.ts:17:1 › landscape frustum keeps horizontal and vertical combat visibility across phone sizes
+[3/150] [chromium] › tests\25d-model.spec.ts:27:1 › independent organs replace once, survive form socket changes, reuse resources, and dispose detached props
+[4/150] [chromium] › tests\25d.spec.ts:21:1 › mobile touches follow all screen directions with fixed orientation and ground height
+[5/150] [chromium] › tests\25d.spec.ts:47:1 › Yanrong and two socket props render with clear low scenery, combat and responsive frustum
+[6/150] [chromium] › tests\challenge-model.spec.ts:11:1 › finite waves spawn exactly their configured enemies and victory never requires optional techniques
+[7/150] [chromium] › tests\challenge-model.spec.ts:21:1 › remaining queued enemies prevent early clears, rest lasts three simulation seconds, and running away respawns targets
+[8/150] [chromium] › tests\challenge-model.spec.ts:35:1 › upgrades/death freeze wave timers, and final kills win before an unused upgrade
+[9/150] [chromium] › tests\challenge-model.spec.ts:49:1 › bonuses add stars only after winning and fresh directors carry no previous progress
+[10/150] [chromium] › tests\challenge-model.spec.ts:57:1 › encounter retries respect cover, boundaries and pool capacity without losing the wave queue
+[11/150] [chromium] › tests\challenge-model.spec.ts:66:1 › 30/60/120 Hz render schedules produce the same fixed-step wave progression
+[12/150] [chromium] › tests\challenge-ui.spec.ts:32:1 › challenge clears three finite waves into victory, freezes, retries, and preserves classic defeat text
+[13/150] [chromium] › tests\challenge-ui.spec.ts:46:1 › wave break, three-choice upgrades, pause and background freeze the director
+[14/150] [chromium] › tests\challenge-ui.spec.ts:59:1 › new entry, wave HUD and victory controls fit two phone landscape safe areas
+[15/150] [chromium] › tests\challenge-ui.spec.ts:72:1 › real movement, auto attacks, dash damage and normal upgrades can complete the encounter without forced kills
+[chromium] › tests\challenge-ui.spec.ts:72:1 › real movement, auto attacks, dash damage and normal upgrades can complete the encounter without forced kills
+challenge simulated playthrough: {"outcome":"victory","time":26.21666666666646,"hp":80,"kills":15,"horns":7,"interrupts":1,"level":4}
+
+[16/150] [chromium] › tests\combat-model.spec.ts:13:1 › three enemies have distinct pursuit speeds and durability
+[17/150] [chromium] › tests\combat-model.spec.ts:28:1 › targeting excludes blocked, distant, spawning and dead enemies
+[18/150] [chromium] › tests\combat-model.spec.ts:40:1 › magic bolts damage, flash, kill and drop XP which nearby players collect once
+[19/150] [chromium] › tests\combat-model.spec.ts:61:1 › contact damage has a shared invulnerability window and death freezes combat
+[20/150] [chromium] › tests\combat-model.spec.ts:81:1 › swept collision catches tunneling and only the first enemy is hit
+[21/150] [chromium] › tests\combat-model.spec.ts:91:1 › spawn positions stay near the player, inside the map and outside obstacles
+[22/150] [chromium] › tests\combat-model.spec.ts:108:1 › 30, 60 and 120 Hz frame schedules give identical fixed-step combat results
+[23/150] [chromium] › tests\combat-model.spec.ts:129:1 › all pools are bounded, full XP pool merges drops, and reset removes old entities
+[24/150] [chromium] › tests\fox-model.spec.ts:29:1 › all four repaired paws stride and lift, weights normalize, soles stay grounded and the loop closes
+[25/150] [chromium] › tests\fox-model.spec.ts:38:1 › real game model has phone size, movement blending, pause and restart without resource growth
+[26/150] [chromium] › tests\fox-model.spec.ts:53:1 › GLB and procedural views give identical gameplay; missing model falls back to sprite
+[27/150] [chromium] › tests\game.spec.ts:14:1 › main menu renders a real 3D world and starts exploration without errors
+[chromium] › tests\game.spec.ts:14:1 › main menu renders a real 3D world and starts exploration without errors
+chromium render budget: {"mode":"playing","ruleset":"classic","outcome":null,"position":{"x":0,"z":0},"movement":{"x":0,"y":0},"elapsed":0.7833333333333341,"cooldown":0,"distance":0,"jumpHeight":0,"graphics":{"mode":"auto","scale":0.9,"targetFps":60,"pixelRatio":0.9,"particles":4},"audio":{"music":true,"sound":true,"active":true,"state":"running","supported":true,"voices":0,"played":0},"camera":{"x":0,"y":17.57056274847714,"z":16.970562748477143,"type":"OrthographicCamera","pitch":45,"quaternion":[-0.3826834323650898,0,0,0.9238795325112867],"width":30.22222222222222,"height":17},"creature":{"name":"焰绒","legs":4,"slots":["head","back","tail"],"equipped":{},"visual":"gltf","model":{"loaded":true,"failed":false,"height":2.85,"blend":0,"animation":"WalkInPlace","time":0.06333330472310406,"bones":14}},"portrait":false,"rendering":true,"drawCalls":22,"triangles":38540,"geometries":51,"textures":7,"combat":{"hp":100,"kills":0,"xp":0,"shotsFired":0,"hits":0,"spawned":0,"collected":0,"invulnerability":0,"enemies":[],"projectiles":0,"orbs":[],"effects":0,"targetId":0,"limits":{"enemies":48,"projectiles":24,"orbs":96,"effects":48,"shockwaves":2},"maxHp":100,"progression":{"level":1,"experience":0,"totalExperience":0,"threshold":8,"pendingChoices":0,"choiceLevel":2,"offers":[],"ranks":{"damage":0,"haste":0,"multishot":0,"vitality":0,"movement":0,"range":0,"orbit":0,"shockwave":0},"stats":{"damageMultiplier":1,"attackRateMultiplier":1,"projectileCount":1,"maxHp":100,"moveMultiplier":1,"rangeMultiplier":1,"orbitCount":0,"orbitDamage":0,"orbitRadius":0,"orbitSpeed":0,"shockDamage":0,"shockRadius":0,"shockInterval":0},"maxLevel":35},"orbitAngle":0,"shockwaves":[]}}
+
+[28/150] [chromium] › tests\game.spec.ts:41:1 › keyboard moves, normalizes diagonals, dashes and stops after release
+[29/150] [chromium] › tests\game.spec.ts:59:1 › joystick deadzone, drag outside, release and pointer cancellation
+[30/150] [chromium] › tests\game.spec.ts:86:1 › pause freezes simulation and resets held input; menu can restart cleanly
+[31/150] [chromium] › tests\game.spec.ts:112:1 › portrait prompts rotation, pauses play and resumes only on request
+[32/150] [chromium] › tests\game.spec.ts:132:1 › visibility and blur handlers freeze time and release controls
+[33/150] [chromium] › tests\game.spec.ts:157:1 › real multitouch keeps joystick and dash independent on mobile
+[34/150] [chromium] › tests\game.spec.ts:193:1 › automatic combat updates HUD, collects XP and restart clears every combat entity
+[35/150] [chromium] › tests\gameover.spec.ts:7:1 › lethal contact ends the real game loop and both restart routes clear combat
+[36/150] [chromium] › tests\horn-model.spec.ts:14:1 › horn sweep hits crossed targets once per dash, knocks survivors, and preserves classic damage
+[37/150] [chromium] › tests\horn-model.spec.ts:30:1 › horn kills use the existing XP drop and pickup path; rear, spawning and covered targets are excluded
+[38/150] [chromium] › tests\horn-model.spec.ts:46:1 › pounce telegraph locks direction, cannot deal windup damage, sweeps its hit, then recovers
+[39/150] [chromium] › tests\horn-model.spec.ts:63:1 › a horn strike interrupts a committed pounce, protects its hit target, and allows a later pounce
+[40/150] [chromium] › tests\horn-model.spec.ts:73:1 › upgrade/death freeze intents and horn hits; reset clears the trial and reused slots
+[41/150] [chromium] › tests\horn-model.spec.ts:85:1 › the same fixed steps give identical trial outcomes under 30, 60 and 120 Hz frame schedules
+[42/150] [chromium] › tests\horn-ui.spec.ts:19:1 › phone trial equips horns, touch dash damages and interrupts; restart and classic clear it
+[43/150] [chromium] › tests\horn-ui.spec.ts:48:1 › telegraph has real instanced geometry, trial upgrades freeze and resume without losing horns
+[44/150] [chromium] › tests\horn-ui.spec.ts:61:1 › trial entry and instructions fit small phone safe areas without covering joystick
+[45/150] [chromium] › tests\presentation-model.spec.ts:6:1 › adaptive graphics reduces pixels under sustained load and recovers with hysteresis
+[46/150] [chromium] › tests\presentation-model.spec.ts:20:1 › graphics modes bound pixel area, ignore suspended time, and reset sample windows
+[47/150] [chromium] › tests\presentation-model.spec.ts:36:1 › camera sweep catches foliage between player and lens and retains a padded gap
+[48/150] [chromium] › tests\presentation-model.spec.ts:48:1 › projectile trails and death fragments reuse bounded simulation slots and reset cleanly
+[49/150] [chromium] › tests\presentation.spec.ts:22:1 › audio waits for a gesture; settings persist and gameplay remains paused on closing
+[50/150] [chromium] › tests\presentation.spec.ts:59:1 › jump is cosmetic, freezes on pause/upgrade, lands, and restart clears it
+[51/150] [chromium] › tests\presentation.spec.ts:88:1 › orthographic camera follows with a fixed pitch and orientation
+[52/150] [chromium] › tests\presentation.spec.ts:95:1 › pooled trails, hit flash and dissolving corpses render through the real loop
+[53/150] [chromium] › tests\presentation.spec.ts:109:1 › small landscape HUD and settings fit safe areas with thumb-size touch targets
+[54/150] [chromium] › tests\presentation.spec.ts:122:1 › independent touch pointers keep moving while dashing
+[55/150] [chromium] › tests\presentation.spec.ts:137:1 › missing Web Audio fails gracefully and never blocks combat or settings
+[56/150] [chromium] › tests\progression.spec.ts:24:1 › exact XP boundaries and overflow preserve every earned level and choice
+[57/150] [chromium] › tests\progression.spec.ts:42:1 › all cards are unique, below their cap and selectable; max level never deadlocks
+[58/150] [chromium] › tests\progression.spec.ts:69:1 › invalid XP, stale choices and unoffered skills do not change progression
+[59/150] [chromium] › tests\progression.spec.ts:86:1 › data-driven stacks use additive base bonuses and independent spell ranks
+[60/150] [chromium] › tests\progression.spec.ts:100:1 › damage, multishot and range upgrades affect real projectiles and pool limits
+[61/150] [chromium] › tests\progression.spec.ts:119:1 › haste increases actual volleys per second; vitality increases max HP and heals
+[62/150] [chromium] › tests\progression.spec.ts:136:1 › orbit damages enemies, uses seconds-based hit immunity and resets cleanly
+[63/150] [chromium] › tests\progression.spec.ts:151:1 › shockwave expands, hits each enemy once, repeats and freezes throughout upgrade choice
+[64/150] [chromium] › tests\progression.spec.ts:177:1 › reset clears level, accumulated XP, choices, stats and both learned skills
+[65/150] [chromium] › tests\sprite.spec.ts:32:1 › complete sprite keeps its aspect, ground anchor, soft shadow and phone size
+[66/150] [chromium] › tests\sprite.spec.ts:47:1 › sprite and 3D fallback give identical movement, targeting, damage and XP results
+[67/150] [chromium] › tests\sprite.spec.ts:52:1 › real depth buffer occludes behind cover and transparent corners reveal the scene
+[68/150] [chromium] › tests\sprite.spec.ts:60:1 › dash afterimages, stretch and hurt flash affect visuals only and restart clears them
+[69/150] [chromium] › tests\sprite.spec.ts:72:1 › missing PNG falls back safely and explicit 3D mode does not request the image
+[70/150] [chromium] › tests\upgrades.spec.ts:34:1 › XP opens three valid cards, freezes the entire simulation and touch picks once
+[71/150] [chromium] › tests\upgrades.spec.ts:65:1 › XP overflow queues separate choices; duplicate old clicks cannot spend the next reward
+[72/150] [chromium] › tests\upgrades.spec.ts:85:1 › cards fit short landscape phones and safe areas; rotation/background keeps choices frozen
+[73/150] [chromium] › tests\upgrades.spec.ts:124:1 › new spells coexist, max HP updates HUD and a fresh run clears all skills
+[74/150] [chromium] › tests\upgrades.spec.ts:147:1 › the last remaining skill is valid and full mastery stops creating empty dialogs
+[75/150] [chromium] › tests\upgrades.spec.ts:164:1 › an existing joystick finger cannot pick a card or leave movement stuck
+
+(node:55948) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[76/150] [webkit] › tests\25d-model.spec.ts:7:1 › screen input maps to projected ground direction without changing speed or analog strength
+[77/150] [webkit] › tests\25d-model.spec.ts:17:1 › landscape frustum keeps horizontal and vertical combat visibility across phone sizes
+[78/150] [webkit] › tests\25d-model.spec.ts:27:1 › independent organs replace once, survive form socket changes, reuse resources, and dispose detached props
+[79/150] [webkit] › tests\25d.spec.ts:21:1 › mobile touches follow all screen directions with fixed orientation and ground height
+[80/150] [webkit] › tests\25d.spec.ts:47:1 › Yanrong and two socket props render with clear low scenery, combat and responsive frustum
+[81/150] [webkit] › tests\challenge-model.spec.ts:11:1 › finite waves spawn exactly their configured enemies and victory never requires optional techniques
+[82/150] [webkit] › tests\challenge-model.spec.ts:21:1 › remaining queued enemies prevent early clears, rest lasts three simulation seconds, and running away respawns targets
+[83/150] [webkit] › tests\challenge-model.spec.ts:35:1 › upgrades/death freeze wave timers, and final kills win before an unused upgrade
+[84/150] [webkit] › tests\challenge-model.spec.ts:49:1 › bonuses add stars only after winning and fresh directors carry no previous progress
+[85/150] [webkit] › tests\challenge-model.spec.ts:57:1 › encounter retries respect cover, boundaries and pool capacity without losing the wave queue
+[86/150] [webkit] › tests\challenge-model.spec.ts:66:1 › 30/60/120 Hz render schedules produce the same fixed-step wave progression
+[87/150] [webkit] › tests\challenge-ui.spec.ts:32:1 › challenge clears three finite waves into victory, freezes, retries, and preserves classic defeat text
+[88/150] [webkit] › tests\challenge-ui.spec.ts:46:1 › wave break, three-choice upgrades, pause and background freeze the director
+[89/150] [webkit] › tests\challenge-ui.spec.ts:59:1 › new entry, wave HUD and victory controls fit two phone landscape safe areas
+[90/150] [webkit] › tests\challenge-ui.spec.ts:72:1 › real movement, auto attacks, dash damage and normal upgrades can complete the encounter without forced kills
+[webkit] › tests\challenge-ui.spec.ts:72:1 › real movement, auto attacks, dash damage and normal upgrades can complete the encounter without forced kills
+challenge simulated playthrough: {"outcome":"victory","time":26.21666666666646,"hp":80,"kills":15,"horns":7,"interrupts":1,"level":4}
+
+[91/150] [webkit] › tests\combat-model.spec.ts:13:1 › three enemies have distinct pursuit speeds and durability
+[92/150] [webkit] › tests\combat-model.spec.ts:28:1 › targeting excludes blocked, distant, spawning and dead enemies
+[93/150] [webkit] › tests\combat-model.spec.ts:40:1 › magic bolts damage, flash, kill and drop XP which nearby players collect once
+[94/150] [webkit] › tests\combat-model.spec.ts:61:1 › contact damage has a shared invulnerability window and death freezes combat
+[95/150] [webkit] › tests\combat-model.spec.ts:81:1 › swept collision catches tunneling and only the first enemy is hit
+[96/150] [webkit] › tests\combat-model.spec.ts:91:1 › spawn positions stay near the player, inside the map and outside obstacles
+[97/150] [webkit] › tests\combat-model.spec.ts:108:1 › 30, 60 and 120 Hz frame schedules give identical fixed-step combat results
+[98/150] [webkit] › tests\combat-model.spec.ts:129:1 › all pools are bounded, full XP pool merges drops, and reset removes old entities
+[99/150] [webkit] › tests\fox-model.spec.ts:29:1 › all four repaired paws stride and lift, weights normalize, soles stay grounded and the loop closes
+[100/150] [webkit] › tests\fox-model.spec.ts:38:1 › real game model has phone size, movement blending, pause and restart without resource growth
+[101/150] [webkit] › tests\fox-model.spec.ts:53:1 › GLB and procedural views give identical gameplay; missing model falls back to sprite
+[102/150] [webkit] › tests\game.spec.ts:14:1 › main menu renders a real 3D world and starts exploration without errors
+[webkit] › tests\game.spec.ts:14:1 › main menu renders a real 3D world and starts exploration without errors
+webkit render budget: {"mode":"playing","ruleset":"classic","outcome":null,"position":{"x":0,"z":0},"movement":{"x":0,"y":0},"elapsed":0.6166666666666669,"cooldown":0,"distance":0,"jumpHeight":0,"graphics":{"mode":"auto","scale":1,"targetFps":60,"pixelRatio":1,"particles":4},"audio":{"music":true,"sound":true,"active":true,"state":"unavailable","supported":false,"voices":0,"played":0},"camera":{"x":0,"y":17.570562748477144,"z":16.970562748477143,"type":"OrthographicCamera","pitch":45,"quaternion":[-0.3826834323650898,0,0,0.9238795325112867],"width":30.22222222222222,"height":17},"creature":{"name":"焰绒","legs":4,"slots":["head","back","tail"],"equipped":{},"visual":"gltf","model":{"loaded":true,"failed":false,"height":2.85,"blend":0,"animation":"WalkInPlace","time":0.6393333333333334,"bones":14}},"portrait":false,"rendering":true,"drawCalls":22,"triangles":38540,"geometries":51,"textures":7,"combat":{"hp":100,"kills":0,"xp":0,"shotsFired":0,"hits":0,"spawned":0,"collected":0,"invulnerability":0,"enemies":[],"projectiles":0,"orbs":[],"effects":0,"targetId":0,"limits":{"enemies":48,"projectiles":24,"orbs":96,"effects":48,"shockwaves":2},"maxHp":100,"progression":{"level":1,"experience":0,"totalExperience":0,"threshold":8,"pendingChoices":0,"choiceLevel":2,"offers":[],"ranks":{"damage":0,"haste":0,"multishot":0,"vitality":0,"movement":0,"range":0,"orbit":0,"shockwave":0},"stats":{"damageMultiplier":1,"attackRateMultiplier":1,"projectileCount":1,"maxHp":100,"moveMultiplier":1,"rangeMultiplier":1,"orbitCount":0,"orbitDamage":0,"orbitRadius":0,"orbitSpeed":0,"shockDamage":0,"shockRadius":0,"shockInterval":0},"maxLevel":35},"orbitAngle":0,"shockwaves":[]}}
+
+[103/150] [webkit] › tests\game.spec.ts:41:1 › keyboard moves, normalizes diagonals, dashes and stops after release
+[104/150] [webkit] › tests\game.spec.ts:59:1 › joystick deadzone, drag outside, release and pointer cancellation
+[105/150] [webkit] › tests\game.spec.ts:86:1 › pause freezes simulation and resets held input; menu can restart cleanly
+[106/150] [webkit] › tests\game.spec.ts:112:1 › portrait prompts rotation, pauses play and resumes only on request
+[107/150] [webkit] › tests\game.spec.ts:132:1 › visibility and blur handlers freeze time and release controls
+[108/150] [webkit] › tests\game.spec.ts:157:1 › real multitouch keeps joystick and dash independent on mobile
+[109/150] [webkit] › tests\game.spec.ts:193:1 › automatic combat updates HUD, collects XP and restart clears every combat entity
+[110/150] [webkit] › tests\gameover.spec.ts:7:1 › lethal contact ends the real game loop and both restart routes clear combat
+[111/150] [webkit] › tests\horn-model.spec.ts:14:1 › horn sweep hits crossed targets once per dash, knocks survivors, and preserves classic damage
+[112/150] [webkit] › tests\horn-model.spec.ts:30:1 › horn kills use the existing XP drop and pickup path; rear, spawning and covered targets are excluded
+[113/150] [webkit] › tests\horn-model.spec.ts:46:1 › pounce telegraph locks direction, cannot deal windup damage, sweeps its hit, then recovers
+[114/150] [webkit] › tests\horn-model.spec.ts:63:1 › a horn strike interrupts a committed pounce, protects its hit target, and allows a later pounce
+[115/150] [webkit] › tests\horn-model.spec.ts:73:1 › upgrade/death freeze intents and horn hits; reset clears the trial and reused slots
+[116/150] [webkit] › tests\horn-model.spec.ts:85:1 › the same fixed steps give identical trial outcomes under 30, 60 and 120 Hz frame schedules
+[117/150] [webkit] › tests\horn-ui.spec.ts:19:1 › phone trial equips horns, touch dash damages and interrupts; restart and classic clear it
+[118/150] [webkit] › tests\horn-ui.spec.ts:48:1 › telegraph has real instanced geometry, trial upgrades freeze and resume without losing horns
+[119/150] [webkit] › tests\horn-ui.spec.ts:61:1 › trial entry and instructions fit small phone safe areas without covering joystick
+[120/150] [webkit] › tests\presentation-model.spec.ts:6:1 › adaptive graphics reduces pixels under sustained load and recovers with hysteresis
+[121/150] [webkit] › tests\presentation-model.spec.ts:20:1 › graphics modes bound pixel area, ignore suspended time, and reset sample windows
+[122/150] [webkit] › tests\presentation-model.spec.ts:36:1 › camera sweep catches foliage between player and lens and retains a padded gap
+[123/150] [webkit] › tests\presentation-model.spec.ts:48:1 › projectile trails and death fragments reuse bounded simulation slots and reset cleanly
+[124/150] [webkit] › tests\presentation.spec.ts:22:1 › audio waits for a gesture; settings persist and gameplay remains paused on closing
+[125/150] [webkit] › tests\presentation.spec.ts:59:1 › jump is cosmetic, freezes on pause/upgrade, lands, and restart clears it
+[126/150] [webkit] › tests\presentation.spec.ts:88:1 › orthographic camera follows with a fixed pitch and orientation
+[127/150] [webkit] › tests\presentation.spec.ts:95:1 › pooled trails, hit flash and dissolving corpses render through the real loop
+[128/150] [webkit] › tests\presentation.spec.ts:109:1 › small landscape HUD and settings fit safe areas with thumb-size touch targets
+[129/150] [webkit] › tests\presentation.spec.ts:122:1 › independent touch pointers keep moving while dashing
+[130/150] [webkit] › tests\presentation.spec.ts:137:1 › missing Web Audio fails gracefully and never blocks combat or settings
+[131/150] [webkit] › tests\progression.spec.ts:24:1 › exact XP boundaries and overflow preserve every earned level and choice
+[132/150] [webkit] › tests\progression.spec.ts:42:1 › all cards are unique, below their cap and selectable; max level never deadlocks
+[133/150] [webkit] › tests\progression.spec.ts:69:1 › invalid XP, stale choices and unoffered skills do not change progression
+[134/150] [webkit] › tests\progression.spec.ts:86:1 › data-driven stacks use additive base bonuses and independent spell ranks
+[135/150] [webkit] › tests\progression.spec.ts:100:1 › damage, multishot and range upgrades affect real projectiles and pool limits
+[136/150] [webkit] › tests\progression.spec.ts:119:1 › haste increases actual volleys per second; vitality increases max HP and heals
+[137/150] [webkit] › tests\progression.spec.ts:136:1 › orbit damages enemies, uses seconds-based hit immunity and resets cleanly
+[138/150] [webkit] › tests\progression.spec.ts:151:1 › shockwave expands, hits each enemy once, repeats and freezes throughout upgrade choice
+[139/150] [webkit] › tests\progression.spec.ts:177:1 › reset clears level, accumulated XP, choices, stats and both learned skills
+[140/150] [webkit] › tests\sprite.spec.ts:32:1 › complete sprite keeps its aspect, ground anchor, soft shadow and phone size
+[141/150] [webkit] › tests\sprite.spec.ts:47:1 › sprite and 3D fallback give identical movement, targeting, damage and XP results
+[142/150] [webkit] › tests\sprite.spec.ts:52:1 › real depth buffer occludes behind cover and transparent corners reveal the scene
+[143/150] [webkit] › tests\sprite.spec.ts:60:1 › dash afterimages, stretch and hurt flash affect visuals only and restart clears them
+[144/150] [webkit] › tests\sprite.spec.ts:72:1 › missing PNG falls back safely and explicit 3D mode does not request the image
+[145/150] [webkit] › tests\upgrades.spec.ts:34:1 › XP opens three valid cards, freezes the entire simulation and touch picks once
+[146/150] [webkit] › tests\upgrades.spec.ts:65:1 › XP overflow queues separate choices; duplicate old clicks cannot spend the next reward
+[147/150] [webkit] › tests\upgrades.spec.ts:85:1 › cards fit short landscape phones and safe areas; rotation/background keeps choices frozen
+[148/150] [webkit] › tests\upgrades.spec.ts:124:1 › new spells coexist, max HP updates HUD and a fresh run clears all skills
+[149/150] [webkit] › tests\upgrades.spec.ts:147:1 › the last remaining skill is valid and full mastery stops creating empty dialogs
+[150/150] [webkit] › tests\upgrades.spec.ts:164:1 › an existing joystick finger cannot pick a card or leave movement stuck
+  4 skipped
+  146 passed (5.5m)

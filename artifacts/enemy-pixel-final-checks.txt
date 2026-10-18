@@ -1,0 +1,20 @@
+
+> monsterbonk-mobile@0.4.0 test
+> playwright test --grep two fixed-capacity|real depth buffer handles --reporter=line
+
+
+Running 4 tests using 1 worker
+
+
+
+(node:55284) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[1/4] [chromium] › tests\enemy-pixel.spec.ts:46:1 › two fixed-capacity pixel batches preserve proportions, anchors and all existing enemy cues
+[2/4] [chromium] › tests\enemy-pixel.spec.ts:85:1 › real depth buffer handles transparent cutouts, foreground cover and visible per-instance hit flash
+
+(node:60564) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[3/4] [webkit] › tests\enemy-pixel.spec.ts:46:1 › two fixed-capacity pixel batches preserve proportions, anchors and all existing enemy cues
+[4/4] [webkit] › tests\enemy-pixel.spec.ts:85:1 › real depth buffer handles transparent cutouts, foreground cover and visible per-instance hit flash
+  4 passed (18.4s)

@@ -1,0 +1,51 @@
+const { chromium } = require('@playwright/test');
+const fs = require('node:fs');
+const assert = require('node:assert/strict');
+(async () => {
+  const browser = await chromium.launch({ headless: true, args: ['--enable-unsafe-swiftshader'] });
+  const context = await browser.newContext({ viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true });
+  const page = await context.newPage();
+  const errors = [], failures = [], assets = new Set(), observations = [];
+  page.on('pageerror', error => errors.push(error.message));
+  page.on('console', message => { if (message.type() === 'error') errors.push(message.text()); });
+  page.on('response', response => {
+    if (response.status() >= 400) failures.push(response.url());
+    if (response.url().includes('/assets/pixel/')) assets.add(response.url().split('/assets/pixel/')[1]);
+  });
+  try {
+    await page.goto('http://127.0.0.1:4178/');
+    await page.locator('#start-party').tap();
+    await page.waitForFunction(() => document.getElementById('timer').textContent === '00:03');
+    await page.waitForTimeout(450);
+    await page.screenshot({ path: 'artifacts/enemy-pixel-production-early-844.png' });
+    await page.waitForTimeout(1250);
+    await page.screenshot({ path: 'artifacts/enemy-pixel-production-fast-844.png' });
+    const stick = await page.locator('#joystick').boundingBox();
+    const x = stick.x + stick.width / 2, y = stick.y + stick.height / 2;
+    const cdp = await context.newCDPSession(page);
+    await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x, y, id: 1 }] });
+    await cdp.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x: x + 35, y, id: 1 }] });
+    await page.waitForTimeout(950);
+    await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+    await page.waitForTimeout(600);
+    await page.screenshot({ path: 'artifacts/enemy-pixel-production-844.png' });
+    observations.push({ viewport: '844x390', timer: await page.locator('#timer').textContent(), hp: await page.locator('#health-value').textContent(), kills: await page.locator('#kill-value').textContent() });
+    assert.equal(await page.locator('.dash-control').isVisible(), false);
+    assert.equal(await page.evaluate(() => '__monsterbonk' in window), false);
+    await page.locator('#pause').tap(); const frozen = await page.locator('#timer').textContent();
+    await page.waitForTimeout(200); assert.equal(await page.locator('#timer').textContent(), frozen);
+    await page.locator('#restart').tap(); assert.equal(await page.locator('#health-value').textContent(), '100 / 100');
+    await page.locator('#pause').tap(); await page.locator('#back-menu').tap();
+    await page.setViewportSize({ width: 568, height: 320 });
+    await page.locator('#start-party').tap();
+    await page.waitForFunction(() => document.getElementById('timer').textContent === '00:03');
+    await page.waitForTimeout(500);
+    await page.screenshot({ path: 'artifacts/enemy-pixel-production-568.png' });
+    observations.push({ viewport: '568x320', timer: await page.locator('#timer').textContent(), hp: await page.locator('#health-value').textContent(), kills: await page.locator('#kill-value').textContent() });
+    assert.deepEqual([...assets].sort(), ['creatures/paopaoyuan.png', 'creatures/yacishou.png', 'creatures/yanrong-base.png', 'enemies/grass-monster.png', 'enemies/runner-bug.png']);
+    assert.deepEqual(errors, []); assert.deepEqual(failures, []);
+    const result = { passed: true, browser: 'desktop Chromium software WebGL / phone viewport', actualDeviceTest: false, assets: [...assets], errors, failures, observations };
+    fs.writeFileSync('artifacts/enemy-pixel-production-smoke.json', JSON.stringify(result, null, 2));
+    console.log(JSON.stringify(result));
+  } finally { await browser.close(); }
+})().catch(error => { console.error(error); process.exitCode = 1; });

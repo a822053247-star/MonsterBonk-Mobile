@@ -1,4 +1,14 @@
-# MonsterBonk Mobile
+# 幻兽幸存者（原 MonsterBonk Mobile）
+
+正式玩法约束以 [V4.0 GDD](docs/GDD.md) 为准。主菜单点击「三兽编队原型」：摇杆操控焰绒，泡泡螈与芽刺兽自动跟随、独立攻击，共享生命，战斗没有冲刺/跳跃操作。三兽现已使用 `public/assets/pixel/creatures/` 的首批原创像素 PNG；主控稍大并带脚环。原型仍预置三只用于技术验证；正式单兽开局和等级槽位解锁安排在 P3。
+
+[迁移审查、备份与后续计划](docs/MIGRATION.md) · [P0/P1 验收记录](docs/P0-P1-REPORT.md) · [首批像素素材接入验收](docs/PIXEL-IMPORT-REPORT.md)
+
+两类基础敌人的像素显示已接入三兽原型，详见 [敌人像素显示验收](docs/ENEMY-PIXEL-REPORT.md)。后续范围、分轮任务、验收标准和待定参数见 [后续开发计划](docs/DEVELOPMENT-PLAN.md)，下一轮为 P3-A 的正式开局、等级槽位、金币与波次骨架；尚未实施。
+
+沿用现有地图、经验曲线与强化卡。未开发新商店、随机区域、警戒、稀有蛋、羁绊或新进化。编队原型中普通怪与快速怪使用像素图，坦克继续占位；菜单与旧模式保留原显示。URL 加 `?partyVisual=legacy` 回退三兽外观，加 `?enemyVisual=legacy` 回退敌人外观，两项可以组合；单张像素图加载失败时也会局部回退。底部「单兽回归」「犄角试炼」「三波闯关」保留旧规则供回归使用。
+
+以下为保留的旧版工程与实验记录，不代表 V4.0 正式玩法方向。
 
 当前角色默认使用用户 Tripo 模型的独立修复版 `public/assets/characters/yanrong-repaired.glb`：重建简化四足骨架、蒙皮权重与原地行走循环，保留原几何和 UV。原始 `fire+fox+3d+model_Clone1.glb` 不覆盖。详见 [模型与步态修复验收](artifacts/角色骨骼与步态修复.md)。开发服务器运行时可访问 <http://localhost:5173/artifacts/fox-probe.html?fixed>，切换原始/修复动画、后腿视角和骨骼显示。
 

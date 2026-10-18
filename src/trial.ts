@@ -1,4 +1,4 @@
-export type Ruleset = 'classic' | 'horn-trial';
+export type Ruleset = 'classic' | 'horn-trial' | 'horn-challenge';
 
 /** Experimental values only. Classic movement, enemies and progression stay intact. */
 export const HORN = { damage: 32, radius: 0.9, knockback: 9, stagger: 0.42, goal: 6 } as const;

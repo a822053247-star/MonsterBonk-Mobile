@@ -10,6 +10,9 @@ import { AdaptiveQuality, loadPreferences, savePreferences, type QualityMode } f
 import { GameAudio } from './audio';
 import { resize25DCamera, screenToGround, VIEW_25D } from './camera-25d';
 import { HORN, type DashStep, type Ruleset } from './trial';
+import { Challenge, CHALLENGE, CHALLENGE_WAVES } from './challenge';
+import { PartySystem } from './party';
+import { PartyView } from './party-view';
 
 type Mode = 'menu' | 'playing' | 'paused' | 'gameover' | 'upgrading' | 'settings';
 const STEP = 1 / 60;
@@ -30,12 +33,18 @@ export class Game {
   private camera = new THREE.OrthographicCamera(-15, 15, 8.5, -8.5, 0.1, 180);
   // Repaired GLB by default; ?character=sprite / ?character=3d retain both fallbacks.
   private monster = new Monster(new URLSearchParams(window.location.search).get('character') === '3d' ? 'procedural' : new URLSearchParams(window.location.search).get('character') === 'sprite' ? 'sprite' : 'gltf');
+  private party = new PartySystem();
+  private pixelPartyEnabled = new URLSearchParams(window.location.search).get('partyVisual') !== 'legacy';
+  private partyView = new PartyView(this.party, this.pixelPartyEnabled);
+  private partyPrototype = false;
   private world: World;
   private combat: Combat;
   private combatView: CombatView;
   private input: Input;
   private mode: Mode = 'menu';
   private runRuleset: Ruleset = 'classic';
+  private challenge?: Challenge;
+  private outcome: 'victory' | 'defeat' | null = null;
   private trialHornMounted = false;
   private dashAttack: DashStep = { active: false, started: false, fromX: 0, fromZ: 0, dx: 0, dz: 1 };
   private position = new THREE.Vector3();
@@ -89,7 +98,7 @@ export class Game {
     sun.position.set(-10, 18, 12);
     this.scene.add(sun);
     this.world = createWorld();
-    this.scene.add(this.world.group, this.monster.root);
+    this.scene.add(this.world.group, this.monster.root, this.partyView.group);
     this.combat = new Combat(this.world.obstacles, WORLD_RADIUS - 0.7);
     this.combatView = new CombatView(this.combat);
     this.scene.add(this.combatView.group);
@@ -123,8 +132,10 @@ export class Game {
       this.preferences.sound = (document.getElementById('sound-toggle') as HTMLInputElement).checked;
       this.audio.configure(this.preferences.music, this.preferences.sound); this.saveSettings();
     }, options);
-    click('start', () => this.start('classic'));
-    click('start-trial', () => this.start('horn-trial'));
+    click('start-party', () => this.start('classic', true));
+    click('start', () => this.start('classic', false));
+    click('start-trial', () => this.start('horn-trial', false));
+    click('start-challenge', () => this.start('horn-challenge', false));
     click('pause', () => this.pause('草原会在这里等你。'));
     click('resume', () => this.resume());
     click('back-menu', () => this.showMenu());
@@ -246,9 +257,19 @@ export class Game {
     else this.wake();
   }
 
-  private start(ruleset: Ruleset = this.runRuleset) {
+  private start(ruleset: Ruleset = this.runRuleset, partyPrototype = this.partyPrototype) {
     if (this.portrait || this.contextLost) return;
     this.runRuleset = ruleset;
+    this.partyPrototype = partyPrototype;
+    this.combat.party = partyPrototype ? this.party : undefined;
+    this.party.reset(partyPrototype ? ['yanrong', 'bubblesalamander', 'sproutspike'] : ['yanrong']);
+    this.input.setMovementOnly(partyPrototype);
+    document.getElementById('hud')!.classList.toggle('party-prototype', partyPrototype);
+    document.getElementById('game-canvas')!.classList.toggle('pixel-party', partyPrototype && this.pixelPartyEnabled);
+    this.partyView.group.visible = partyPrototype;
+    this.combatView.setPixelEnemies(partyPrototype && new URLSearchParams(window.location.search).get('enemyVisual') !== 'legacy');
+    this.challenge = ruleset === 'horn-challenge' ? new Challenge() : undefined;
+    this.outcome = null;
     this.audio.setActive(true); this.audio.unlock();
     this.position.set(0, 0, 0);
     this.previousPosition.copy(this.position);
@@ -258,8 +279,12 @@ export class Game {
     this.jumpHeight = this.previousJump = this.jumpVelocity = 0;
     this.elapsed = this.cooldown = this.dashRemaining = this.distance = 0;
     this.combat.reset(ruleset);
+    this.party.syncLeader(this.position, this.facing);
+    this.party.placeCompanions(this.world.obstacles, WORLD_RADIUS - 0.7);
+    if (partyPrototype) this.partyView.render(1, 0);
+    this.monster.root.visible = !partyPrototype || !this.partyView.hasPixelLeader;
     if (this.trialHornMounted) this.monster.unequipOrgan('head');
-    this.trialHornMounted = ruleset === 'horn-trial';
+    this.trialHornMounted = this.combat.isTrial;
     if (this.trialHornMounted) this.monster.equipOrgan('charge-horns');
     for (const trail of this.trails) (trail.mesh.material as THREE.MeshBasicMaterial).color.set(this.combat.isTrial ? '#ffd58a' : '#e5f2b2');
     this.monster.resetVisual();
@@ -277,8 +302,8 @@ export class Game {
     document.getElementById('gameover-screen')!.hidden = true;
     (document.activeElement as HTMLElement | null)?.blur();
     this.welcome.classList.remove('faded');
-    this.welcome.querySelector('h2')!.textContent = this.combat.isTrial ? '犄角已就绪，冲出一条路。' : '小小魔法，准备就绪。';
-    this.welcome.querySelector('p')!.textContent = this.combat.isTrial ? '冲刺命中可击退和打断 · 留意黄色扑击预警线' : '移动躲避敌人，焰绒会自动施法 · 靠近拾取经验';
+    this.welcome.querySelector('h2')!.textContent = partyPrototype ? '三兽同行，自动迎战。' : this.challenge ? '三波迎战，冲出一条路。' : this.combat.isTrial ? '犄角已就绪，冲出一条路。' : '小小魔法，准备就绪。';
+    this.welcome.querySelector('p')!.textContent = partyPrototype ? '摇杆操控焰绒 · 泡泡螈与芽刺兽自动跟随攻击' : this.challenge ? '击败三波即可通关 · 冲锋命中 6 次、打断 2 次各加一星' : this.combat.isTrial ? '冲刺命中可击退和打断 · 留意黄色扑击预警线' : '移动躲避敌人，焰绒会自动施法 · 靠近拾取经验';
     this.accumulator = 0;
     this.placeCamera(true);
     this.updateHUD();
@@ -310,7 +335,16 @@ export class Game {
   }
 
   private showMenu() {
+    this.monster.root.visible = true;
+    document.getElementById('game-canvas')!.classList.remove('pixel-party');
+    this.partyPrototype = false;
+    this.combat.party = undefined;
+    this.party.reset();
+    this.partyView.group.visible = false;
+    this.combatView.setPixelEnemies(false);
+    this.input.setMovementOnly(false);
     this.runRuleset = 'classic';
+    this.challenge = undefined; this.outcome = null;
     if (this.trialHornMounted) this.monster.unequipOrgan('head');
     this.trialHornMounted = false;
     this.monster.resetVisual();
@@ -360,7 +394,7 @@ export class Game {
     if (this.combat.progression.awaitingChoice) { this.openUpgrade(); return; }
     this.previousPosition.copy(this.position);
     this.previousJump = this.jumpHeight;
-    if (this.input.consumeJump() && this.jumpHeight === 0) { this.jumpVelocity = 6; this.audio.play('jump'); }
+    if (this.input.consumeJump() && !this.partyPrototype && this.jumpHeight === 0) { this.jumpVelocity = 6; this.audio.play('jump'); }
     if (this.jumpHeight > 0 || this.jumpVelocity > 0) {
       this.jumpVelocity -= 22 * dt;
       this.jumpHeight = Math.max(0, this.jumpHeight + this.jumpVelocity * dt);
@@ -374,7 +408,7 @@ export class Game {
     this.elapsed += dt;
     this.cooldown = Math.max(0, this.cooldown - dt);
     this.dashRemaining = Math.max(0, this.dashRemaining - dt);
-    if (this.input.consumeDash() && this.cooldown === 0) {
+    if (this.input.consumeDash() && !this.partyPrototype && this.cooldown === 0) {
       this.dashDirection.set(movement.x, movement.y);
       if (magnitude < 0.05) this.dashDirection.set(Math.sin(this.facing), Math.cos(this.facing));
       this.dashDirection.normalize();
@@ -432,13 +466,26 @@ export class Game {
     this.dashAttack.active = dashing;
     this.dashAttack.fromX = this.previousPosition.x; this.dashAttack.fromZ = this.previousPosition.z;
     this.dashAttack.dx = this.dashDirection.x; this.dashAttack.dz = this.dashDirection.y;
+    if (this.partyPrototype) {
+      // The original Player movement is now the controlled creature adapter.
+      this.party.syncLeader(this.position, this.facing);
+      this.party.follow(dt, this.world.obstacles, WORLD_RADIUS - 0.7);
+    }
     this.combat.update(dt, this.position, this.dashAttack);
     if (this.combat.shotsFired > shots) this.audio.play('cast');
     if (this.combat.hits > hits) this.audio.play('hit');
     if (this.combat.collected > collected) this.audio.play('collect');
     if (this.combat.hp < hp) this.audio.play('hurt');
     if (this.combat.hp === 0) this.endRun();
-    else if (this.combat.progression.awaitingChoice) this.openUpgrade();
+    else {
+      if (this.challenge) {
+        const wave = this.challenge.wave, phase = this.challenge.phase;
+        this.challenge.update(dt, this.combat, this.position);
+        if (this.challenge.wave !== wave || this.challenge.phase !== phase) this.audio.play('level');
+        if (this.challenge.phase === 'won') this.endRun('victory');
+      }
+      if (this.mode === 'playing' && this.combat.progression.awaitingChoice) this.openUpgrade();
+    }
   }
 
   private openUpgrade() {
@@ -494,18 +541,32 @@ export class Game {
     document.getElementById('hud')!.inert = false;
   }
 
-  private endRun() {
+  private endRun(outcome: 'victory' | 'defeat' = 'defeat') {
     this.hideUpgrade();
     this.mode = 'gameover';
+    this.outcome = outcome;
     this.audio.setActive(false);
     this.input.setEnabled(false);
     this.velocity.set(0, 0);
+    this.dashRemaining = 0;
     this.previousPosition.copy(this.position);
     this.accumulator = 0;
     this.monster.body.visible = true;
     document.getElementById('result-time')!.textContent = this.formatTime();
     document.getElementById('result-kills')!.textContent = String(this.combat.kills);
     document.getElementById('result-xp')!.textContent = String(this.combat.xp);
+    const won = outcome === 'victory';
+    document.getElementById('result-heading')!.textContent = won ? '三波挑战，通关！' : '小火焰，休息一下。';
+    document.getElementById('result-eyebrow')!.textContent = won ? 'CHALLENGE CLEARED' : 'EVERY SPROUT GETS ANOTHER CHANCE';
+    document.getElementById('result-message')!.textContent = won ? '走位、成长、冲锋，下一次挑战更高星级。' : '带着这次冒险的勇气，再出发吧。';
+    const summary = document.getElementById('result-challenge')!;
+    summary.hidden = !this.challenge;
+    if (this.challenge) {
+      const stars = this.challenge.stars(this.combat);
+      summary.textContent = won ? `${'★'.repeat(stars)}${'☆'.repeat(3 - stars)} · 冲锋 ${Math.min(this.combat.hornHits,HORN.goal)}/${HORN.goal} · 打断 ${Math.min(this.combat.interrupts,CHALLENGE.interruptGoal)}/${CHALLENGE.interruptGoal}` : `到达第 ${this.challenge.wave + 1} / ${CHALLENGE_WAVES.length} 波 · 冲锋 ${this.combat.hornHits} · 打断 ${this.combat.interrupts}`;
+    }
+    document.getElementById('gameover-screen')!.setAttribute('aria-label', won ? '挑战胜利' : '本局结束');
+    document.querySelector('.result-card')!.classList.toggle('victorious', won);
     document.getElementById('gameover-screen')!.hidden = false;
   }
 
@@ -514,14 +575,21 @@ export class Game {
   }
 
   private updateHUD() {
+    document.getElementById('party-status')!.hidden = !this.partyPrototype;
     const trialStatus = document.getElementById('trial-status')!;
     trialStatus.hidden = !this.combat.isTrial;
     document.getElementById('hud')!.classList.toggle('horn-trial', this.combat.isTrial);
     if (this.combat.isTrial) {
-      document.getElementById('trial-title')!.textContent = this.combat.hornHits >= HORN.goal ? '试炼目标达成 · 继续练习' : '冲锋犄角 · 开局已装备';
-      const progress = `冲锋命中 ${this.combat.hornHits}/${HORN.goal} · 打断 ${this.combat.interrupts}`;
+      const challenge = this.challenge;
+      const title = challenge ? `第 ${challenge.wave + 1}/${CHALLENGE_WAVES.length} 波 · ${challenge.phase === 'rest' ? '本波完成' : challenge.definition.title}` : this.combat.hornHits >= HORN.goal ? '试炼目标达成 · 继续练习' : '冲锋犄角 · 开局已装备';
+      const titleElement = document.getElementById('trial-title')!;
+      if (titleElement.textContent !== title) titleElement.textContent = title;
+      const progress = challenge ? `击败 ${challenge.defeated}/${challenge.definition.enemies.length} · 冲锋 ${Math.min(this.combat.hornHits,HORN.goal)}/${HORN.goal}` : `冲锋命中 ${this.combat.hornHits}/${HORN.goal} · 打断 ${this.combat.interrupts}`;
       const counter = document.getElementById('trial-progress')!;
       if (counter.textContent !== progress) counter.textContent = progress;
+      const hint = challenge ? `打断 ${this.combat.interrupts}/${CHALLENGE.interruptGoal} 可加星 · ${challenge.definition.hint}` : '黄线蓄力时侧移躲开；冲刺命中可打断，青环期间可反击';
+      const hintElement = document.getElementById('trial-hint')!;
+      if (hintElement.textContent !== hint) hintElement.textContent = hint;
     }
     const time = this.formatTime();
     if (this.timer.textContent !== time) this.timer.textContent = time;
@@ -530,7 +598,17 @@ export class Game {
     this.dashButton.classList.toggle('cooling', this.cooldown > 0);
     this.dashButton.setAttribute('aria-disabled', String(this.cooldown > 0));
     this.dashStatus.textContent = this.cooldown > 0 ? `${this.cooldown.toFixed(1)}s` : '就绪';
-    this.welcome.classList.toggle('faded', this.elapsed > 5 || this.distance > 8);
+    if (this.challenge) {
+      const resting = this.challenge.phase === 'rest';
+      if (resting) {
+        this.welcome.querySelector('h2')!.textContent = `第 ${this.challenge.wave + 1} 波完成！`;
+        this.welcome.querySelector('p')!.textContent = `${Math.ceil(this.challenge.restTime)} 秒后迎战下一波 · 靠近拾取经验`;
+      } else if (this.challenge.wave > 0) {
+        this.welcome.querySelector('h2')!.textContent = `第 ${this.challenge.wave + 1} 波 · ${this.challenge.definition.title}`;
+        this.welcome.querySelector('p')!.textContent = this.challenge.definition.hint;
+      }
+      this.welcome.classList.toggle('faded', !resting && this.challenge.waveTime > (this.challenge.wave === 0 ? 5 : 2));
+    } else this.welcome.classList.toggle('faded', this.elapsed > 5 || this.distance > 8);
     this.boundaryHint.hidden = Math.hypot(this.position.x, this.position.z) < WORLD_RADIUS - 1.2;
     const hp = this.combat.hp, maxHp = this.combat.maxHp;
     this.healthValue.textContent = `${hp} / ${maxHp}`;
@@ -554,6 +632,7 @@ export class Game {
     const player = this.monster.root.position;
     resize25DCamera(this.camera, window.innerWidth / Math.max(1, window.innerHeight), this.mode === 'menu');
     this.monster.updateView(window.innerHeight, this.camera.top - this.camera.bottom, this.mode === 'menu');
+    this.partyView.resize(window.innerHeight, this.camera.top - this.camera.bottom);
     if (this.mode === 'menu') {
       this.lookTarget.set(-3.2, 0.8, 0);
       this.monster.body.rotation.y = 0.55 + Math.sin(this.visualTime * 0.35) * 0.09;
@@ -567,6 +646,7 @@ export class Game {
     this.camera.position.copy(this.cameraTarget);
     // Position and look point share one smoothed anchor, so pitch never changes.
     this.camera.lookAt(this.cameraAnchor);
+    this.combatView.updateView(this.camera, window.innerHeight, this.camera.top - this.camera.bottom);
   }
 
   private frame = (time: number) => {
@@ -591,10 +671,12 @@ export class Game {
         this.monster.root.position.lerpVectors(this.previousPosition, this.position, this.accumulator / STEP);
         this.updateHUD();
         this.combatView.render(this.accumulator / STEP, this.visualTime, this.monster.root.position);
+        if (this.partyPrototype) this.partyView.render(this.accumulator / STEP, this.visualTime, this.combat.hurtFlash / 0.25);
         this.monster.body.visible = true;
       }
     this.monster.animate(renderDt, Math.min(1, this.velocity.length() / 4.6), this.dashRemaining > 0, this.visualTime, THREE.MathUtils.lerp(this.previousJump, this.jumpHeight, this.accumulator / STEP), this.combat.hurtFlash / 0.25);
       this.placeCamera(false, renderDt);
+      this.monster.root.visible = !this.partyPrototype || !this.partyView.hasPixelLeader;
       this.renderer.render(this.scene, this.camera);
     }
     if (this.mode === 'menu' || this.mode === 'playing') this.frameId = window.requestAnimationFrame(this.frame);
@@ -636,6 +718,12 @@ export class Game {
     return {
       mode: this.mode,
       ruleset: this.runRuleset,
+      outcome: this.outcome,
+      partyPrototype: this.partyPrototype,
+      party: this.party.inspect(),
+      partyVisual: this.partyView.inspect(),
+      enemyVisual: this.combatView.inspect(),
+      challenge: this.challenge?.inspect(this.combat),
       position: { x: this.position.x, z: this.position.z },
       movement: { ...this.input.movement },
       elapsed: this.elapsed, cooldown: this.cooldown, distance: this.distance,
@@ -661,6 +749,8 @@ export class Game {
     this.events.abort();
     this.input.dispose();
     this.monster.dispose();
+    this.partyView.dispose();
+    this.combatView.dispose();
     this.audio.dispose();
     const geometries = new Set<THREE.BufferGeometry>();
     const materials = new Set<THREE.Material>();

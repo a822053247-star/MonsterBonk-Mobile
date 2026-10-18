@@ -1,0 +1,74 @@
+
+> monsterbonk-mobile@0.4.0 test
+> playwright test --grep formal roster|companions follow|three independent|cover and range|only leader|existing upgrade choice|single joystick|pause, upgrade and background|prototype entry --reporter=line
+
+
+Running 18 tests using 1 worker
+
+
+
+(node:12248) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[1/18] [chromium] › tests\party-model.spec.ts:15:1 › formal roster starts with one, permits duplicates, caps three and supports future four
+[2/18] [chromium] › tests\party-model.spec.ts:28:1 › companions follow a moving leader around cover and remain separate within the boundary
+[3/18] [chromium] › tests\party-model.spec.ts:56:1 › three independent emitters use their own origin, target and cooldown without a duplicate player shot
+[4/18] [chromium] › tests\party-model.spec.ts:76:1 › cover and range are checked from each member rather than from the leader
+[5/18] [chromium] › tests\party-model.spec.ts:92:1 › only leader contact hurts shared HP, only leader collects XP, death freezes every emitter
+[6/18] [chromium] › tests\party-model.spec.ts:117:1 › existing upgrade choice freezes all attacks and central stats apply after picking
+[7/18] [chromium] › tests\party-ui.spec.ts:21:1 › single joystick moves the leader, partners follow and all three automatically attack
+  1) [chromium] › tests\party-ui.spec.ts:21:1 › single joystick moves the leader, partners follow and all three automatically attack 
+
+    Error: expect(received).toBeGreaterThan(expected)
+
+    Expected: > 1.6103728114720792
+    Received:   0.9666139644407776
+
+    Call Log:
+    - Timeout 8000ms exceeded while waiting on the predicate
+
+      32 |   await expect.poll(async () => (await state(page)).position.x).toBeGreaterThan(first.position.x + 1.5);
+      33 |   await page.mouse.up();
+    > 34 |   await expect.poll(async () => (await state(page)).party[1].x).toBeGreaterThan(first.party[1].x + 0.4);
+         |                                                                 ^
+      35 |   await page.evaluate(() => (window as unknown as Fixture).preview());
+      36 |   await expect.poll(async () => (await state(page)).party.every(m => m.shotsFired > 0)).toBe(true);
+      37 |   await expect.poll(async () => (await state(page)).combat.hits).toBeGreaterThan(0);
+        at E:\study\game\MonsterBonk Mobile\tests\party-ui.spec.ts:34:65
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\party-ui-single-joystick-m-8d0fc--three-automatically-attack-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\party-ui-single-joystick-m-8d0fc--three-automatically-attack-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\party-ui-single-joystick-m-8d0fc--three-automatically-attack-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\party-ui-single-joystick-m-8d0fc--three-automatically-attack-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+(node:51440) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[8/18] [chromium] › tests\party-ui.spec.ts:46:1 › pause, upgrade and background freeze the entire party; death and restart reset shared combat
+[9/18] [chromium] › tests\party-ui.spec.ts:76:1 › prototype entry and party HUD fit short phones and safe areas
+(node:21068) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[10/18] [webkit] › tests\party-model.spec.ts:15:1 › formal roster starts with one, permits duplicates, caps three and supports future four
+[11/18] [webkit] › tests\party-model.spec.ts:28:1 › companions follow a moving leader around cover and remain separate within the boundary
+[12/18] [webkit] › tests\party-model.spec.ts:56:1 › three independent emitters use their own origin, target and cooldown without a duplicate player shot
+[13/18] [webkit] › tests\party-model.spec.ts:76:1 › cover and range are checked from each member rather than from the leader
+[14/18] [webkit] › tests\party-model.spec.ts:92:1 › only leader contact hurts shared HP, only leader collects XP, death freezes every emitter
+[15/18] [webkit] › tests\party-model.spec.ts:117:1 › existing upgrade choice freezes all attacks and central stats apply after picking
+[16/18] [webkit] › tests\party-ui.spec.ts:21:1 › single joystick moves the leader, partners follow and all three automatically attack
+[17/18] [webkit] › tests\party-ui.spec.ts:46:1 › pause, upgrade and background freeze the entire party; death and restart reset shared combat
+[18/18] [webkit] › tests\party-ui.spec.ts:76:1 › prototype entry and party HUD fit short phones and safe areas
+  1 failed
+    [chromium] › tests\party-ui.spec.ts:21:1 › single joystick moves the leader, partners follow and all three automatically attack 
+  17 passed (1.1m)

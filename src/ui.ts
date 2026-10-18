@@ -23,20 +23,20 @@ const portrait = `<svg class="portrait" viewBox="0 0 80 80" aria-hidden="true"><
 
 export function createUI(root: HTMLElement) {
   root.innerHTML = `
-    <canvas id="game-canvas" aria-label="MonsterBonk Mobile 2.5D 游戏场景"></canvas>
+    <canvas id="game-canvas" aria-label="幻兽幸存者 2.5D 游戏场景"></canvas>
     <div class="vignette" aria-hidden="true"></div>
     <div id="damage-overlay" class="damage-overlay" aria-hidden="true"></div>
     <section id="menu" class="menu screen" aria-label="主菜单">
-      <header class="menu-header"><div class="studio-mark">${icon('leaf')}<span>MONSTERBONK <b>MOBILE</b></span></div><span class="version">MEADOW LITTLE MONSTERS <i></i> 04</span></header>
+      <header class="menu-header"><div class="studio-mark">${icon('leaf')}<span>幻兽幸存者 <b>MOBILE</b></span></div><span class="version">V4.0 <i></i> P1 编队原型</span></header>
       <div class="menu-copy">
         <div class="eyebrow"><span></span> 小小怪兽，大大冒险</div>
-        <h1>MONSTER<br/><span>BONK</span><em>MOBILE</em></h1>
-        <p class="menu-description">魔法已苏醒，草原不再安静。<br/>和焰绒一起，迎接小怪物们。</p>
-        <div class="menu-actions"><button id="start" class="primary">开始冒险 ${icon('arrow')}</button><button id="help" class="secondary" aria-label="操作指南">${icon('help')}<span>操作指南</span></button><button id="menu-settings" class="secondary settings-entry" aria-label="画质与声音设置">${icon('settings')}</button></div>
+        <h1>幻兽<br/><span>幸存者</span><em>MOBILE</em></h1>
+        <p class="menu-description">一只主控，两位伙伴，自动迎战。<br/>本次原型预置三兽，摇杆轻松走位。</p>
+        <div class="menu-actions"><button id="start-party" class="primary">三兽编队原型 ${icon('arrow')}</button><button id="help" class="secondary" aria-label="操作指南">${icon('help')}<span>操作指南</span></button><button id="menu-settings" class="secondary settings-entry" aria-label="画质与声音设置">${icon('settings')}</button></div>
         <div class="menu-hint"><span class="key">W A S D</span><span>或虚拟摇杆移动</span><span class="dot">·</span><span>随时来一小段冒险</span></div>
       </div>
       <div class="character-tag"><span class="tag-line"></span><div><small>MEET YOUR LITTLE MONSTER</small><strong>焰绒 <span>YANRONG</span></strong><p>一团勇敢又好奇的小火焰</p></div><span class="tag-star">✧</span></div>
-      <footer class="menu-footer"><span>${icon('compass')} 中央草场 <i>/</i> 第一章的起点</span><button id="start-trial" class="trial-entry">${icon('dash')} 犄角试炼 <small>开局装备 · 冲刺反制</small></button></footer>
+      <footer class="menu-footer" aria-label="旧版兼容回归入口"><button id="start" class="trial-entry practice-entry">单兽回归 <small>旧版</small></button><div class="mode-entries"><button id="start-trial" class="trial-entry practice-entry">${icon('dash')} 犄角试炼 <small>旧版 · 自由练习</small></button><button id="start-challenge" class="trial-entry">${icon('battle')} 三波闯关 <small>旧版 · 赢取星级</small></button></div></footer>
     </section>
     <section id="hud" class="hud screen" aria-label="游戏操作与状态" hidden>
       <div class="hud-top">
@@ -45,14 +45,15 @@ export function createUI(root: HTMLElement) {
         <div class="hud-actions"><button id="settings" class="icon-button" aria-label="画质与声音设置">${icon('settings')}</button><button id="fullscreen" class="icon-button" aria-label="切换全屏">${icon('expand')}</button><button id="pause" class="icon-button" aria-label="暂停游戏">${icon('pause')}</button></div>
       </div>
       <div id="welcome" class="welcome"><span class="eyebrow">A LITTLE SPARK OF MAGIC</span><h2>小小魔法，准备就绪。</h2><p>移动躲避敌人，焰绒会自动施法 · 靠近拾取经验</p></div>
-      <div id="trial-status" class="trial-status" hidden><strong id="trial-title">冲锋犄角 · 开局已装备</strong><span id="trial-progress" aria-live="polite"></span><small>黄线蓄力时侧移躲开<br/>冲刺命中可打断；青环期间可反击</small></div><div class="location-label"><span>01</span><div>中央草场<small>WINDSONG MEADOW</small></div></div>
+      <div id="party-status" class="party-status" hidden><strong>三兽编队 · 共享生命</strong><span>主控 焰绒 · 伙伴 泡泡螈 / 芽刺兽</span></div>
+      <div id="trial-status" class="trial-status" hidden><strong id="trial-title">冲锋犄角 · 开局已装备</strong><span id="trial-progress" aria-live="polite"></span><small id="trial-hint">黄线蓄力时侧移躲开；冲刺命中可打断，青环期间可反击</small></div><div class="location-label"><span>01</span><div>中央草场<small>WINDSONG MEADOW</small></div></div>
       <div class="movement-control"><div id="joystick" class="joystick" role="group" aria-label="虚拟摇杆：按住并拖动以移动"><span class="joystick-cross horizontal"></span><span class="joystick-cross vertical"></span><span class="joystick-knob"><span></span></span></div><span class="control-caption">移动 <b>W A S D</b></span></div>
       <div class="dash-control"><button id="dash" class="dash-button" aria-label="冲刺">${icon('dash')}<strong>冲刺</strong><span id="dash-status">就绪</span></button><span class="control-caption">轻点冲刺 <b>SPACE</b></span></div>
       <div id="boundary-hint" class="boundary-hint" hidden>草原边界 · 换个方向继续探索吧</div>
-      <div class="stage-note">2.5D 原型 <span>·</span> 焰绒与魔法</div>
+      <div class="stage-note">2.5D 原型 <span>·</span> 幻兽幸存者</div>
     </section>
     <section id="pause-screen" class="modal-screen" aria-label="暂停菜单" hidden><div class="modal pause-card"><div class="modal-symbol">${icon('leaf')}</div><span class="eyebrow">TAKE A LITTLE BREATH</span><h2>冒险，歇一小会。</h2><p id="pause-reason">草原会在这里等你。</p><button id="resume" class="primary">继续冒险 ${icon('arrow')}</button><button id="pause-settings" class="text-button">画质与声音</button><div class="pause-links"><button id="restart" class="text-button">重新开始</button><button id="back-menu" class="text-button">返回主菜单</button></div></div></section>
-    <section id="gameover-screen" class="modal-screen" aria-label="本局结束" hidden><div class="modal result-card"><div class="modal-symbol">${icon('spark')}</div><span class="eyebrow">EVERY SPROUT GETS ANOTHER CHANCE</span><h2>小火焰，休息一下。</h2><p>带着这次冒险的勇气，再出发吧。</p><div class="result-stats"><div><strong id="result-time">00:00</strong><span>生存时间</span></div><div><strong id="result-kills">0</strong><span>击败怪物</span></div><div><strong id="result-xp">0</strong><span>收集经验</span></div></div><button id="gameover-restart" class="primary">再来一次 ${icon('arrow')}</button><button id="gameover-menu" class="text-button">返回主菜单</button></div></section>
+    <section id="gameover-screen" class="modal-screen" aria-label="本局结束" hidden><div class="modal result-card"><div class="modal-symbol">${icon('spark')}</div><span id="result-eyebrow" class="eyebrow">EVERY SPROUT GETS ANOTHER CHANCE</span><h2 id="result-heading">小火焰，休息一下。</h2><p id="result-message">带着这次冒险的勇气，再出发吧。</p><div id="result-challenge" class="result-challenge" hidden></div><div class="result-stats"><div><strong id="result-time">00:00</strong><span>生存时间</span></div><div><strong id="result-kills">0</strong><span>击败怪物</span></div><div><strong id="result-xp">0</strong><span>收集经验</span></div></div><div class="result-actions"><button id="gameover-restart" class="primary">再来一次 ${icon('arrow')}</button><button id="gameover-menu" class="text-button">返回主菜单</button></div></div></section>
     <section id="upgrade-screen" class="upgrade-screen" role="dialog" aria-modal="true" aria-labelledby="upgrade-heading" hidden>
       <div id="upgrade-panel" class="upgrade-panel" tabindex="-1">
         <header class="upgrade-header"><div class="upgrade-emblem">${icon('leaf')}</div><div><span class="eyebrow">A LITTLE STRONGER, A LITTLE BRAVER</span><h2 id="upgrade-heading">新的魔法，正在发芽。</h2></div><button id="upgrade-menu" class="text-button">返回菜单</button></header>
@@ -61,7 +62,7 @@ export function createUI(root: HTMLElement) {
         <footer class="upgrade-footer"><span>${icon('spark')} <span id="upgrade-queue">本次选择后继续冒险</span></span><span>轻点卡牌选择 · 强化仅在本局生效</span></footer>
       </div>
     </section>
-    <section id="help-screen" class="modal-screen" aria-label="操作指南" hidden><div class="modal help-card"><button id="close-help" class="icon-button close-button" aria-label="关闭操作指南">${icon('close')}</button><span class="eyebrow">A SMALL FIELD GUIDE</span><h2>出发前，认识一下。</h2><div class="guide-row"><span>01</span><div><strong>走位与闪避</strong><p>左下角摇杆控制方向。电脑使用 WASD 或方向键。避开橙色出生预警圈。</p></div></div><div class="guide-row"><span>02</span><div><strong>来一小段冲刺</strong><p>轻点右下角冲刺，电脑按空格或 Shift。碰到敌人会受伤，受伤后短暂无敌。</p></div></div><div class="guide-row"><span>03</span><div><strong>收集经验，选择魔法</strong><p>自动施法击败敌人，靠近吸收经验。升级会暂停战斗，轻点卡牌叠加强化，也能习得环绕球与冲击波。</p></div></div><p class="guide-tip">手机请横屏。升级时摇杆会复位，选卡后请重新按住摇杆；同类百分比强化按基础值累加。</p></div></section>
+    <section id="help-screen" class="modal-screen" aria-label="操作指南" hidden><div class="modal help-card"><button id="close-help" class="icon-button close-button" aria-label="关闭操作指南">${icon('close')}</button><span class="eyebrow">A SMALL FIELD GUIDE</span><h2>出发前，认识一下。</h2><div class="guide-row"><span>01</span><div><strong>走位与闪避</strong><p>左下角摇杆控制方向。电脑使用 WASD 或方向键。避开橙色出生预警圈。</p></div></div><div class="guide-row"><span>02</span><div><strong>三兽同行</strong><p>主控焰绒由摇杆控制，泡泡螈与芽刺兽自动跟随和攻击。全队共享生命，仅主控受击；受伤后短暂无敌。</p></div></div><div class="guide-row"><span>03</span><div><strong>收集经验，选择魔法</strong><p>自动施法击败敌人，靠近吸收经验。升级会暂停战斗，轻点卡牌叠加强化，也能习得环绕球与冲击波。</p></div></div><p class="guide-tip">手机请横屏，摇杆是编队原型唯一战斗操作。升级后重新按住摇杆；底部三个旧版入口保留原操作。</p></div></section>
     <section id="settings-screen" class="modal-screen settings-screen" role="dialog" aria-modal="true" aria-labelledby="settings-heading" hidden>
       <div class="settings-card"><header><div><span class="eyebrow">MAKE YOURSELF AT HOME</span><h2 id="settings-heading">按你的节奏冒险</h2></div><button id="close-settings" class="icon-button" aria-label="关闭设置">${icon('close')}</button></header>
       <div class="settings-grid"><div class="graphics-setting"><label for="quality">画面品质</label><select id="quality"><option value="auto">自动 · 优先流畅</option><option value="battery">省电 · 30 帧目标</option><option value="high">清晰 · 60 帧目标</option></select><p id="quality-description">根据运行负载动态调整清晰度。</p><small>帧率为目标，实际表现取决于设备。</small></div>

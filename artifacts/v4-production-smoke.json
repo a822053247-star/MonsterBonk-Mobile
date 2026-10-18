@@ -1,0 +1,21 @@
+{
+  "passed": true,
+  "browser": "headless Chromium / software WebGL",
+  "actualPhoneTest": false,
+  "errors": [],
+  "failures": [],
+  "observations": [
+    {
+      "viewport": "844x390",
+      "hp": "100 / 100",
+      "kills": "4",
+      "time": "00:07"
+    },
+    {
+      "viewport": "568x320",
+      "hp": "100 / 100",
+      "kills": "2",
+      "time": "00:05"
+    }
+  ]
+}

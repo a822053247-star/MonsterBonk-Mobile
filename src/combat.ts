@@ -1,5 +1,6 @@
 import { Progression, SKILL_RULES, type SkillId } from './progression';
 import { HORN, POUNCE, type DashStep, type EnemyIntent, type Ruleset } from './trial';
+import type { PartySystem, SpeciesId } from './party';
 
 /** Combat owns no DOM/GPU state. Every clock and movement is measured in seconds. */
 export const COMBAT_LIMITS = { enemies: 48, projectiles: 24, orbs: 96, effects: 48, shockwaves: 2 } as const;
@@ -14,7 +15,7 @@ type Point = { x: number; z: number };
 type Obstacle = Point & { radius: number };
 type Moving = Point & { previousX: number; previousZ: number; active: boolean };
 export interface Enemy extends Moving { id: number; kind: EnemyKind; hp: number; age: number; spawnTime: number; flash: number; knockX: number; knockZ: number; facing: number; orbitCooldown: number; intent: EnemyIntent; intentTime: number; intentCooldown: number; aimX: number; aimZ: number; stagger: number; hornDash: number }
-export interface Projectile extends Moving { vx: number; vz: number; life: number; damage: number; distance: number }
+export interface Projectile extends Moving { vx: number; vz: number; life: number; damage: number; distance: number; sourceId?: number; species?: SpeciesId }
 export interface Shockwave { active: boolean; x: number; z: number; age: number; radius: number; previousRadius: number; maxRadius: number; damage: number; hitIds: Int32Array }
 export interface ExperienceOrb extends Moving { value: number; magnetized: boolean }
 export interface CombatEffect extends Point { active: boolean; time: number; duration: number; kind: 'hit' | 'death' | 'collect' | 'hurt'; enemyKind: EnemyKind }
@@ -33,6 +34,8 @@ export function segmentHit(ax: number, az: number, bx: number, bz: number, x: nu
 }
 
 export class Combat {
+  /** Optional P1 context; absent for all preserved legacy modes. */
+  party?: PartySystem;
   readonly enemies: Enemy[] = Array.from({ length: COMBAT_LIMITS.enemies }, () => ({ active: false, id: 0, kind: 'normal', hp: 0, x: 0, z: 0, previousX: 0, previousZ: 0, age: 0, spawnTime: 0, flash: 0, knockX: 0, knockZ: 0, facing: 0, orbitCooldown: 0, intent: 'chase', intentTime: 0, intentCooldown: 0, aimX: 0, aimZ: 1, stagger: 0, hornDash: 0 }));
   readonly projectiles: Projectile[] = Array.from({ length: COMBAT_LIMITS.projectiles }, () => ({ active: false, x: 0, z: 0, previousX: 0, previousZ: 0, vx: 0, vz: 0, life: 0, damage: 0, distance: 0 }));
   readonly orbs: ExperienceOrb[] = Array.from({ length: COMBAT_LIMITS.orbs }, () => ({ active: false, x: 0, z: 0, previousX: 0, previousZ: 0, value: 0, magnetized: false }));
@@ -68,7 +71,8 @@ export class Combat {
 
   constructor(private obstacles: readonly Obstacle[] = [], private boundary = 32.3, private random: () => number = Math.random, ruleset: Ruleset = 'classic') { this.ruleset = ruleset; this.progression = new Progression(random); }
 
-  get isTrial() { return this.ruleset === 'horn-trial'; }
+  get isTrial() { return this.ruleset !== 'classic'; }
+  get isChallenge() { return this.ruleset === 'horn-challenge'; }
   enemyMaxHp(kind: EnemyKind) { return this.isTrial && kind === 'fast' ? POUNCE.hp : ENEMY_TYPES[kind].hp; }
   get xp() { return this.progression.totalExperience; }
   get stats() { return this.progression.stats; }
@@ -80,11 +84,13 @@ export class Combat {
     if (!this.progression.pick(id)) return false;
     this.hp = Math.min(this.maxHp, this.hp + this.maxHp - previous.maxHp);
     this.fireClock *= previous.attackRateMultiplier / this.stats.attackRateMultiplier;
+    if (this.party) for (const member of this.party.members) member.attackCooldown *= previous.attackRateMultiplier / this.stats.attackRateMultiplier;
     if (previous.shockDamage === 0 && this.stats.shockDamage > 0) this.shockClock = 0;
     return true;
   }
 
   reset(ruleset: Ruleset = this.ruleset) {
+    if (this.party) this.party.reset(this.party.members.map(member => member.species));
     this.ruleset = ruleset;
     this.dashSerial = this.hornHits = this.hornKills = this.interrupts = 0;
     for (const pool of [this.enemies, this.projectiles, this.orbs, this.effects, this.shockwaves]) {
@@ -126,8 +132,22 @@ export class Combat {
     }
   }
 
-  findTarget(player: Point): Enemy | undefined {
-    let nearest: Enemy | undefined, best = (WEAPON.range * this.stats.rangeMultiplier) ** 2;
+  /** Finite encounters use the same pool, spawn warning, collision and enemy data. */
+  spawnEncounter(kind: EnemyKind, player: Point) {
+    for (let attempt = 0; attempt < 24; attempt++) {
+      const angle = this.random() * Math.PI * 2, distance = 6 + this.random() * 3;
+      const x = player.x + Math.sin(angle) * distance, z = player.z + Math.cos(angle) * distance;
+      const radius = ENEMY_TYPES[kind].radius;
+      if (Math.hypot(x, z) > this.boundary - radius - .2) continue;
+      if (this.obstacles.some(o => Math.hypot(x - o.x, z - o.z) < o.radius + radius + .3)) continue;
+      if (this.enemies.some(e => e.active && Math.hypot(x - e.x, z - e.z) < radius + ENEMY_TYPES[e.kind].radius + .3)) continue;
+      return this.spawn(kind, x, z);
+    }
+    return undefined;
+  }
+
+  findTarget(player: Point, range = WEAPON.range * this.stats.rangeMultiplier): Enemy | undefined {
+    let nearest: Enemy | undefined, best = range ** 2;
     for (const enemy of this.enemies) {
       if (!enemy.active || enemy.spawnTime > 0 || enemy.hp <= 0) continue;
       const squared = (enemy.x - player.x) ** 2 + (enemy.z - player.z) ** 2;
@@ -151,8 +171,8 @@ export class Combat {
     this.elapsed += dt;
     this.invulnerability = Math.max(0, this.invulnerability - dt);
     this.hurtFlash = Math.max(0, this.hurtFlash - dt);
-    this.spawnClock -= dt;
-    if (this.spawnClock <= 0) {
+    if (!this.isChallenge) this.spawnClock -= dt;
+    if (!this.isChallenge && this.spawnClock <= 0) {
       this.spawnNear(player);
       this.spawnClock += Math.max(0.5, 1.3 - this.elapsed * 0.006);
     }
@@ -222,23 +242,23 @@ export class Combat {
     }
 
     if (this.isTrial && dash?.active && this.dashSerial > 0) this.resolveHorn(player, dash);
-    const target = this.findTarget(player);
-    this.targetId = target?.id ?? 0;
-    this.fireClock = Math.max(0, this.fireClock - dt);
-    if (target && this.fireClock <= 1e-8) {
-      let available = 0;
-      for (const shot of this.projectiles) if (!shot.active) available++;
-      if (available >= this.stats.projectileCount) {
-        const x = target.x - player.x, z = target.z - player.z, length = Math.max(0.001, Math.hypot(x, z));
-        for (let i = 0; i < this.stats.projectileCount; i++) {
-          const shot = this.projectiles.find((candidate) => !candidate.active)!;
-          // Always retain a center shot: adding an even number of fan projectiles
-          // must not make every shot miss a lone target at maximum range.
-          const spread = i === 0 ? 0 : Math.ceil(i / 2) * (i % 2 ? 1 : -1) * 0.11;
-          const angle = Math.atan2(x / length, z / length) + spread;
-          Object.assign(shot, { active: true, x: player.x, z: player.z, previousX: player.x, previousZ: player.z, vx: Math.sin(angle) * WEAPON.speed, vz: Math.cos(angle) * WEAPON.speed, distance: 0, life: Math.max(WEAPON.lifetime, WEAPON.range * this.stats.rangeMultiplier / WEAPON.speed + 0.12), damage: WEAPON.damage * this.stats.damageMultiplier });
-          this.shotsFired++;
+    if (this.party) {
+      for (const member of this.party.members) {
+        const stats = this.party.statsFor(member, this.stats);
+        const target = this.findTarget(member, stats.range);
+        member.targetId = target?.id ?? 0;
+        member.attackCooldown = Math.max(0, member.attackCooldown - dt);
+        if (target && member.attackCooldown <= 1e-8 && this.fireBolts(member, target, stats.damage, stats.projectileCount, stats.range, member.id, member.species)) {
+          member.attackCooldown = stats.interval;
+          member.shotsFired += stats.projectileCount;
         }
+      }
+      this.targetId = this.party.leader.targetId;
+    } else {
+      const target = this.findTarget(player);
+      this.targetId = target?.id ?? 0;
+      this.fireClock = Math.max(0, this.fireClock - dt);
+      if (target && this.fireClock <= 1e-8 && this.fireBolts(player, target, WEAPON.damage * this.stats.damageMultiplier, this.stats.projectileCount, WEAPON.range * this.stats.rangeMultiplier)) {
         this.fireClock = WEAPON.interval / this.stats.attackRateMultiplier;
       }
     }
@@ -307,6 +327,23 @@ export class Combat {
         if (this.progression.awaitingChoice) break;
       }
     }
+  }
+
+  /** Shared pool + swept collision + damageEnemy for every controlled/partner bolt. */
+  private fireBolts(origin: Point, target: Enemy, damage: number, count: number, range: number, sourceId = 0, species?: SpeciesId) {
+    let available = 0;
+    for (const shot of this.projectiles) if (!shot.active) available++;
+    if (available < count) return false;
+    const x = target.x - origin.x, z = target.z - origin.z, length = Math.max(0.001, Math.hypot(x, z));
+    for (let i = 0; i < count; i++) {
+      const shot = this.projectiles.find(candidate => !candidate.active)!;
+      // Retain a center shot even for an even number of fan projectiles.
+      const spread = i === 0 ? 0 : Math.ceil(i / 2) * (i % 2 ? 1 : -1) * 0.11;
+      const angle = Math.atan2(x / length, z / length) + spread;
+      Object.assign(shot, { active: true, x: origin.x, z: origin.z, previousX: origin.x, previousZ: origin.z, vx: Math.sin(angle) * WEAPON.speed, vz: Math.cos(angle) * WEAPON.speed, distance: 0, life: Math.max(WEAPON.lifetime, range / WEAPON.speed + 0.12), damage, sourceId, species });
+      this.shotsFired++;
+    }
+    return true;
   }
 
   private updatePounce(enemy: Enemy, dt: number, dx: number, dz: number, distance: number) {
