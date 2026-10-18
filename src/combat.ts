@@ -1,4 +1,5 @@
 import { Progression, SKILL_RULES, type SkillId } from './progression';
+import { HORN, POUNCE, type DashStep, type EnemyIntent, type Ruleset } from './trial';
 
 /** Combat owns no DOM/GPU state. Every clock and movement is measured in seconds. */
 export const COMBAT_LIMITS = { enemies: 48, projectiles: 24, orbs: 96, effects: 48, shockwaves: 2 } as const;
@@ -12,7 +13,7 @@ export const WEAPON = { range: 10.5, interval: 0.44, speed: 18, damage: 18, life
 type Point = { x: number; z: number };
 type Obstacle = Point & { radius: number };
 type Moving = Point & { previousX: number; previousZ: number; active: boolean };
-export interface Enemy extends Moving { id: number; kind: EnemyKind; hp: number; age: number; spawnTime: number; flash: number; knockX: number; knockZ: number; facing: number; orbitCooldown: number }
+export interface Enemy extends Moving { id: number; kind: EnemyKind; hp: number; age: number; spawnTime: number; flash: number; knockX: number; knockZ: number; facing: number; orbitCooldown: number; intent: EnemyIntent; intentTime: number; intentCooldown: number; aimX: number; aimZ: number; stagger: number; hornDash: number }
 export interface Projectile extends Moving { vx: number; vz: number; life: number; damage: number; distance: number }
 export interface Shockwave { active: boolean; x: number; z: number; age: number; radius: number; previousRadius: number; maxRadius: number; damage: number; hitIds: Int32Array }
 export interface ExperienceOrb extends Moving { value: number; magnetized: boolean }
@@ -32,7 +33,7 @@ export function segmentHit(ax: number, az: number, bx: number, bz: number, x: nu
 }
 
 export class Combat {
-  readonly enemies: Enemy[] = Array.from({ length: COMBAT_LIMITS.enemies }, () => ({ active: false, id: 0, kind: 'normal', hp: 0, x: 0, z: 0, previousX: 0, previousZ: 0, age: 0, spawnTime: 0, flash: 0, knockX: 0, knockZ: 0, facing: 0, orbitCooldown: 0 }));
+  readonly enemies: Enemy[] = Array.from({ length: COMBAT_LIMITS.enemies }, () => ({ active: false, id: 0, kind: 'normal', hp: 0, x: 0, z: 0, previousX: 0, previousZ: 0, age: 0, spawnTime: 0, flash: 0, knockX: 0, knockZ: 0, facing: 0, orbitCooldown: 0, intent: 'chase', intentTime: 0, intentCooldown: 0, aimX: 0, aimZ: 1, stagger: 0, hornDash: 0 }));
   readonly projectiles: Projectile[] = Array.from({ length: COMBAT_LIMITS.projectiles }, () => ({ active: false, x: 0, z: 0, previousX: 0, previousZ: 0, vx: 0, vz: 0, life: 0, damage: 0, distance: 0 }));
   readonly orbs: ExperienceOrb[] = Array.from({ length: COMBAT_LIMITS.orbs }, () => ({ active: false, x: 0, z: 0, previousX: 0, previousZ: 0, value: 0, magnetized: false }));
   readonly effects: CombatEffect[] = Array.from({ length: COMBAT_LIMITS.effects }, () => ({ active: false, x: 0, z: 0, time: 0, duration: 0, kind: 'hit', enemyKind: 'normal' }));
@@ -59,9 +60,16 @@ export class Combat {
   private spawnClock = 2.6;
   private fireClock = 0;
   private nextId = 1;
+  private ruleset: Ruleset = 'classic';
+  private dashSerial = 0;
+  hornHits = 0;
+  hornKills = 0;
+  interrupts = 0;
 
-  constructor(private obstacles: readonly Obstacle[] = [], private boundary = 32.3, private random: () => number = Math.random) { this.progression = new Progression(random); }
+  constructor(private obstacles: readonly Obstacle[] = [], private boundary = 32.3, private random: () => number = Math.random, ruleset: Ruleset = 'classic') { this.ruleset = ruleset; this.progression = new Progression(random); }
 
+  get isTrial() { return this.ruleset === 'horn-trial'; }
+  enemyMaxHp(kind: EnemyKind) { return this.isTrial && kind === 'fast' ? POUNCE.hp : ENEMY_TYPES[kind].hp; }
   get xp() { return this.progression.totalExperience; }
   get stats() { return this.progression.stats; }
   get maxHp() { return this.stats.maxHp; }
@@ -76,7 +84,9 @@ export class Combat {
     return true;
   }
 
-  reset() {
+  reset(ruleset: Ruleset = this.ruleset) {
+    this.ruleset = ruleset;
+    this.dashSerial = this.hornHits = this.hornKills = this.interrupts = 0;
     for (const pool of [this.enemies, this.projectiles, this.orbs, this.effects, this.shockwaves]) {
       for (const item of pool) item.active = false;
     }
@@ -97,7 +107,7 @@ export class Combat {
   spawn(kind: EnemyKind, x: number, z: number, spawnTime = 0.75): Enemy | undefined {
     const enemy = this.enemies.find((candidate) => !candidate.active);
     if (!enemy) return;
-    Object.assign(enemy, { active: true, id: this.nextId++, kind, x, z, previousX: x, previousZ: z, hp: ENEMY_TYPES[kind].hp, age: 0, spawnTime, flash: 0, knockX: 0, knockZ: 0, facing: 0, orbitCooldown: 0 });
+    Object.assign(enemy, { active: true, id: this.nextId++, kind, x, z, previousX: x, previousZ: z, hp: this.enemyMaxHp(kind), age: 0, spawnTime, flash: 0, knockX: 0, knockZ: 0, facing: 0, orbitCooldown: 0, intent: 'chase', intentTime: 0, intentCooldown: 0, aimX: 0, aimZ: 1, stagger: 0, hornDash: 0 });
     this.spawned++;
     return enemy;
   }
@@ -130,8 +140,9 @@ export class Combat {
     return nearest;
   }
 
-  update(dt: number, player: Point) {
+  update(dt: number, player: Point, dash?: DashStep) {
     if (this.hp <= 0 || dt <= 0 || this.progression.awaitingChoice) return;
+    if (this.isTrial && dash?.active && dash.started) this.dashSerial++;
     this.previousAnchorX = this.anchorInitialized ? this.anchorX : player.x;
     this.previousAnchorZ = this.anchorInitialized ? this.anchorZ : player.z;
     this.anchorX = player.x;
@@ -182,12 +193,22 @@ export class Combat {
         }
       }
       const steeringLength = Math.max(1, Math.hypot(steerX, steerZ));
-      enemy.x += (steerX / steeringLength * type.speed + enemy.knockX) * dt;
-      enemy.z += (steerZ / steeringLength * type.speed + enemy.knockZ) * dt;
+      let moveX = steerX / steeringLength * type.speed, moveZ = steerZ / steeringLength * type.speed;
+      if (this.isTrial) {
+        enemy.stagger = Math.max(0, enemy.stagger - dt);
+        if (enemy.stagger > 0) { moveX = moveZ = 0; }
+        else if (enemy.kind === 'fast') {
+          this.updatePounce(enemy, dt, dx, dz, length);
+          if (enemy.intent === 'pounce') { moveX = enemy.aimX * POUNCE.speed; moveZ = enemy.aimZ * POUNCE.speed; }
+          else if (enemy.intent !== 'chase') { moveX = moveZ = 0; }
+        }
+      }
+      enemy.x += (moveX + enemy.knockX) * dt;
+      enemy.z += (moveZ + enemy.knockZ) * dt;
       const decay = Math.exp(-14 * dt);
       enemy.knockX *= decay;
       enemy.knockZ *= decay;
-      enemy.facing = Math.atan2(dx, dz);
+      enemy.facing = this.isTrial && (enemy.intent === 'windup' || enemy.intent === 'pounce') ? Math.atan2(enemy.aimX, enemy.aimZ) : Math.atan2(dx, dz);
       for (const obstacle of this.obstacles) {
         const ox = enemy.x - obstacle.x, oz = enemy.z - obstacle.z, distance = Math.hypot(ox, oz);
         const radius = type.radius + obstacle.radius;
@@ -200,6 +221,7 @@ export class Combat {
       if (boundaryDistance > limit) { enemy.x *= limit / boundaryDistance; enemy.z *= limit / boundaryDistance; }
     }
 
+    if (this.isTrial && dash?.active && this.dashSerial > 0) this.resolveHorn(player, dash);
     const target = this.findTarget(player);
     this.targetId = target?.id ?? 0;
     this.fireClock = Math.max(0, this.fireClock - dt);
@@ -254,8 +276,11 @@ export class Combat {
       let damage = 0;
       for (const enemy of this.enemies) {
         if (!enemy.active || enemy.spawnTime > 0) continue;
+        if (this.isTrial && (enemy.stagger > 0 || enemy.intent === 'windup' || enemy.intent === 'recover')) continue;
         const type = ENEMY_TYPES[enemy.kind];
-        if (Math.hypot(enemy.x - player.x, enemy.z - player.z) < type.radius + 0.62) damage = Math.max(damage, type.damage);
+        // Relative sweep catches a fast pounce crossing the player between ticks.
+        const pounceHit = this.isTrial && enemy.intent === 'pounce' && segmentHit(enemy.previousX - this.previousAnchorX, enemy.previousZ - this.previousAnchorZ, enemy.x - player.x, enemy.z - player.z, 0, 0, type.radius + 0.62) !== Infinity;
+        if (pounceHit || Math.hypot(enemy.x - player.x, enemy.z - player.z) < type.radius + 0.62) damage = Math.max(damage, type.damage);
       }
       if (damage > 0) {
         this.hp = Math.max(0, this.hp - damage);
@@ -281,6 +306,46 @@ export class Combat {
         this.effect(orb.x, orb.z, 'collect');
         if (this.progression.awaitingChoice) break;
       }
+    }
+  }
+
+  private updatePounce(enemy: Enemy, dt: number, dx: number, dz: number, distance: number) {
+    enemy.intentCooldown = Math.max(0, enemy.intentCooldown - dt);
+    if (enemy.intent === 'chase') {
+      if (enemy.intentCooldown === 0 && distance <= POUNCE.range) {
+        enemy.intent = 'windup'; enemy.intentTime = POUNCE.windup;
+        enemy.aimX = dx / distance; enemy.aimZ = dz / distance;
+      }
+      return;
+    }
+    enemy.intentTime = Math.max(0, enemy.intentTime - dt);
+    if (enemy.intentTime > 1e-8) return;
+    if (enemy.intent === 'windup') { enemy.intent = 'pounce'; enemy.intentTime = POUNCE.duration; }
+    else if (enemy.intent === 'pounce') { enemy.intent = 'recover'; enemy.intentTime = POUNCE.recovery; }
+    else { enemy.intent = 'chase'; enemy.intentCooldown = POUNCE.cooldown; }
+  }
+
+  private resolveHorn(player: Point, dash: DashStep) {
+    for (const enemy of this.enemies) {
+      if (!enemy.active || enemy.spawnTime > 0 || enemy.hornDash === this.dashSerial) continue;
+      const t = segmentHit(dash.fromX - enemy.previousX, dash.fromZ - enemy.previousZ, player.x - enemy.x, player.z - enemy.z, 0, 0, HORN.radius + ENEMY_TYPES[enemy.kind].radius);
+      if (t === Infinity) continue;
+      const px = dash.fromX + (player.x - dash.fromX) * t, pz = dash.fromZ + (player.z - dash.fromZ) * t;
+      const ex = enemy.previousX + (enemy.x - enemy.previousX) * t, ez = enemy.previousZ + (enemy.z - enemy.previousZ) * t;
+      if ((ex - px) * dash.dx + (ez - pz) * dash.dz < -0.2) continue;
+      if (this.obstacles.some(obstacle => segmentHit(px, pz, ex, ez, obstacle.x, obstacle.z, obstacle.radius) !== Infinity)) continue;
+      enemy.hornDash = this.dashSerial;
+      const interrupted = enemy.intent === 'windup' || enemy.intent === 'pounce';
+      this.damageEnemy(enemy, HORN.damage, dash.dx, dash.dz);
+      this.hornHits++;
+      if (!enemy.active) this.hornKills++;
+      if (interrupted) this.interrupts++;
+      if (enemy.active) {
+        enemy.knockX = dash.dx * HORN.knockback; enemy.knockZ = dash.dz * HORN.knockback;
+        enemy.stagger = HORN.stagger;
+        if (enemy.kind === 'fast') { enemy.intent = 'recover'; enemy.intentTime = POUNCE.recovery; }
+      }
+      this.effect(ex, ez, 'hit');
     }
   }
 
@@ -376,6 +441,7 @@ export class Combat {
       targetId: this.targetId, limits: COMBAT_LIMITS, maxHp: this.maxHp,
       progression: this.progression.inspect(),
       orbitAngle: this.orbitAngle,
+      trial: this.isTrial ? { organ: 'charge-horns', hits: this.hornHits, kills: this.hornKills, interrupts: this.interrupts, goal: HORN.goal, complete: this.hornHits >= HORN.goal, intents: this.enemies.filter(enemy => enemy.active).map(enemy => ({ id: enemy.id, state: enemy.intent, remaining: enemy.intentTime, aimX: enemy.aimX, aimZ: enemy.aimZ, stagger: enemy.stagger })) } : undefined,
       shockwaves: this.shockwaves.filter((wave) => wave.active).map((wave) => ({ x: wave.x, z: wave.z, radius: wave.radius, damage: wave.damage, age: wave.age })),
     };
   }

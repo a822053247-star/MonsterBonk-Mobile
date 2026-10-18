@@ -1,0 +1,23 @@
+{
+  "environment": "Windows desktop browser emulation; no physical phone test or FPS claim",
+  "results": [
+    {
+      "browser": "chromium",
+      "viewport": "844x390",
+      "diagnosticsAbsent": true,
+      "trialStartRestartAndClassicReturn": true,
+      "autoAttackKillObserved": true,
+      "pausedTimerFrozen": true,
+      "errors": []
+    },
+    {
+      "browser": "webkit",
+      "viewport": "844x390",
+      "diagnosticsAbsent": true,
+      "trialStartRestartAndClassicReturn": true,
+      "autoAttackKillObserved": true,
+      "pausedTimerFrozen": true,
+      "errors": []
+    }
+  ]
+}

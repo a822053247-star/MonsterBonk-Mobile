@@ -36,7 +36,7 @@ export function createUI(root: HTMLElement) {
         <div class="menu-hint"><span class="key">W A S D</span><span>或虚拟摇杆移动</span><span class="dot">·</span><span>随时来一小段冒险</span></div>
       </div>
       <div class="character-tag"><span class="tag-line"></span><div><small>MEET YOUR LITTLE MONSTER</small><strong>焰绒 <span>YANRONG</span></strong><p>一团勇敢又好奇的小火焰</p></div><span class="tag-star">✧</span></div>
-      <footer class="menu-footer"><span>${icon('compass')} 中央草场 <i>/</i> 第一章的起点</span><span>2.5D 原型 <b>·</b> 焰绒与魔法</span></footer>
+      <footer class="menu-footer"><span>${icon('compass')} 中央草场 <i>/</i> 第一章的起点</span><button id="start-trial" class="trial-entry">${icon('dash')} 犄角试炼 <small>开局装备 · 冲刺反制</small></button></footer>
     </section>
     <section id="hud" class="hud screen" aria-label="游戏操作与状态" hidden>
       <div class="hud-top">
@@ -45,7 +45,7 @@ export function createUI(root: HTMLElement) {
         <div class="hud-actions"><button id="settings" class="icon-button" aria-label="画质与声音设置">${icon('settings')}</button><button id="fullscreen" class="icon-button" aria-label="切换全屏">${icon('expand')}</button><button id="pause" class="icon-button" aria-label="暂停游戏">${icon('pause')}</button></div>
       </div>
       <div id="welcome" class="welcome"><span class="eyebrow">A LITTLE SPARK OF MAGIC</span><h2>小小魔法，准备就绪。</h2><p>移动躲避敌人，焰绒会自动施法 · 靠近拾取经验</p></div>
-      <div class="location-label"><span>01</span><div>中央草场<small>WINDSONG MEADOW</small></div></div>
+      <div id="trial-status" class="trial-status" hidden><strong id="trial-title">冲锋犄角 · 开局已装备</strong><span id="trial-progress" aria-live="polite"></span><small>黄线蓄力时侧移躲开<br/>冲刺命中可打断；青环期间可反击</small></div><div class="location-label"><span>01</span><div>中央草场<small>WINDSONG MEADOW</small></div></div>
       <div class="movement-control"><div id="joystick" class="joystick" role="group" aria-label="虚拟摇杆：按住并拖动以移动"><span class="joystick-cross horizontal"></span><span class="joystick-cross vertical"></span><span class="joystick-knob"><span></span></span></div><span class="control-caption">移动 <b>W A S D</b></span></div>
       <div class="dash-control"><button id="dash" class="dash-button" aria-label="冲刺">${icon('dash')}<strong>冲刺</strong><span id="dash-status">就绪</span></button><span class="control-caption">轻点冲刺 <b>SPACE</b></span></div>
       <div id="boundary-hint" class="boundary-hint" hidden>草原边界 · 换个方向继续探索吧</div>

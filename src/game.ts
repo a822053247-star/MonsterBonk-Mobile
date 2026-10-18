@@ -9,6 +9,7 @@ import type { SkillId } from './progression';
 import { AdaptiveQuality, loadPreferences, savePreferences, type QualityMode } from './quality';
 import { GameAudio } from './audio';
 import { resize25DCamera, screenToGround, VIEW_25D } from './camera-25d';
+import { HORN, type DashStep, type Ruleset } from './trial';
 
 type Mode = 'menu' | 'playing' | 'paused' | 'gameover' | 'upgrading' | 'settings';
 const STEP = 1 / 60;
@@ -34,6 +35,9 @@ export class Game {
   private combatView: CombatView;
   private input: Input;
   private mode: Mode = 'menu';
+  private runRuleset: Ruleset = 'classic';
+  private trialHornMounted = false;
+  private dashAttack: DashStep = { active: false, started: false, fromX: 0, fromZ: 0, dx: 0, dz: 1 };
   private position = new THREE.Vector3();
   private previousPosition = new THREE.Vector3();
   private velocity = new THREE.Vector2();
@@ -119,7 +123,8 @@ export class Game {
       this.preferences.sound = (document.getElementById('sound-toggle') as HTMLInputElement).checked;
       this.audio.configure(this.preferences.music, this.preferences.sound); this.saveSettings();
     }, options);
-    click('start', () => this.start());
+    click('start', () => this.start('classic'));
+    click('start-trial', () => this.start('horn-trial'));
     click('pause', () => this.pause('草原会在这里等你。'));
     click('resume', () => this.resume());
     click('back-menu', () => this.showMenu());
@@ -241,8 +246,9 @@ export class Game {
     else this.wake();
   }
 
-  private start() {
+  private start(ruleset: Ruleset = this.runRuleset) {
     if (this.portrait || this.contextLost) return;
+    this.runRuleset = ruleset;
     this.audio.setActive(true); this.audio.unlock();
     this.position.set(0, 0, 0);
     this.previousPosition.copy(this.position);
@@ -251,7 +257,11 @@ export class Game {
     this.facing = 0;
     this.jumpHeight = this.previousJump = this.jumpVelocity = 0;
     this.elapsed = this.cooldown = this.dashRemaining = this.distance = 0;
-    this.combat.reset();
+    this.combat.reset(ruleset);
+    if (this.trialHornMounted) this.monster.unequipOrgan('head');
+    this.trialHornMounted = ruleset === 'horn-trial';
+    if (this.trialHornMounted) this.monster.equipOrgan('charge-horns');
+    for (const trail of this.trails) (trail.mesh.material as THREE.MeshBasicMaterial).color.set(this.combat.isTrial ? '#ffd58a' : '#e5f2b2');
     this.monster.resetVisual();
     this.hideUpgrade();
     this.combatView.clear();
@@ -267,6 +277,8 @@ export class Game {
     document.getElementById('gameover-screen')!.hidden = true;
     (document.activeElement as HTMLElement | null)?.blur();
     this.welcome.classList.remove('faded');
+    this.welcome.querySelector('h2')!.textContent = this.combat.isTrial ? '犄角已就绪，冲出一条路。' : '小小魔法，准备就绪。';
+    this.welcome.querySelector('p')!.textContent = this.combat.isTrial ? '冲刺命中可击退和打断 · 留意黄色扑击预警线' : '移动躲避敌人，焰绒会自动施法 · 靠近拾取经验';
     this.accumulator = 0;
     this.placeCamera(true);
     this.updateHUD();
@@ -298,6 +310,9 @@ export class Game {
   }
 
   private showMenu() {
+    this.runRuleset = 'classic';
+    if (this.trialHornMounted) this.monster.unequipOrgan('head');
+    this.trialHornMounted = false;
     this.monster.resetVisual();
     this.mode = 'menu';
     this.jumpHeight = this.previousJump = this.jumpVelocity = 0;
@@ -307,7 +322,7 @@ export class Game {
     this.monster.root.position.copy(this.position);
     this.velocity.set(0, 0);
     this.dashRemaining = 0;
-    this.combat.reset();
+    this.combat.reset('classic');
     this.hideUpgrade();
     this.combatView.clear();
     this.combatView.group.visible = false;
@@ -355,6 +370,7 @@ export class Game {
     // All simulation stays on XZ; only visuals use height, including cosmetic J.
     const movement = screenToGround(screenInput.x, screenInput.y, this.groundInput);
     const magnitude = Math.hypot(movement.x, movement.y);
+    this.dashAttack.started = false;
     this.elapsed += dt;
     this.cooldown = Math.max(0, this.cooldown - dt);
     this.dashRemaining = Math.max(0, this.dashRemaining - dt);
@@ -364,6 +380,7 @@ export class Game {
       this.dashDirection.normalize();
       this.cooldown = DASH_COOLDOWN;
       this.dashRemaining = 0.19;
+      this.dashAttack.started = true;
       this.audio.play('dash');
     }
     const dashing = this.dashRemaining > 0;
@@ -412,7 +429,10 @@ export class Game {
       }
     });
     const shots = this.combat.shotsFired, hits = this.combat.hits, collected = this.combat.collected, hp = this.combat.hp;
-    this.combat.update(dt, this.position);
+    this.dashAttack.active = dashing;
+    this.dashAttack.fromX = this.previousPosition.x; this.dashAttack.fromZ = this.previousPosition.z;
+    this.dashAttack.dx = this.dashDirection.x; this.dashAttack.dz = this.dashDirection.y;
+    this.combat.update(dt, this.position, this.dashAttack);
     if (this.combat.shotsFired > shots) this.audio.play('cast');
     if (this.combat.hits > hits) this.audio.play('hit');
     if (this.combat.collected > collected) this.audio.play('collect');
@@ -494,6 +514,15 @@ export class Game {
   }
 
   private updateHUD() {
+    const trialStatus = document.getElementById('trial-status')!;
+    trialStatus.hidden = !this.combat.isTrial;
+    document.getElementById('hud')!.classList.toggle('horn-trial', this.combat.isTrial);
+    if (this.combat.isTrial) {
+      document.getElementById('trial-title')!.textContent = this.combat.hornHits >= HORN.goal ? '试炼目标达成 · 继续练习' : '冲锋犄角 · 开局已装备';
+      const progress = `冲锋命中 ${this.combat.hornHits}/${HORN.goal} · 打断 ${this.combat.interrupts}`;
+      const counter = document.getElementById('trial-progress')!;
+      if (counter.textContent !== progress) counter.textContent = progress;
+    }
     const time = this.formatTime();
     if (this.timer.textContent !== time) this.timer.textContent = time;
     const ready = 1 - this.cooldown / DASH_COOLDOWN;
@@ -606,6 +635,7 @@ export class Game {
   inspect() {
     return {
       mode: this.mode,
+      ruleset: this.runRuleset,
       position: { x: this.position.x, z: this.position.z },
       movement: { ...this.input.movement },
       elapsed: this.elapsed, cooldown: this.cooldown, distance: this.distance,

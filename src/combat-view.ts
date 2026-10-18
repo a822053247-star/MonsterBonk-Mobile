@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { Combat, COMBAT_LIMITS, ENEMY_TYPES } from './combat';
 import { SKILL_RULES } from './progression';
+import { POUNCE } from './trial';
 
 /** All enemies and effects use shared instanced batches: no per-kill GPU allocations. */
 export class CombatView {
@@ -29,6 +30,9 @@ export class CombatView {
   private boltTrails: THREE.InstancedMesh;
   private dissolving: THREE.InstancedMesh;
   private waveRings: THREE.InstancedMesh;
+  private pounceLanes: THREE.InstancedMesh;
+  private pounceArrows: THREE.InstancedMesh;
+  private recoveryRings: THREE.InstancedMesh;
 
   constructor(private combat: Combat) {
     const lambert = (color: string) => new THREE.MeshLambertMaterial({ color, flatShading: true });
@@ -65,6 +69,10 @@ export class CombatView {
     this.orbitCores = make(sphere, basic('#effffe'), SKILL_RULES.maxOrbitBalls);
     this.orbitPath = make(new THREE.RingGeometry(0.993, 1, 64), new THREE.MeshBasicMaterial({ color: '#b8edf0', transparent: true, opacity: 0.3, side: THREE.DoubleSide, depthWrite: false }), 1);
     this.waveRings = make(new THREE.RingGeometry(0.9, 1, 48), new THREE.MeshBasicMaterial({ color: '#e9f5b0', transparent: true, opacity: 0.65, side: THREE.DoubleSide, depthWrite: false }), COMBAT_LIMITS.shockwaves);
+    this.pounceLanes = make(plane, new THREE.MeshBasicMaterial({ color: '#ffad43', transparent: true, opacity: 0.48, side: THREE.DoubleSide, depthWrite: false }), COMBAT_LIMITS.enemies);
+    this.pounceArrows = make(new THREE.CircleGeometry(1, 3), new THREE.MeshBasicMaterial({ color: '#ffef9c', side: THREE.DoubleSide, depthWrite: false }), COMBAT_LIMITS.enemies);
+    this.recoveryRings = make(ring, new THREE.MeshBasicMaterial({ color: '#a5f5da', transparent: true, opacity: 0.7, side: THREE.DoubleSide, depthWrite: false }), COMBAT_LIMITS.enemies);
+    this.pounceLanes.visible = this.pounceArrows.visible = this.recoveryRings.visible = false;
     // Allocate color attributes before the first render, including empty pooled batches.
     for (const mesh of [this.body, this.armor, this.sparks, this.dissolving]) mesh.setColorAt(0, this.color.set('#ffffff'));
     this.group.visible = false;
@@ -94,7 +102,7 @@ export class CombatView {
       const tall = enemy.kind === 'fast' ? 1.55 : enemy.kind === 'tank' ? 1.15 : 1.3;
       const bob = Math.abs(Math.sin(enemy.age * (enemy.kind === 'fast' ? 14 : 7))) * 0.07;
       const y = size * tall + bob;
-      const color = enemy.flash > 0 ? '#fff5d6' : type.color;
+      const color = enemy.flash > 0 ? '#fff5d6' : this.combat.isTrial && enemy.intent === 'windup' ? '#ffba5c' : this.combat.isTrial && enemy.intent === 'recover' ? '#a3ccb5' : type.color;
       this.put(this.body, x, y, z, size, size * tall, size, 0, enemy.facing, 0, color);
       this.put(this.shadows, x, 0.04, z, size * 1.1, size * 0.8, 1, -Math.PI / 2);
       const fx = Math.sin(enemy.facing), fz = Math.cos(enemy.facing);
@@ -104,12 +112,21 @@ export class CombatView {
         this.put(this.horns, x + side * fz * size * 0.6, y + size * tall * 0.85, z - side * fx * size * 0.6, size * 0.22, hornSize, size * 0.22, 0, enemy.facing, -side * 0.3);
       }
       if (enemy.kind === 'tank') this.put(this.armor, x - fx * size * 0.25, y + size * 0.45, z - fz * size * 0.25, size * 1.08, size * 0.85, size * 0.95, 0, enemy.facing, 0, enemy.flash > 0 ? '#fff5d6' : '#536e83');
-      if (enemy.hp < type.hp) {
-        const fraction = enemy.hp / type.hp, width = size * 2;
+      const maxHp = this.combat.enemyMaxHp(enemy.kind);
+      if (enemy.hp < maxHp) {
+        const fraction = enemy.hp / maxHp, width = size * 2;
         this.put(this.healthBack, x, y + size * tall + 0.35, z, width, 0.075, 1, -0.55);
         this.put(this.healthFill, x - width * (1 - fraction) / 2, y + size * tall + 0.355, z + 0.01, width * fraction, 0.052, 1, -0.55);
       }
       if (enemy.id === this.combat.targetId) this.put(this.target, x, 0.055, z, size + 0.2, size + 0.2, 1, -Math.PI / 2, 0, time);
+      if (this.combat.isTrial) {
+        if (enemy.intent === 'windup' || enemy.intent === 'pounce') {
+          const length = POUNCE.speed * POUNCE.duration, angle = Math.atan2(enemy.aimX, enemy.aimZ);
+          this.put(this.pounceLanes, x + enemy.aimX * length / 2, 0.075, z + enemy.aimZ * length / 2, 0.9, length, 1, -Math.PI / 2, 0, angle);
+          this.put(this.pounceArrows, x + enemy.aimX * length, 0.085, z + enemy.aimZ * length, 0.4, 0.4, 1, -Math.PI / 2, 0, angle - Math.PI / 2);
+        }
+        if (enemy.intent === 'recover' || enemy.stagger > 0) this.put(this.recoveryRings, x, 0.08, z, size + 0.3, size + 0.3, 1, -Math.PI / 2);
+      }
     }
     for (const shot of this.combat.projectiles) {
       if (!shot.active) continue;
@@ -168,6 +185,7 @@ export class CombatView {
       mesh.instanceMatrix.needsUpdate = true;
       if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
     }
+    for (const mesh of [this.pounceLanes, this.pounceArrows, this.recoveryRings]) mesh.visible = mesh.count > 0;
   }
 
   clear() { for (const mesh of this.batches) mesh.count = 0; }
