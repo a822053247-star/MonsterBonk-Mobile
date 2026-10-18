@@ -1,0 +1,231 @@
+{
+  "errors": [],
+  "simulationFrozen": true,
+  "chosen": "orbit",
+  "before": {
+    "mode": "upgrading",
+    "position": {
+      "x": 6.566574979925181,
+      "z": 10.990192622439826
+    },
+    "movement": {
+      "x": 0,
+      "y": 0
+    },
+    "elapsed": 10.783333333333449,
+    "cooldown": 0,
+    "distance": 28.283057216619568,
+    "portrait": false,
+    "rendering": false,
+    "drawCalls": 57,
+    "triangles": 52666,
+    "geometries": 26,
+    "textures": 1,
+    "combat": {
+      "hp": 100,
+      "kills": 4,
+      "xp": 8,
+      "shotsFired": 13,
+      "hits": 11,
+      "spawned": 7,
+      "collected": 3,
+      "invulnerability": 0,
+      "enemies": [
+        {
+          "id": 3,
+          "kind": "tank",
+          "x": -1.5941996724369634,
+          "z": 8.892363877461497,
+          "hp": 10,
+          "spawning": false
+        },
+        {
+          "id": 7,
+          "kind": "tank",
+          "x": 4.338397010174223,
+          "z": 18.649795806784493,
+          "hp": 100,
+          "spawning": true
+        },
+        {
+          "id": 5,
+          "kind": "normal",
+          "x": 9.670986479694427,
+          "z": -2.610626993151094,
+          "hp": 30,
+          "spawning": false
+        }
+      ],
+      "projectiles": 1,
+      "orbs": [
+        {
+          "x": -0.6616804239814189,
+          "z": 9.534275696738053,
+          "value": 2
+        }
+      ],
+      "effects": 2,
+      "targetId": 3,
+      "limits": {
+        "enemies": 48,
+        "projectiles": 24,
+        "orbs": 96,
+        "effects": 48,
+        "shockwaves": 2
+      },
+      "maxHp": 100,
+      "progression": {
+        "level": 2,
+        "experience": 0,
+        "totalExperience": 8,
+        "threshold": 12,
+        "pendingChoices": 1,
+        "choiceLevel": 2,
+        "offers": [
+          "orbit",
+          "shockwave",
+          "haste"
+        ],
+        "ranks": {
+          "damage": 0,
+          "haste": 0,
+          "multishot": 0,
+          "vitality": 0,
+          "movement": 0,
+          "range": 0,
+          "orbit": 0,
+          "shockwave": 0
+        },
+        "stats": {
+          "damageMultiplier": 1,
+          "attackRateMultiplier": 1,
+          "projectileCount": 1,
+          "maxHp": 100,
+          "moveMultiplier": 1,
+          "rangeMultiplier": 1,
+          "orbitCount": 0,
+          "orbitDamage": 0,
+          "orbitRadius": 0,
+          "orbitSpeed": 0,
+          "shockDamage": 0,
+          "shockRadius": 0,
+          "shockInterval": 0
+        },
+        "maxLevel": 35
+      },
+      "orbitAngle": 0,
+      "shockwaves": []
+    }
+  },
+  "afterChoice": {
+    "mode": "playing",
+    "position": {
+      "x": 6.566574979925181,
+      "z": 10.990192622439826
+    },
+    "movement": {
+      "x": 0,
+      "y": 0
+    },
+    "elapsed": 10.783333333333449,
+    "cooldown": 0,
+    "distance": 28.283057216619568,
+    "portrait": false,
+    "rendering": true,
+    "drawCalls": 57,
+    "triangles": 52666,
+    "geometries": 26,
+    "textures": 1,
+    "combat": {
+      "hp": 100,
+      "kills": 4,
+      "xp": 8,
+      "shotsFired": 13,
+      "hits": 11,
+      "spawned": 7,
+      "collected": 3,
+      "invulnerability": 0,
+      "enemies": [
+        {
+          "id": 3,
+          "kind": "tank",
+          "x": -1.5941996724369634,
+          "z": 8.892363877461497,
+          "hp": 10,
+          "spawning": false
+        },
+        {
+          "id": 7,
+          "kind": "tank",
+          "x": 4.338397010174223,
+          "z": 18.649795806784493,
+          "hp": 100,
+          "spawning": true
+        },
+        {
+          "id": 5,
+          "kind": "normal",
+          "x": 9.670986479694427,
+          "z": -2.610626993151094,
+          "hp": 30,
+          "spawning": false
+        }
+      ],
+      "projectiles": 1,
+      "orbs": [
+        {
+          "x": -0.6616804239814189,
+          "z": 9.534275696738053,
+          "value": 2
+        }
+      ],
+      "effects": 2,
+      "targetId": 3,
+      "limits": {
+        "enemies": 48,
+        "projectiles": 24,
+        "orbs": 96,
+        "effects": 48,
+        "shockwaves": 2
+      },
+      "maxHp": 100,
+      "progression": {
+        "level": 2,
+        "experience": 0,
+        "totalExperience": 8,
+        "threshold": 12,
+        "pendingChoices": 0,
+        "choiceLevel": 3,
+        "offers": [],
+        "ranks": {
+          "damage": 0,
+          "haste": 0,
+          "multishot": 0,
+          "vitality": 0,
+          "movement": 0,
+          "range": 0,
+          "orbit": 1,
+          "shockwave": 0
+        },
+        "stats": {
+          "damageMultiplier": 1,
+          "attackRateMultiplier": 1,
+          "projectileCount": 1,
+          "maxHp": 100,
+          "moveMultiplier": 1,
+          "rangeMultiplier": 1,
+          "orbitCount": 1,
+          "orbitDamage": 12,
+          "orbitRadius": 2.2,
+          "orbitSpeed": 2.4,
+          "shockDamage": 0,
+          "shockRadius": 0,
+          "shockInterval": 0
+        },
+        "maxLevel": 35
+      },
+      "orbitAngle": 0,
+      "shockwaves": []
+    }
+  }
+}

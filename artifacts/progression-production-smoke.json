@@ -1,0 +1,11 @@
+{
+  "errors": [],
+  "diagnosticsAbsent": true,
+  "before": "Lv. 01",
+  "values": {
+    "level": "Lv. 01",
+    "xp": "0 / 8",
+    "health": "100 / 100",
+    "upgradeHidden": true
+  }
+}

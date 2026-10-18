@@ -1,0 +1,174 @@
+import * as THREE from 'three';
+import { Combat, COMBAT_LIMITS, ENEMY_TYPES } from './combat';
+import { SKILL_RULES } from './progression';
+
+/** All enemies and effects use shared instanced batches: no per-kill GPU allocations. */
+export class CombatView {
+  readonly group = new THREE.Group();
+  private dummy = new THREE.Object3D();
+  private color = new THREE.Color();
+  private batches: THREE.InstancedMesh[] = [];
+  private body: THREE.InstancedMesh;
+  private eyes: THREE.InstancedMesh;
+  private horns: THREE.InstancedMesh;
+  private armor: THREE.InstancedMesh;
+  private shadows: THREE.InstancedMesh;
+  private warnings: THREE.InstancedMesh;
+  private healthBack: THREE.InstancedMesh;
+  private healthFill: THREE.InstancedMesh;
+  private bolts: THREE.InstancedMesh;
+  private boltCores: THREE.InstancedMesh;
+  private gems: THREE.InstancedMesh;
+  private gemRings: THREE.InstancedMesh;
+  private sparks: THREE.InstancedMesh;
+  private target: THREE.InstancedMesh;
+  private orbitBalls: THREE.InstancedMesh;
+  private orbitCores: THREE.InstancedMesh;
+  private orbitPath: THREE.InstancedMesh;
+  detail = 4;
+  private boltTrails: THREE.InstancedMesh;
+  private dissolving: THREE.InstancedMesh;
+  private waveRings: THREE.InstancedMesh;
+
+  constructor(private combat: Combat) {
+    const lambert = (color: string) => new THREE.MeshLambertMaterial({ color, flatShading: true });
+    const basic = (color: string) => new THREE.MeshBasicMaterial({ color });
+    const make = (geometry: THREE.BufferGeometry, material: THREE.Material, capacity: number) => {
+      const mesh = new THREE.InstancedMesh(geometry, material, capacity);
+      mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+      // Batches move throughout the whole arena; a stale initial bound must not cull them.
+      mesh.frustumCulled = false;
+      mesh.count = 0;
+      this.batches.push(mesh);
+      this.group.add(mesh);
+      return mesh;
+    };
+    const sphere = new THREE.IcosahedronGeometry(1, 1), ring = new THREE.RingGeometry(0.88, 1, 24);
+    const plane = new THREE.PlaneGeometry(1, 1);
+    this.body = make(sphere, lambert('#ffffff'), COMBAT_LIMITS.enemies);
+    this.eyes = make(new THREE.SphereGeometry(1, 6, 4), basic('#253e38'), COMBAT_LIMITS.enemies * 2);
+    this.horns = make(new THREE.ConeGeometry(1, 2, 5), lambert('#fff0c4'), COMBAT_LIMITS.enemies * 2);
+    this.armor = make(new THREE.DodecahedronGeometry(1), lambert('#ffffff'), COMBAT_LIMITS.enemies);
+    this.shadows = make(new THREE.CircleGeometry(1, 16), new THREE.MeshBasicMaterial({ color: '#25472d', transparent: true, opacity: 0.18, depthWrite: false }), COMBAT_LIMITS.enemies);
+    this.warnings = make(ring, new THREE.MeshBasicMaterial({ color: '#ffbb89', transparent: true, opacity: 0.7, side: THREE.DoubleSide, depthWrite: false }), COMBAT_LIMITS.enemies);
+    this.healthBack = make(plane, basic('#653d3b'), COMBAT_LIMITS.enemies);
+    this.healthFill = make(plane, basic('#f5e8b0'), COMBAT_LIMITS.enemies);
+    this.boltTrails = make(sphere, new THREE.MeshBasicMaterial({ color: '#cfb7ff', transparent: true, opacity: 0.42, depthWrite: false }), COMBAT_LIMITS.projectiles * 5);
+    this.dissolving = make(sphere, lambert('#ffffff'), COMBAT_LIMITS.effects * 4);
+    this.bolts = make(sphere, new THREE.MeshBasicMaterial({ color: '#a594f2', transparent: true, opacity: 0.6, depthWrite: false }), COMBAT_LIMITS.projectiles);
+    this.boltCores = make(sphere, basic('#fff6d6'), COMBAT_LIMITS.projectiles);
+    this.gems = make(new THREE.OctahedronGeometry(1), basic('#91f7d8'), COMBAT_LIMITS.orbs);
+    this.gemRings = make(ring, new THREE.MeshBasicMaterial({ color: '#bdfbdf', transparent: true, opacity: 0.45, side: THREE.DoubleSide, depthWrite: false }), COMBAT_LIMITS.orbs);
+    this.sparks = make(new THREE.OctahedronGeometry(1), basic('#ffffff'), COMBAT_LIMITS.effects * 4);
+    this.target = make(ring, basic('#fff0ac'), 1);
+    this.orbitBalls = make(sphere, new THREE.MeshBasicMaterial({ color: '#72dbe5', transparent: true, opacity: 0.65, depthWrite: false }), SKILL_RULES.maxOrbitBalls);
+    this.orbitCores = make(sphere, basic('#effffe'), SKILL_RULES.maxOrbitBalls);
+    this.orbitPath = make(new THREE.RingGeometry(0.993, 1, 64), new THREE.MeshBasicMaterial({ color: '#b8edf0', transparent: true, opacity: 0.3, side: THREE.DoubleSide, depthWrite: false }), 1);
+    this.waveRings = make(new THREE.RingGeometry(0.9, 1, 48), new THREE.MeshBasicMaterial({ color: '#e9f5b0', transparent: true, opacity: 0.65, side: THREE.DoubleSide, depthWrite: false }), COMBAT_LIMITS.shockwaves);
+    // Allocate color attributes before the first render, including empty pooled batches.
+    for (const mesh of [this.body, this.armor, this.sparks, this.dissolving]) mesh.setColorAt(0, this.color.set('#ffffff'));
+    this.group.visible = false;
+  }
+
+  private put(mesh: THREE.InstancedMesh, x: number, y: number, z: number, sx: number, sy: number, sz: number, rx = 0, ry = 0, rz = 0, color?: string) {
+    const index = mesh.count++;
+    this.dummy.position.set(x, y, z);
+    this.dummy.scale.set(sx, sy, sz);
+    this.dummy.rotation.set(rx, ry, rz);
+    this.dummy.updateMatrix();
+    mesh.setMatrixAt(index, this.dummy.matrix);
+    if (color) mesh.setColorAt(index, this.color.set(color));
+  }
+
+  render(alpha: number, time: number, player: { x: number; z: number } = { x: this.combat.anchorX, z: this.combat.anchorZ }) {
+    for (const mesh of this.batches) mesh.count = 0;
+    for (const enemy of this.combat.enemies) {
+      if (!enemy.active) continue;
+      const type = ENEMY_TYPES[enemy.kind], size = type.radius;
+      const x = THREE.MathUtils.lerp(enemy.previousX, enemy.x, alpha), z = THREE.MathUtils.lerp(enemy.previousZ, enemy.z, alpha);
+      if (enemy.spawnTime > 0) {
+        const pulse = 0.9 + Math.sin(time * 10) * 0.1;
+        this.put(this.warnings, x, 0.05, z, (size + 0.5) * pulse, (size + 0.5) * pulse, 1, -Math.PI / 2);
+        continue;
+      }
+      const tall = enemy.kind === 'fast' ? 1.55 : enemy.kind === 'tank' ? 1.15 : 1.3;
+      const bob = Math.abs(Math.sin(enemy.age * (enemy.kind === 'fast' ? 14 : 7))) * 0.07;
+      const y = size * tall + bob;
+      const color = enemy.flash > 0 ? '#fff5d6' : type.color;
+      this.put(this.body, x, y, z, size, size * tall, size, 0, enemy.facing, 0, color);
+      this.put(this.shadows, x, 0.04, z, size * 1.1, size * 0.8, 1, -Math.PI / 2);
+      const fx = Math.sin(enemy.facing), fz = Math.cos(enemy.facing);
+      for (const side of [-1, 1]) {
+        this.put(this.eyes, x + fx * size * 0.87 + fz * size * 0.35 * side, y + size * 0.25, z + fz * size * 0.87 - fx * size * 0.35 * side, size * 0.105, size * 0.18, size * 0.105);
+        const hornSize = enemy.kind === 'fast' ? 0.35 : 0.18;
+        this.put(this.horns, x + side * fz * size * 0.6, y + size * tall * 0.85, z - side * fx * size * 0.6, size * 0.22, hornSize, size * 0.22, 0, enemy.facing, -side * 0.3);
+      }
+      if (enemy.kind === 'tank') this.put(this.armor, x - fx * size * 0.25, y + size * 0.45, z - fz * size * 0.25, size * 1.08, size * 0.85, size * 0.95, 0, enemy.facing, 0, enemy.flash > 0 ? '#fff5d6' : '#536e83');
+      if (enemy.hp < type.hp) {
+        const fraction = enemy.hp / type.hp, width = size * 2;
+        this.put(this.healthBack, x, y + size * tall + 0.35, z, width, 0.075, 1, -0.55);
+        this.put(this.healthFill, x - width * (1 - fraction) / 2, y + size * tall + 0.355, z + 0.01, width * fraction, 0.052, 1, -0.55);
+      }
+      if (enemy.id === this.combat.targetId) this.put(this.target, x, 0.055, z, size + 0.2, size + 0.2, 1, -Math.PI / 2, 0, time);
+    }
+    for (const shot of this.combat.projectiles) {
+      if (!shot.active) continue;
+      const x = THREE.MathUtils.lerp(shot.previousX, shot.x, alpha), z = THREE.MathUtils.lerp(shot.previousZ, shot.z, alpha), angle = Math.atan2(shot.vx, shot.vz);
+      this.put(this.bolts, x, 1.15, z, 0.22, 0.22, 0.48, 0, angle);
+      this.put(this.boltCores, x + Math.sin(angle) * 0.12, 1.15, z + Math.cos(angle) * 0.12, 0.12, 0.12, 0.3, 0, angle);
+      // Fixed-capacity instance slots: a tapered trail, no per-shot meshes or textures.
+      for (let i = 1; i <= this.detail + 1; i++) {
+        const distance = i * 0.28;
+        if (distance > shot.distance) break;
+        const size = 0.17 * (1 - i / 7);
+        this.put(this.boltTrails, x - Math.sin(angle) * distance, 1.15, z - Math.cos(angle) * distance, size, size, 0.24, 0, angle);
+      }
+    }
+    const stats = this.combat.stats;
+    if (stats.orbitCount > 0) {
+      const angle = THREE.MathUtils.lerp(this.combat.previousOrbitAngle, this.combat.orbitAngle, alpha);
+      this.put(this.orbitPath, player.x, 0.065, player.z, stats.orbitRadius, stats.orbitRadius, 1, -Math.PI / 2);
+      for (let i = 0; i < stats.orbitCount; i++) {
+        const phase = angle + i / stats.orbitCount * Math.PI * 2;
+        const x = player.x + Math.cos(phase) * stats.orbitRadius, z = player.z + Math.sin(phase) * stats.orbitRadius;
+        this.put(this.orbitBalls, x, 0.95, z, 0.3, 0.3, 0.3, 0, time);
+        this.put(this.orbitCores, x, 0.95, z, 0.14, 0.14, 0.14, 0, -time);
+      }
+    }
+    for (const wave of this.combat.shockwaves) {
+      if (!wave.active) continue;
+      const radius = THREE.MathUtils.lerp(wave.previousRadius, wave.radius, alpha);
+      this.put(this.waveRings, wave.x, 0.1, wave.z, radius, radius, 1, -Math.PI / 2);
+    }
+    for (let index = 0; index < this.combat.orbs.length; index++) {
+      const orb = this.combat.orbs[index];
+      if (!orb.active) continue;
+      const x = THREE.MathUtils.lerp(orb.previousX, orb.x, alpha), z = THREE.MathUtils.lerp(orb.previousZ, orb.z, alpha);
+      const size = Math.min(0.34, 0.18 + Math.log2(orb.value + 1) * 0.025);
+      this.put(this.gems, x, 0.4 + Math.sin(time * 3 + index) * 0.08, z, size, size * 1.4, size, 0, time + index);
+      this.put(this.gemRings, x, 0.045, z, size * 1.4, size * 1.4, 1, -Math.PI / 2);
+    }
+    for (const effect of this.combat.effects) {
+      if (!effect.active) continue;
+      const progress = 1 - effect.time / effect.duration;
+      if (effect.kind === 'death') {
+        const type = ENEMY_TYPES[effect.enemyKind];
+        for (let i = 0; i < this.detail; i++) {
+          const angle = i / this.detail * Math.PI * 2, size = type.radius * 0.65 * (1 - progress) ** 1.4;
+          this.put(this.dissolving, effect.x + Math.sin(angle) * progress * 0.7, type.radius + progress * 0.9, effect.z + Math.cos(angle) * progress * 0.7, size, size * 1.2, size, progress * 3, angle, progress * 4, type.color);
+        }
+      }
+      const color = effect.kind === 'hurt' ? '#f7a08d' : effect.kind === 'collect' ? '#9cffe2' : effect.kind === 'death' ? '#ffe3a6' : '#f4ddff';
+      for (let i = 0; i < this.detail; i++) {
+        const angle = i / this.detail * Math.PI * 2 + 0.4, size = (1 - progress) * 0.15;
+        this.put(this.sparks, effect.x + Math.sin(angle) * progress * 0.9, 0.7 + Math.sin(progress * Math.PI) * 0.6, effect.z + Math.cos(angle) * progress * 0.9, size, size * 1.7, size, 0, angle, progress * 5, color);
+      }
+    }
+    for (const mesh of this.batches) {
+      mesh.instanceMatrix.needsUpdate = true;
+      if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
+    }
+  }
+
+  clear() { for (const mesh of this.batches) mesh.count = 0; }
+}

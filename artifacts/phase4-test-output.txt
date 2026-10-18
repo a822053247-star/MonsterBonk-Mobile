@@ -1,0 +1,3317 @@
+
+> monsterbonk-mobile@0.4.0 test
+> playwright test --reporter=list,json --output=test-results
+
+
+Running 86 tests using 1 worker
+
+(node:62420) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  1 [chromium] › tests\combat-model.spec.ts:13:1 › three enemies have distinct pursuit speeds and durability (11ms)
+  ok  2 [chromium] › tests\combat-model.spec.ts:28:1 › targeting excludes blocked, distant, spawning and dead enemies (3ms)
+  ok  3 [chromium] › tests\combat-model.spec.ts:40:1 › magic bolts damage, flash, kill and drop XP which nearby players collect once (8ms)
+  ok  4 [chromium] › tests\combat-model.spec.ts:61:1 › contact damage has a shared invulnerability window and death freezes combat (6ms)
+  ok  5 [chromium] › tests\combat-model.spec.ts:81:1 › swept collision catches tunneling and only the first enemy is hit (2ms)
+  ok  6 [chromium] › tests\combat-model.spec.ts:91:1 › spawn positions stay near the player, inside the map and outside obstacles (40ms)
+  ok  7 [chromium] › tests\combat-model.spec.ts:108:1 › 30, 60 and 120 Hz frame schedules give identical fixed-step combat results (47ms)
+  ok  8 [chromium] › tests\combat-model.spec.ts:129:1 › all pools are bounded, full XP pool merges drops, and reset removes old entities (447ms)
+chromium render budget: {"mode":"playing","position":{"x":0,"z":0},"movement":{"x":0,"y":0},"elapsed":0.8000000000000008,"cooldown":0,"distance":0,"jumpHeight":0,"graphics":{"mode":"auto","scale":0.9,"targetFps":60,"pixelRatio":0.9,"particles":4},"audio":{"music":true,"sound":true,"active":true,"state":"running","supported":true,"voices":0,"played":0},"camera":{"x":0,"y":10.2,"z":13.5},"portrait":false,"rendering":true,"drawCalls":43,"triangles":57070,"geometries":33,"textures":1,"combat":{"hp":100,"kills":0,"xp":0,"shotsFired":0,"hits":0,"spawned":0,"collected":0,"invulnerability":0,"enemies":[],"projectiles":0,"orbs":[],"effects":0,"targetId":0,"limits":{"enemies":48,"projectiles":24,"orbs":96,"effects":48,"shockwaves":2},"maxHp":100,"progression":{"level":1,"experience":0,"totalExperience":0,"threshold":8,"pendingChoices":0,"choiceLevel":2,"offers":[],"ranks":{"damage":0,"haste":0,"multishot":0,"vitality":0,"movement":0,"range":0,"orbit":0,"shockwave":0},"stats":{"damageMultiplier":1,"attackRateMultiplier":1,"projectileCount":1,"maxHp":100,"moveMultiplier":1,"rangeMultiplier":1,"orbitCount":0,"orbitDamage":0,"orbitRadius":0,"orbitSpeed":0,"shockDamage":0,"shockRadius":0,"shockInterval":0},"maxLevel":35},"orbitAngle":0,"shockwaves":[]}}
+  ok  9 [chromium] › tests\game.spec.ts:14:1 › main menu renders a real 3D world and starts exploration without errors (7.1s)
+  ok 10 [chromium] › tests\game.spec.ts:40:1 › keyboard moves, normalizes diagonals, dashes and stops after release (5.7s)
+  ok 11 [chromium] › tests\game.spec.ts:58:1 › joystick deadzone, drag outside, release and pointer cancellation (5.9s)
+  ok 12 [chromium] › tests\game.spec.ts:85:1 › pause freezes simulation and resets held input; menu can restart cleanly (8.1s)
+  ok 13 [chromium] › tests\game.spec.ts:111:1 › portrait prompts rotation, pauses play and resumes only on request (3.5s)
+  ok 14 [chromium] › tests\game.spec.ts:131:1 › visibility and blur handlers freeze time and release controls (3.7s)
+  ok 15 [chromium] › tests\game.spec.ts:156:1 › real multitouch keeps joystick and dash independent on mobile (15.1s)
+  ok 16 [chromium] › tests\game.spec.ts:192:1 › automatic combat updates HUD, collects XP and restart clears every combat entity (11.9s)
+  ok 17 [chromium] › tests\gameover.spec.ts:7:1 › lethal contact ends the real game loop and both restart routes clear combat (4.8s)
+  ok 18 [chromium] › tests\presentation-model.spec.ts:6:1 › adaptive graphics reduces pixels under sustained load and recovers with hysteresis (3ms)
+  ok 19 [chromium] › tests\presentation-model.spec.ts:20:1 › graphics modes bound pixel area, ignore suspended time, and reset sample windows (2ms)
+  ok 20 [chromium] › tests\presentation-model.spec.ts:36:1 › camera sweep catches foliage between player and lens and retains a padded gap (3ms)
+  ok 21 [chromium] › tests\presentation-model.spec.ts:48:1 › projectile trails and death fragments reuse bounded simulation slots and reset cleanly (6ms)
+  ok 22 [chromium] › tests\presentation.spec.ts:23:1 › audio waits for a gesture; settings persist and gameplay remains paused on closing (7.1s)
+  ok 23 [chromium] › tests\presentation.spec.ts:60:1 › jump is cosmetic, freezes on pause/upgrade, lands, and restart clears it (6.4s)
+  ok 24 [chromium] › tests\presentation.spec.ts:89:1 › camera retracts before cover and smoothly restores its follow distance (3.2s)
+  ok 25 [chromium] › tests\presentation.spec.ts:99:1 › pooled trails, hit flash and dissolving corpses render through the real loop (4.9s)
+  ok 26 [chromium] › tests\presentation.spec.ts:113:1 › small landscape HUD and settings fit safe areas with thumb-size touch targets (3.7s)
+  ok 27 [chromium] › tests\presentation.spec.ts:126:1 › independent touch pointers keep moving while jumping and dashing (5.2s)
+  ok 28 [chromium] › tests\presentation.spec.ts:145:1 › missing Web Audio fails gracefully and never blocks combat or settings (4.0s)
+  ok 29 [chromium] › tests\progression.spec.ts:24:1 › exact XP boundaries and overflow preserve every earned level and choice (4ms)
+  ok 30 [chromium] › tests\progression.spec.ts:42:1 › all cards are unique, below their cap and selectable; max level never deadlocks (83ms)
+  ok 31 [chromium] › tests\progression.spec.ts:69:1 › invalid XP, stale choices and unoffered skills do not change progression (5ms)
+  ok 32 [chromium] › tests\progression.spec.ts:86:1 › data-driven stacks use additive base bonuses and independent spell ranks (10ms)
+  ok 33 [chromium] › tests\progression.spec.ts:100:1 › damage, multishot and range upgrades affect real projectiles and pool limits (18ms)
+  ok 34 [chromium] › tests\progression.spec.ts:119:1 › haste increases actual volleys per second; vitality increases max HP and heals (15ms)
+  ok 35 [chromium] › tests\progression.spec.ts:136:1 › orbit damages enemies, uses seconds-based hit immunity and resets cleanly (4ms)
+  ok 36 [chromium] › tests\progression.spec.ts:151:1 › shockwave expands, hits each enemy once, repeats and freezes throughout upgrade choice (12ms)
+  ok 37 [chromium] › tests\progression.spec.ts:177:1 › reset clears level, accumulated XP, choices, stats and both learned skills (7ms)
+  ok 38 [chromium] › tests\upgrades.spec.ts:34:1 › XP opens three valid cards, freezes the entire simulation and touch picks once (4.4s)
+  ok 39 [chromium] › tests\upgrades.spec.ts:65:1 › XP overflow queues separate choices; duplicate old clicks cannot spend the next reward (4.0s)
+  ok 40 [chromium] › tests\upgrades.spec.ts:85:1 › cards fit short landscape phones and safe areas; rotation/background keeps choices frozen (4.3s)
+  ok 41 [chromium] › tests\upgrades.spec.ts:124:1 › new spells coexist, max HP updates HUD and a fresh run clears all skills (10.3s)
+  ok 42 [chromium] › tests\upgrades.spec.ts:147:1 › the last remaining skill is valid and full mastery stops creating empty dialogs (3.9s)
+  ok 43 [chromium] › tests\upgrades.spec.ts:164:1 › an existing joystick finger cannot pick a card or leave movement stuck (4.4s)
+(node:61004) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 44 [webkit] › tests\combat-model.spec.ts:13:1 › three enemies have distinct pursuit speeds and durability (10ms)
+  ok 45 [webkit] › tests\combat-model.spec.ts:28:1 › targeting excludes blocked, distant, spawning and dead enemies (1ms)
+  ok 46 [webkit] › tests\combat-model.spec.ts:40:1 › magic bolts damage, flash, kill and drop XP which nearby players collect once (8ms)
+  ok 47 [webkit] › tests\combat-model.spec.ts:61:1 › contact damage has a shared invulnerability window and death freezes combat (6ms)
+  ok 48 [webkit] › tests\combat-model.spec.ts:81:1 › swept collision catches tunneling and only the first enemy is hit (2ms)
+  ok 49 [webkit] › tests\combat-model.spec.ts:91:1 › spawn positions stay near the player, inside the map and outside obstacles (37ms)
+  ok 50 [webkit] › tests\combat-model.spec.ts:108:1 › 30, 60 and 120 Hz frame schedules give identical fixed-step combat results (38ms)
+  ok 51 [webkit] › tests\combat-model.spec.ts:129:1 › all pools are bounded, full XP pool merges drops, and reset removes old entities (429ms)
+webkit render budget: {"mode":"playing","position":{"x":0,"z":0},"movement":{"x":0,"y":0},"elapsed":0.6333333333333336,"cooldown":0,"distance":0,"jumpHeight":0,"graphics":{"mode":"auto","scale":1,"targetFps":60,"pixelRatio":1,"particles":4},"audio":{"music":true,"sound":true,"active":true,"state":"unavailable","supported":false,"voices":0,"played":0},"camera":{"x":0,"y":10.2,"z":13.5},"portrait":false,"rendering":true,"drawCalls":43,"triangles":57070,"geometries":33,"textures":1,"combat":{"hp":100,"kills":0,"xp":0,"shotsFired":0,"hits":0,"spawned":0,"collected":0,"invulnerability":0,"enemies":[],"projectiles":0,"orbs":[],"effects":0,"targetId":0,"limits":{"enemies":48,"projectiles":24,"orbs":96,"effects":48,"shockwaves":2},"maxHp":100,"progression":{"level":1,"experience":0,"totalExperience":0,"threshold":8,"pendingChoices":0,"choiceLevel":2,"offers":[],"ranks":{"damage":0,"haste":0,"multishot":0,"vitality":0,"movement":0,"range":0,"orbit":0,"shockwave":0},"stats":{"damageMultiplier":1,"attackRateMultiplier":1,"projectileCount":1,"maxHp":100,"moveMultiplier":1,"rangeMultiplier":1,"orbitCount":0,"orbitDamage":0,"orbitRadius":0,"orbitSpeed":0,"shockDamage":0,"shockRadius":0,"shockInterval":0},"maxLevel":35},"orbitAngle":0,"shockwaves":[]}}
+  ok 52 [webkit] › tests\game.spec.ts:14:1 › main menu renders a real 3D world and starts exploration without errors (3.8s)
+  ok 53 [webkit] › tests\game.spec.ts:40:1 › keyboard moves, normalizes diagonals, dashes and stops after release (3.5s)
+  ok 54 [webkit] › tests\game.spec.ts:58:1 › joystick deadzone, drag outside, release and pointer cancellation (3.1s)
+  ok 55 [webkit] › tests\game.spec.ts:85:1 › pause freezes simulation and resets held input; menu can restart cleanly (5.7s)
+  ok 56 [webkit] › tests\game.spec.ts:111:1 › portrait prompts rotation, pauses play and resumes only on request (2.2s)
+  ok 57 [webkit] › tests\game.spec.ts:131:1 › visibility and blur handlers freeze time and release controls (2.5s)
+  -  58 [webkit] › tests\game.spec.ts:156:1 › real multitouch keeps joystick and dash independent on mobile
+  ok 59 [webkit] › tests\game.spec.ts:192:1 › automatic combat updates HUD, collects XP and restart clears every combat entity (10.2s)
+  ok 60 [webkit] › tests\gameover.spec.ts:7:1 › lethal contact ends the real game loop and both restart routes clear combat (2.8s)
+  ok 61 [webkit] › tests\presentation-model.spec.ts:6:1 › adaptive graphics reduces pixels under sustained load and recovers with hysteresis (2ms)
+  ok 62 [webkit] › tests\presentation-model.spec.ts:20:1 › graphics modes bound pixel area, ignore suspended time, and reset sample windows (2ms)
+  ok 63 [webkit] › tests\presentation-model.spec.ts:36:1 › camera sweep catches foliage between player and lens and retains a padded gap (3ms)
+  ok 64 [webkit] › tests\presentation-model.spec.ts:48:1 › projectile trails and death fragments reuse bounded simulation slots and reset cleanly (4ms)
+  ok 65 [webkit] › tests\presentation.spec.ts:23:1 › audio waits for a gesture; settings persist and gameplay remains paused on closing (4.6s)
+  ok 66 [webkit] › tests\presentation.spec.ts:60:1 › jump is cosmetic, freezes on pause/upgrade, lands, and restart clears it (4.0s)
+  ok 67 [webkit] › tests\presentation.spec.ts:89:1 › camera retracts before cover and smoothly restores its follow distance (1.8s)
+  ok 68 [webkit] › tests\presentation.spec.ts:99:1 › pooled trails, hit flash and dissolving corpses render through the real loop (2.6s)
+  ok 69 [webkit] › tests\presentation.spec.ts:113:1 › small landscape HUD and settings fit safe areas with thumb-size touch targets (1.8s)
+  -  70 [webkit] › tests\presentation.spec.ts:126:1 › independent touch pointers keep moving while jumping and dashing
+  ok 71 [webkit] › tests\presentation.spec.ts:145:1 › missing Web Audio fails gracefully and never blocks combat or settings (2.5s)
+  ok 72 [webkit] › tests\progression.spec.ts:24:1 › exact XP boundaries and overflow preserve every earned level and choice (5ms)
+  ok 73 [webkit] › tests\progression.spec.ts:42:1 › all cards are unique, below their cap and selectable; max level never deadlocks (77ms)
+  ok 74 [webkit] › tests\progression.spec.ts:69:1 › invalid XP, stale choices and unoffered skills do not change progression (4ms)
+  ok 75 [webkit] › tests\progression.spec.ts:86:1 › data-driven stacks use additive base bonuses and independent spell ranks (7ms)
+  ok 76 [webkit] › tests\progression.spec.ts:100:1 › damage, multishot and range upgrades affect real projectiles and pool limits (17ms)
+  ok 77 [webkit] › tests\progression.spec.ts:119:1 › haste increases actual volleys per second; vitality increases max HP and heals (15ms)
+  ok 78 [webkit] › tests\progression.spec.ts:136:1 › orbit damages enemies, uses seconds-based hit immunity and resets cleanly (4ms)
+  ok 79 [webkit] › tests\progression.spec.ts:151:1 › shockwave expands, hits each enemy once, repeats and freezes throughout upgrade choice (11ms)
+  ok 80 [webkit] › tests\progression.spec.ts:177:1 › reset clears level, accumulated XP, choices, stats and both learned skills (7ms)
+  ok 81 [webkit] › tests\upgrades.spec.ts:34:1 › XP opens three valid cards, freezes the entire simulation and touch picks once (2.4s)
+  ok 82 [webkit] › tests\upgrades.spec.ts:65:1 › XP overflow queues separate choices; duplicate old clicks cannot spend the next reward (2.3s)
+  ok 83 [webkit] › tests\upgrades.spec.ts:85:1 › cards fit short landscape phones and safe areas; rotation/background keeps choices frozen (2.9s)
+  ok 84 [webkit] › tests\upgrades.spec.ts:124:1 › new spells coexist, max HP updates HUD and a fresh run clears all skills (3.5s)
+  ok 85 [webkit] › tests\upgrades.spec.ts:147:1 › the last remaining skill is valid and full mastery stops creating empty dialogs (2.1s)
+  -  86 [webkit] › tests\upgrades.spec.ts:164:1 › an existing joystick finger cannot pick a card or leave movement stuck
+
+  3 skipped
+  83 passed (3.4m)
+{
+  "config": {
+    "argv": [
+      "C:\\Program Files\\nodejs\\node.exe",
+      "E:\\study\\game\\MonsterBonk Mobile\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "--reporter=list,json",
+      "--output=test-results"
+    ],
+    "configFile": "E:\\study\\game\\MonsterBonk Mobile\\playwright.config.ts",
+    "rootDir": "E:/study/game/MonsterBonk Mobile/tests",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "E:/study/game/MonsterBonk Mobile/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "E:/study/game/MonsterBonk Mobile/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "E:/study/game/MonsterBonk Mobile/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "webkit",
+        "name": "webkit",
+        "testDir": "E:/study/game/MonsterBonk Mobile/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "filteredProjects": [
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "E:\\study\\game\\MonsterBonk Mobile\\test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "chromium",
+        "testDir": "E:\\study\\game\\MonsterBonk Mobile\\tests",
+        "snapshotDir": "E:\\study\\game\\MonsterBonk Mobile\\tests",
+        "testIgnore": [],
+        "testMatch": "**/*.@(spec|test).?(c|m)[jt]s?(x)",
+        "timeout": 30000,
+        "use": {
+          "baseURL": "http://127.0.0.1:5173",
+          "viewport": {
+            "width": 1280,
+            "height": 720
+          },
+          "trace": "retain-on-failure",
+          "screenshot": "only-on-failure",
+          "browserName": "chromium",
+          "launchOptions": {
+            "args": [
+              "--enable-unsafe-swiftshader"
+            ]
+          }
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": "chromium"
+      },
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "E:\\study\\game\\MonsterBonk Mobile\\test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "webkit",
+        "testDir": "E:\\study\\game\\MonsterBonk Mobile\\tests",
+        "snapshotDir": "E:\\study\\game\\MonsterBonk Mobile\\tests",
+        "testIgnore": [],
+        "testMatch": "**/*.@(spec|test).?(c|m)[jt]s?(x)",
+        "timeout": 30000,
+        "use": {
+          "baseURL": "http://127.0.0.1:5173",
+          "viewport": {
+            "width": 1280,
+            "height": 720
+          },
+          "trace": "retain-on-failure",
+          "screenshot": "only-on-failure",
+          "browserName": "webkit"
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": "webkit"
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list"
+      ],
+      [
+        "json"
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "default",
+    "updateSourceMethod": "patch",
+    "version": "1.64.1",
+    "workers": 1,
+    "webServer": {
+      "command": "npm run dev",
+      "url": "http://127.0.0.1:5173",
+      "reuseExistingServer": true,
+      "timeout": 30000
+    }
+  },
+  "suites": [
+    {
+      "title": "combat-model.spec.ts",
+      "file": "combat-model.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "three enemies have distinct pursuit speeds and durability",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 11,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T14:16:08.906Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "2d08695bfdd78eaec269-d12df25c4603d9b8b0b0",
+          "file": "combat-model.spec.ts",
+          "line": 13,
+          "column": 1
+        },
+        {
+          "title": "targeting excludes blocked, distant, spawning and dead enemies",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T14:16:08.956Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "2d08695bfdd78eaec269-1b228ceb40d93066f9bc",
+          "file": "combat-model.spec.ts",
+          "line": 28,
+          "column": 1
+        },
+        {
+          "title": "magic bolts damage, flash, kill and drop XP which nearby players collect once",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 8,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T14:16:08.976Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "2d08695bfdd78eaec269-bcfa648d7187fa2900e4",
+          "file": "combat-model.spec.ts",
+          "line": 40,
+          "column": 1
+        },
+        {
+          "title": "contact damage has a shared invulnerability window and death freezes combat",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 6,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T14:16:08.994Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "2d08695bfdd78eaec269-1f4144dc66a3295dea2c",
+          "file": "combat-model.spec.ts",
+          "line": 61,
+          "column": 1
+        },
+        {
+          "title": "swept collision catches tunneling and only the first enemy is hit",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T14:16:09.010Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "2d08695bfdd78eaec269-0bad7e2352fb5696b1a9",
+          "file": "combat-model.spec.ts",
+          "line": 81,
+          "column": 1
+        },
+        {
+          "title": "spawn positions stay near the player, inside the map and outside obstacles",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 40,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T14:16:09.026Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "2d08695bfdd78eaec269-a95126dff5d517384e1d",
+          "file": "combat-model.spec.ts",
+          "line": 91,
+          "column": 1
+        },
+        {
+          "title": "30, 60 and 120 Hz frame schedules give identical fixed-step combat results",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 47,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T14:16:09.076Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "2d08695bfdd78eaec269-efc01c8f813e9cdc4942",
+          "file": "combat-model.spec.ts",
+          "line": 108,
+          "column": 1
+        },
+        {
+          "title": "all pools are bounded, full XP pool merges drops, and reset removes old entities",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 447,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T14:16:09.133Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "2d08695bfdd78eaec269-5f71c837d977890c1ec1",
+          "file": "combat-model.spec.ts",
+          "line": 129,
+          "column": 1
+        },
+        {
+          "title": "three enemies have distinct pursuit speeds and durability",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "webkit",
+              "projectName": "webkit",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 10,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T14:18:24.056Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "2d08695bfdd78eaec269-63ad84fd300497279046",
+          "file": "combat-model.spec.ts",
+          "line": 13,
+          "column": 1
+        },
+        {
+          "title": "targeting excludes blocked, distant, spawning and dead enemies",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "webkit",
+              "projectName": "webkit",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T14:18:24.102Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "2d08695bfdd78eaec269-85937d9ea2227a33d18b",
+          "file": "combat-model.spec.ts",
+          "line": 28,
+          "column": 1
+        },
+        {
+          "title": "magic bolts damage, flash, kill and drop XP which nearby players collect once",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "webkit",
+              "projectName": "webkit",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 8,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T14:18:24.115Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "2d08695bfdd78eaec269-25e15801fe582dd6ab25",
+          "file": "combat-model.spec.ts",
+          "line": 40,
+          "column": 1
+        },
+        {
+          "title": "contact damage has a shared invulnerability window and death freezes combat",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "webkit",
+              "projectName": "webkit",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 6,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T14:18:24.133Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "2d08695bfdd78eaec269-8736b3d8a7c6222e40ad",
+          "file": "combat-model.spec.ts",
+          "line": 61,
+          "column": 1
+        },
+        {
+          "title": "swept collision catches tunneling and only the first enemy is hit",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "webkit",
+              "projectName": "webkit",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T14:18:24.148Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "2d08695bfdd78eaec269-b3be6ccc1cdc9bb95785",
+          "file": "combat-model.spec.ts",
+          "line": 81,
+          "column": 1
+        },
+        {
+          "title": "spawn positions stay near the player, inside the map and outside obstacles",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "webkit",
+              "projectName": "webkit",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 37,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T14:18:24.162Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "2d08695bfdd78eaec269-33a9b2cfd4c3a29c2fa4",
+          "file": "combat-model.spec.ts",
+          "line": 91,
+          "column": 1
+        },
+        {
+          "title": "30, 60 and 120 Hz frame schedules give identical fixed-step combat results",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "webkit",
+              "projectName": "webkit",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 38,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T14:18:24.208Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "2d08695bfdd78eaec269-3bb929e7eea9b17e3502",
+          "file": "combat-model.spec.ts",
+          "line": 108,
+          "column": 1
+        },
+        {
+          "title": "all pools are bounded, full XP pool merges drops, and reset removes old entities",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "webkit",
+              "projectName": "webkit",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 429,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T14:18:24.254Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "2d08695bfdd78eaec269-201aeea4b50bc75721bb",
+          "file": "combat-model.spec.ts",
+          "line": 129,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "game.spec.ts",
+      "file": "game.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "main menu renders a real 3D world and starts exploration without errors",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 7120,
+                  "errors": [],
+                  "stdout": [
+                    {
+                      "text": "chromium render budget: {\"mode\":\"playing\",\"position\":{\"x\":0,\"z\":0},\"movement\":{\"x\":0,\"y\":0},\"elapsed\":0.8000000000000008,\"cooldown\":0,\"distance\":0,\"jumpHeight\":0,\"graphics\":{\"mode\":\"auto\",\"scale\":0.9,\"targetFps\":60,\"pixelRatio\":0.9,\"particles\":4},\"audio\":{\"music\":true,\"sound\":true,\"active\":true,\"state\":\"running\",\"supported\":true,\"voices\":0,\"played\":0},\"camera\":{\"x\":0,\"y\":10.2,\"z\":13.5},\"portrait\":false,\"rendering\":true,\"drawCalls\":43,\"triangles\":57070,\"geometries\":33,\"textures\":1,\"combat\":{\"hp\":100,\"kills\":0,\"xp\":0,\"shotsFired\":0,\"hits\":0,\"spawned\":0,\"collected\":0,\"invulnerability\":0,\"enemies\":[],\"projectiles\":0,\"orbs\":[],\"effects\":0,\"targetId\":0,\"limits\":{\"enemies\":48,\"projectiles\":24,\"orbs\":96,\"effects\":48,\"shockwaves\":2},\"maxHp\":100,\"progression\":{\"level\":1,\"experience\":0,\"totalExperience\":0,\"threshold\":8,\"pendingChoices\":0,\"choiceLevel\":2,\"offers\":[],\"ranks\":{\"damage\":0,\"haste\":0,\"multishot\":0,\"vitality\":0,\"movement\":0,\"range\":0,\"orbit\":0,\"shockwave\":0},\"stats\":{\"damageMultiplier\":1,\"attackRateMultiplier\":1,\"projectileCount\":1,\"maxHp\":100,\"moveMultiplier\":1,\"rangeMultiplier\":1,\"orbitCount\":0,\"orbitDamage\":0,\"orbitRadius\":0,\"orbitSpeed\":0,\"shockDamage\":0,\"shockRadius\":0,\"shockInterval\":0},\"maxLevel\":35},\"orbitAngle\":0,\"shockwaves\":[]}}\n"
+                    }
+                  ],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T14:16:09.615Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "8b1bb1493a64c9fc3ab6-6f266e371a69e9a5b8d8",
+          "file": "game.spec.ts",
+          "line": 14,
+          "column": 1
+        },
+        {
+          "title": "keyboard moves, normalizes diagonals, dashes and stops after release",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 5736,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T14:16:17.442Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "8b1bb1493a64c9fc3ab6-73342b479bca27b8b4ce",
+          "file": "game.spec.ts",
+          "line": 40,
+          "column": 1
+        },
+        {
+          "title": "joystick deadzone, drag outside, release and pointer cancellation",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 5892,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T14:16:23.193Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "8b1bb1493a64c9fc3ab6-1263dfdc3d2b2982a32c",
+          "file": "game.spec.ts",
+          "line": 58,
+          "column": 1
+        },
+        {
+          "title": "pause freezes simulation and resets held input; menu can restart cleanly",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 8111,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T14:16:29.100Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "8b1bb1493a64c9fc3ab6-cacaf4d5bf0580d63abf",
+          "file": "game.spec.ts",
+          "line": 85,
+          "column": 1
+        },
+        {
+          "title": "portrait prompts rotation, pauses play and resumes only on request",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3485,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T14:16:37.223Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "8b1bb1493a64c9fc3ab6-31e7b70fb74dd7aac445",
+          "file": "game.spec.ts",
+          "line": 111,
+          "column": 1
+        },
+        {
+          "title": "visibility and blur handlers freeze time and release controls",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3682,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T14:16:40.725Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "8b1bb1493a64c9fc3ab6-608d05f74b0e104b092b",
+          "file": "game.spec.ts",
+          "line": 131,
+          "column": 1
+        },
+        {
+          "title": "real multitouch keeps joystick and dash independent on mobile",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 15070,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T14:16:44.425Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "mobile gameplay",
+                      "contentType": "image/png",
+                      "path": "E:\\study\\game\\MonsterBonk Mobile\\test-results\\game-real-multitouch-keeps-e046b--dash-independent-on-mobile-chromium\\attachments\\mobile-gameplay-4d91373b9bc0cfb691451013ec4e720723eacf06.png"
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "8b1bb1493a64c9fc3ab6-08e383773988d7dcb23b",
+          "file": "game.spec.ts",
+          "line": 156,
+          "column": 1
+        },
+        {
+          "title": "automatic combat updates HUD, collects XP and restart clears every combat entity",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 11859,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T14:16:59.511Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "8b1bb1493a64c9fc3ab6-0d1a4a7490090110fbca",
+          "file": "game.spec.ts",
+          "line": 192,
+          "column": 1
+        },
+        {
+          "title": "main menu renders a real 3D world and starts exploration without errors",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "webkit",
+              "projectName": "webkit",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3775,
+                  "errors": [],
+                  "stdout": [
+                    {
+                      "text": "webkit render budget: {\"mode\":\"playing\",\"position\":{\"x\":0,\"z\":0},\"movement\":{\"x\":0,\"y\":0},\"elapsed\":0.6333333333333336,\"cooldown\":0,\"distance\":0,\"jumpHeight\":0,\"graphics\":{\"mode\":\"auto\",\"scale\":1,\"targetFps\":60,\"pixelRatio\":1,\"particles\":4},\"audio\":{\"music\":true,\"sound\":true,\"active\":true,\"state\":\"unavailable\",\"supported\":false,\"voices\":0,\"played\":0},\"camera\":{\"x\":0,\"y\":10.2,\"z\":13.5},\"portrait\":false,\"rendering\":true,\"drawCalls\":43,\"triangles\":57070,\"geometries\":33,\"textures\":1,\"combat\":{\"hp\":100,\"kills\":0,\"xp\":0,\"shotsFired\":0,\"hits\":0,\"spawned\":0,\"collected\":0,\"invulnerability\":0,\"enemies\":[],\"projectiles\":0,\"orbs\":[],\"effects\":0,\"targetId\":0,\"limits\":{\"enemies\":48,\"projectiles\":24,\"orbs\":96,\"effects\":48,\"shockwaves\":2},\"maxHp\":100,\"progression\":{\"level\":1,\"experience\":0,\"totalExperience\":0,\"threshold\":8,\"pendingChoices\":0,\"choiceLevel\":2,\"offers\":[],\"ranks\":{\"damage\":0,\"haste\":0,\"multishot\":0,\"vitality\":0,\"movement\":0,\"range\":0,\"orbit\":0,\"shockwave\":0},\"stats\":{\"damageMultiplier\":1,\"attackRateMultiplier\":1,\"projectileCount\":1,\"maxHp\":100,\"moveMultiplier\":1,\"rangeMultiplier\":1,\"orbitCount\":0,\"orbitDamage\":0,\"orbitRadius\":0,\"orbitSpeed\":0,\"shockDamage\":0,\"shockRadius\":0,\"shockInterval\":0},\"maxLevel\":35},\"orbitAngle\":0,\"shockwaves\":[]}}\n"
+                    }
+                  ],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T14:18:24.718Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "8b1bb1493a64c9fc3ab6-a0cd0cc927cdae638836",
+          "file": "game.spec.ts",
+          "line": 14,
+          "column": 1
+        },
+        {
+          "title": "keyboard moves, normalizes diagonals, dashes and stops after release",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "webkit",
+              "projectName": "webkit",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3537,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T14:18:28.846Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "8b1bb1493a64c9fc3ab6-4d336e5bf69abe304546",
+          "file": "game.spec.ts",
+          "line": 40,
+          "column": 1
+        },
+        {
+          "title": "joystick deadzone, drag outside, release and pointer cancellation",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "webkit",
+              "projectName": "webkit",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3054,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T14:18:32.403Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "8b1bb1493a64c9fc3ab6-3a4cec1c5fc1848094ff",
+          "file": "game.spec.ts",
+          "line": 58,
+          "column": 1
+        },
+        {
+          "title": "pause freezes simulation and resets held input; menu can restart cleanly",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "webkit",
+              "projectName": "webkit",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 5692,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T14:18:35.477Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "8b1bb1493a64c9fc3ab6-4c78e2b0ba725da2954d",
+          "file": "game.spec.ts",
+          "line": 85,
+          "column": 1
+        },
+        {
+          "title": "portrait prompts rotation, pauses play and resumes only on request",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "webkit",
+              "projectName": "webkit",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2196,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T14:18:41.185Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "8b1bb1493a64c9fc3ab6-b8f55691195f74a6a9c1",
+          "file": "game.spec.ts",
+          "line": 111,
+          "column": 1
+        },
+        {
+          "title": "visibility and blur handlers freeze time and release controls",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "webkit",
+              "projectName": "webkit",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2498,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T14:18:43.395Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "8b1bb1493a64c9fc3ab6-4a9c5552715bd9749730",
+          "file": "game.spec.ts",
+          "line": 131,
+          "column": 1
+        },
+        {
+          "title": "real multitouch keeps joystick and dash independent on mobile",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [
+                {
+                  "type": "skip",
+                  "description": "CDP multitouch injection is Chromium-only.",
+                  "location": {
+                    "file": "E:\\study\\game\\MonsterBonk Mobile\\tests\\game.spec.ts",
+                    "line": 157,
+                    "column": 8
+                  }
+                }
+              ],
+              "expectedStatus": "skipped",
+              "projectId": "webkit",
+              "projectName": "webkit",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "skipped",
+                  "duration": 1252,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T14:18:45.907Z",
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "description": "CDP multitouch injection is Chromium-only.",
+                      "location": {
+                        "file": "E:\\study\\game\\MonsterBonk Mobile\\tests\\game.spec.ts",
+                        "line": 157,
+                        "column": 8
+                      }
+                    }
+                  ],
+                  "attachments": []
+                }
+              ],
+              "status": "skipped"
+            }
+          ],
+          "id": "8b1bb1493a64c9fc3ab6-29dec6120007dfabcb22",
+          "file": "game.spec.ts",
+          "line": 156,
+          "column": 1
+        },
+        {
+          "title": "automatic combat updates HUD, collects XP and restart clears every combat entity",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "webkit",
+              "projectName": "webkit",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 10193,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T14:18:47.173Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "8b1bb1493a64c9fc3ab6-9e93193c2f7bd71b786a",
+          "file": "game.spec.ts",
+          "line": 192,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "gameover.spec.ts",
+      "file": "gameover.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "lethal contact ends the real game loop and both restart routes clear combat",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 4849,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T14:17:11.402Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "205257e7c8d5ed228671-d43318fb6b3e60449a09",
+          "file": "gameover.spec.ts",
+          "line": 7,
+          "column": 1
+        },
+        {
+          "title": "lethal contact ends the real game loop and both restart routes clear combat",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "webkit",
+              "projectName": "webkit",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2822,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T14:18:57.403Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "205257e7c8d5ed228671-b82496912f0545e8ca0e",
+          "file": "gameover.spec.ts",
+          "line": 7,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "presentation-model.spec.ts",
+      "file": "presentation-model.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "adaptive graphics reduces pixels under sustained load and recovers with hysteresis",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T14:17:16.277Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "fa7ab18a34e7afaab3f0-1360d714f474727bb7ec",
+          "file": "presentation-model.spec.ts",
+          "line": 6,
+          "column": 1
+        },
+        {
+          "title": "graphics modes bound pixel area, ignore suspended time, and reset sample windows",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T14:17:16.291Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "fa7ab18a34e7afaab3f0-a8812f55acd036082260",
+          "file": "presentation-model.spec.ts",
+          "line": 20,
+          "column": 1
+        },
+        {
+          "title": "camera sweep catches foliage between player and lens and retains a padded gap",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T14:17:16.304Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "fa7ab18a34e7afaab3f0-013b000594da025dfaca",
+          "file": "presentation-model.spec.ts",
+          "line": 36,
+          "column": 1
+        },
+        {
+          "title": "projectile trails and death fragments reuse bounded simulation slots and reset cleanly",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 6,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T14:17:16.317Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "fa7ab18a34e7afaab3f0-121a7cf51057eaea5c5e",
+          "file": "presentation-model.spec.ts",
+          "line": 48,
+          "column": 1
+        },
+        {
+          "title": "adaptive graphics reduces pixels under sustained load and recovers with hysteresis",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "webkit",
+              "projectName": "webkit",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T14:19:00.261Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "fa7ab18a34e7afaab3f0-35b762298c853d42d959",
+          "file": "presentation-model.spec.ts",
+          "line": 6,
+          "column": 1
+        },
+        {
+          "title": "graphics modes bound pixel area, ignore suspended time, and reset sample windows",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "webkit",
+              "projectName": "webkit",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T14:19:00.270Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "fa7ab18a34e7afaab3f0-f137426a4dc62a34c9d6",
+          "file": "presentation-model.spec.ts",
+          "line": 20,
+          "column": 1
+        },
+        {
+          "title": "camera sweep catches foliage between player and lens and retains a padded gap",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "webkit",
+              "projectName": "webkit",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T14:19:00.280Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "fa7ab18a34e7afaab3f0-1a1e0638b793b33b3b31",
+          "file": "presentation-model.spec.ts",
+          "line": 36,
+          "column": 1
+        },
+        {
+          "title": "projectile trails and death fragments reuse bounded simulation slots and reset cleanly",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "webkit",
+              "projectName": "webkit",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 4,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T14:19:00.292Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "fa7ab18a34e7afaab3f0-7069858bf390756bbdbc",
+          "file": "presentation-model.spec.ts",
+          "line": 48,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "presentation.spec.ts",
+      "file": "presentation.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "audio waits for a gesture; settings persist and gameplay remains paused on closing",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 7070,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T14:17:16.356Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "57a964c83dbf6a737e02-f4badd99d4d6607c0c03",
+          "file": "presentation.spec.ts",
+          "line": 23,
+          "column": 1
+        },
+        {
+          "title": "jump is cosmetic, freezes on pause/upgrade, lands, and restart clears it",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 6433,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T14:17:23.437Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "57a964c83dbf6a737e02-89521dd341cc39abb1bf",
+          "file": "presentation.spec.ts",
+          "line": 60,
+          "column": 1
+        },
+        {
+          "title": "camera retracts before cover and smoothly restores its follow distance",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3213,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T14:17:29.883Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "57a964c83dbf6a737e02-75eaefff308d7f3271bf",
+          "file": "presentation.spec.ts",
+          "line": 89,
+          "column": 1
+        },
+        {
+          "title": "pooled trails, hit flash and dissolving corpses render through the real loop",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 4872,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T14:17:33.109Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "57a964c83dbf6a737e02-10872ff0b258dac07852",
+          "file": "presentation.spec.ts",
+          "line": 99,
+          "column": 1
+        },
+        {
+          "title": "small landscape HUD and settings fit safe areas with thumb-size touch targets",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3671,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T14:17:37.996Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "57a964c83dbf6a737e02-af75116ca47810ef2902",
+          "file": "presentation.spec.ts",
+          "line": 113,
+          "column": 1
+        },
+        {
+          "title": "independent touch pointers keep moving while jumping and dashing",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 5189,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T14:17:41.680Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "57a964c83dbf6a737e02-a1ea73d3baef9f29a491",
+          "file": "presentation.spec.ts",
+          "line": 126,
+          "column": 1
+        },
+        {
+          "title": "missing Web Audio fails gracefully and never blocks combat or settings",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 4036,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T14:17:46.882Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "57a964c83dbf6a737e02-2f80d1d66adb679da5a2",
+          "file": "presentation.spec.ts",
+          "line": 145,
+          "column": 1
+        },
+        {
+          "title": "audio waits for a gesture; settings persist and gameplay remains paused on closing",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "webkit",
+              "projectName": "webkit",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 4564,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T14:19:00.323Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "57a964c83dbf6a737e02-3e9dd5c6ff292cec53d2",
+          "file": "presentation.spec.ts",
+          "line": 23,
+          "column": 1
+        },
+        {
+          "title": "jump is cosmetic, freezes on pause/upgrade, lands, and restart clears it",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "webkit",
+              "projectName": "webkit",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3963,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T14:19:04.897Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "57a964c83dbf6a737e02-8434d2615b17cd3a8ada",
+          "file": "presentation.spec.ts",
+          "line": 60,
+          "column": 1
+        },
+        {
+          "title": "camera retracts before cover and smoothly restores its follow distance",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "webkit",
+              "projectName": "webkit",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1808,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T14:19:08.872Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "57a964c83dbf6a737e02-8942e169c23dc818a635",
+          "file": "presentation.spec.ts",
+          "line": 89,
+          "column": 1
+        },
+        {
+          "title": "pooled trails, hit flash and dissolving corpses render through the real loop",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "webkit",
+              "projectName": "webkit",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2591,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T14:19:10.694Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "57a964c83dbf6a737e02-d045926a458209254360",
+          "file": "presentation.spec.ts",
+          "line": 99,
+          "column": 1
+        },
+        {
+          "title": "small landscape HUD and settings fit safe areas with thumb-size touch targets",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "webkit",
+              "projectName": "webkit",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1802,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T14:19:13.299Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "57a964c83dbf6a737e02-2d70fb838040e309ac20",
+          "file": "presentation.spec.ts",
+          "line": 113,
+          "column": 1
+        },
+        {
+          "title": "independent touch pointers keep moving while jumping and dashing",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [
+                {
+                  "type": "skip",
+                  "description": "Native multi-touch injection uses Chromium CDP.",
+                  "location": {
+                    "file": "E:\\study\\game\\MonsterBonk Mobile\\tests\\presentation.spec.ts",
+                    "line": 127,
+                    "column": 8
+                  }
+                }
+              ],
+              "expectedStatus": "skipped",
+              "projectId": "webkit",
+              "projectName": "webkit",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "skipped",
+                  "duration": 1273,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T14:19:15.114Z",
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "description": "Native multi-touch injection uses Chromium CDP.",
+                      "location": {
+                        "file": "E:\\study\\game\\MonsterBonk Mobile\\tests\\presentation.spec.ts",
+                        "line": 127,
+                        "column": 8
+                      }
+                    }
+                  ],
+                  "attachments": []
+                }
+              ],
+              "status": "skipped"
+            }
+          ],
+          "id": "57a964c83dbf6a737e02-5fb3c53bdcc953e0789b",
+          "file": "presentation.spec.ts",
+          "line": 126,
+          "column": 1
+        },
+        {
+          "title": "missing Web Audio fails gracefully and never blocks combat or settings",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "webkit",
+              "projectName": "webkit",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2454,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T14:19:16.401Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "57a964c83dbf6a737e02-04bf616656288dc6b039",
+          "file": "presentation.spec.ts",
+          "line": 145,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "progression.spec.ts",
+      "file": "progression.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "exact XP boundaries and overflow preserve every earned level and choice",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 4,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T14:17:50.954Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "632bd77fbc565a652e89-7ec90b327458ce2c4b01",
+          "file": "progression.spec.ts",
+          "line": 24,
+          "column": 1
+        },
+        {
+          "title": "all cards are unique, below their cap and selectable; max level never deadlocks",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 83,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T14:17:50.968Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "632bd77fbc565a652e89-0948cc2be2490155d403",
+          "file": "progression.spec.ts",
+          "line": 42,
+          "column": 1
+        },
+        {
+          "title": "invalid XP, stale choices and unoffered skills do not change progression",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 5,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T14:17:51.062Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "632bd77fbc565a652e89-da2cf4fc38e4f3d2ff40",
+          "file": "progression.spec.ts",
+          "line": 69,
+          "column": 1
+        },
+        {
+          "title": "data-driven stacks use additive base bonuses and independent spell ranks",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 10,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T14:17:51.080Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "632bd77fbc565a652e89-a2ed8f32e003f31a27c2",
+          "file": "progression.spec.ts",
+          "line": 86,
+          "column": 1
+        },
+        {
+          "title": "damage, multishot and range upgrades affect real projectiles and pool limits",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 18,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T14:17:51.102Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "632bd77fbc565a652e89-e4394c53c5fd830b8063",
+          "file": "progression.spec.ts",
+          "line": 100,
+          "column": 1
+        },
+        {
+          "title": "haste increases actual volleys per second; vitality increases max HP and heals",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 15,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T14:17:51.131Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "632bd77fbc565a652e89-3cc37e52168af24349fa",
+          "file": "progression.spec.ts",
+          "line": 119,
+          "column": 1
+        },
+        {
+          "title": "orbit damages enemies, uses seconds-based hit immunity and resets cleanly",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 4,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T14:17:51.157Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "632bd77fbc565a652e89-82d70801a4dadf1fbccb",
+          "file": "progression.spec.ts",
+          "line": 136,
+          "column": 1
+        },
+        {
+          "title": "shockwave expands, hits each enemy once, repeats and freezes throughout upgrade choice",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 12,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T14:17:51.172Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "632bd77fbc565a652e89-c5f95ff8490a4dc1c11d",
+          "file": "progression.spec.ts",
+          "line": 151,
+          "column": 1
+        },
+        {
+          "title": "reset clears level, accumulated XP, choices, stats and both learned skills",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 7,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T14:17:51.194Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "632bd77fbc565a652e89-b1d54ed56591a4324f91",
+          "file": "progression.spec.ts",
+          "line": 177,
+          "column": 1
+        },
+        {
+          "title": "exact XP boundaries and overflow preserve every earned level and choice",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "webkit",
+              "projectName": "webkit",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 5,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T14:19:18.886Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "632bd77fbc565a652e89-da28d8806549dc13e4e8",
+          "file": "progression.spec.ts",
+          "line": 24,
+          "column": 1
+        },
+        {
+          "title": "all cards are unique, below their cap and selectable; max level never deadlocks",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "webkit",
+              "projectName": "webkit",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 77,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T14:19:18.901Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "632bd77fbc565a652e89-862b8c6c2b73bd92d7ba",
+          "file": "progression.spec.ts",
+          "line": 42,
+          "column": 1
+        },
+        {
+          "title": "invalid XP, stale choices and unoffered skills do not change progression",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "webkit",
+              "projectName": "webkit",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 4,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T14:19:18.989Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "632bd77fbc565a652e89-2189af4925a4429eeaf1",
+          "file": "progression.spec.ts",
+          "line": 69,
+          "column": 1
+        },
+        {
+          "title": "data-driven stacks use additive base bonuses and independent spell ranks",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "webkit",
+              "projectName": "webkit",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 7,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T14:19:19.006Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "632bd77fbc565a652e89-67d5fc20dde341fbde7e",
+          "file": "progression.spec.ts",
+          "line": 86,
+          "column": 1
+        },
+        {
+          "title": "damage, multishot and range upgrades affect real projectiles and pool limits",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "webkit",
+              "projectName": "webkit",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 17,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T14:19:19.022Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "632bd77fbc565a652e89-9a6b9cdafa637990eeb0",
+          "file": "progression.spec.ts",
+          "line": 100,
+          "column": 1
+        },
+        {
+          "title": "haste increases actual volleys per second; vitality increases max HP and heals",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "webkit",
+              "projectName": "webkit",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 15,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T14:19:19.050Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "632bd77fbc565a652e89-096faf487e7819777ad0",
+          "file": "progression.spec.ts",
+          "line": 119,
+          "column": 1
+        },
+        {
+          "title": "orbit damages enemies, uses seconds-based hit immunity and resets cleanly",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "webkit",
+              "projectName": "webkit",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 4,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T14:19:19.076Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "632bd77fbc565a652e89-b0aa999ceddf3db7ce8c",
+          "file": "progression.spec.ts",
+          "line": 136,
+          "column": 1
+        },
+        {
+          "title": "shockwave expands, hits each enemy once, repeats and freezes throughout upgrade choice",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "webkit",
+              "projectName": "webkit",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 11,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T14:19:19.089Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "632bd77fbc565a652e89-d9bd3273ce1415c22d7a",
+          "file": "progression.spec.ts",
+          "line": 151,
+          "column": 1
+        },
+        {
+          "title": "reset clears level, accumulated XP, choices, stats and both learned skills",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "webkit",
+              "projectName": "webkit",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 7,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T14:19:19.110Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "632bd77fbc565a652e89-40d6bc29a277d04600c9",
+          "file": "progression.spec.ts",
+          "line": 177,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "upgrades.spec.ts",
+      "file": "upgrades.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "XP opens three valid cards, freezes the entire simulation and touch picks once",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 4422,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T14:17:51.225Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "9796ed2e8ce16fa02ce5-9c62421e4fcae73d785c",
+          "file": "upgrades.spec.ts",
+          "line": 34,
+          "column": 1
+        },
+        {
+          "title": "XP overflow queues separate choices; duplicate old clicks cannot spend the next reward",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 4017,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T14:17:55.660Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "9796ed2e8ce16fa02ce5-4239d3eb6abd07a4d2b2",
+          "file": "upgrades.spec.ts",
+          "line": 65,
+          "column": 1
+        },
+        {
+          "title": "cards fit short landscape phones and safe areas; rotation/background keeps choices frozen",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 4341,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T14:17:59.690Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "9796ed2e8ce16fa02ce5-fadb245e967341939fd7",
+          "file": "upgrades.spec.ts",
+          "line": 85,
+          "column": 1
+        },
+        {
+          "title": "new spells coexist, max HP updates HUD and a fresh run clears all skills",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 10312,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T14:18:04.045Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "9796ed2e8ce16fa02ce5-391cc5106af3436fdc03",
+          "file": "upgrades.spec.ts",
+          "line": 124,
+          "column": 1
+        },
+        {
+          "title": "the last remaining skill is valid and full mastery stops creating empty dialogs",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3861,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T14:18:14.374Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "9796ed2e8ce16fa02ce5-cdc487e8014290ce0c65",
+          "file": "upgrades.spec.ts",
+          "line": 147,
+          "column": 1
+        },
+        {
+          "title": "an existing joystick finger cannot pick a card or leave movement stuck",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 4414,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T14:18:18.247Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "9796ed2e8ce16fa02ce5-27489e1971ae3935ec5d",
+          "file": "upgrades.spec.ts",
+          "line": 164,
+          "column": 1
+        },
+        {
+          "title": "XP opens three valid cards, freezes the entire simulation and touch picks once",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "webkit",
+              "projectName": "webkit",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2423,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T14:19:19.150Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "9796ed2e8ce16fa02ce5-d4cc9c7123d91b41446a",
+          "file": "upgrades.spec.ts",
+          "line": 34,
+          "column": 1
+        },
+        {
+          "title": "XP overflow queues separate choices; duplicate old clicks cannot spend the next reward",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "webkit",
+              "projectName": "webkit",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2338,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T14:19:21.586Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "9796ed2e8ce16fa02ce5-62fe3760debe207343e3",
+          "file": "upgrades.spec.ts",
+          "line": 65,
+          "column": 1
+        },
+        {
+          "title": "cards fit short landscape phones and safe areas; rotation/background keeps choices frozen",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "webkit",
+              "projectName": "webkit",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2882,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T14:19:23.938Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "9796ed2e8ce16fa02ce5-fb16573e72e91ea1742d",
+          "file": "upgrades.spec.ts",
+          "line": 85,
+          "column": 1
+        },
+        {
+          "title": "new spells coexist, max HP updates HUD and a fresh run clears all skills",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "webkit",
+              "projectName": "webkit",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3530,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T14:19:26.834Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "9796ed2e8ce16fa02ce5-b94e4cc514c1681de4fd",
+          "file": "upgrades.spec.ts",
+          "line": 124,
+          "column": 1
+        },
+        {
+          "title": "the last remaining skill is valid and full mastery stops creating empty dialogs",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "webkit",
+              "projectName": "webkit",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2108,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T14:19:30.377Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "9796ed2e8ce16fa02ce5-2116e6b4b16d9db1f131",
+          "file": "upgrades.spec.ts",
+          "line": 147,
+          "column": 1
+        },
+        {
+          "title": "an existing joystick finger cannot pick a card or leave movement stuck",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [
+                {
+                  "type": "skip",
+                  "description": "CDP multitouch injection is Chromium-only.",
+                  "location": {
+                    "file": "E:\\study\\game\\MonsterBonk Mobile\\tests\\upgrades.spec.ts",
+                    "line": 165,
+                    "column": 8
+                  }
+                }
+              ],
+              "expectedStatus": "skipped",
+              "projectId": "webkit",
+              "projectName": "webkit",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "skipped",
+                  "duration": 1426,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T14:19:32.499Z",
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "description": "CDP multitouch injection is Chromium-only.",
+                      "location": {
+                        "file": "E:\\study\\game\\MonsterBonk Mobile\\tests\\upgrades.spec.ts",
+                        "line": 165,
+                        "column": 8
+                      }
+                    }
+                  ],
+                  "attachments": []
+                }
+              ],
+              "status": "skipped"
+            }
+          ],
+          "id": "9796ed2e8ce16fa02ce5-b23451f388a6338dbf29",
+          "file": "upgrades.spec.ts",
+          "line": 164,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-17T14:16:08.131Z",
+    "duration": 206593.451,
+    "expected": 83,
+    "skipped": 3,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

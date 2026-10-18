@@ -1,0 +1,18 @@
+{
+  "version": "0.4.0",
+  "environment": "Windows desktop Playwright, Chromium and WebKit",
+  "stats": {
+    "startTime": "2026-10-17T14:16:08.131Z",
+    "duration": 206593.451,
+    "expected": 83,
+    "skipped": 3,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "physicalPhoneFpsMeasured": false,
+  "notes": [
+    "Three WebKit native multi-touch injection cases are skipped because the tests use Chromium CDP.",
+    "Windows WebKit runner exposes neither AudioContext nor webkitAudioContext. Graceful fallback is tested; Chromium audio activation and generated effects are tested.",
+    "Full regression preceded a final pink-flower geometry size correction; related rendering/layout tests were rerun afterwards."
+  ]
+}

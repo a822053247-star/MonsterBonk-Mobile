@@ -1,0 +1,80 @@
+{
+  "errors": [],
+  "productionDiagnosticsAbsent": true,
+  "hudVisible": true,
+  "rotateVisible": true,
+  "layouts": [
+    {
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "simulatedSafeArea": false,
+      "footer": {
+        "top": 675,
+        "bottom": 692
+      },
+      "startBottom": 542.84375
+    },
+    {
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "simulatedSafeArea": true,
+      "footer": {
+        "top": 654,
+        "bottom": 671
+      },
+      "startBottom": 532.34375
+    },
+    {
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "simulatedSafeArea": false,
+      "footer": {
+        "top": 358,
+        "bottom": 372
+      },
+      "startBottom": 338.875
+    },
+    {
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "simulatedSafeArea": true,
+      "footer": {
+        "top": 337,
+        "bottom": 351
+      },
+      "startBottom": 328.375
+    },
+    {
+      "viewport": {
+        "width": 568,
+        "height": 320
+      },
+      "simulatedSafeArea": false,
+      "footer": {
+        "top": 288,
+        "bottom": 302
+      },
+      "startBottom": 274.015625
+    },
+    {
+      "viewport": {
+        "width": 568,
+        "height": 320
+      },
+      "simulatedSafeArea": true,
+      "footer": {
+        "top": 268.03125,
+        "bottom": 282.03125
+      },
+      "startBottom": 264.03125
+    }
+  ]
+}
