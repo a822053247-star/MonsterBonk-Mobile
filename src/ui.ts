@@ -1,4 +1,5 @@
 import { upgradePreview, type Progression } from './progression';
+import { FUSION_ASSET_ROOT, type ElementalFusionId } from './fusion-pixels';
 
 const icons = {
   settings: '<path d="M4 6h16M4 12h16M4 18h16"/><circle cx="9" cy="6" r="2" fill="currentColor"/><circle cx="15" cy="12" r="2" fill="currentColor"/><circle cx="9" cy="18" r="2" fill="currentColor"/>',
@@ -98,7 +99,7 @@ export function renderUpgradeCards(progression: Progression, version: number) {
     const rank = progression.ranks[id];
     return `<button class="skill-card" data-skill="${id}" data-offer="${version}" style="--skill-color:${skill.color}" disabled aria-label="${skill.title}：${skill.benefit}，提升到 ${rank + 1} 级">
       <span class="skill-card-meta"><span>${rank === 0 && skill.effect.type === 'spell' ? '新技能' : '魔法强化'}</span><span>Lv. ${rank} → ${rank + 1}<small> / ${skill.maxRank}</small></span></span>
-      <span class="skill-emblem">${id === 'split-on-hit' && progression.fusionBase === 'spark' ? fireIcon(1) : icon(skill.icon)}</span>
+      <span class="skill-emblem">${id === 'area' && progression.fusionBase === 'bubble' ? fusionIcon('deep-bubble') : id === 'chain' ? fusionIcon(progression.fusionBase === 'bubble' ? 'chain-bubble' : 'jump-thorn') : id === 'split-on-hit' && progression.fusionBase === 'leaf' ? fusionIcon('thorn-scatter') : id === 'split-on-hit' && progression.fusionBase === 'spark' ? fireIcon(1) : icon(skill.icon)}</span>
       <h3>${skill.title}</h3><strong class="skill-benefit">${skill.benefit}</strong>
       <p class="skill-description">${skill.description}</p>
       <span class="skill-preview">${upgradePreview(skill, progression.ranks)}</span>
@@ -114,8 +115,17 @@ function fireIcon(index: 0 | 1 | 2) {
 }
 
 function bindFireIcons(root: HTMLElement) {
-  root.querySelectorAll<HTMLImageElement>('.fire-icon img').forEach(image => {
+  root.querySelectorAll<HTMLImageElement>('.fire-icon img, .fusion-icon img').forEach(image => {
     const sync = () => image.parentElement!.classList.toggle('ready', image.complete && image.naturalWidth > 0);
     image.addEventListener('load', sync, { once: true }); image.addEventListener('error', sync, { once: true }); sync();
   });
+}
+
+export function fusionIcon(id: ElementalFusionId) {
+  return `<span class="fusion-icon">${icon(id.includes('bubble') ? 'wave' : 'leaf')}<img src="${FUSION_ASSET_ROOT}${id}-icon.png" alt="" draggable="false"/></span>`;
+}
+export function setFusionIcons(root: HTMLElement, ids: ElementalFusionId[]) {
+  const key = ids.join(',');
+  if (root.dataset.icons === key) return;
+  root.dataset.icons = key; root.innerHTML = ids.map(fusionIcon).join(''); bindFireIcons(root);
 }

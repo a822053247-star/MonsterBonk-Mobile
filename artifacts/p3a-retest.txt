@@ -1,0 +1,82 @@
+
+> monsterbonk-mobile@0.4.0 test
+> playwright test --last-failed --reporter=list
+
+
+Running 8 tests using 1 worker
+
+(node:56648) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 1 [chromium] › tests\elemental-fusion-model.spec.ts:114:1 › deep AoE respects cover and scatter angles, range and single-hit children are independent of animations (19ms)
+  ok 2 [chromium] › tests\elemental-fusion-ui.spec.ts:53:11 › deep-bubble individual skill renders audited pixels, icon and real damage; lifecycle clears batch (4.4s)
+  ok 3 [chromium] › tests\enemy-motion-model.spec.ts:18:1 › render pose is restrained, allocation-free and stops at rest; animation cadence follows real displacement (423ms)
+  ok 4 [chromium] › tests\enemy-motion-ui.spec.ts:12:1 › PNG walk visibly changes at a fixed collision anchor and always faces the camera (3.2s)
+  ok 5 [chromium] › tests\game.spec.ts:41:1 › keyboard moves, normalizes diagonals, dashes and stops after release (5.4s)
+(node:43444) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  6 [webkit] › tests\creature-selection.spec.ts:21:1 › menu selection overrides development URL and remains selected after returning from compatibility mode (30.7s)
+(node:55920) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 7 [webkit] › tests\elemental-fusion-ui.spec.ts:53:11 › jump-thorn individual skill renders audited pixels, icon and real damage; lifecycle clears batch (4.2s)
+  ok 8 [webkit] › tests\game.spec.ts:86:1 › pause freezes simulation and resets held input; menu can restart cleanly (5.2s)
+
+
+  1) [webkit] › tests\creature-selection.spec.ts:21:1 › menu selection overrides development URL and remains selected after returning from compatibility mode 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.tap: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for locator('#start-fusion')
+        - locator resolved to <button class="primary" id="start-fusion">…</button>
+      - attempting tap action
+        2 × waiting for element to be visible, enabled and stable
+          - element is visible, enabled and stable
+          - scrolling into view if needed
+          - done scrolling
+          - <section role="dialog" aria-modal="true" id="creature-picker" class="modal-screen" aria-labelledby="creature-picker-title">…</section> intercepts pointer events
+        - retrying tap action
+        - waiting 20ms
+        2 × waiting for element to be visible, enabled and stable
+          - element is visible, enabled and stable
+          - scrolling into view if needed
+          - done scrolling
+          - <section role="dialog" aria-modal="true" id="creature-picker" class="modal-screen" aria-labelledby="creature-picker-title">…</section> intercepts pointer events
+        - retrying tap action
+          - waiting 100ms
+        42 × waiting for element to be visible, enabled and stable
+           - element is visible, enabled and stable
+           - scrolling into view if needed
+           - done scrolling
+           - <section role="dialog" aria-modal="true" id="creature-picker" class="modal-screen" aria-labelledby="creature-picker-title">…</section> intercepts pointer events
+         - retrying tap action
+           - waiting 500ms
+        - waiting for element to be visible, enabled and stable
+
+
+      20 | });
+      21 | test('menu selection overrides development URL and remains selected after returning from compatibility mode',async({page})=>{
+    > 22 |  await menu(page,'&fusionDev=paopaoyuan');await page.locator('#choose-creature').tap();await expect(page.locator('[data-creature="bubblesalamander"]')).toHaveAttribute('aria-pressed','true');await page.locator('[data-creature="sproutspike"]').tap();await page.keyboard.press('Escape');await page.locator('#start-fusion').tap();expect(await page.evaluate(()=>(window as any).game.party.leader.species)).toBe('sproutspike');
+         |                                                                                                                                                                                                                                                                                                                                  ^
+      23 |  await page.locator('#pause').tap();await page.locator('#back-menu').tap();await page.locator('#start-legacy-party').tap();expect(await page.evaluate(()=>(window as any).game.party.members.length)).toBe(3);
+      24 |  await page.locator('#pause').tap();await page.locator('#back-menu').tap();await page.locator('#start-fusion').tap();expect(await page.evaluate(()=>(window as any).game.party.members.map((m:any)=>m.species))).toEqual(['sproutspike']);
+      25 | });
+        at E:\study\game\MonsterBonk Mobile\tests\creature-selection.spec.ts:22:322
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\creature-selection-menu-se-b4eca-ing-from-compatibility-mode-webkit\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\creature-selection-menu-se-b4eca-ing-from-compatibility-mode-webkit\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\creature-selection-menu-se-b4eca-ing-from-compatibility-mode-webkit\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\creature-selection-menu-se-b4eca-ing-from-compatibility-mode-webkit\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [webkit] › tests\creature-selection.spec.ts:21:1 › menu selection overrides development URL and remains selected after returning from compatibility mode 
+  7 passed (1.0m)

@@ -1,0 +1,12 @@
+
+> monsterbonk-mobile@0.4.0 test
+> playwright test --last-failed --reporter=list
+
+
+Running 1 test using 1 worker
+
+(node:62916) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 1 [webkit] › tests\creature-selection.spec.ts:21:1 › menu selection overrides development URL and remains selected after returning from compatibility mode (5.9s)
+
+  1 passed (7.8s)

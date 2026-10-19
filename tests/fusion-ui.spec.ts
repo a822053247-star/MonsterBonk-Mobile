@@ -56,6 +56,9 @@ test('real card selection fuses and real impacts render four atlas rows on both 
   await page.setViewportSize({ width: 568, height: 320 });
   await page.screenshot({ path: 'artifacts/v5-fusion-card-568.png' });
   await page.setViewportSize({ width: 844, height: 390 }); await card.tap();
+  // Resize can wake rendering after the fixture sleeps. Keep this arranged frame
+  // paused while manually advancing Combat, so screenshots cannot race live ticks.
+  await page.evaluate(() => { const g = (window as any).game; g.sleep(); g.mode = 'paused'; });
   for (const viewport of [{ width: 844, height: 390 }, { width: 568, height: 320 }]) {
     await page.setViewportSize(viewport); await page.evaluate(() => (window as unknown as Fixture).impact());
     expect((await state(page)).combat.fusion).toMatchObject({ active: 'burst-seed', bursts: viewport.width === 844 ? 1 : 2, children: 2 });

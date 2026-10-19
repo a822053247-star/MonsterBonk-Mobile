@@ -1,0 +1,609 @@
+{
+  "sourceSize": [
+    1774,
+    887
+  ],
+  "sourceSHA256": "4d4f0fd5eb3f73e5da9e97dda903a68c99e790ba1079a8e348fba45baa0c18c4",
+  "alpha": {
+    "zero": 764092,
+    "faint": 319136,
+    "visible": 490310
+  },
+  "threshold": 24,
+  "minimumComponentPixels": 24,
+  "cell": 256,
+  "grid": [
+    8,
+    4
+  ],
+  "frames": [
+    {
+      "skill": "deep-bubble",
+      "frame": 0,
+      "source": [
+        27,
+        101,
+        185,
+        187
+      ],
+      "atlas": [
+        0,
+        0,
+        256,
+        256
+      ],
+      "pivot": [
+        128,
+        128
+      ],
+      "scale": 1
+    },
+    {
+      "skill": "deep-bubble",
+      "frame": 1,
+      "source": [
+        189,
+        96,
+        352,
+        218
+      ],
+      "atlas": [
+        256,
+        0,
+        256,
+        256
+      ],
+      "pivot": [
+        128,
+        128
+      ],
+      "scale": 1
+    },
+    {
+      "skill": "deep-bubble",
+      "frame": 2,
+      "source": [
+        376,
+        64,
+        564,
+        231
+      ],
+      "atlas": [
+        512,
+        0,
+        256,
+        256
+      ],
+      "pivot": [
+        128,
+        128
+      ],
+      "scale": 1
+    },
+    {
+      "skill": "deep-bubble",
+      "frame": 3,
+      "source": [
+        581,
+        61,
+        771,
+        242
+      ],
+      "atlas": [
+        768,
+        0,
+        256,
+        256
+      ],
+      "pivot": [
+        128,
+        128
+      ],
+      "scale": 1
+    },
+    {
+      "skill": "deep-bubble",
+      "frame": 4,
+      "source": [
+        783,
+        31,
+        988,
+        251
+      ],
+      "atlas": [
+        1024,
+        0,
+        256,
+        256
+      ],
+      "pivot": [
+        128,
+        128
+      ],
+      "scale": 1
+    },
+    {
+      "skill": "deep-bubble",
+      "frame": 5,
+      "source": [
+        998,
+        67,
+        1214,
+        248
+      ],
+      "atlas": [
+        1280,
+        0,
+        256,
+        256
+      ],
+      "pivot": [
+        128,
+        128
+      ],
+      "scale": 1
+    },
+    {
+      "skill": "deep-bubble",
+      "frame": 6,
+      "source": [
+        1226,
+        100,
+        1400,
+        242
+      ],
+      "atlas": [
+        1536,
+        0,
+        256,
+        256
+      ],
+      "pivot": [
+        128,
+        128
+      ],
+      "scale": 1
+    },
+    {
+      "skill": "deep-bubble",
+      "frame": 7,
+      "source": [
+        1414,
+        112,
+        1514,
+        207
+      ],
+      "atlas": [
+        1792,
+        0,
+        256,
+        256
+      ],
+      "pivot": [
+        128,
+        128
+      ],
+      "scale": 1
+    },
+    {
+      "skill": "chain-bubble",
+      "frame": 0,
+      "source": [
+        27,
+        339,
+        204,
+        436
+      ],
+      "atlas": [
+        0,
+        256,
+        256,
+        256
+      ],
+      "pivot": [
+        128,
+        128
+      ],
+      "scale": 0.9032258064516129
+    },
+    {
+      "skill": "chain-bubble",
+      "frame": 1,
+      "source": [
+        227,
+        320,
+        401,
+        434
+      ],
+      "atlas": [
+        256,
+        256,
+        256,
+        256
+      ],
+      "pivot": [
+        128,
+        128
+      ],
+      "scale": 0.9032258064516129
+    },
+    {
+      "skill": "chain-bubble",
+      "frame": 2,
+      "source": [
+        427,
+        301,
+        609,
+        459
+      ],
+      "atlas": [
+        512,
+        256,
+        256,
+        256
+      ],
+      "pivot": [
+        128,
+        128
+      ],
+      "scale": 0.9032258064516129
+    },
+    {
+      "skill": "chain-bubble",
+      "frame": 3,
+      "source": [
+        627,
+        302,
+        845,
+        452
+      ],
+      "atlas": [
+        768,
+        256,
+        256,
+        256
+      ],
+      "pivot": [
+        128,
+        128
+      ],
+      "scale": 0.9032258064516129
+    },
+    {
+      "skill": "chain-bubble",
+      "frame": 4,
+      "source": [
+        854,
+        318,
+        1102,
+        441
+      ],
+      "atlas": [
+        1024,
+        256,
+        256,
+        256
+      ],
+      "pivot": [
+        128,
+        128
+      ],
+      "scale": 0.9032258064516129
+    },
+    {
+      "skill": "chain-bubble",
+      "frame": 5,
+      "source": [
+        1117,
+        310,
+        1266,
+        453
+      ],
+      "atlas": [
+        1280,
+        256,
+        256,
+        256
+      ],
+      "pivot": [
+        128,
+        128
+      ],
+      "scale": 0.9032258064516129
+    },
+    {
+      "skill": "chain-bubble",
+      "frame": 6,
+      "source": [
+        1283,
+        317,
+        1499,
+        453
+      ],
+      "atlas": [
+        1536,
+        256,
+        256,
+        256
+      ],
+      "pivot": [
+        128,
+        128
+      ],
+      "scale": 0.9032258064516129
+    },
+    {
+      "skill": "thorn-scatter",
+      "frame": 0,
+      "source": [
+        44,
+        536,
+        235,
+        608
+      ],
+      "atlas": [
+        0,
+        512,
+        256,
+        256
+      ],
+      "pivot": [
+        128,
+        128
+      ],
+      "scale": 1
+    },
+    {
+      "skill": "thorn-scatter",
+      "frame": 1,
+      "source": [
+        257,
+        504,
+        452,
+        645
+      ],
+      "atlas": [
+        256,
+        512,
+        256,
+        256
+      ],
+      "pivot": [
+        128,
+        128
+      ],
+      "scale": 1
+    },
+    {
+      "skill": "thorn-scatter",
+      "frame": 2,
+      "source": [
+        472,
+        498,
+        644,
+        649
+      ],
+      "atlas": [
+        512,
+        512,
+        256,
+        256
+      ],
+      "pivot": [
+        128,
+        128
+      ],
+      "scale": 1
+    },
+    {
+      "skill": "thorn-scatter",
+      "frame": 3,
+      "source": [
+        673,
+        499,
+        868,
+        653
+      ],
+      "atlas": [
+        768,
+        512,
+        256,
+        256
+      ],
+      "pivot": [
+        128,
+        128
+      ],
+      "scale": 1
+    },
+    {
+      "skill": "thorn-scatter",
+      "frame": 4,
+      "source": [
+        896,
+        488,
+        1077,
+        658
+      ],
+      "atlas": [
+        1024,
+        512,
+        256,
+        256
+      ],
+      "pivot": [
+        128,
+        128
+      ],
+      "scale": 1
+    },
+    {
+      "skill": "thorn-scatter",
+      "frame": 5,
+      "source": [
+        1108,
+        505,
+        1283,
+        650
+      ],
+      "atlas": [
+        1280,
+        512,
+        256,
+        256
+      ],
+      "pivot": [
+        128,
+        128
+      ],
+      "scale": 1
+    },
+    {
+      "skill": "thorn-scatter",
+      "frame": 6,
+      "source": [
+        1315,
+        502,
+        1478,
+        636
+      ],
+      "atlas": [
+        1536,
+        512,
+        256,
+        256
+      ],
+      "pivot": [
+        128,
+        128
+      ],
+      "scale": 1
+    },
+    {
+      "skill": "jump-thorn",
+      "frame": 0,
+      "source": [
+        27,
+        722,
+        238,
+        813
+      ],
+      "atlas": [
+        0,
+        768,
+        256,
+        256
+      ],
+      "pivot": [
+        128,
+        128
+      ],
+      "scale": 1
+    },
+    {
+      "skill": "jump-thorn",
+      "frame": 1,
+      "source": [
+        241,
+        715,
+        428,
+        809
+      ],
+      "atlas": [
+        256,
+        768,
+        256,
+        256
+      ],
+      "pivot": [
+        128,
+        128
+      ],
+      "scale": 1
+    }
+  ],
+  "rejected": [
+    {
+      "skill": "jump-thorn",
+      "source": [
+        430,
+        674,
+        1035,
+        870
+      ],
+      "reason": "Impact and two arc stages overlap: connected body spans x597..1030; impact x434..607 overlaps it. No reliable boundary."
+    },
+    {
+      "skill": "jump-thorn",
+      "source": [
+        1035,
+        674,
+        1380,
+        870
+      ],
+      "reason": "Impact x1043..1183 overlaps arc x1175..1371. Keep procedural impact and curved travel."
+    },
+    {
+      "skill": "jump-thorn",
+      "source": [
+        1380,
+        674,
+        1525,
+        870
+      ],
+      "reason": "Terminal detached debris; not enough to reconstruct the obscured impact animation."
+    }
+  ],
+  "playback": {
+    "deep-bubble": {
+      "flight": [
+        0,
+        1,
+        2
+      ],
+      "impact": [
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    "chain-bubble": {
+      "flight": [
+        0,
+        1
+      ],
+      "impact": [
+        2,
+        5,
+        6
+      ],
+      "unusedArcs": [
+        3,
+        4
+      ]
+    },
+    "thorn-scatter": {
+      "flight": [
+        0
+      ],
+      "impact": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ]
+    },
+    "jump-thorn": {
+      "flight": [
+        0,
+        1
+      ],
+      "impact": [],
+      "fallback": "procedural"
+    }
+  }
+}

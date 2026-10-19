@@ -28,3 +28,48 @@ test('real pursuit on both phone layouts freezes on pause and reuses cached batc
  const cache=await page.evaluate(()=>(window as any).game.combatView.pixelEnemies.inspect().cache);await page.locator('#restart').tap();expect(await page.evaluate(()=>(window as any).game.combatView.pixelEnemies.inspect().cache)).toEqual(cache);
  expect(await page.evaluate(()=>{const g=(window as any).game;g.dispose();return g.combatView.pixelEnemies})).toBeUndefined();
 });
+
+for(const kind of ['normal','fast','tank']as const)test(kind+' shows eight distinct GPU headings with independent mirrored UVs and holds direction at rest',async({page})=>{
+ await open(page);
+ const samples=await page.evaluate(kind=>{const w=window as any,g=w.game;g.sleep();g.mode='paused';g.combat.reset();const e=g.combat.spawn(kind,-3,3,0),samples=[];
+  for(const [dx,dy]of [[0,-1],[1,-1],[1,0],[1,1],[0,1],[-1,1],[-1,0],[-1,-1]]){
+   e.previousX=e.x-dx*.02;e.previousZ=e.z-dy*.02/Math.SQRT1_2;w.draw();samples.push({pixels:w.gpu(),frame:g.combatView.pixelEnemies.inspect().batches.find((b:any)=>b.kind===kind).frames[0]});
+  }
+  e.previousX=e.x;e.previousZ=e.z;w.draw();return {samples,rest:g.combatView.pixelEnemies.inspect().batches.find((b:any)=>b.kind===kind).frames[0]};
+ },kind);
+ expect(new Set(samples.samples.map(s=>s.pixels.hash)).size).toBe(8);
+ expect(samples.samples.map(s=>s.frame)).toEqual([4,3,2,1,0,1,2,3].map((frame,i)=>({frame,mirror:i>=5})));
+ expect(samples.rest).toEqual({frame:3,mirror:true});
+});
+
+test('actual pursuit faces its displacement; death retains its heading and finished corpses release direction state',async({page})=>{
+ await open(page);
+ const result=await page.evaluate(()=>{const w=window as any,g=w.game,c=g.combat;g.sleep();c.reset();c.obstacles=[];c.useNavigation=false;c.spawnClock=1e9;g.party.leader.attackCooldown=1e9;
+  const enemies=[c.spawn('normal',6,4,0),c.spawn('fast',-6,4,0),c.spawn('tank',0,-6,0)];c.update(1/60,{x:0,z:0});w.draw();const alive=g.combatView.pixelEnemies.inspect();
+  enemies.forEach((e:any)=>c.damageEnemy(e,1e5,0,0));w.draw();const dead=g.combatView.pixelEnemies.inspect();c.update(.6,{x:0,z:0});w.draw();return {alive,dead,cleared:g.combatView.pixelEnemies.inspect().directionStates};
+ });
+ expect(result.alive.batches.map((b:any)=>b.frames[0])).toEqual([{frame:3,mirror:true},{frame:3,mirror:false},{frame:0,mirror:false}]);
+ expect(result.dead.batches.map((b:any)=>b.frames)).toEqual(result.alive.batches.map((b:any)=>b.frames));expect(result.cleared).toBe(0);
+});
+
+for(const viewport of [{width:844,height:390},{width:568,height:320}])test('three species render every direction at '+viewport.width+' without per-enemy textures',async({page})=>{
+ await page.setViewportSize(viewport);await open(page);await page.evaluate(()=>{const w=window as any,g=w.game;g.sleep();g.mode='paused';g.combat.reset();g.welcome.style.display='none';
+  const vectors=[[0,-1],[1,-1],[1,0],[1,1],[0,1],[-1,1],[-1,0],[-1,-1]];
+  for(const [row,kind]of ['normal','fast','tank'].entries())for(const [col,[dx,dy]]of vectors.entries()){
+   const e=g.combat.spawn(kind,(col-3.5)*2.4,(row-1)*4,0);e.previousX=e.x-dx*.02;e.previousZ=e.z-dy*.02/Math.SQRT1_2;
+  }w.draw();
+ });
+ const state=await page.evaluate(()=>(window as any).game.combatView.pixelEnemies.inspect());
+ expect(state.cache).toEqual({textures:3,references:3});expect(state.batches.map((b:any)=>b.count)).toEqual([8,8,8]);expect(state.batches.every((b:any)=>b.directional&&b.nearest&&!b.mipmaps)).toBe(true);
+ // Keep presenting this frozen GPU scene during screenshot composition in WebKit.
+ await page.evaluate(()=>{const w=window as any;const draw=()=>{w.draw();w.captureFrame=requestAnimationFrame(draw)};draw()});
+ await page.screenshot({path:'artifacts/enemy-directions-eight-'+viewport.width+'.png'});
+ await page.evaluate(()=>cancelAnimationFrame((window as any).captureFrame));
+});
+
+test('a missing direction atlas falls back only that species to its original static PNG',async({page})=>{
+ await page.route('**/enemies/direction/runner-bug-directions/runtime.normalized.png',r=>r.abort());await open(page);
+ const batches=await page.evaluate(()=>(window as any).game.combatView.pixelEnemies.inspect().batches);
+ expect(batches.map((b:any)=>b.directional)).toEqual([true,false,true]);expect(batches[1]).toMatchObject({loaded:true,failed:false,directionFailed:true});
+ await page.evaluate(()=>(window as any).arrange());expect(await page.evaluate(()=>(window as any).game.combatView.pixelEnemies.inspect().batches.map((b:any)=>b.count))).toEqual([2,2,1]);
+});

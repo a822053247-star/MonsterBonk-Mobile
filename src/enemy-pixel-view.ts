@@ -1,6 +1,8 @@
 import * as THREE from 'three';
 import { COMBAT_LIMITS, type EnemyKind } from './combat';
 import { PIXEL_ALPHA, PixelTextureCache } from './pixel-sprite';
+import { ENEMY_DIRECTION_LAYOUT, ENEMY_DIRECTION_FRAMES, enemyFacing } from './enemy-directions';
+import type { Facing8, ScreenBasis } from './creature-animation';
 
 type PixelEnemyKind = EnemyKind;
 const HEIGHTS = { normal: 1.7, fast: 1.45, tank: 2.3 } as const;
@@ -8,6 +10,7 @@ type Batch = {
   mesh: THREE.InstancedMesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>;
   hurt: THREE.InstancedBufferAttribute;
   fade: THREE.InstancedBufferAttribute;
+  facing: THREE.InstancedBufferAttribute;
   lease: ReturnType<PixelTextureCache['acquire']>;
 };
 
@@ -20,12 +23,16 @@ export class EnemyPixelView {
   private color = new THREE.Color();
   private orientation = new THREE.Quaternion(-Math.sin(Math.PI / 8), 0, 0, Math.cos(Math.PI / 8));
   private up = new THREE.Vector3(0, Math.SQRT1_2, -Math.SQRT1_2);
+  private right = new THREE.Vector3(1, 0, 0);
   private top = new THREE.Vector3();
   private roll = new THREE.Quaternion();
   private forward = new THREE.Vector3(0, 0, 1);
   private displayScale = 1;
   private disposed = false;
   private tankFallback: THREE.CanvasTexture;
+  private basis: ScreenBasis = { rightX: 1, rightZ: 0, upX: 0, upZ: -Math.SQRT1_2 };
+  private directions = new Map<number, { facing: Facing8; seen: number }>();
+  private renderSerial = 0;
 
   constructor() {
     this.group.name = 'EnemyPixelBatches';
@@ -49,12 +56,20 @@ export class EnemyPixelView {
       geometry.setAttribute('instanceHurt', hurt);
       const fade = new THREE.InstancedBufferAttribute(new Float32Array(COMBAT_LIMITS.enemies).fill(1), 1);
       fade.setUsage(THREE.DynamicDrawUsage); geometry.setAttribute('instanceFade', fade);
+      const facing = new THREE.InstancedBufferAttribute(new Float32Array(COMBAT_LIMITS.enemies * 2), 2);
+      facing.setUsage(THREE.DynamicDrawUsage); geometry.setAttribute('instanceFacing', facing);
+      const directionAtlas = { value: 0 };
       // Alpha cutout avoids per-instance transparent sorting and invisible depth quads.
       const material = new THREE.MeshBasicMaterial({ color: '#ffffff', alphaTest: PIXEL_ALPHA, transparent: false, depthTest: true, depthWrite: true, toneMapped: false });
       if (kind === 'tank') material.map = this.tankFallback;
       material.onBeforeCompile = shader => {
-        shader.vertexShader = 'attribute float instanceHurt; attribute float instanceFade; varying float vPixelHurt; varying float vPixelFade;\n' + shader.vertexShader;
-        shader.vertexShader = shader.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\nvPixelHurt = instanceHurt; vPixelFade = instanceFade;');
+        shader.uniforms.enemyDirectionAtlas = directionAtlas;
+        shader.vertexShader = 'attribute float instanceHurt; attribute float instanceFade; attribute vec2 instanceFacing; uniform float enemyDirectionAtlas; varying float vPixelHurt; varying float vPixelFade;\n' + shader.vertexShader;
+        shader.vertexShader = shader.vertexShader.replace('#include <uv_vertex>', `#include <uv_vertex>
+          #ifdef USE_MAP
+            if (enemyDirectionAtlas > 0.5) vMapUv.x = (mix(vMapUv.x, 1.0-vMapUv.x, instanceFacing.y) + instanceFacing.x) / 5.0;
+          #endif`);
+        shader.vertexShader = shader.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\nvPixelHurt = instanceHurt; vPixelFade = instanceFade; transformed.y -= enemyDirectionAtlas * (1.0 - 240.0/256.0);');
         shader.fragmentShader = 'varying float vPixelHurt; varying float vPixelFade;\n' + shader.fragmentShader;
         shader.fragmentShader = shader.fragmentShader.replace('#include <color_fragment>', '#include <color_fragment>\ndiffuseColor.rgb = mix(diffuseColor.rgb, vec3(1.0, 0.96, 0.84), vPixelHurt * 0.78);');
         // Ordered pixel dissolve retains opaque depth/cutout behavior without corpse sorting.
@@ -65,16 +80,17 @@ export class EnemyPixelView {
             if (vPixelFade < threshold) discard;
           }`);
       };
-      material.customProgramCacheKey = () => 'enemy-pixel-hurt-fade-v2';
+      material.customProgramCacheKey = () => 'enemy-pixel-direction-hurt-fade-v3';
       const mesh = new THREE.InstancedMesh(geometry, material, COMBAT_LIMITS.enemies);
       mesh.name = `EnemyPixel:${kind}`; mesh.count = 0; mesh.frustumCulled = false;
       mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
       mesh.setColorAt(0, this.color.set('#ffffff'));
       const lease = this.cache.acquire(`enemy-${kind}`, () => {
         if (this.disposed || !lease.entry.ready) return;
+        directionAtlas.value = lease.entry.directional ? 1 : 0;
         material.map = lease.entry.texture; material.needsUpdate = true;
       }, kind === 'tank');
-      this.batches.set(kind, { mesh, hurt, fade, lease });
+      this.batches.set(kind, { mesh, hurt, fade, facing, lease });
       this.group.add(mesh);
     }
   }
@@ -82,6 +98,9 @@ export class EnemyPixelView {
   setView(camera: THREE.Camera, viewportHeight: number, frustumHeight: number) {
     this.orientation.copy(camera.quaternion);
     this.up.set(0, 1, 0).applyQuaternion(this.orientation);
+    this.right.set(1,0,0).applyQuaternion(this.orientation);
+    this.basis.rightX = this.right.x; this.basis.rightZ = this.right.z;
+    this.basis.upX = this.up.x; this.basis.upZ = this.up.z;
     // Roughly 34px/29px on short phones; purely visual, never a collision radius.
     this.displayScale = THREE.MathUtils.clamp(34 * frustumHeight / Math.max(1, viewportHeight) / HEIGHTS.normal, 1, 1.2);
   }
@@ -89,15 +108,26 @@ export class EnemyPixelView {
   ready(kind: EnemyKind): kind is PixelEnemyKind { return !this.disposed && (kind === 'tank' || !!this.batches.get(kind)?.lease.entry.ready); }
   enableBasics() { if (!this.disposed) for (const batch of this.batches.values()) batch.lease.start(); }
   height(kind: PixelEnemyKind) { return HEIGHTS[kind] * this.displayScale; }
-  begin() { for (const { mesh } of this.batches.values()) mesh.count = 0; }
+  begin() { this.renderSerial++; for (const { mesh } of this.batches.values()) mesh.count = 0; }
+  resetDirections() { this.directions.clear(); }
 
-  put(kind: PixelEnemyKind, x: number, z: number, bob: number, hurt: boolean, tint: string, lean = 0, squash = 0, scale = 1, opacity = 1) {
+  put(kind: PixelEnemyKind, x: number, z: number, bob: number, hurt: boolean, tint: string, lean = 0, squash = 0, scale = 1, opacity = 1, movement?: { id: number; dx: number; dz: number }) {
     const batch = this.batches.get(kind)!;
     if (batch.mesh.count >= COMBAT_LIMITS.enemies) return;
     const index = batch.mesh.count++, height = this.height(kind);
+    let heading: Facing8 = 'down';
+    if (movement) {
+      let state = this.directions.get(movement.id);
+      heading = enemyFacing(movement.dx, movement.dz, this.basis, state?.facing);
+      if (!state) { state = { facing: heading, seen: this.renderSerial }; this.directions.set(movement.id, state); }
+      state.facing = heading; state.seen = this.renderSerial;
+    }
+    const [frame, mirror] = ENEMY_DIRECTION_FRAMES[heading];
+    batch.facing.setXY(index, frame, mirror);
     this.pose.position.set(x, 0.035 + bob * 0.35, z);
     this.pose.quaternion.copy(this.orientation).multiply(this.roll.setFromAxisAngle(this.forward, lean));
-    this.pose.scale.set(height * batch.lease.entry.aspect * (1 - squash * .6) * scale, height * (1 + squash) * scale, 1);
+    const fullHeight = height * (batch.lease.entry.directional ? ENEMY_DIRECTION_LAYOUT.cell / ENEMY_DIRECTION_LAYOUT.bodyHeight : 1);
+    this.pose.scale.set(fullHeight * batch.lease.entry.aspect * (1 - squash * .6) * scale, fullHeight * (1 + squash) * scale, 1);
     this.pose.updateMatrix();
     batch.mesh.setMatrixAt(index, this.pose.matrix);
     batch.mesh.setColorAt(index, this.color.set(tint));
@@ -110,15 +140,18 @@ export class EnemyPixelView {
   }
 
   finish() {
-    for (const { mesh, hurt, fade } of this.batches.values()) {
+    for (const { mesh, hurt, fade, facing } of this.batches.values()) {
       mesh.instanceMatrix.needsUpdate = true;
       if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
-      hurt.needsUpdate = true; fade.needsUpdate = true;
+      hurt.needsUpdate = true; fade.needsUpdate = true; facing.needsUpdate = true;
     }
+    for (const [id,state] of this.directions) if (state.seen !== this.renderSerial) this.directions.delete(id);
   }
 
   inspect() {
-    return { cache: this.cache.inspect(), batches: [...this.batches].map(([kind, batch]) => ({ kind, loaded: batch.lease.entry.ready, failed: batch.lease.entry.failed,
+    return { cache: this.cache.inspect(), directionStates: this.directions.size, batches: [...this.batches].map(([kind, batch]) => ({ kind, loaded: batch.lease.entry.ready, failed: batch.lease.entry.failed,
+      directional: batch.lease.entry.directional, directionFailed: batch.lease.entry.directionFailed,
+      frames: Array.from({ length: batch.mesh.count }, (_,i) => ({ frame: batch.facing.getX(i), mirror: !!batch.facing.getY(i) })),
       count: batch.mesh.count, capacity: COMBAT_LIMITS.enemies, aspect: batch.lease.entry.aspect, height: this.height(kind),
       crop: [...batch.lease.entry.crop], sourceSize: [...batch.lease.entry.sourceSize],
       nearest: batch.lease.entry.texture.magFilter === THREE.NearestFilter && batch.lease.entry.texture.minFilter === THREE.NearestFilter,
@@ -132,6 +165,7 @@ export class EnemyPixelView {
       lease.release(); mesh.dispose(); mesh.geometry.dispose(); mesh.material.dispose();
     }
     this.batches.clear(); this.group.clear(); this.group.removeFromParent();
+    this.directions.clear();
     this.tankFallback.dispose();
   }
 }

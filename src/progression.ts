@@ -39,8 +39,8 @@ export const FUSION_SKILLS: readonly SkillDefinition[] = [...SKILLS,
   { id: 'split-on-hit', title: '命中分裂', benefit: '命中派生两枚小火种', description: '火花弹命中后分裂，与焰绒自动融合为爆裂火种：小范围爆炸并派生两枚火种。可与分枝魔法同时生效。', maxRank: 1, icon: 'spark', color: '#ffb45f', effect: { type: 'spell', levels: [{ splitOnHit: 1 }] } },
 ];
 /** Development-only pools; no new water/grass cards leak into historical or P1 modes. */
-const AREA_CARD: SkillDefinition = { id: 'area', title: '范围扩大', benefit: '水泡命中扩散', description: '水泡弹自动融合为深海泡影，命中时扩散范围伤害与减速。', maxRank: 1, icon: 'wave', color: '#8fe8ff', effect: { type: 'spell', levels: [{}] } };
-const CHAIN_CARD: SkillDefinition = { id: 'chain', title: '连锁弹射', benefit: '命中后跳向附近敌人', description: '自动形成连环水爆或跳跃荆棘；最多两次弹射，不重复锁定已命中的敌人。', maxRank: 1, icon: 'compass', color: '#a5edbe', effect: { type: 'spell', levels: [{}] } };
+const AREA_CARD: SkillDefinition = { id: 'area', title: '范围扩张', benefit: '水泡命中扩散', description: '水泡弹自动融合为深海泡影，命中时扩散范围伤害与减速。', maxRank: 1, icon: 'wave', color: '#8fe8ff', effect: { type: 'spell', levels: [{}] } };
+const CHAIN_CARD: SkillDefinition = { id: 'chain', title: '连锁弹射', benefit: '命中后跳向附近敌人', description: '自动形成连环水爆或跳跃荆棘；最多三次额外跳跃，不重复锁定已命中的敌人。', maxRank: 1, icon: 'compass', color: '#a5edbe', effect: { type: 'spell', levels: [{}] } };
 export const WATER_SKILLS: readonly SkillDefinition[] = [...SKILLS, AREA_CARD, CHAIN_CARD];
 export const GRASS_SKILLS: readonly SkillDefinition[] = [...SKILLS, { ...FUSION_SKILLS[FUSION_SKILLS.length - 1], title: '命中分裂', benefit: '叶刃命中散射三枚荆棘', description: '叶刃自动融合为荆棘散射；派生荆棘不会再次分裂。', icon: 'leaf', color: '#b4ea86' }, CHAIN_CARD];
 const ALL_SKILLS = [...FUSION_SKILLS, AREA_CARD, CHAIN_CARD];

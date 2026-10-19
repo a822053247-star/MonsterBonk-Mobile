@@ -1,0 +1,12 @@
+
+> monsterbonk-mobile@0.4.0 test
+> playwright test --last-failed --reporter=list
+
+
+Running 1 test using 1 worker
+
+(node:18568) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 1 [webkit] › tests\fusion-ui.spec.ts:50:1 › real card selection fuses and real impacts render four atlas rows on both short phone layouts (3.9s)
+
+  1 passed (5.8s)

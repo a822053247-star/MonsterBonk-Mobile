@@ -1,0 +1,277 @@
+Command: npm test -- --reporter=list
+Completion output (earlier progress omitted):
+  ok 375 [webkit] › tests\upgrades.spec.ts:34:1 › XP opens three valid cards, freezes the entire simulation and touch picks once (2.8s)
+  ok 376 [webkit] › tests\upgrades.spec.ts:65:1 › XP overflow queues separate choices; duplicate old clicks cannot spend the next reward (2.7s)
+  ok 377 [webkit] › tests\upgrades.spec.ts:85:1 › cards fit short landscape phones and safe areas; rotation/background keeps choices frozen (3.1s)
+  ok 378 [webkit] › tests\upgrades.spec.ts:124:1 › new spells coexist, max HP updates HUD and a fresh run clears all skills (3.7s)
+  ok 379 [webkit] › tests\upgrades.spec.ts:147:1 › the last remaining skill is valid and full mastery stops creating empty dialogs (2.6s)
+  -  380 [webkit] › tests\upgrades.spec.ts:164:1 › an existing joystick finger cannot pick a card or leave movement stuck
+  ok 381 [webkit] › tests\world-art.spec.ts:3:1 › every used tree and rock cutout has one connected body and no isolated white square (855ms)
+  ok 382 [webkit] › tests\world-generator.spec.ts:5:1 › same seed reproduces the complete layout and validation, independently of global RNG (111ms)
+  ok 383 [webkit] › tests\world-generator.spec.ts:15:1 › 256 seeds vary regions, trees, rocks and ponds while preserving spawn and every navigable cell (7.7s)
+  ok 384 [webkit] › tests\world-generator.spec.ts:40:1 › validation rejects blocked spawn, blocked roads and isolated walkable pockets (4ms)
+  ok 385 [webkit] › tests\world-sample.spec.ts:13:1 › sample loads, preserves an open start, and returns to the original map for old modes (3.2s)
+  ok 386 [webkit] › tests\world-sample.spec.ts:34:1 › water blocks Yanrong and no followers are created (2.5s)
+  ok 387 [webkit] › tests\world-sample.spec.ts:45:1 › failed assets and explicit legacy override retain a visible collidable original world (4.2s)
+  ok 388 [webkit] › tests\world-sample.spec.ts:58:1 › desktop and short phone previews retain readable scale and bounded draw calls (2.8s)
+
+
+  1) [chromium] › tests\elemental-fusion-model.spec.ts:114:1 › deep AoE respects cover and scatter angles, range and single-hit children are independent of animations 
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 2
+    + Received  + 2
+
+      Array [
+    -   -0.5235987755982988,
+    +   -0.5235987755982987,
+        0,
+    -   0.5235987755982987,
+    +   0.5235987755982991,
+      ]
+
+      116 |  const grass=fixture('sproutspike');grass.learn('split-on-hit');const g=grass.fire();grass.impact(g.shot,g.target);
+      117 |  const kids=grass.c.projectiles.filter(s=>s.active&&s.generation===1),base=Math.atan2(g.shot.vx,g.shot.vz);
+    > 118 |  expect(kids.map(s=>Math.atan2(s.vx,s.vz)-base)).toEqual([-.5235987755982988,0,.5235987755982987]);
+          |                                                  ^
+      119 |  for(const s of grass.c.enemies)s.active=false;grass.c.update(.5,origin);
+      120 |  for(const kid of kids){expect(kid.distance).toBeCloseTo(3);expect(kid.active).toBe(false);expect(kid.pierces).toBe(0);}
+      121 | });
+        at E:\study\game\MonsterBonk Mobile\tests\elemental-fusion-model.spec.ts:118:50
+
+    Error Context: test-results\elemental-fusion-model-dee-13ead-e-independent-of-animations-chromium\error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\elemental-fusion-model-dee-13ead-e-independent-of-animations-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\elemental-fusion-model-dee-13ead-e-independent-of-animations-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [chromium] › tests\elemental-fusion-ui.spec.ts:53:11 › deep-bubble individual skill renders audited pixels, icon and real damage; lifecycle clears batch 
+
+    Error: browserContext.close: ENOENT: no such file or directory, open 'E:\study\game\MonsterBonk Mobile\test-results\.playwright-artifacts-1\traces\ff01734f2e423bd74f9e-14861e106edcabc8d450-recording8.trace'
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\elemental-fusion-ui-deep-b-753b2-mage-lifecycle-clears-batch-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\elemental-fusion-ui-deep-b-753b2-mage-lifecycle-clears-batch-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\elemental-fusion-ui-deep-b-753b2-mage-lifecycle-clears-batch-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\elemental-fusion-ui-deep-b-753b2-mage-lifecycle-clears-batch-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) [chromium] › tests\enemy-motion-model.spec.ts:18:1 › render pose is restrained, allocation-free and stops at rest; animation cadence follows real displacement 
+
+    Error: expect(received).toBeCloseTo(expected, precision)
+
+    Expected: 0.55
+    Received: 0.7000000000000128
+
+    Expected precision:    6
+    Expected difference: < 0.0000005
+    Received difference:   0.1500000000000128
+
+      20 |  const normal=new Combat(),slow=new Combat();quiet(normal);quiet(slow);const a=normal.spawn('normal',8,0,0)!,b=slow.spawn('normal',8,0,0)!;b.slowTime=1.5;const phase=b.walkPhase!;
+      21 |  for(let i=0;i<30;i++){normal.update(1/60,{x:0,z:0});slow.update(1/60,{x:0,z:0});}
+    > 22 |  expect((8-b.x)/(8-a.x)).toBeCloseTo(.7,6);expect(b.walkPhase).not.toBe(phase);expect(b.walkAmount).toBeLessThan(a.walkAmount!);
+         |                          ^
+      23 | });
+      24 |
+        at E:\study\game\MonsterBonk Mobile\tests\enemy-motion-model.spec.ts:22:26
+
+    Error Context: test-results\enemy-motion-model-render--18798-e-follows-real-displacement-chromium\error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\enemy-motion-model-render--18798-e-follows-real-displacement-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\enemy-motion-model-render--18798-e-follows-real-displacement-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  4) [chromium] › tests\enemy-motion-ui.spec.ts:12:1 › PNG walk visibly changes at a fixed collision anchor and always faces the camera 
+
+    Error: browserContext.close: ENOENT: no such file or directory, open 'E:\study\game\MonsterBonk Mobile\test-results\.playwright-artifacts-3\traces\cd21d3646b5a7f151b00-63472facb2198e01b57b.trace'
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\enemy-motion-ui-PNG-walk-v-2722d-and-always-faces-the-camera-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\enemy-motion-ui-PNG-walk-v-2722d-and-always-faces-the-camera-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\enemy-motion-ui-PNG-walk-v-2722d-and-always-faces-the-camera-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\enemy-motion-ui-PNG-walk-v-2722d-and-always-faces-the-camera-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  5) [chromium] › tests\game.spec.ts:41:1 › keyboard moves, normalizes diagonals, dashes and stops after release 
+
+    Error: browserContext.close: ENOENT: no such file or directory, open 'E:\study\game\MonsterBonk Mobile\test-results\.playwright-artifacts-4\traces\8b1bb1493a64c9fc3ab6-73342b479bca27b8b4ce-recording44.trace'
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\game-keyboard-moves-normal-a3f9f-hes-and-stops-after-release-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\game-keyboard-moves-normal-a3f9f-hes-and-stops-after-release-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\game-keyboard-moves-normal-a3f9f-hes-and-stops-after-release-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\game-keyboard-moves-normal-a3f9f-hes-and-stops-after-release-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  6) [webkit] › tests\creature-selection.spec.ts:21:1 › menu selection overrides development URL and remains selected after returning from compatibility mode 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.tap: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for locator('#start-fusion')
+        - locator resolved to <button class="primary" id="start-fusion">…</button>
+      - attempting tap action
+        2 × waiting for element to be visible, enabled and stable
+          - element is visible, enabled and stable
+          - scrolling into view if needed
+          - done scrolling
+          - <section role="dialog" aria-modal="true" id="creature-picker" class="modal-screen" aria-labelledby="creature-picker-title">…</section> intercepts pointer events
+        - retrying tap action
+        - waiting 20ms
+        2 × waiting for element to be visible, enabled and stable
+          - element is visible, enabled and stable
+          - scrolling into view if needed
+          - done scrolling
+          - <section role="dialog" aria-modal="true" id="creature-picker" class="modal-screen" aria-labelledby="creature-picker-title">…</section> intercepts pointer events
+        - retrying tap action
+          - waiting 100ms
+        42 × waiting for element to be visible, enabled and stable
+           - element is visible, enabled and stable
+           - scrolling into view if needed
+           - done scrolling
+           - <section role="dialog" aria-modal="true" id="creature-picker" class="modal-screen" aria-labelledby="creature-picker-title">…</section> intercepts pointer events
+         - retrying tap action
+           - waiting 500ms
+        - waiting for element to be visible, enabled and stable
+
+
+      20 | });
+      21 | test('menu selection overrides development URL and remains selected after returning from compatibility mode',async({page})=>{
+    > 22 |  await menu(page,'&fusionDev=paopaoyuan');await page.locator('#choose-creature').tap();await expect(page.locator('[data-creature="bubblesalamander"]')).toHaveAttribute('aria-pressed','true');await page.locator('[data-creature="sproutspike"]').tap();await page.keyboard.press('Escape');await page.locator('#start-fusion').tap();expect(await page.evaluate(()=>(window as any).game.party.leader.species)).toBe('sproutspike');
+         |                                                                                                                                                                                                                                                                                                                                  ^
+      23 |  await page.locator('#pause').tap();await page.locator('#back-menu').tap();await page.locator('#start-legacy-party').tap();expect(await page.evaluate(()=>(window as any).game.party.members.length)).toBe(3);
+      24 |  await page.locator('#pause').tap();await page.locator('#back-menu').tap();await page.locator('#start-fusion').tap();expect(await page.evaluate(()=>(window as any).game.party.members.map((m:any)=>m.species))).toEqual(['sproutspike']);
+      25 | });
+        at E:\study\game\MonsterBonk Mobile\tests\creature-selection.spec.ts:22:322
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\creature-selection-menu-se-b4eca-ing-from-compatibility-mode-webkit\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\creature-selection-menu-se-b4eca-ing-from-compatibility-mode-webkit\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\creature-selection-menu-se-b4eca-ing-from-compatibility-mode-webkit\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\creature-selection-menu-se-b4eca-ing-from-compatibility-mode-webkit\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  7) [webkit] › tests\elemental-fusion-ui.spec.ts:53:11 › jump-thorn individual skill renders audited pixels, icon and real damage; lifecycle clears batch 
+
+    Error: page.evaluate: Execution context was destroyed, most likely because of a navigation
+
+      57 |  await expect(page.locator('#fusion-elemental-icons img')).toHaveAttribute('src',new RegExp(id+'-icon.png'));
+      58 |  await expect.poll(()=>page.locator('#fusion-elemental-icons img').evaluate((img:HTMLImageElement)=>img.complete&&img.naturalWidth===128)).toBe(true);
+    > 59 |  await page.evaluate(()=>(window as any).impact());await page.evaluate(dt=>{const w=window as any;w.game.combat.update(dt,w.game.position);w.draw()},delta);
+         |                                                               ^
+      60 |  const state=await page.evaluate(()=>{const g=(window as any).game;return {pixels:g.combatView.inspectElemental(),hits:g.combat.hits,children:g.combat.childShots,shots:g.combat.projectiles.filter((s:any)=>s.active).map((s:any)=>({hops:s.bounces,delay:s.hopDelay}))}});
+      61 |  expect(state.hits).toBeGreaterThan(0);expect(state.pixels.count).toBeGreaterThan(0);expect(state.pixels.nearest).toBe(true);if(id==='thorn-scatter')expect(state.children).toBe(3);
+      62 |  const row=['deep-bubble','chain-bubble','thorn-scatter','jump-thorn'].indexOf(id);expect(state.pixels.frames.every((f:number)=>Math.floor(f/8)===row)).toBe(true);
+        at E:\study\game\MonsterBonk Mobile\tests\elemental-fusion-ui.spec.ts:59:63
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\elemental-fusion-ui-jump-t-9bce7-mage-lifecycle-clears-batch-webkit\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\elemental-fusion-ui-jump-t-9bce7-mage-lifecycle-clears-batch-webkit\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\elemental-fusion-ui-jump-t-9bce7-mage-lifecycle-clears-batch-webkit\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\elemental-fusion-ui-jump-t-9bce7-mage-lifecycle-clears-batch-webkit\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  8) [webkit] › tests\game.spec.ts:86:1 › pause freezes simulation and resets held input; menu can restart cleanly 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.click: Test timeout of 30000ms exceeded.
+    Call log:
+      - waiting for locator('#pause')
+        - locator resolved to <button id="pause" aria-label="暂停游戏" class="icon-button">…</button>
+      - attempting click action
+        2 × waiting for element to be visible, enabled and stable
+          - element is not visible
+        - retrying click action
+        - waiting 20ms
+        2 × waiting for element to be visible, enabled and stable
+          - element is not visible
+        - retrying click action
+          - waiting 100ms
+        32 × waiting for element to be visible, enabled and stable
+           - element is not visible
+         - retrying click action
+           - waiting 500ms
+        - waiting for element to be visible, enabled and stable
+
+
+      101 |   const initialResources = await inspect(page);
+      102 |   for (let i = 0; i < 3; i++) {
+    > 103 |     await page.locator('#pause').click();
+          |                                  ^
+      104 |     await page.locator('#back-menu').click();
+      105 |     await page.locator('#start').click();
+      106 |   }
+        at E:\study\game\MonsterBonk Mobile\tests\game.spec.ts:103:34
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\game-pause-freezes-simulat-29510-ut-menu-can-restart-cleanly-webkit\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\game-pause-freezes-simulat-29510-ut-menu-can-restart-cleanly-webkit\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\game-pause-freezes-simulat-29510-ut-menu-can-restart-cleanly-webkit\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\game-pause-freezes-simulat-29510-ut-menu-can-restart-cleanly-webkit\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  8 failed
+    [chromium] › tests\elemental-fusion-model.spec.ts:114:1 › deep AoE respects cover and scatter angles, range and single-hit children are independent of animations 
+    [chromium] › tests\elemental-fusion-ui.spec.ts:53:11 › deep-bubble individual skill renders audited pixels, icon and real damage; lifecycle clears batch 
+    [chromium] › tests\enemy-motion-model.spec.ts:18:1 › render pose is restrained, allocation-free and stops at rest; animation cadence follows real displacement 
+    [chromium] › tests\enemy-motion-ui.spec.ts:12:1 › PNG walk visibly changes at a fixed collision anchor and always faces the camera 
+    [chromium] › tests\game.spec.ts:41:1 › keyboard moves, normalizes diagonals, dashes and stops after release 
+    [webkit] › tests\creature-selection.spec.ts:21:1 › menu selection overrides development URL and remains selected after returning from compatibility mode 
+    [webkit] › tests\elemental-fusion-ui.spec.ts:53:11 › jump-thorn individual skill renders audited pixels, icon and real damage; lifecycle clears batch 
+    [webkit] › tests\game.spec.ts:86:1 › pause freezes simulation and resets held input; menu can restart cleanly 
+  4 skipped
+  376 passed (16.3m)
+

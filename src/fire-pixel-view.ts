@@ -20,7 +20,7 @@ export class FirePixelView {
   loaded = false;
   failed = false;
 
-  constructor() {
+  constructor(private url = URL, private columns = 4, rows = 4, name = 'YanrongFireAtlas') {
     const geometry = new THREE.PlaneGeometry(1, 1);
     geometry.setAttribute('instanceFrame', this.frames);
     this.frames.setUsage(THREE.DynamicDrawUsage);
@@ -29,14 +29,14 @@ export class FirePixelView {
       shader.vertexShader = 'attribute float instanceFrame;\n' + shader.vertexShader;
       shader.vertexShader = shader.vertexShader.replace('#include <uv_vertex>', `#include <uv_vertex>
         #ifdef USE_MAP
-          vMapUv = (vMapUv + vec2(mod(instanceFrame, 4.0), 3.0 - floor(instanceFrame / 4.0))) * 0.25;
+          vMapUv = (vMapUv + vec2(mod(instanceFrame, ${columns}.0), ${rows - 1}.0 - floor(instanceFrame / ${columns}.0))) / vec2(${columns}.0, ${rows}.0);
         #endif`);
     };
-    material.customProgramCacheKey = () => 'yanrong-fire-atlas-v1';
+    material.customProgramCacheKey = () => `pixel-effect-atlas-${columns}-${rows}`;
     this.mesh = new THREE.InstancedMesh(geometry, material, CAPACITY);
-    this.mesh.name = 'YanrongFireAtlas'; this.mesh.count = 0; this.mesh.frustumCulled = false;
+    this.mesh.name = name; this.mesh.count = 0; this.mesh.frustumCulled = false;
     this.mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
-    this.texture = new THREE.TextureLoader().load(URL, texture => {
+    this.texture = new THREE.TextureLoader().load(url, texture => {
       if (this.disposed) { texture.dispose(); return; }
       texture.magFilter = texture.minFilter = THREE.NearestFilter;
       texture.generateMipmaps = false; texture.colorSpace = THREE.SRGBColorSpace;
@@ -52,7 +52,7 @@ export class FirePixelView {
   }
   begin() { this.mesh.count = 0; }
 
-  put(row: number, frame: number, x: number, y: number, z: number, size: number, vx = 0, vz = 0, ground = false) {
+  put(row: number, frame: number, x: number, y: number, z: number, size: number, vx = 0, vz = 0, ground = false, rotation = 0) {
     if (!this.loaded || this.disposed || this.mesh.count >= CAPACITY) return;
     const index = this.mesh.count++;
     this.pose.position.set(x, y, z); this.pose.scale.set(size, size, 1);
@@ -61,14 +61,14 @@ export class FirePixelView {
       this.pose.quaternion.copy(this.orientation);
       if (vx || vz) {
         const angle = Math.atan2(this.up.x * vx + this.up.z * vz, this.right.x * vx + this.right.z * vz);
-        this.pose.quaternion.multiply(this.spin.setFromAxisAngle(this.axis, angle));
+        this.pose.quaternion.multiply(this.spin.setFromAxisAngle(this.axis, angle + rotation));
       }
     }
     this.pose.updateMatrix(); this.mesh.setMatrixAt(index, this.pose.matrix);
-    this.frames.setX(index, row * 4 + Math.max(0, Math.min(3, frame)));
+    this.frames.setX(index, row * this.columns + Math.max(0, Math.min(this.columns - 1, frame)));
   }
   finish() { this.mesh.instanceMatrix.needsUpdate = true; this.frames.needsUpdate = true; }
-  inspect() { return { loaded: this.loaded, failed: this.failed, count: this.mesh.count, capacity: CAPACITY, nearest: this.texture.magFilter === THREE.NearestFilter, url: URL }; }
+  inspect() { return { loaded: this.loaded, failed: this.failed, count: this.mesh.count, capacity: CAPACITY, nearest: this.texture.magFilter === THREE.NearestFilter, url: this.url, frames: Array.from(this.frames.array.slice(0, this.mesh.count)) }; }
   dispose() {
     if (this.disposed) return;
     this.disposed = true; this.loaded = false; this.mesh.count = 0;

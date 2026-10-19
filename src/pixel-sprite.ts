@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import type { SpeciesId } from './party';
 import { ANIMATION_LAYOUT, CreatureAnimator, clipFrame, type AnimationAsset, type ScreenBasis, type CreatureClip } from './creature-animation';
+import { ENEMY_DIRECTION_ASSETS, ENEMY_DIRECTION_LAYOUT } from './enemy-directions';
 
 export const PIXEL_CREATURE_ASSETS: Readonly<Record<SpeciesId, string>> = {
   yanrong: 'creatures/yanrong-base.png',
@@ -52,6 +53,7 @@ interface TextureEntry {
   texture: THREE.Texture; ready: boolean; failed: boolean; disposed: boolean; refs: number;
   aspect: number; sourceSize: number[]; crop: number[]; listeners: Set<() => void>;
   start: () => void;
+  directional: boolean; directionFailed: boolean;
 }
 
 /** One texture per asset, shared by repeated members/instances, owned by each view. */
@@ -61,22 +63,30 @@ export class PixelTextureCache {
   acquire(species: PixelAssetId, onChange: () => void, autoLoad = true) {
     let entry = this.entries.get(species);
     if (!entry) {
-      const created: TextureEntry = { texture: new THREE.Texture(), ready: false, failed: false, disposed: false, refs: 0, aspect: 1, sourceSize: [], crop: [], listeners: new Set(), start: () => {} };
+      const created: TextureEntry = { texture: new THREE.Texture(), ready: false, failed: false, disposed: false, refs: 0, aspect: 1, sourceSize: [], crop: [], listeners: new Set(), start: () => {}, directional: false, directionFailed: false };
       entry = created;
       this.entries.set(species, created);
       // The URL honors Vite's base path; failed loads leave existing views visible.
       const url = `${import.meta.env?.BASE_URL ?? './'}assets/pixel/${PIXEL_ASSETS[species]}`;
+      const directionPath = ENEMY_DIRECTION_ASSETS[species as keyof typeof ENEMY_DIRECTION_ASSETS];
       let started = false;
       created.start = () => {
         if (started || created.disposed) return;
         started = true;
         const loader = new THREE.ImageLoader();
-        loader.load(url, image => {
+        const fail = (directional: boolean) => {
+          if (created.disposed) return;
+          if (directional) { created.directionFailed = true; request(false); return; }
+          created.failed = true;
+          for (const notify of created.listeners) notify();
+        };
+        const request = (directional: boolean) => loader.load(directional ? `${import.meta.env?.BASE_URL ?? './'}assets/pixel/${directionPath}` : url, image => {
         if (created.disposed) return;
         try {
           const atlas = species in PIXEL_ANIMATION_ASSETS;
           if (atlas && (image.naturalWidth !== ANIMATION_LAYOUT.frameWidth * 4 || image.naturalHeight !== ANIMATION_LAYOUT.frameHeight * (species.endsWith('-walk') ? 4 : 2))) throw new Error('Invalid animation atlas dimensions');
-          const prepared = atlas ? { canvas: image, aspect: 1, sourceSize: [image.naturalWidth, image.naturalHeight], crop: [0, 0, image.naturalWidth, image.naturalHeight] } : preparePixelTexture(image);
+          if (directional && (image.naturalWidth !== ENEMY_DIRECTION_LAYOUT.cell * ENEMY_DIRECTION_LAYOUT.columns || image.naturalHeight !== ENEMY_DIRECTION_LAYOUT.cell)) throw new Error('Invalid enemy direction atlas dimensions');
+          const prepared = atlas || directional ? { canvas: image, aspect: 1, sourceSize: [image.naturalWidth, image.naturalHeight], crop: [0, 0, directional ? 256 : image.naturalWidth, image.naturalHeight] } : preparePixelTexture(image);
           created.texture.image = prepared.canvas;
           created.texture.colorSpace = THREE.SRGBColorSpace;
           created.texture.magFilter = created.texture.minFilter = THREE.NearestFilter;
@@ -85,13 +95,11 @@ export class PixelTextureCache {
           created.texture.needsUpdate = true;
           created.aspect = prepared.aspect; created.sourceSize = prepared.sourceSize; created.crop = prepared.crop;
           created.ready = true;
-        } catch { created.failed = true; }
+          created.directional = directional;
+        } catch { fail(directional); return; }
         for (const notify of created.listeners) notify();
-      }, undefined, () => {
-        if (created.disposed) return;
-        created.failed = true;
-        for (const notify of created.listeners) notify();
-        });
+      }, undefined, () => fail(directional));
+        request(!!directionPath);
       };
     }
     const acquired = entry;

@@ -1,0 +1,15 @@
+{
+  "image": "grass-monster-directions.png",
+  "frameWidth": 256,
+  "frameHeight": 256,
+  "columns": 5,
+  "rows": 1,
+  "directions": [
+    "front",
+    "front-right",
+    "right",
+    "back-right",
+    "back"
+  ],
+  "footBaseline": 237
+}

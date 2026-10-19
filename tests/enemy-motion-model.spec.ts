@@ -19,5 +19,5 @@ test('render pose is restrained, allocation-free and stops at rest; animation ca
  const pose={bob:0,lean:0,squash:0};for(const kind of['normal','fast','tank']as const)for(let i=0;i<60;i++){expect(enemyPose(kind,i*.1,1,pose)).toBe(pose);expect(pose.bob).toBeLessThanOrEqual(.065);expect(Math.abs(pose.lean)).toBeLessThanOrEqual(.045);expect(Math.abs(pose.squash)).toBeLessThanOrEqual(.035);enemyPose(kind,i*.1,0,pose);for(const value of Object.values(pose))expect(value).toBeCloseTo(0,10);}
  const normal=new Combat(),slow=new Combat();quiet(normal);quiet(slow);const a=normal.spawn('normal',8,0,0)!,b=slow.spawn('normal',8,0,0)!;b.slowTime=1.5;const phase=b.walkPhase!;
  for(let i=0;i<30;i++){normal.update(1/60,{x:0,z:0});slow.update(1/60,{x:0,z:0});}
- expect((8-b.x)/(8-a.x)).toBeCloseTo(.55,6);expect(b.walkPhase).not.toBe(phase);expect(b.walkAmount).toBeLessThan(a.walkAmount!);
+ expect((8-b.x)/(8-a.x)).toBeCloseTo(.7,6);expect(b.walkPhase).not.toBe(phase);expect(b.walkAmount).toBeLessThan(a.walkAmount!);
 });

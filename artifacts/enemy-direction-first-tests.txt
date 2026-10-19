@@ -1,0 +1,30 @@
+
+> monsterbonk-mobile@0.4.0 test
+> playwright test tests/enemy-directions.spec.ts tests/enemy-motion-ui.spec.ts tests/enemy-pixel.spec.ts --project=chromium --reporter=list
+
+
+Running 19 tests using 1 worker
+
+(node:14772) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  1 [chromium] › tests\enemy-directions.spec.ts:7:1 › screen-projected movement selects eight directions, mirrors only left views and holds at rest (12ms)
+  ok  2 [chromium] › tests\enemy-directions.spec.ts:17:1 › supplied images remain unchanged, individual directions match original sheets and feet are audited (36ms)
+  ok  3 [chromium] › tests\enemy-directions.spec.ts:28:1 › three runtime direction atlases decode with visible silhouettes and transparent safe gutters (1.8s)
+  ok  4 [chromium] › tests\enemy-motion-ui.spec.ts:12:1 › PNG walk visibly changes at a fixed collision anchor and always faces the camera (1.7s)
+  ok  5 [chromium] › tests\enemy-motion-ui.spec.ts:16:1 › real hit flash brightens PNG and death shrinks/dissolves it before releasing the instance (2.1s)
+  ok  6 [chromium] › tests\enemy-motion-ui.spec.ts:23:1 › real pursuit on both phone layouts freezes on pause and reuses cached batches after restart (3.8s)
+  ok  7 [chromium] › tests\enemy-motion-ui.spec.ts:32:52 › normal shows eight distinct GPU headings with independent mirrored UVs and holds direction at rest (3.0s)
+  ok  8 [chromium] › tests\enemy-motion-ui.spec.ts:32:52 › fast shows eight distinct GPU headings with independent mirrored UVs and holds direction at rest (3.1s)
+  ok  9 [chromium] › tests\enemy-motion-ui.spec.ts:32:52 › tank shows eight distinct GPU headings with independent mirrored UVs and holds direction at rest (3.1s)
+  ok 10 [chromium] › tests\enemy-motion-ui.spec.ts:45:1 › actual pursuit faces its displacement; death retains its heading and finished corpses release direction state (3.1s)
+  ok 11 [chromium] › tests\enemy-motion-ui.spec.ts:55:1 › three species render every direction together on phone layouts without per-enemy textures (3.2s)
+  ok 12 [chromium] › tests\enemy-motion-ui.spec.ts:67:1 › a missing direction atlas falls back only that species to its original static PNG (3.1s)
+  ok 13 [chromium] › tests\enemy-pixel.spec.ts:46:1 › three fixed-capacity pixel batches preserve proportions, anchors and all existing enemy cues (3.4s)
+  ok 14 [chromium] › tests\enemy-pixel.spec.ts:70:1 › pixel and legacy enemy displays give identical movement, combat and experience with no new monster types (5.4s)
+  ok 15 [chromium] › tests\enemy-pixel.spec.ts:76:1 › one missing enemy texture only falls back that kind and retains original body parts (3.1s)
+  ok 16 [chromium] › tests\enemy-pixel.spec.ts:86:1 › real depth buffer handles transparent cutouts, foreground cover and visible per-instance hit flash (3.1s)
+  ok 17 [chromium] › tests\enemy-pixel.spec.ts:96:1 › 48 enemies reuse the same batches and textures, clear on reset and release on disposal (2.9s)
+  ok 18 [chromium] › tests\enemy-pixel.spec.ts:105:1 › disposing during enemy PNG loading prevents late resource attachment (3.3s)
+  ok 19 [chromium] › tests\enemy-pixel.spec.ts:114:1 › tank never uses removed blue geometry in legacy mode or after PNG failure (5.4s)
+
+  19 passed (56.5s)

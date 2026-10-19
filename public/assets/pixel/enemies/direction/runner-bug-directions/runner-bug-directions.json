@@ -1,0 +1,131 @@
+{
+  "image": "runner-bug-directions.png",
+  "frameWidth": 256,
+  "frameHeight": 256,
+  "columns": 5,
+  "rows": 1,
+  "order": [
+    "front",
+    "front-right",
+    "right",
+    "back-right",
+    "back"
+  ],
+  "frames": [
+    {
+      "name": "runner-bug-front",
+      "file": "runner-bug-front.png",
+      "x": 0,
+      "y": 0,
+      "width": 256,
+      "height": 256,
+      "source_bbox": [
+        0,
+        23,
+        1232,
+        1254
+      ],
+      "scaled_size": [
+        208,
+        208
+      ],
+      "offset_in_cell": [
+        24,
+        16
+      ],
+      "baseline": 224
+    },
+    {
+      "name": "runner-bug-front-right",
+      "file": "runner-bug-front-right.png",
+      "x": 256,
+      "y": 0,
+      "width": 256,
+      "height": 256,
+      "source_bbox": [
+        0,
+        21,
+        1222,
+        1254
+      ],
+      "scaled_size": [
+        206,
+        208
+      ],
+      "offset_in_cell": [
+        25,
+        16
+      ],
+      "baseline": 224
+    },
+    {
+      "name": "runner-bug-right",
+      "file": "runner-bug-right.png",
+      "x": 512,
+      "y": 0,
+      "width": 256,
+      "height": 256,
+      "source_bbox": [
+        0,
+        23,
+        1178,
+        1254
+      ],
+      "scaled_size": [
+        199,
+        208
+      ],
+      "offset_in_cell": [
+        28,
+        16
+      ],
+      "baseline": 224
+    },
+    {
+      "name": "runner-bug-back-right",
+      "file": "runner-bug-back-right.png",
+      "x": 768,
+      "y": 0,
+      "width": 256,
+      "height": 256,
+      "source_bbox": [
+        0,
+        3,
+        1224,
+        1254
+      ],
+      "scaled_size": [
+        204,
+        208
+      ],
+      "offset_in_cell": [
+        26,
+        16
+      ],
+      "baseline": 224
+    },
+    {
+      "name": "runner-bug-back",
+      "file": "runner-bug-back.png",
+      "x": 1024,
+      "y": 0,
+      "width": 256,
+      "height": 256,
+      "source_bbox": [
+        31,
+        3,
+        1234,
+        1254
+      ],
+      "scaled_size": [
+        200,
+        208
+      ],
+      "offset_in_cell": [
+        28,
+        16
+      ],
+      "baseline": 224
+    }
+  ]
+}

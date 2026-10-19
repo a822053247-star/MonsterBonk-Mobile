@@ -4,7 +4,8 @@ import { Monster } from './monster';
 import { createWorld, WORLD_RADIUS, type World } from './world';
 import { Combat } from './combat';
 import { CombatView } from './combat-view';
-import { renderUpgradeCards } from './ui';
+import { renderUpgradeCards, setFusionIcons } from './ui';
+import { elementalClip, type ElementalFusionId } from './fusion-pixels';
 import type { SkillId } from './progression';
 import { AdaptiveQuality, loadPreferences, savePreferences, type QualityMode } from './quality';
 import { GameAudio } from './audio';
@@ -219,6 +220,8 @@ export class Game {
     window.addEventListener('pageshow', () => this.wake(), options);
     window.addEventListener('keydown', (event) => {
       if (event.code !== 'Escape') return;
+      // Touch WebKit need not focus a tapped button; Escape can target body.
+      if (!document.getElementById('creature-picker')!.hidden) { this.closeCreaturePicker(); return; }
       if (this.mode === 'settings') { this.closeSettings(); return; }
       if (!document.getElementById('help-screen')!.hidden) {
         document.getElementById('help-screen')!.hidden = true;
@@ -294,12 +297,13 @@ export class Game {
   }
 
   private start(ruleset: Ruleset = this.runRuleset, partyPrototype = this.partyPrototype, newMap = false, variant = this.prototypeVariant) {
+    this.fusionNotice = ''; this.fusionNoticeUntil = 0;
     if (this.portrait || this.contextLost) return;
     this.runRuleset = ruleset;
     this.partyPrototype = partyPrototype;
     this.prototypeVariant = partyPrototype ? variant : 'sample';
     this.combat.fusionEnabled = partyPrototype && variant === 'fusion';
-    this.combatView.setFusion(this.combat.fusionEnabled && this.selectedSpecies === 'yanrong');
+    this.combatView.setFusion(this.combat.fusionEnabled, this.selectedSpecies !== 'yanrong');
     this.world.setSample(partyPrototype && new URLSearchParams(window.location.search).get('world') !== 'legacy', newMap);
     this.combat.useNavigation = partyPrototype && this.world.sampleActive;
     this.combat.party = partyPrototype ? this.party : undefined;
@@ -572,7 +576,10 @@ export class Game {
 
   private chooseUpgrade(id: SkillId) {
     if (this.mode !== 'upgrading' || document.hidden || this.portrait || this.contextLost) return;
+    const before = this.combat.fusions.map(f => f.id);
     if (!this.combat.chooseUpgrade(id)) return;
+    const unlocked = this.combat.fusions.find(f => !before.includes(f.id));
+    if (unlocked) { this.fusionNotice = `融合解锁：${unlocked.title}`; this.fusionNoticeUntil = this.combat.elapsed + 3; }
     this.updateHUD();
     if (this.combat.progression.awaitingChoice) {
       this.renderChoices();
@@ -596,6 +603,8 @@ export class Game {
   }
 
   private endRun(outcome: 'victory' | 'defeat' = 'defeat') {
+    this.combat.clearTransientEffects();
+    this.combatView.clear();
     this.partyView.stopAnimation();
     this.hideUpgrade();
     this.mode = 'gameover';
@@ -629,6 +638,9 @@ export class Game {
     return `${String(Math.floor(this.elapsed / 60)).padStart(2, '0')}:${String(Math.floor(this.elapsed % 60)).padStart(2, '0')}`;
   }
 
+  private fusionNotice = '';
+  private fusionNoticeUntil = 0;
+
   private updateHUD() {
     const fusionStatus = document.getElementById('fusion-status')!;
     fusionStatus.hidden = !this.combat.fusionEnabled;
@@ -637,7 +649,7 @@ export class Game {
     const title = document.getElementById('fusion-title')!, hint = document.getElementById('fusion-hint')!;
     const base = this.combat.baseAttack;
     const titleText = fused ? this.combat.fusions.map(f => f.title).join(' / ') + ' · 已融合' : base === 'bubble' ? '水泡弹' : base === 'leaf' ? '叶刃' : '火花弹';
-    const hintText = base === 'spark' ? (fused ? '命中爆炸 · 两枚小火种' : '升级寻找「命中分裂」') : base === 'bubble' ? '升级寻找「范围扩大」「连锁弹射」' : '升级寻找「命中分裂」「连锁弹射」';
+    const hintText = this.combat.elapsed < this.fusionNoticeUntil && this.fusionNotice && fused ? this.fusionNotice : this.combat.fusions.length > 1 ? '两种融合交替发射' : base === 'spark' ? (fused ? '命中爆炸 · 两枚小火种' : '升级寻找「命中分裂」') : fused ? base === 'bubble' ? '水泡命中 · 范围控制或连锁' : '叶刃命中 · 分裂或跳跃' : base === 'bubble' ? '升级寻找「范围扩张」「连锁弹射」' : '升级寻找「命中分裂」「连锁弹射」';
     const species = this.party.leader.species;
     document.getElementById('creature-name')!.textContent = CREATURES[species].name;
     document.getElementById('creature-code')!.textContent = species === 'yanrong' ? 'YANRONG' : species === 'bubblesalamander' ? 'PAOPAOYUAN' : 'YACISHOU';
@@ -649,6 +661,9 @@ export class Game {
     if (hint.textContent !== hintText) hint.textContent = hintText;
     document.getElementById('fusion-spark-icon')!.hidden = fused || base !== 'spark';
     document.getElementById('fusion-burst-icon')!.hidden = !fused || base !== 'spark';
+    let elementalIcons = document.getElementById('fusion-elemental-icons');
+    if (!elementalIcons) { elementalIcons = document.createElement('span'); elementalIcons.id = 'fusion-elemental-icons'; fusionStatus.prepend(elementalIcons); }
+    setFusionIcons(elementalIcons, this.combat.fusions.filter(f => elementalClip(f.id)).map(f => f.id as ElementalFusionId));
     const map = this.world.inspect();
     const replay = document.getElementById('map-replay') as HTMLAnchorElement;
     replay.hidden = !this.partyPrototype || !map.seed;

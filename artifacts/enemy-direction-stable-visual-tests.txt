@@ -1,0 +1,27 @@
+
+> monsterbonk-mobile@0.4.0 test
+> playwright test tests/fusion-ui.spec.ts -g real card selection --repeat-each=3 --reporter=list
+
+
+Running 6 tests using 1 worker
+
+(node:47464) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 1 [chromium] › tests\fusion-ui.spec.ts:50:1 › real card selection fuses and real impacts render four atlas rows on both short phone layouts (4.6s)
+(node:17784) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 2 [chromium] › tests\fusion-ui.spec.ts:50:1 › real card selection fuses and real impacts render four atlas rows on both short phone layouts (4.2s)
+(node:49476) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 3 [chromium] › tests\fusion-ui.spec.ts:50:1 › real card selection fuses and real impacts render four atlas rows on both short phone layouts (4.1s)
+(node:32944) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 4 [webkit] › tests\fusion-ui.spec.ts:50:1 › real card selection fuses and real impacts render four atlas rows on both short phone layouts (3.9s)
+(node:44604) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 5 [webkit] › tests\fusion-ui.spec.ts:50:1 › real card selection fuses and real impacts render four atlas rows on both short phone layouts (3.9s)
+(node:46948) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 6 [webkit] › tests\fusion-ui.spec.ts:50:1 › real card selection fuses and real impacts render four atlas rows on both short phone layouts (3.9s)
+
+  6 passed (31.8s)

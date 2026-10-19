@@ -1,0 +1,200 @@
+
+> monsterbonk-mobile@0.4.0 test
+> playwright test tests/enemy-directions.spec.ts tests/enemy-motion-ui.spec.ts tests/enemy-pixel.spec.ts tests/enemy-motion-model.spec.ts tests/combat-model.spec.ts tests/fusion-model.spec.ts tests/elemental-fusion-model.spec.ts tests/companion-animation.spec.ts tests/fusion-ui.spec.ts tests/creature-animation-ui.spec.ts --reporter=list
+
+
+Running 152 tests using 1 worker
+
+(node:40536) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok   1 [chromium] › tests\combat-model.spec.ts:13:1 › three enemies have distinct pursuit speeds and durability (10ms)
+  ok   2 [chromium] › tests\combat-model.spec.ts:28:1 › targeting excludes blocked, distant, spawning and dead enemies (1ms)
+  ok   3 [chromium] › tests\combat-model.spec.ts:40:1 › magic bolts damage, flash, kill and drop XP which nearby players collect once (8ms)
+  ok   4 [chromium] › tests\combat-model.spec.ts:61:1 › contact damage has a shared invulnerability window and death freezes combat (6ms)
+  ok   5 [chromium] › tests\combat-model.spec.ts:81:1 › swept collision catches tunneling and only the first enemy is hit (2ms)
+  ok   6 [chromium] › tests\combat-model.spec.ts:91:1 › spawn positions stay near the player, inside the map and outside obstacles (36ms)
+  ok   7 [chromium] › tests\combat-model.spec.ts:108:1 › 30, 60 and 120 Hz frame schedules give identical fixed-step combat results (45ms)
+  ok   8 [chromium] › tests\combat-model.spec.ts:129:1 › all pools are bounded, full XP pool merges drops, and reset removes old entities (454ms)
+  ok   9 [chromium] › tests\companion-animation.spec.ts:6:1 › companion clips use audited frames, correct diagonal orientation and last-heading idle (285ms)
+  ok  10 [chromium] › tests\companion-animation.spec.ts:62:1 › actual companion GPU frames change independently with stable size and release every texture (2.4s)
+  ok  11 [chromium] › tests\companion-animation.spec.ts:68:1 › real legacy formation animates followers and freezes on pause, background, death and restart (4.3s)
+  ok  12 [chromium] › tests\companion-animation.spec.ts:85:1 › missing companion atlases keep original static PNGs visible without disabling movement (3.1s)
+  ok  13 [chromium] › tests\companion-animation.spec.ts:92:1 › legacy Yanrong leader visibly walks through frames, keeps heading when stopping (3.2s)
+  ok  14 [chromium] › tests\creature-animation-ui.spec.ts:43:1 › real V5 leader renders all projected directions, mirrors left and retains heading when stopping (5.0s)
+  ok  15 [chromium] › tests\creature-animation-ui.spec.ts:60:1 › visible GPU pixels change across real walking/idle frames, with stable foot, size and frame sequence (4.2s)
+  ok  16 [chromium] › tests\creature-animation-ui.spec.ts:74:1 › actual collision displacement controls animation and animated/static visuals have identical combat and positions (8.0s)
+  ok  17 [chromium] › tests\creature-animation-ui.spec.ts:88:1 › pause, choices, background and death freeze frames; restart resets the real leader (3.9s)
+  ok  18 [chromium] › tests\creature-animation-ui.spec.ts:99:1 › missing diagonal falls back to a mirrored side; both missing atlases retain the original PNG (5.5s)
+  ok  19 [chromium] › tests\creature-animation-ui.spec.ts:112:1 › shared atlases render independent real frames/mirrors without shared UV mutations and release all leases (2.9s)
+  ok  20 [chromium] › tests\creature-animation-ui.spec.ts:118:1 › disposal during animation loading releases leases and late callbacks never reattach (3.4s)
+  ok  21 [chromium] › tests\elemental-fusion-model.spec.ts:18:1 › only four new recipes exist, modifiers form independent water/grass fusions and do not leak to legacy pools (4ms)
+  ok  22 [chromium] › tests\elemental-fusion-model.spec.ts:27:1 › base water slow expires, refreshes without stacking, and legacy bubbles do not acquire it (6ms)
+  ok  23 [chromium] › tests\elemental-fusion-model.spec.ts:34:1 › deep bubble damages and slows neighbors once per impact, excludes the direct victim and spawned enemies (6ms)
+  ok  24 [chromium] › tests\elemental-fusion-model.spec.ts:41:1 › leaf sweep pierces one additional enemy in the same tick, never hits the same victim twice (3ms)
+  ok  25 [chromium] › tests\elemental-fusion-model.spec.ts:48:66 › bubblesalamander chain flies to three fresh targets, respects cap and uses fixed subsequent damage (10ms)
+  ok  26 [chromium] › tests\elemental-fusion-model.spec.ts:48:66 › sproutspike chain flies to three fresh targets, respects cap and uses fixed subsequent damage (7ms)
+  ok  27 [chromium] › tests\elemental-fusion-model.spec.ts:61:1 › scatter spawns three weaker children next tick, ignores original and never recursively splits (8ms)
+  ok  28 [chromium] › tests\elemental-fusion-model.spec.ts:69:66 › bubblesalamander simultaneous recipes alternate by volley and reset deterministically (6ms)
+  ok  29 [chromium] › tests\elemental-fusion-model.spec.ts:69:66 › sproutspike simultaneous recipes alternate by volley and reset deterministically (7ms)
+  ok  30 [chromium] › tests\elemental-fusion-model.spec.ts:77:1 › cover blocks elemental impacts and chain targets; full pools degrade safely without dropping direct damage (5ms)
+  ok  31 [chromium] › tests\elemental-fusion-model.spec.ts:83:1 › death, choice and zero time freeze elemental clocks; reset clears slow, recipes, hits and projectiles (4ms)
+  ok  32 [chromium] › tests\elemental-fusion-model.spec.ts:92:1 › elemental deaths use the shared kill and XP path exactly once and snapshots do not change in flight (4ms)
+  ok  33 [chromium] › tests\elemental-fusion-model.spec.ts:98:1 › water chain ledger includes splash victims, excludes them from future primary hits and repeat splashes (6ms)
+  ok  34 [chromium] › tests\elemental-fusion-model.spec.ts:107:65 › bubblesalamander reselects a dead hop target and terminates if none remain (4ms)
+  ok  35 [chromium] › tests\elemental-fusion-model.spec.ts:107:65 › sproutspike reselects a dead hop target and terminates if none remain (4ms)
+  ok  36 [chromium] › tests\elemental-fusion-model.spec.ts:114:1 › deep AoE respects cover and scatter angles, range and single-hit children are independent of animations (6ms)
+  ok  37 [chromium] › tests\elemental-fusion-model.spec.ts:123:1 › multi-shot keeps one chosen recipe for each volley without advancing the attack clock (4ms)
+  ok  38 [chromium] › tests\enemy-directions.spec.ts:7:1 › screen-projected movement selects eight directions, mirrors only left views and holds at rest (5ms)
+  ok  39 [chromium] › tests\enemy-directions.spec.ts:17:1 › supplied images remain unchanged, individual directions match original sheets and feet are audited (40ms)
+  ok  40 [chromium] › tests\enemy-directions.spec.ts:28:1 › three runtime direction atlases decode with visible silhouettes and transparent safe gutters (2.0s)
+  ok  41 [chromium] › tests\enemy-motion-model.spec.ts:5:1 › coincident crowds separate gradually without exceeding species speed or teleporting (775ms)
+  ok  42 [chromium] › tests\enemy-motion-model.spec.ts:11:1 › swept collision stops tunneling and tangent sliding keeps every moving frame outside cover (252ms)
+  ok  43 [chromium] › tests\enemy-motion-model.spec.ts:18:1 › render pose is restrained, allocation-free and stops at rest; animation cadence follows real displacement (343ms)
+  ok  44 [chromium] › tests\enemy-motion-ui.spec.ts:12:1 › PNG walk visibly changes at a fixed collision anchor and always faces the camera (3.0s)
+  ok  45 [chromium] › tests\enemy-motion-ui.spec.ts:16:1 › real hit flash brightens PNG and death shrinks/dissolves it before releasing the instance (3.5s)
+  ok  46 [chromium] › tests\enemy-motion-ui.spec.ts:23:1 › real pursuit on both phone layouts freezes on pause and reuses cached batches after restart (3.6s)
+  ok  47 [chromium] › tests\enemy-motion-ui.spec.ts:32:52 › normal shows eight distinct GPU headings with independent mirrored UVs and holds direction at rest (3.1s)
+  ok  48 [chromium] › tests\enemy-motion-ui.spec.ts:32:52 › fast shows eight distinct GPU headings with independent mirrored UVs and holds direction at rest (3.1s)
+  ok  49 [chromium] › tests\enemy-motion-ui.spec.ts:32:52 › tank shows eight distinct GPU headings with independent mirrored UVs and holds direction at rest (3.1s)
+  ok  50 [chromium] › tests\enemy-motion-ui.spec.ts:45:1 › actual pursuit faces its displacement; death retains its heading and finished corpses release direction state (3.0s)
+  ok  51 [chromium] › tests\enemy-motion-ui.spec.ts:55:1 › three species render every direction together on phone layouts without per-enemy textures (3.2s)
+  ok  52 [chromium] › tests\enemy-motion-ui.spec.ts:67:1 › a missing direction atlas falls back only that species to its original static PNG (3.0s)
+  ok  53 [chromium] › tests\enemy-pixel.spec.ts:46:1 › three fixed-capacity pixel batches preserve proportions, anchors and all existing enemy cues (3.5s)
+  ok  54 [chromium] › tests\enemy-pixel.spec.ts:70:1 › pixel and legacy enemy displays give identical movement, combat and experience with no new monster types (5.3s)
+  ok  55 [chromium] › tests\enemy-pixel.spec.ts:76:1 › one missing enemy texture only falls back that kind and retains original body parts (2.9s)
+  ok  56 [chromium] › tests\enemy-pixel.spec.ts:86:1 › real depth buffer handles transparent cutouts, foreground cover and visible per-instance hit flash (3.2s)
+  ok  57 [chromium] › tests\enemy-pixel.spec.ts:96:1 › 48 enemies reuse the same batches and textures, clear on reset and release on disposal (3.0s)
+  ok  58 [chromium] › tests\enemy-pixel.spec.ts:105:1 › disposing during enemy PNG loading prevents late resource attachment (3.4s)
+  ok  59 [chromium] › tests\enemy-pixel.spec.ts:114:1 › tank never uses removed blue geometry in legacy mode or after PNG failure (5.8s)
+  ok  60 [chromium] › tests\fusion-model.spec.ts:28:1 › ordinary spark uses existing automatic attacks and never splits without its card (2ms)
+  ok  61 [chromium] › tests\fusion-model.spec.ts:34:1 › real split card resolves the matching spark and leaf recipes; historical card pools stay unchanged (4ms)
+  ok  62 [chromium] › tests\fusion-model.spec.ts:42:1 › one main hit damages its target once, explodes once over multiple other targets, and defers two children (7ms)
+  ok  63 [chromium] › tests\fusion-model.spec.ts:54:1 › children can damage other enemies, never hit the original and never generate another explosion or generation (4ms)
+  ok  64 [chromium] › tests\fusion-model.spec.ts:67:1 › multishot and hit splitting coexist without replacing each other (2ms)
+  ok  65 [chromium] › tests\fusion-model.spec.ts:75:1 › full projectile and effect pools preserve direct/AoE damage and degrade to available child slots (3ms)
+  ok  66 [chromium] › tests\fusion-model.spec.ts:85:1 › kill credit and experience use the shared damage path exactly once for blast victims (2ms)
+  ok  67 [chromium] › tests\fusion-model.spec.ts:93:1 › choice and death freeze all damage, children and effect ages; restart clears the run (4ms)
+  ok  68 [chromium] › tests\fusion-model.spec.ts:107:1 › hundreds of fused hits stay inside original pools with generation capped at one (815ms)
+  ok  69 [chromium] › tests\fusion-ui.spec.ts:34:1 › new menu starts one pixel Yanrong with joystick only and automatically fires ordinary sparks (3.3s)
+  ok  70 [chromium] › tests\fusion-ui.spec.ts:50:1 › real card selection fuses and real impacts render four atlas rows on both short phone layouts (4.0s)
+  ok  71 [chromium] › tests\fusion-ui.spec.ts:76:1 › pause, background, death and restart freeze animations/damage and clear learned fusion (3.9s)
+  ok  72 [chromium] › tests\fusion-ui.spec.ts:94:1 › missing atlas and icons keep procedural attack/explosion and readable cards (3.0s)
+  ok  73 [chromium] › tests\fusion-ui.spec.ts:104:1 › legacy three-creature entry retains following/automatic attacks and does not learn fusion (4.0s)
+  ok  74 [chromium] › tests\fusion-ui.spec.ts:115:1 › new and preserved menu entries fit both phone safe areas with unobstructed touch targets (8.0s)
+  ok  75 [chromium] › tests\fusion-ui.spec.ts:130:1 › fusion restarts reuse GPU resources and disposal releases the atlas batch (4.2s)
+  ok  76 [chromium] › tests\fusion-ui.spec.ts:144:1 › late fire atlas completion cannot attach resources after disposal (2.7s)
+(node:21576) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  77 [webkit] › tests\combat-model.spec.ts:13:1 › three enemies have distinct pursuit speeds and durability (10ms)
+  ok  78 [webkit] › tests\combat-model.spec.ts:28:1 › targeting excludes blocked, distant, spawning and dead enemies (2ms)
+  ok  79 [webkit] › tests\combat-model.spec.ts:40:1 › magic bolts damage, flash, kill and drop XP which nearby players collect once (8ms)
+  ok  80 [webkit] › tests\combat-model.spec.ts:61:1 › contact damage has a shared invulnerability window and death freezes combat (6ms)
+  ok  81 [webkit] › tests\combat-model.spec.ts:81:1 › swept collision catches tunneling and only the first enemy is hit (1ms)
+  ok  82 [webkit] › tests\combat-model.spec.ts:91:1 › spawn positions stay near the player, inside the map and outside obstacles (34ms)
+  ok  83 [webkit] › tests\combat-model.spec.ts:108:1 › 30, 60 and 120 Hz frame schedules give identical fixed-step combat results (43ms)
+  ok  84 [webkit] › tests\combat-model.spec.ts:129:1 › all pools are bounded, full XP pool merges drops, and reset removes old entities (457ms)
+  ok  85 [webkit] › tests\companion-animation.spec.ts:6:1 › companion clips use audited frames, correct diagonal orientation and last-heading idle (564ms)
+  ok  86 [webkit] › tests\companion-animation.spec.ts:62:1 › actual companion GPU frames change independently with stable size and release every texture (2.5s)
+  ok  87 [webkit] › tests\companion-animation.spec.ts:68:1 › real legacy formation animates followers and freezes on pause, background, death and restart (3.7s)
+  ok  88 [webkit] › tests\companion-animation.spec.ts:85:1 › missing companion atlases keep original static PNGs visible without disabling movement (2.6s)
+  ok  89 [webkit] › tests\companion-animation.spec.ts:92:1 › legacy Yanrong leader visibly walks through frames, keeps heading when stopping (2.6s)
+  ok  90 [webkit] › tests\creature-animation-ui.spec.ts:43:1 › real V5 leader renders all projected directions, mirrors left and retains heading when stopping (4.2s)
+  ok  91 [webkit] › tests\creature-animation-ui.spec.ts:60:1 › visible GPU pixels change across real walking/idle frames, with stable foot, size and frame sequence (3.7s)
+  ok  92 [webkit] › tests\creature-animation-ui.spec.ts:74:1 › actual collision displacement controls animation and animated/static visuals have identical combat and positions (5.8s)
+  ok  93 [webkit] › tests\creature-animation-ui.spec.ts:88:1 › pause, choices, background and death freeze frames; restart resets the real leader (4.1s)
+  ok  94 [webkit] › tests\creature-animation-ui.spec.ts:99:1 › missing diagonal falls back to a mirrored side; both missing atlases retain the original PNG (3.8s)
+  ok  95 [webkit] › tests\creature-animation-ui.spec.ts:112:1 › shared atlases render independent real frames/mirrors without shared UV mutations and release all leases (2.5s)
+  ok  96 [webkit] › tests\creature-animation-ui.spec.ts:118:1 › disposal during animation loading releases leases and late callbacks never reattach (2.8s)
+  ok  97 [webkit] › tests\elemental-fusion-model.spec.ts:18:1 › only four new recipes exist, modifiers form independent water/grass fusions and do not leak to legacy pools (5ms)
+  ok  98 [webkit] › tests\elemental-fusion-model.spec.ts:27:1 › base water slow expires, refreshes without stacking, and legacy bubbles do not acquire it (6ms)
+  ok  99 [webkit] › tests\elemental-fusion-model.spec.ts:34:1 › deep bubble damages and slows neighbors once per impact, excludes the direct victim and spawned enemies (8ms)
+  ok 100 [webkit] › tests\elemental-fusion-model.spec.ts:41:1 › leaf sweep pierces one additional enemy in the same tick, never hits the same victim twice (3ms)
+  ok 101 [webkit] › tests\elemental-fusion-model.spec.ts:48:66 › bubblesalamander chain flies to three fresh targets, respects cap and uses fixed subsequent damage (14ms)
+  ok 102 [webkit] › tests\elemental-fusion-model.spec.ts:48:66 › sproutspike chain flies to three fresh targets, respects cap and uses fixed subsequent damage (6ms)
+  ok 103 [webkit] › tests\elemental-fusion-model.spec.ts:61:1 › scatter spawns three weaker children next tick, ignores original and never recursively splits (7ms)
+  ok 104 [webkit] › tests\elemental-fusion-model.spec.ts:69:66 › bubblesalamander simultaneous recipes alternate by volley and reset deterministically (6ms)
+  ok 105 [webkit] › tests\elemental-fusion-model.spec.ts:69:66 › sproutspike simultaneous recipes alternate by volley and reset deterministically (8ms)
+  ok 106 [webkit] › tests\elemental-fusion-model.spec.ts:77:1 › cover blocks elemental impacts and chain targets; full pools degrade safely without dropping direct damage (5ms)
+  ok 107 [webkit] › tests\elemental-fusion-model.spec.ts:83:1 › death, choice and zero time freeze elemental clocks; reset clears slow, recipes, hits and projectiles (4ms)
+  ok 108 [webkit] › tests\elemental-fusion-model.spec.ts:92:1 › elemental deaths use the shared kill and XP path exactly once and snapshots do not change in flight (4ms)
+  ok 109 [webkit] › tests\elemental-fusion-model.spec.ts:98:1 › water chain ledger includes splash victims, excludes them from future primary hits and repeat splashes (4ms)
+  ok 110 [webkit] › tests\elemental-fusion-model.spec.ts:107:65 › bubblesalamander reselects a dead hop target and terminates if none remain (3ms)
+  ok 111 [webkit] › tests\elemental-fusion-model.spec.ts:107:65 › sproutspike reselects a dead hop target and terminates if none remain (3ms)
+  ok 112 [webkit] › tests\elemental-fusion-model.spec.ts:114:1 › deep AoE respects cover and scatter angles, range and single-hit children are independent of animations (7ms)
+  ok 113 [webkit] › tests\elemental-fusion-model.spec.ts:123:1 › multi-shot keeps one chosen recipe for each volley without advancing the attack clock (4ms)
+  ok 114 [webkit] › tests\enemy-directions.spec.ts:7:1 › screen-projected movement selects eight directions, mirrors only left views and holds at rest (4ms)
+  ok 115 [webkit] › tests\enemy-directions.spec.ts:17:1 › supplied images remain unchanged, individual directions match original sheets and feet are audited (31ms)
+  ok 116 [webkit] › tests\enemy-directions.spec.ts:28:1 › three runtime direction atlases decode with visible silhouettes and transparent safe gutters (1.6s)
+  ok 117 [webkit] › tests\enemy-motion-model.spec.ts:5:1 › coincident crowds separate gradually without exceeding species speed or teleporting (628ms)
+  ok 118 [webkit] › tests\enemy-motion-model.spec.ts:11:1 › swept collision stops tunneling and tangent sliding keeps every moving frame outside cover (217ms)
+  ok 119 [webkit] › tests\enemy-motion-model.spec.ts:18:1 › render pose is restrained, allocation-free and stops at rest; animation cadence follows real displacement (301ms)
+  ok 120 [webkit] › tests\enemy-motion-ui.spec.ts:12:1 › PNG walk visibly changes at a fixed collision anchor and always faces the camera (2.4s)
+  ok 121 [webkit] › tests\enemy-motion-ui.spec.ts:16:1 › real hit flash brightens PNG and death shrinks/dissolves it before releasing the instance (2.9s)
+  ok 122 [webkit] › tests\enemy-motion-ui.spec.ts:23:1 › real pursuit on both phone layouts freezes on pause and reuses cached batches after restart (3.3s)
+  ok 123 [webkit] › tests\enemy-motion-ui.spec.ts:32:52 › normal shows eight distinct GPU headings with independent mirrored UVs and holds direction at rest (2.5s)
+  ok 124 [webkit] › tests\enemy-motion-ui.spec.ts:32:52 › fast shows eight distinct GPU headings with independent mirrored UVs and holds direction at rest (2.6s)
+  ok 125 [webkit] › tests\enemy-motion-ui.spec.ts:32:52 › tank shows eight distinct GPU headings with independent mirrored UVs and holds direction at rest (2.5s)
+  ok 126 [webkit] › tests\enemy-motion-ui.spec.ts:45:1 › actual pursuit faces its displacement; death retains its heading and finished corpses release direction state (2.6s)
+  ok 127 [webkit] › tests\enemy-motion-ui.spec.ts:55:1 › three species render every direction together on phone layouts without per-enemy textures (2.7s)
+  ok 128 [webkit] › tests\enemy-motion-ui.spec.ts:67:1 › a missing direction atlas falls back only that species to its original static PNG (2.6s)
+  ok 129 [webkit] › tests\enemy-pixel.spec.ts:46:1 › three fixed-capacity pixel batches preserve proportions, anchors and all existing enemy cues (2.8s)
+  ok 130 [webkit] › tests\enemy-pixel.spec.ts:70:1 › pixel and legacy enemy displays give identical movement, combat and experience with no new monster types (4.5s)
+  ok 131 [webkit] › tests\enemy-pixel.spec.ts:76:1 › one missing enemy texture only falls back that kind and retains original body parts (2.5s)
+  ok 132 [webkit] › tests\enemy-pixel.spec.ts:86:1 › real depth buffer handles transparent cutouts, foreground cover and visible per-instance hit flash (2.5s)
+  ok 133 [webkit] › tests\enemy-pixel.spec.ts:96:1 › 48 enemies reuse the same batches and textures, clear on reset and release on disposal (2.6s)
+  ok 134 [webkit] › tests\enemy-pixel.spec.ts:105:1 › disposing during enemy PNG loading prevents late resource attachment (3.0s)
+  ok 135 [webkit] › tests\enemy-pixel.spec.ts:114:1 › tank never uses removed blue geometry in legacy mode or after PNG failure (4.2s)
+  ok 136 [webkit] › tests\fusion-model.spec.ts:28:1 › ordinary spark uses existing automatic attacks and never splits without its card (1ms)
+  ok 137 [webkit] › tests\fusion-model.spec.ts:34:1 › real split card resolves the matching spark and leaf recipes; historical card pools stay unchanged (2ms)
+  ok 138 [webkit] › tests\fusion-model.spec.ts:42:1 › one main hit damages its target once, explodes once over multiple other targets, and defers two children (5ms)
+  ok 139 [webkit] › tests\fusion-model.spec.ts:54:1 › children can damage other enemies, never hit the original and never generate another explosion or generation (2ms)
+  ok 140 [webkit] › tests\fusion-model.spec.ts:67:1 › multishot and hit splitting coexist without replacing each other (2ms)
+  ok 141 [webkit] › tests\fusion-model.spec.ts:75:1 › full projectile and effect pools preserve direct/AoE damage and degrade to available child slots (2ms)
+  ok 142 [webkit] › tests\fusion-model.spec.ts:85:1 › kill credit and experience use the shared damage path exactly once for blast victims (1ms)
+  ok 143 [webkit] › tests\fusion-model.spec.ts:93:1 › choice and death freeze all damage, children and effect ages; restart clears the run (2ms)
+  ok 144 [webkit] › tests\fusion-model.spec.ts:107:1 › hundreds of fused hits stay inside original pools with generation capped at one (444ms)
+  ok 145 [webkit] › tests\fusion-ui.spec.ts:34:1 › new menu starts one pixel Yanrong with joystick only and automatically fires ordinary sparks (1.8s)
+  x  146 [webkit] › tests\fusion-ui.spec.ts:50:1 › real card selection fuses and real impacts render four atlas rows on both short phone layouts (3.7s)
+(node:37096) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 147 [webkit] › tests\fusion-ui.spec.ts:76:1 › pause, background, death and restart freeze animations/damage and clear learned fusion (4.5s)
+  ok 148 [webkit] › tests\fusion-ui.spec.ts:94:1 › missing atlas and icons keep procedural attack/explosion and readable cards (2.7s)
+  ok 149 [webkit] › tests\fusion-ui.spec.ts:104:1 › legacy three-creature entry retains following/automatic attacks and does not learn fusion (3.7s)
+  ok 150 [webkit] › tests\fusion-ui.spec.ts:115:1 › new and preserved menu entries fit both phone safe areas with unobstructed touch targets (4.8s)
+  ok 151 [webkit] › tests\fusion-ui.spec.ts:130:1 › fusion restarts reuse GPU resources and disposal releases the atlas batch (6.2s)
+  ok 152 [webkit] › tests\fusion-ui.spec.ts:144:1 › late fire atlas completion cannot attach resources after disposal (2.7s)
+
+
+  1) [webkit] › tests\fusion-ui.spec.ts:50:1 › real card selection fuses and real impacts render four atlas rows on both short phone layouts 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 4
+    Received: 2
+
+      60 |     await page.setViewportSize(viewport); await page.evaluate(() => (window as unknown as Fixture).impact());
+      61 |     expect((await state(page)).combat.fusion).toMatchObject({ active: 'burst-seed', bursts: viewport.width === 844 ? 1 : 2, children: 2 });
+    > 62 |     expect((await state(page)).fusionVisual!.count).toBe(4);
+         |                                                     ^
+      63 |     expect(await page.evaluate(() => { const v = (window as any).game.combatView.firePixels; return Array.from(v.frames.array).slice(0, v.mesh.count); })).toEqual([4, 4, 8, 12]);
+      64 |     const box = (await page.locator('#fusion-status').boundingBox())!;
+      65 |     expect(box.x).toBeGreaterThan(140); expect(box.x + box.width).toBeLessThan(viewport.width - 100);
+        at E:\study\game\MonsterBonk Mobile\tests\fusion-ui.spec.ts:62:53
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\fusion-ui-real-card-select-4d738-on-both-short-phone-layouts-webkit\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\fusion-ui-real-card-select-4d738-on-both-short-phone-layouts-webkit\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\fusion-ui-real-card-select-4d738-on-both-short-phone-layouts-webkit\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\fusion-ui-real-card-select-4d738-on-both-short-phone-layouts-webkit\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [webkit] › tests\fusion-ui.spec.ts:50:1 › real card selection fuses and real impacts render four atlas rows on both short phone layouts 
+  151 passed (4.4m)

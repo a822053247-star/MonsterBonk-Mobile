@@ -74,6 +74,7 @@ test('pixel and legacy enemy displays give identical movement, combat and experi
 });
 
 test('one missing enemy texture only falls back that kind and retains original body parts', async ({ page }) => {
+  await page.route('**/enemies/direction/grass-monster-directions/runtime.normalized.png', route => route.abort());
   await page.route('**/enemies/grass-monster.png', route => route.abort());
   await open(page);
   await expect.poll(async () => (await state(page)).enemyVisual.batches?.find(b => b.kind === 'normal')?.failed).toBe(true);
@@ -98,11 +99,11 @@ test('48 enemies reuse the same batches and textures, clear on reset and release
   const p = await page.evaluate(() => (window as unknown as Fixture).pool());
   expect(p.counts).toEqual([48, 0, 0]); expect(p.calls[1]).toBe(p.calls[0]); expect(p.stable).toBe(true);
   expect(p.cleared).toBe(0); expect(p.cache).toEqual({ textures: 3, references: 3 });
-  expect(await page.evaluate(() => (window as unknown as Fixture).destroy())).toEqual({ cache: { textures: 0, references: 0 }, batches: [], children: 0 });
+  expect(await page.evaluate(() => (window as unknown as Fixture).destroy())).toEqual({ cache: { textures: 0, references: 0 }, directionStates: 0, batches: [], children: 0 });
 });
 
 test('disposing during enemy PNG loading prevents late resource attachment', async ({ page }) => {
-  await page.route('**/assets/pixel/enemies/*.png', async route => { await new Promise(resolve => setTimeout(resolve, 350)); await route.continue().catch(() => {}); });
+  await page.route('**/assets/pixel/enemies/**', async route => { await new Promise(resolve => setTimeout(resolve, 350)); await route.continue().catch(() => {}); });
   await open(page);
   expect(await page.evaluate(() => (window as unknown as Fixture).destroy())).toMatchObject({ cache: { textures: 0, references: 0 }, batches: [], children: 0 });
   await page.waitForTimeout(600);
@@ -116,6 +117,7 @@ test('tank never uses removed blue geometry in legacy mode or after PNG failure'
   expect((await state(page)).enemyVisual.batches!.map(b => b.count)).toEqual([0, 0, 1]);
   expect(await page.evaluate(() => 'armor' in (window as unknown as { game: any }).game.combatView)).toBe(false);
   await page.route('**/enemies/rock-armor-bug.png', route => route.abort());
+  await page.route('**/enemies/direction/rock-armor-bug-directions/runtime.normalized.png', route => route.abort());
   await open(page);
   await expect.poll(async () => (await state(page)).enemyVisual.batches?.find(b => b.kind === 'tank')?.failed).toBe(true);
   await expect.poll(async () => (await state(page)).enemyVisual.batches?.filter(b => b.loaded).length).toBe(2);

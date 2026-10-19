@@ -1,0 +1,131 @@
+{
+  "image": "rock-armor-bug-directions.png",
+  "frameWidth": 256,
+  "frameHeight": 256,
+  "columns": 5,
+  "rows": 1,
+  "order": [
+    "front",
+    "front-right",
+    "right",
+    "back-right",
+    "back"
+  ],
+  "frames": [
+    {
+      "name": "rock-armor-bug-front",
+      "file": "rock-armor-bug-front.png",
+      "x": 0,
+      "y": 0,
+      "width": 256,
+      "height": 256,
+      "source_bbox": [
+        0,
+        21,
+        1216,
+        1254
+      ],
+      "scaled_size": [
+        205,
+        208
+      ],
+      "offset_in_cell": [
+        25,
+        16
+      ],
+      "baseline": 224
+    },
+    {
+      "name": "rock-armor-bug-front-right",
+      "file": "rock-armor-bug-front-right.png",
+      "x": 256,
+      "y": 0,
+      "width": 256,
+      "height": 256,
+      "source_bbox": [
+        0,
+        38,
+        1358,
+        1122
+      ],
+      "scaled_size": [
+        224,
+        179
+      ],
+      "offset_in_cell": [
+        16,
+        45
+      ],
+      "baseline": 224
+    },
+    {
+      "name": "rock-armor-bug-right",
+      "file": "rock-armor-bug-right.png",
+      "x": 512,
+      "y": 0,
+      "width": 256,
+      "height": 256,
+      "source_bbox": [
+        0,
+        25,
+        1235,
+        1254
+      ],
+      "scaled_size": [
+        209,
+        208
+      ],
+      "offset_in_cell": [
+        23,
+        16
+      ],
+      "baseline": 224
+    },
+    {
+      "name": "rock-armor-bug-back-right",
+      "file": "rock-armor-bug-back-right.png",
+      "x": 768,
+      "y": 0,
+      "width": 256,
+      "height": 256,
+      "source_bbox": [
+        25,
+        21,
+        1202,
+        1254
+      ],
+      "scaled_size": [
+        199,
+        208
+      ],
+      "offset_in_cell": [
+        28,
+        16
+      ],
+      "baseline": 224
+    },
+    {
+      "name": "rock-armor-bug-back",
+      "file": "rock-armor-bug-back.png",
+      "x": 1024,
+      "y": 0,
+      "width": 256,
+      "height": 256,
+      "source_bbox": [
+        16,
+        24,
+        239,
+        232
+      ],
+      "scaled_size": [
+        223,
+        208
+      ],
+      "offset_in_cell": [
+        16,
+        16
+      ],
+      "baseline": 224
+    }
+  ]
+}

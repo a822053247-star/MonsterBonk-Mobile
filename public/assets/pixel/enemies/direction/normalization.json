@@ -1,0 +1,407 @@
+{
+  "cell": 256,
+  "columns": 5,
+  "bodyHeight": 200,
+  "foot": [
+    128,
+    240
+  ],
+  "species": {
+    "grass-monster": {
+      "sourceSHA256": {
+        "grass-monster-front.png": "7af8468d4009e922e13d852ff16f217c4a66176aa63fa2089c9fea075cb0e480",
+        "grass-monster-front-right.png": "08badd0cabdcea8c482790bbe9d317d4379193f86686255144f6f1eae09bad36",
+        "grass-monster-right.png": "4a4a044879f7cc40f66bcc4d3adb05019913ec06a97965cdbd8fac2bc24f65b1",
+        "grass-monster-back-right.png": "b90f97d1a6f17428a169a37bc77989dcd6420f986a1c43ae34c3056500143099",
+        "grass-monster-back.png": "806fbd2f380cc978417dfbe3a66724dd028c3c09015a5ab6614ff996c913631d",
+        "grass-monster-directions.png": "a9ec15b56aa870c2fcaff4263f8496c73e7b6cf1f8a686472259f2e223d397f8"
+      },
+      "matchesSheet": [
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "alpha": [
+        {
+          "zero": 38564,
+          "faint": 0
+        },
+        {
+          "zero": 39475,
+          "faint": 0
+        },
+        {
+          "zero": 42013,
+          "faint": 0
+        },
+        {
+          "zero": 43068,
+          "faint": 0
+        },
+        {
+          "zero": 39038,
+          "faint": 0
+        }
+      ],
+      "scale": 0.9852216748768473,
+      "frames": [
+        {
+          "direction": "front",
+          "sourceBounds": [
+            26,
+            34,
+            231,
+            237
+          ],
+          "offset": [
+            27,
+            40
+          ],
+          "size": [
+            202,
+            200
+          ],
+          "sizeCorrection": 1
+        },
+        {
+          "direction": "front-right",
+          "sourceBounds": [
+            28,
+            35,
+            228,
+            237
+          ],
+          "offset": [
+            30,
+            41
+          ],
+          "size": [
+            197,
+            199
+          ],
+          "sizeCorrection": 1
+        },
+        {
+          "direction": "right",
+          "sourceBounds": [
+            38,
+            45,
+            218,
+            237
+          ],
+          "offset": [
+            40,
+            51
+          ],
+          "size": [
+            177,
+            189
+          ],
+          "sizeCorrection": 1
+        },
+        {
+          "direction": "back-right",
+          "sourceBounds": [
+            39,
+            48,
+            217,
+            237
+          ],
+          "offset": [
+            41,
+            54
+          ],
+          "size": [
+            175,
+            186
+          ],
+          "sizeCorrection": 1
+        },
+        {
+          "direction": "back",
+          "sourceBounds": [
+            24,
+            42,
+            232,
+            237
+          ],
+          "offset": [
+            26,
+            48
+          ],
+          "size": [
+            205,
+            192
+          ],
+          "sizeCorrection": 1
+        }
+      ]
+    },
+    "runner-bug": {
+      "sourceSHA256": {
+        "runner-bug-front.png": "0cca6e5e5d2027b8cc5545c4a481a3c2ad14ee6dfc7076bf55d0203f9776c3bc",
+        "runner-bug-front-right.png": "3a13ed3a25551ebf5e6b602f5bf7acb769a5b94098eb8a58d891992ba574f1db",
+        "runner-bug-right.png": "d49aec92ad10bc9b1d2392b74110e40824ece66744a9d67c601a821c5e167fdd",
+        "runner-bug-back-right.png": "d759c08faa3f3141ad1af62b39119c4be46432db5ba5625b863be9ef92237c1a",
+        "runner-bug-back.png": "4fda42128d51aa46ff7bdfa2279fdea190742b7c7bea436045e8f6d9af1d710e",
+        "runner-bug-directions.png": "a97d4fcae5a6ce5567d2989b53f837c38d3c1232a1dab635dcd7a4bbc6588576"
+      },
+      "matchesSheet": [
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "alpha": [
+        {
+          "zero": 49855,
+          "faint": 452
+        },
+        {
+          "zero": 49387,
+          "faint": 528
+        },
+        {
+          "zero": 50432,
+          "faint": 305
+        },
+        {
+          "zero": 51484,
+          "faint": 420
+        },
+        {
+          "zero": 52912,
+          "faint": 394
+        }
+      ],
+      "scale": 1.2269938650306749,
+      "frames": [
+        {
+          "direction": "front",
+          "sourceBounds": [
+            52,
+            44,
+            208,
+            200
+          ],
+          "offset": [
+            33,
+            49
+          ],
+          "size": [
+            191,
+            191
+          ],
+          "sizeCorrection": 1
+        },
+        {
+          "direction": "front-right",
+          "sourceBounds": [
+            52,
+            62,
+            210,
+            204
+          ],
+          "offset": [
+            31,
+            66
+          ],
+          "size": [
+            194,
+            174
+          ],
+          "sizeCorrection": 1
+        },
+        {
+          "direction": "right",
+          "sourceBounds": [
+            50,
+            64,
+            219,
+            198
+          ],
+          "offset": [
+            25,
+            76
+          ],
+          "size": [
+            207,
+            164
+          ],
+          "sizeCorrection": 1
+        },
+        {
+          "direction": "back-right",
+          "sourceBounds": [
+            52,
+            50,
+            213,
+            203
+          ],
+          "offset": [
+            29,
+            52
+          ],
+          "size": [
+            198,
+            188
+          ],
+          "sizeCorrection": 1
+        },
+        {
+          "direction": "back",
+          "sourceBounds": [
+            60,
+            42,
+            195,
+            205
+          ],
+          "offset": [
+            45,
+            40
+          ],
+          "size": [
+            166,
+            200
+          ],
+          "sizeCorrection": 1
+        }
+      ]
+    },
+    "rock-armor-bug": {
+      "sourceSHA256": {
+        "rock-armor-bug-front.png": "76fa6140e9a6eabd2e3f867c78dbc2cff7b4853c344fcb85fbf95746e1252481",
+        "rock-armor-bug-front-right.png": "9c6afde5e222b6c159abb967af7e98b4f6e7da46ccc2b92ec1ca23c38f8d4a3e",
+        "rock-armor-bug-right.png": "1b727dcb3c2492deca5a813ffc94a91f847196eb1ee36f599bfb9e2ab3fab27d",
+        "rock-armor-bug-back-right.png": "8e13b4734d8517ea30852f0f4311be31d87e0e7046211834ed570a116dc93236",
+        "rock-armor-bug-back.png": "80a93197bf17ebb9944360ae207e1c166aea3c2ee501cf41e5230f13df31c252",
+        "rock-armor-bug-directions.png": "80647304aadba7cf02f21920bc050a314ca920c140198cffceda42ad006d06b4"
+      },
+      "matchesSheet": [
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "alpha": [
+        {
+          "zero": 44368,
+          "faint": 335
+        },
+        {
+          "zero": 43809,
+          "faint": 361
+        },
+        {
+          "zero": 46304,
+          "faint": 369
+        },
+        {
+          "zero": 48278,
+          "faint": 297
+        },
+        {
+          "zero": 29763,
+          "faint": 1949
+        }
+      ],
+      "scale": 1.2048192771084338,
+      "frames": [
+        {
+          "direction": "front",
+          "sourceBounds": [
+            42,
+            39,
+            220,
+            205
+          ],
+          "offset": [
+            21,
+            40
+          ],
+          "size": [
+            214,
+            200
+          ],
+          "sizeCorrection": 1
+        },
+        {
+          "direction": "front-right",
+          "sourceBounds": [
+            39,
+            51,
+            224,
+            216
+          ],
+          "offset": [
+            17,
+            41
+          ],
+          "size": [
+            223,
+            199
+          ],
+          "sizeCorrection": 1
+        },
+        {
+          "direction": "right",
+          "sourceBounds": [
+            43,
+            48,
+            217,
+            201
+          ],
+          "offset": [
+            23,
+            56
+          ],
+          "size": [
+            210,
+            184
+          ],
+          "sizeCorrection": 1
+        },
+        {
+          "direction": "back-right",
+          "sourceBounds": [
+            47,
+            46,
+            216,
+            203
+          ],
+          "offset": [
+            26,
+            51
+          ],
+          "size": [
+            204,
+            189
+          ],
+          "sizeCorrection": 1
+        },
+        {
+          "direction": "back",
+          "sourceBounds": [
+            16,
+            16,
+            239,
+            224
+          ],
+          "offset": [
+            21,
+            40
+          ],
+          "size": [
+            214,
+            200
+          ],
+          "sizeCorrection": 0.7980769230769231
+        }
+      ]
+    }
+  }
+}
