@@ -1,0 +1,362 @@
+[
+  {
+    "source": "skills/area-expansion.png",
+    "output": "upgrade/illustrations/skills/area-expansion.png",
+    "crop_box": [
+      32,
+      60,
+      755,
+      721
+    ],
+    "size": [
+      723,
+      661
+    ],
+    "method": "alpha > 2 boundary + 16px halo margin; no resize or pixel recoloring"
+  },
+  {
+    "source": "skills/berserk-route.png",
+    "output": "upgrade/illustrations/skills/berserk-route.png",
+    "crop_box": [
+      243,
+      322,
+      1043,
+      834
+    ],
+    "size": [
+      800,
+      512
+    ],
+    "method": "alpha > 2 boundary + 16px halo margin; no resize or pixel recoloring"
+  },
+  {
+    "source": "skills/bubble-weapon.png",
+    "output": "upgrade/illustrations/skills/bubble-weapon.png",
+    "crop_box": [
+      17,
+      193,
+      690,
+      645
+    ],
+    "size": [
+      673,
+      452
+    ],
+    "method": "alpha > 2 boundary + 16px halo margin; no resize or pixel recoloring"
+  },
+  {
+    "source": "skills/chain-bounce-grass.png",
+    "output": "upgrade/illustrations/skills/chain-bounce-grass.png",
+    "crop_box": [
+      219,
+      341,
+      1155,
+      880
+    ],
+    "size": [
+      936,
+      539
+    ],
+    "method": "alpha > 2 boundary + 16px halo margin; no resize or pixel recoloring"
+  },
+  {
+    "source": "skills/chain-bounce-water.png",
+    "output": "upgrade/illustrations/skills/chain-bounce-water.png",
+    "crop_box": [
+      40,
+      319,
+      984,
+      841
+    ],
+    "size": [
+      944,
+      522
+    ],
+    "method": "alpha > 2 boundary + 16px halo margin; no resize or pixel recoloring"
+  },
+  {
+    "source": "skills/damage.png",
+    "output": "upgrade/illustrations/skills/damage.png",
+    "crop_box": [
+      21,
+      38,
+      790,
+      756
+    ],
+    "size": [
+      769,
+      718
+    ],
+    "method": "alpha > 2 boundary + 16px halo margin; no resize or pixel recoloring"
+  },
+  {
+    "source": "skills/haste.png",
+    "output": "upgrade/illustrations/skills/haste.png",
+    "crop_box": [
+      162,
+      152,
+      1441,
+      908
+    ],
+    "size": [
+      1279,
+      756
+    ],
+    "method": "alpha > 2 boundary + 16px halo margin; no resize or pixel recoloring"
+  },
+  {
+    "source": "skills/leaf-weapon.png",
+    "output": "upgrade/illustrations/skills/leaf-weapon.png",
+    "crop_box": [
+      15,
+      200,
+      788,
+      624
+    ],
+    "size": [
+      773,
+      424
+    ],
+    "method": "alpha > 2 boundary + 16px halo margin; no resize or pixel recoloring"
+  },
+  {
+    "source": "skills/movement.png",
+    "output": "upgrade/illustrations/skills/movement.png",
+    "crop_box": [
+      108,
+      187,
+      651,
+      615
+    ],
+    "size": [
+      543,
+      428
+    ],
+    "method": "alpha > 2 boundary + 16px halo margin; no resize or pixel recoloring"
+  },
+  {
+    "source": "skills/multishot.png",
+    "output": "upgrade/illustrations/skills/multishot.png",
+    "crop_box": [
+      26,
+      48,
+      718,
+      711
+    ],
+    "size": [
+      692,
+      663
+    ],
+    "method": "alpha > 2 boundary + 16px halo margin; no resize or pixel recoloring"
+  },
+  {
+    "source": "skills/orbit.png",
+    "output": "upgrade/illustrations/skills/orbit.png",
+    "crop_box": [
+      123,
+      172,
+      589,
+      601
+    ],
+    "size": [
+      466,
+      429
+    ],
+    "method": "alpha > 2 boundary + 16px halo margin; no resize or pixel recoloring"
+  },
+  {
+    "source": "skills/pursuit-route.png",
+    "output": "upgrade/illustrations/skills/pursuit-route.png",
+    "crop_box": [
+      88,
+      202,
+      903,
+      851
+    ],
+    "size": [
+      815,
+      649
+    ],
+    "method": "alpha > 2 boundary + 16px halo margin; no resize or pixel recoloring"
+  },
+  {
+    "source": "skills/range.png",
+    "output": "upgrade/illustrations/skills/range.png",
+    "crop_box": [
+      72,
+      180,
+      688,
+      576
+    ],
+    "size": [
+      616,
+      396
+    ],
+    "method": "alpha > 2 boundary + 16px halo margin; no resize or pixel recoloring"
+  },
+  {
+    "source": "skills/shockwave.png",
+    "output": "upgrade/illustrations/skills/shockwave.png",
+    "crop_box": [
+      83,
+      133,
+      680,
+      633
+    ],
+    "size": [
+      597,
+      500
+    ],
+    "method": "alpha > 2 boundary + 16px halo margin; no resize or pixel recoloring"
+  },
+  {
+    "source": "skills/spark-weapon.png",
+    "output": "upgrade/illustrations/skills/spark-weapon.png",
+    "crop_box": [
+      18,
+      162,
+      763,
+      614
+    ],
+    "size": [
+      745,
+      452
+    ],
+    "method": "alpha > 2 boundary + 16px halo margin; no resize or pixel recoloring"
+  },
+  {
+    "source": "skills/split-on-hit-fire.png",
+    "output": "upgrade/illustrations/skills/split-on-hit-fire.png",
+    "crop_box": [
+      29,
+      117,
+      764,
+      673
+    ],
+    "size": [
+      735,
+      556
+    ],
+    "method": "alpha > 2 boundary + 16px halo margin; no resize or pixel recoloring"
+  },
+  {
+    "source": "skills/split-on-hit-thorn.png",
+    "output": "upgrade/illustrations/skills/split-on-hit-thorn.png",
+    "crop_box": [
+      22,
+      94,
+      736,
+      678
+    ],
+    "size": [
+      714,
+      584
+    ],
+    "method": "alpha > 2 boundary + 16px halo margin; no resize or pixel recoloring"
+  },
+  {
+    "source": "skills/vitality.png",
+    "output": "upgrade/illustrations/skills/vitality.png",
+    "crop_box": [
+      19,
+      17,
+      747,
+      734
+    ],
+    "size": [
+      728,
+      717
+    ],
+    "method": "alpha > 2 boundary + 16px halo margin; no resize or pixel recoloring"
+  },
+  {
+    "source": "relics/echo-rune.png",
+    "output": "upgrade/illustrations/relics/echo-rune.png",
+    "crop_box": [
+      16,
+      87,
+      757,
+      687
+    ],
+    "size": [
+      741,
+      600
+    ],
+    "method": "alpha > 2 boundary + 16px halo margin; no resize or pixel recoloring"
+  },
+  {
+    "source": "relics/hunter-eye.png",
+    "output": "upgrade/illustrations/relics/hunter-eye.png",
+    "crop_box": [
+      58,
+      113,
+      800,
+      722
+    ],
+    "size": [
+      742,
+      609
+    ],
+    "method": "alpha > 2 boundary + 16px halo margin; no resize or pixel recoloring"
+  },
+  {
+    "source": "relics/overload-core.png",
+    "output": "upgrade/illustrations/relics/overload-core.png",
+    "crop_box": [
+      37,
+      65,
+      747,
+      680
+    ],
+    "size": [
+      710,
+      615
+    ],
+    "method": "alpha > 2 boundary + 16px halo margin; no resize or pixel recoloring"
+  },
+  {
+    "source": "relics/shattered-core.png",
+    "output": "upgrade/illustrations/relics/shattered-core.png",
+    "crop_box": [
+      44,
+      89,
+      713,
+      679
+    ],
+    "size": [
+      669,
+      590
+    ],
+    "method": "alpha > 2 boundary + 16px halo margin; no resize or pixel recoloring"
+  },
+  {
+    "source": "relics/specialist-badge.png",
+    "output": "upgrade/illustrations/relics/specialist-badge.png",
+    "crop_box": [
+      25,
+      56,
+      773,
+      737
+    ],
+    "size": [
+      748,
+      681
+    ],
+    "method": "alpha > 2 boundary + 16px halo margin; no resize or pixel recoloring"
+  },
+  {
+    "source": "relics/tidal-pearl.png",
+    "output": "upgrade/illustrations/relics/tidal-pearl.png",
+    "crop_box": [
+      35,
+      80,
+      756,
+      700
+    ],
+    "size": [
+      721,
+      620
+    ],
+    "method": "alpha > 2 boundary + 16px halo margin; no resize or pixel recoloring"
+  }
+]

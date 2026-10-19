@@ -1,0 +1,89 @@
+[
+  {
+    "title": "火系武器卡背景",
+    "element": "fire",
+    "source": "elements-sheet.png",
+    "source_sha256": "99ba888f3286678cb4fffd726976df3fec00ddc051aecc004ec1ae9ca54d9cef",
+    "source_size": [
+      1774,
+      887
+    ],
+    "source_mode": "RGBA",
+    "crop_box": [
+      0,
+      6,
+      572,
+      887
+    ],
+    "output": "weapon-fire.png",
+    "output_size": [
+      652,
+      935
+    ],
+    "paste_offset": [
+      40,
+      27
+    ],
+    "safe_margin_min": 24,
+    "alpha_preserved": true,
+    "accepted": true
+  },
+  {
+    "title": "水系武器卡背景",
+    "element": "water",
+    "source": "elements-sheet.png",
+    "source_sha256": "99ba888f3286678cb4fffd726976df3fec00ddc051aecc004ec1ae9ca54d9cef",
+    "source_size": [
+      1774,
+      887
+    ],
+    "source_mode": "RGBA",
+    "crop_box": [
+      596,
+      3,
+      1164,
+      887
+    ],
+    "output": "weapon-water.png",
+    "output_size": [
+      652,
+      935
+    ],
+    "paste_offset": [
+      42,
+      25
+    ],
+    "safe_margin_min": 24,
+    "alpha_preserved": true,
+    "accepted": true
+  },
+  {
+    "title": "草系武器卡背景",
+    "element": "grass",
+    "source": "elements-sheet.png",
+    "source_sha256": "99ba888f3286678cb4fffd726976df3fec00ddc051aecc004ec1ae9ca54d9cef",
+    "source_size": [
+      1774,
+      887
+    ],
+    "source_mode": "RGBA",
+    "crop_box": [
+      1170,
+      0,
+      1774,
+      887
+    ],
+    "output": "weapon-grass.png",
+    "output_size": [
+      652,
+      935
+    ],
+    "paste_offset": [
+      24,
+      24
+    ],
+    "safe_margin_min": 24,
+    "alpha_preserved": true,
+    "accepted": true
+  }
+]

@@ -4,6 +4,8 @@ import type { Combat } from './combat';
 import { ATTACKS, type RunBuild } from './run-build';
 import { upgradePreview, type Progression } from './progression';
 import { FUSION_ASSET_ROOT, type ElementalFusionId } from './fusion-pixels';
+import { bindUpgradeArt, uiArtUrl, upgradeArt } from './upgrade-art';
+import { shopArt } from './shop-art';
 
 const icons = {
   settings: '<path d="M4 6h16M4 12h16M4 18h16"/><circle cx="9" cy="6" r="2" fill="currentColor"/><circle cx="15" cy="12" r="2" fill="currentColor"/><circle cx="9" cy="18" r="2" fill="currentColor"/>',
@@ -56,14 +58,14 @@ export function createUI(root: HTMLElement) {
     </section>
     <section id="hud" class="hud screen" aria-label="游戏操作与状态" hidden>
       <div class="hud-top">
-        <div class="health-block"><div class="health-panel">${portrait}<img id="creature-portrait" class="portrait" alt="" hidden style="object-fit:contain;image-rendering:pixelated"/><div class="health-copy"><div class="health-title"><strong id="creature-name">焰绒</strong><span id="level-value">1级</span></div><div class="health-track" role="progressbar" aria-label="生命值" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100"><div id="health-fill"></div></div><div class="health-values">${icon('heart')}<span id="health-value">100 / 100</span><small id="creature-code"></small></div></div></div><div class="combat-stats"><div>${icon('battle')}<span>击败</span><strong id="kill-value">0</strong></div><div>${icon('spark')}<span>经验</span><strong id="xp-value">0</strong></div></div><div class="xp-row"><div id="xp-track" class="xp-track" role="progressbar" aria-label="升级经验" aria-valuemin="0" aria-valuemax="8" aria-valuenow="0"><div id="xp-fill"></div></div><span id="xp-progress">0 / 8</span></div></div>
+        <div class="health-block"><div class="health-panel"><img class="health-frame-art" data-upgrade-art="health-frame" src="${uiArtUrl('hud/creature-health-panel.png')}" alt="" draggable="false"/>${portrait}<img id="creature-portrait" class="portrait" data-upgrade-art="portrait" alt="" hidden style="object-fit:contain;image-rendering:pixelated"/><div class="health-copy"><div class="health-title"><strong id="creature-name">焰绒</strong><span id="level-value">1级</span></div><div class="health-track" role="progressbar" aria-label="生命值" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100"><div id="health-fill"></div></div><div class="health-values">${icon('heart')}<span id="health-value">100 / 100</span><small id="creature-code"></small></div></div></div><div class="combat-stats"><div>${icon('battle')}<span>击败</span><strong id="kill-value">0</strong></div><div>${icon('spark')}<span>经验</span><strong id="xp-value">0</strong></div></div><div class="xp-row"><span class="xp-label">经验</span><div id="xp-track" class="xp-track" role="progressbar" aria-label="升级经验" aria-valuemin="0" aria-valuemax="8" aria-valuenow="0"><div id="xp-fill"></div></div><span id="xp-progress">0 / 8</span></div></div>
         <div class="run-status"><span class="run-label">${icon('compass')} 中央草场</span><strong id="timer">00:00</strong><small id="run-wave" hidden></small><small id="run-gold" hidden></small><span class="explore-label"><i></i> 草原遭遇</span></div>
         <div class="hud-actions"><button id="settings" class="icon-button" aria-label="画质与声音设置">${icon('settings')}</button><button id="fullscreen" class="icon-button" aria-label="切换全屏">${icon('expand')}</button><button id="pause" class="icon-button" aria-label="暂停游戏">${icon('pause')}</button></div>
       </div>
       <div id="encounter-status" class="encounter-status" hidden><div><strong id="encounter-name"></strong><span id="encounter-health"></span></div><div id="encounter-track" class="encounter-track" role="progressbar" aria-label="遭遇敌人生命值" aria-valuemin="0"><i id="encounter-fill"></i></div><small id="encounter-hint"></small><small id="encounter-wave"></small></div>
       <div id="welcome" class="welcome"><h2>小小魔法，准备就绪。</h2><p>移动躲避敌人，焰绒会自动施法 · 靠近拾取经验</p></div>
       <div id="party-status" class="party-status" hidden><strong>草场战斗样板</strong><span>焰绒 · 单兽自动攻击</span></div>
-      <div id="fusion-status" class="fusion-status" role="status" hidden><span id="fusion-spark-icon">${fireIcon(0)}</span><span id="fusion-burst-icon" hidden>${fireIcon(2)}</span><div><strong id="fusion-title">火花弹</strong><small id="fusion-hint">升级寻找「命中分裂」</small><small id="build-status" hidden></small><div id="weapon-cooldowns" class="weapon-cooldowns" role="group" aria-label="武器冷却" hidden></div></div></div>
+      <div id="fusion-status" class="fusion-status" role="status" hidden><span id="hud-extra-weapons" hidden></span><span id="fusion-spark-icon">${fireIcon(0)}</span><span id="fusion-burst-icon" hidden>${fireIcon(2)}</span><div><strong id="fusion-title">火花弹</strong><small id="fusion-hint">升级寻找「命中分裂」</small><small id="build-status" hidden></small><div id="weapon-cooldowns" class="weapon-cooldowns" role="group" aria-label="武器冷却" hidden></div></div></div>
       <div id="trial-status" class="trial-status" hidden><strong id="trial-title">冲锋犄角 · 开局已装备</strong><span id="trial-progress" aria-live="polite"></span><small id="trial-hint">黄线蓄力时侧移躲开；冲刺命中可打断，青环期间可反击</small></div><div class="location-label"><span>01</span><div>中央草场<small id="map-seed">中央草场</small></div></div>
       <div class="movement-control"><div id="joystick" class="joystick" role="group" aria-label="虚拟摇杆：按住并拖动以移动"><span class="joystick-cross horizontal"></span><span class="joystick-cross vertical"></span><span class="joystick-knob"><span></span></span></div><span class="control-caption">移动</span></div>
       <div class="dash-control"><button id="dash" class="dash-button" aria-label="冲刺">${icon('dash')}<strong>冲刺</strong><span id="dash-status">就绪</span></button><span class="control-caption">空格冲刺</span></div>
@@ -71,15 +73,22 @@ export function createUI(root: HTMLElement) {
       <div class="stage-note">2.5D 原型 <span>·</span> 幻兽幸存者</div>
     </section>
     <section id="pause-screen" class="modal-screen" aria-label="暂停菜单" hidden><div class="modal pause-card"><div class="pause-controls"><div class="modal-symbol">${icon('leaf')}</div><h2>已暂停</h2><p id="pause-reason"></p><button id="resume" class="primary">继续 ${icon('arrow')}</button><button id="pause-settings" class="text-button">画质与声音</button><div class="pause-links"><button id="restart" class="text-button">重新开始</button><button id="back-menu" class="text-button">返回主菜单</button></div><a id="map-replay" class="map-replay" hidden></a></div><section id="build-summary" class="build-summary" aria-label="本局构筑" tabindex="0" hidden><h3>本局构筑</h3><div id="build-weapons"></div><h4>技能融合</h4><p id="build-fusions"></p><h4>稀有道具与进化</h4><p id="build-relics"></p><p id="build-evolution"></p></section></div></section>
-    <section id="gameover-screen" class="modal-screen" aria-label="本局结束" hidden><div class="modal result-card"><div class="result-overview"><div class="modal-symbol">${icon('spark')}</div><span id="result-eyebrow" class="eyebrow">本局结束</span><h2 id="result-heading">本局结束</h2><p id="result-message"></p><div id="result-challenge" class="result-challenge" hidden></div><div class="result-stats"><div><strong id="result-time">00:00</strong><span>生存时间</span></div><div><strong id="result-kills">0</strong><span>击败怪物</span></div><div><strong id="result-xp">0</strong><span>收集经验</span></div></div><div class="result-actions"><button id="gameover-restart" class="primary">再来一次 ${icon('arrow')}</button><button id="gameover-menu" class="text-button">返回主菜单</button></div></div><section id="result-build" class="build-summary" aria-label="本局战报" tabindex="0" hidden><h3>本局战报</h3><p id="result-run"></p><h4>最终构筑</h4><p id="result-weapons"></p><p id="result-fusions"></p><p id="result-relics"></p></section></div></section>
+    <section id="gameover-screen" class="modal-screen" role="dialog" aria-modal="true" aria-labelledby="result-heading" aria-label="本局结束" data-outcome="defeat" hidden>
+      <div class="modal result-card">
+        <header class="result-header"><span class="result-insignia" aria-hidden="true"><span class="result-art-fallback">${icon('leaf')}</span><img id="result-victory-art" data-upgrade-art="result-victory" src="${uiArtUrl('result/victory-crown.png')}" alt="" draggable="false" hidden/><img id="result-defeat-art" data-upgrade-art="result-defeat" src="${uiArtUrl('result/defeat-badge.png')}" alt="" draggable="false"/></span><div><span id="result-eyebrow" class="eyebrow">冒险战报</span><h2 id="result-heading">本局结束</h2><p id="result-message"></p></div></header>
+        <div class="result-report" style="--result-panel-url:url('${uiArtUrl('result/battle-report-panel.png')}')"><img class="result-panel-art" data-upgrade-art="result-panel" src="${uiArtUrl('result/battle-report-panel.png')}" alt="" draggable="false"/><div class="result-body"><div class="result-overview"><div class="result-stats"><div><strong id="result-time">00:00</strong><span>生存时间</span></div><div><strong id="result-kills">0</strong><span>击败怪物</span></div><div><strong id="result-xp">0</strong><span>获得经验</span></div></div><div id="result-challenge" class="result-challenge" hidden></div><p id="result-run"></p></div>
+          <section id="result-build" class="build-summary" aria-label="最终构筑" tabindex="0"><h3>最终构筑</h3><p id="result-weapons"></p><p id="result-skills"></p><p id="result-fusions"></p><p id="result-relics"></p></section></div></div>
+        <footer class="result-actions"><button id="gameover-restart" class="primary">再次挑战 ${icon('arrow')}</button><button id="gameover-menu" class="text-button">返回菜单</button></footer>
+      </div>
+    </section>
     <section id="shop-screen" class="shop-screen" role="dialog" aria-modal="true" aria-labelledby="shop-heading" hidden>
-      <div class="shop-panel"><header class="shop-header"><div><small>波次间休整 · 战斗已暂停</small><h2 id="shop-heading">草场商店</h2></div><div><strong id="shop-coins"></strong><small id="shop-health"></small></div></header>
-      <p id="shop-message" class="shop-message" role="status"></p><div id="shop-items" class="shop-items"></div>
+      <div class="shop-panel"><header class="shop-header"><div><small>休整 · 已暂停</small><h2 id="shop-heading">森林魔法商店</h2></div><div><span class="shop-wallet"><img data-upgrade-art="coin" src="${uiArtUrl('common/coin.png')}" alt="" draggable="false"/><strong id="shop-coins"></strong></span><small id="shop-health"></small></div></header>
+      <p id="shop-message" class="shop-message" role="status"></p><div class="shop-display"><img class="shop-panel-art" data-upgrade-art="shop-panel" src="${uiArtUrl('shop/shop-panel.png')}" alt="" draggable="false"/><div id="shop-items" class="shop-items"></div></div>
       <footer class="shop-actions"><button id="shop-refresh" class="secondary"></button><button id="shop-menu" class="text-button">返回主菜单</button><button id="shop-next" class="primary"></button></footer></div>
     </section>
     <section id="upgrade-screen" class="upgrade-screen" role="dialog" aria-modal="true" aria-labelledby="upgrade-heading" hidden>
       <div id="upgrade-panel" class="upgrade-panel" tabindex="-1">
-        <header class="upgrade-header"><div class="upgrade-emblem">${icon('leaf')}</div><div><h2 id="upgrade-heading">选择强化</h2></div><button id="upgrade-menu" class="text-button">返回菜单</button></header>
+        <header class="upgrade-header"><div class="upgrade-heading-art"><img data-upgrade-art="banner" src="${uiArtUrl('common/forest-title-banner.png')}" alt="" draggable="false"/><h2 id="upgrade-heading">选择强化</h2></div><button id="upgrade-menu" class="text-button">返回菜单</button></header>
         <div class="upgrade-subtitle"><span id="upgrade-level">等级 02</span><p id="upgrade-instruction">选择一项</p><span class="paused-badge">战斗已暂停</span></div>
         <div id="upgrade-cards" class="upgrade-cards"></div>
         <footer class="upgrade-footer"><span>${icon('spark')} <span id="upgrade-queue">本次选择后继续</span></span><span>仅本局生效</span></footer>
@@ -97,28 +106,40 @@ export function createUI(root: HTMLElement) {
     <div id="toast" class="toast" role="status" hidden></div>
   `;
   bindFireIcons(root);
+  bindUpgradeArt(root);
 }
 
 export function renderUpgradeCards(progression: Progression, version: number) {
   const offered = progression.offers;
   document.getElementById('upgrade-level')!.textContent = `等级 ${String(progression.choiceLevel).padStart(2, '0')}`;
-  document.getElementById('upgrade-instruction')!.textContent = offered.length < 3 ? `还有 ${offered.length} 种技能可强化，选择一项继续成长。` : '三选一，让这次冒险更不一样。';
-  document.getElementById('upgrade-queue')!.textContent = progression.pendingChoices > 1 ? `还有 ${progression.pendingChoices} 次成长选择 · 逐次选择后继续` : '本次选择后继续';
+  document.getElementById('upgrade-instruction')!.textContent = offered.length < 3 ? `剩余 ${offered.length} 项可选` : '三选一';
+  document.getElementById('upgrade-queue')!.textContent = progression.pendingChoices > 1 ? `待选 ${progression.pendingChoices} 次` : '选择后继续';
   document.getElementById('upgrade-cards')!.innerHTML = offered.map((id) => {
     const skill = progression.skills.find((candidate) => candidate.id === id)!;
     const rank = progression.ranks[id];
-    return `<button class="skill-card" data-skill="${id}" data-offer="${version}" data-category="${skill.category ?? 'normal'}" style="--skill-color:${skill.color}" disabled aria-label="${skill.title}：${skill.benefit}，提升到 ${rank + 1} 级">
-      <span class="skill-card-meta"><span>${skill.category === 'relic' ? '稀有道具' : skill.category === 'evolution' ? '互斥进化' : id.endsWith('-weapon') ? (rank ? '武器强化' : '新武器') : rank === 0 && skill.effect.type === 'spell' ? '新技能' : '魔法强化'}</span><span>${rank} → ${rank + 1}级<small> / ${skill.maxRank}</small></span></span>
-      <span class="skill-emblem">${id === 'area' && progression.fusionBase === 'bubble' ? fusionIcon('deep-bubble') : id === 'chain' ? fusionIcon(progression.fusionBase === 'bubble' ? 'chain-bubble' : 'jump-thorn') : id === 'split-on-hit' && progression.fusionBase === 'leaf' ? fusionIcon('thorn-scatter') : id === 'split-on-hit' && progression.fusionBase === 'spark' ? fireIcon(1) : icon(skill.icon)}</span>
-      <h3>${skill.title}</h3><strong class="skill-benefit">${skill.benefit}</strong>
+    const art = upgradeArt(skill, progression.fusionBase, progression.build?.attacks.map(a => a.attackId));
+    const preview = id.endsWith('-weapon') && rank === 0
+      ? `未装备 → ${rank + 1}级` : upgradePreview(skill, progression.ranks) ?? '';
+    const titlePath = `upgrade-title-${version}-${id}`;
+    return `<button type="button" class="skill-card${skill.tradeoff ? ' has-tradeoff' : ''}" data-skill="${id}" data-offer="${version}" data-category="${skill.category ?? 'normal'}" data-element="${art.element ?? ''}" style="--skill-color:${skill.color}" disabled aria-label="${skill.title}：${skill.benefit}，${preview}，${rank} → ${rank + 1}级${skill.tradeoff ? '，代价：' + skill.tradeoff : ''}" aria-description="${skill.description}">
+      <img class="skill-frame" data-upgrade-art="frame" src="${art.frame}" alt="" draggable="false"/>
+      <span class="skill-card-meta"><span><img data-upgrade-art="gem" src="${art.gem}" alt="" draggable="false"/>${skill.category === 'relic' ? '稀有道具' : skill.category === 'evolution' ? '互斥进化' : id.endsWith('-weapon') ? (rank ? '武器强化' : '新武器') : rank === 0 && skill.effect.type === 'spell' ? '新技能' : '魔法强化'}</span><span>${rank} → ${rank + 1}级<small> / ${skill.maxRank}</small></span></span>
+      <h3 aria-label="${skill.title}">${curvedTitle(skill.title, titlePath, 'skill-title-arc')}</h3>
+      <span class="skill-content"><span class="skill-emblem${art.illustrations.length > 1 ? ' multiple-art' : ''}" aria-hidden="true"><span class="skill-art-fallback">${icon(skill.icon)}</span>${art.illustrations.map(url => `<img class="skill-illustration" data-upgrade-art="illustration" src="${url}" alt="" draggable="false"/>`).join('')}</span>
+      <strong class="skill-benefit">${skill.benefit}</strong>
+      <span class="skill-preview">${preview}</span></span>
       ${skill.tradeoff ? `<p class="skill-tradeoff">代价：${skill.tradeoff}</p>` : ''}
       <p class="skill-description">${skill.description}</p>
-      <span class="skill-preview">${upgradePreview(skill, progression.ranks)}</span>
-      <span class="skill-ranks" aria-hidden="true">${Array.from({ length: skill.maxRank }, (_, index) => `<i class="${index <= rank ? 'filled' : ''}"></i>`).join('')}</span>
+      <span class="skill-ranks" aria-hidden="true">${Array.from({ length: skill.maxRank }, (_, index) => `<i class="${index < rank ? 'filled' : index === rank ? 'next' : ''}"></i>`).join('')}</span>
       <span class="skill-pick">点击选择 ${icon('arrow')}</span>
     </button>`;
   }).join('');
-  bindFireIcons(document.getElementById('upgrade-cards')!);
+  bindUpgradeArt(document.getElementById('upgrade-cards')!);
+}
+
+function curvedTitle(title: string, pathId: string, className: string) {
+  const size = Math.min(36, 240 / Array.from(title).length);
+  return `<svg class="${className}" viewBox="0 0 300 76" aria-hidden="true" focusable="false"><defs><path id="${pathId}" d="M 8 58 Q 150 20 292 58"/></defs><text font-size="${size}" text-anchor="middle"><textPath href="#${pathId}" startOffset="50%">${title}</textPath></text></svg>`;
 }
 
 function fireIcon(index: 0 | 1 | 2) {
@@ -167,27 +188,60 @@ export function renderBuildSummary(build: RunBuild | undefined, fusions: readonl
 export function renderRunShop(run: RunFlow, combat: Combat) {
   const shop = run.shop;
   if (!shop) return;
-  document.getElementById('shop-heading')!.textContent = `第 ${run.wave} 波完成 · 草场商店`;
+  document.getElementById('shop-heading')!.textContent = `第 ${run.wave} 波完成 · 魔法商店`;
   document.getElementById('shop-coins')!.textContent = `${run.coins} 金币`;
   document.getElementById('shop-health')!.textContent = `生命 ${Math.ceil(combat.hp)} / ${combat.maxHp}`;
-  document.getElementById('shop-items')!.innerHTML = shop.items.map((item, index) => `<article class="shop-item${item.sold ? ' sold' : ''}"><small>${['武器 / 强化', '通用改造', '随机道具', '恢复 / 防御'][index]}</small><h3>${item.title}</h3><p>${item.benefit}</p>${item.tradeoff ? `<p class="shop-cost">代价：${item.tradeoff}</p>` : ''}<button type="button" class="shop-buy" data-buy="${index}" data-shop-token="${shop.token}" ${item.sold || item.kind === 'empty' || item.price > run.coins ? 'disabled' : ''}>${item.sold ? '已购买' : item.kind === 'empty' ? '暂无适用商品' : `${item.price} 金币 · ${item.price > run.coins ? '金币不足' : '购买'}`}</button></article>`).join('');
+  const items = document.getElementById('shop-items')!;
+  const pageKey = `${shop.token.split(':')[0]}:${shop.refreshes}`;
+  const resetScroll = items.dataset.page !== pageKey;
+  items.dataset.page = pageKey;
+  items.innerHTML = shop.items.map((item, index) => {
+    const art = shopArt(item, combat);
+    const unavailable = item.sold || item.kind === 'empty' || item.price > run.coins;
+    const state = item.sold ? '已购买' : item.kind === 'empty' ? '暂无适用商品' : item.price > run.coins ? '金币不足' : '购买';
+    const title = item.kind === 'reward' && item.skill?.endsWith('-weapon')
+      ? item.title.replace(/^获得/, '').replace(/强化$/, '') : item.title;
+    const titlePath = `shop-title-${shop.token.replace(/[^a-zA-Z0-9_-]/g, '-')}-${index}`;
+    return `<article class="shop-item${item.sold ? ' sold' : ''}${item.price > run.coins ? ' unaffordable' : ''}" data-kind="${item.kind}" data-category="${art.category}" data-skill="${item.skill ?? ''}">
+      <img class="shop-slot-art" data-upgrade-art="shop-slot" src="${uiArtUrl('shop/item-slot.png')}" alt="" draggable="false"/>
+      <h3 aria-label="${title}">${curvedTitle(title, titlePath, 'shop-title-arc')}</h3><small class="shop-item-type">${art.label}</small>
+      <div class="shop-item-body"><span class="shop-illustration${art.images.length > 1 ? ' multiple-art' : ''}" aria-hidden="true"><span class="shop-art-fallback">${icon(art.icon)}</span>${art.images.map(src => `<img data-upgrade-art="shop-illustration" src="${src}" alt="" draggable="false"/>`).join('')}</span><p class="shop-benefit">${item.benefit}</p>${item.tradeoff ? `<p class="shop-cost">代价：${item.tradeoff}</p>` : ''}</div>
+      <div class="shop-purchase"><span class="shop-price" ${item.kind === 'empty' ? 'hidden' : ''}><img data-upgrade-art="coin" src="${uiArtUrl('common/coin.png')}" alt="" draggable="false"/>${item.price} 金币</span>
+      <button type="button" class="shop-buy" data-buy="${index}" data-shop-token="${shop.token}" aria-label="${item.title}，${item.price} 金币，${state}" ${unavailable ? 'disabled' : ''}><span class="shop-buy-label">${state}</span></button>
+      </div>
+    </article>`;
+  }).join('');
+  if (resetScroll) items.scrollTop = 0;
   const refresh = document.getElementById('shop-refresh') as HTMLButtonElement;
-  refresh.textContent = `刷新商品 · ${shop.refreshCost} 金币`;
+  refresh.innerHTML = `<img data-upgrade-art="refresh" src="${uiArtUrl('shop/refresh-rune.png')}" alt="" draggable="false"/><span>刷新商品 · ${shop.refreshCost} 金币</span>`;
   refresh.dataset.shopToken = shop.token; refresh.disabled = run.coins < shop.refreshCost || !shop.canRefresh;
   const next = document.getElementById('shop-next') as HTMLButtonElement;
   next.textContent = `进入第 ${run.wave + 1} 波`;
   next.dataset.shopToken = shop.token;
+  bindUpgradeArt(document.getElementById('shop-screen')!);
 }
 
 export function renderRunResult(run: RunFlow | undefined, combat: Combat) {
   const panel = document.getElementById('result-build')!;
-  panel.hidden = !run; panel.closest('.result-card')!.classList.toggle('formal-result', !!run);
-  if (!run) return;
-  const build = combat.runBuild;
-  document.getElementById('result-run')!.textContent = `到达第 ${run.wave} / 6 波 · 完成 ${run.completedWaves} 波\n生命 ${Math.ceil(combat.hp)} / ${combat.maxHp} · 剩余 ${run.coins} 金币 · 共获得 ${run.earned} 金币\n战斗 ${Math.floor(run.combatElapsed)} 秒 / 休整 ${Math.floor(run.restElapsed)} 秒`;
-  document.getElementById('result-weapons')!.textContent = build.attacks.map(a => `${ATTACKS[a.attackId].title} ${a.level}级`).join(' / ');
+  panel.hidden = false; panel.closest('.result-card')!.classList.toggle('formal-result', !!run);
+  const build = combat.usesRunBuild ? combat.runBuild : undefined;
+  const runSummary = document.getElementById('result-run')!;
+  runSummary.hidden = !run;
+  runSummary.textContent = run ? `第 ${run.wave} / 6 波 · 完成 ${run.completedWaves} 波\n本局获得 ${run.earned} 金币` : '';
+  document.getElementById('result-weapons')!.textContent = build ? build.attacks.map(a => `${ATTACKS[a.attackId].title} ${a.level}级`).join(' / ') : `基础攻击：${ATTACKS[combat.baseAttack].title}`;
+  const learned = combat.progression.skills.filter(skill => !skill.category && !skill.id.endsWith('-weapon') && combat.progression.ranks[skill.id] > 0);
+  document.getElementById('result-skills')!.textContent = learned.length ? learned.map(skill => `${skill.title} ${combat.progression.ranks[skill.id]}级`).join(' / ') : '强化：无';
   document.getElementById('result-fusions')!.textContent = '融合：' + (combat.fusions.map(f => f.title).join(' / ') || '无');
-  document.getElementById('result-relics')!.textContent = '道具：' + (build.relics.map(id => RELICS[id].title).join(' / ') || '无') + '\n进化：' + (build.evolution ? EVOLUTIONS[build.evolution].title : '未选择');
+  document.getElementById('result-relics')!.textContent = '道具：' + (build?.relics.map(id => RELICS[id].title).join(' / ') || '无') + '\n进化：' + (build?.evolution ? EVOLUTIONS[build.evolution].title : '无');
+  document.getElementById('result-skills')!.hidden = !learned.length;
+  document.getElementById('result-fusions')!.hidden = !combat.fusions.length;
+  document.getElementById('result-relics')!.hidden = !build?.relics.length && !build?.evolution;
+}
+
+export function renderResultOutcome(won: boolean) {
+  document.getElementById('gameover-screen')!.dataset.outcome = won ? 'victory' : 'defeat';
+  document.getElementById('result-victory-art')!.hidden = !won;
+  document.getElementById('result-defeat-art')!.hidden = won;
 }
 
 export function renderWeaponCooldowns(_combat: Combat) {
@@ -197,6 +251,18 @@ export function renderWeaponCooldowns(_combat: Combat) {
   root.replaceChildren();
 }
 
+export function renderHudWeaponIcons(combat: Combat) {
+  const root = document.getElementById('hud-extra-weapons')!;
+  const attacks = combat.usesRunBuild ? combat.runBuild.attacks.map(attack => attack.attackId) : [combat.baseAttack];
+  const ids = attacks.filter(id => id !== 'spark' && !combat.fusions.some(fusion => fusion.baseAttack === id));
+  root.hidden = !ids.length;
+  const key = ids.join(',');
+  if (root.dataset.weapons === key) return;
+  root.dataset.weapons = key;
+  root.innerHTML = ids.map(id => `<span class="hud-weapon-icon" title="${ATTACKS[id].title}">${icon(id === 'bubble' ? 'wave' : 'leaf')}<img data-upgrade-art="hud-weapon" src="${uiArtUrl(`upgrade/illustrations/skills/${id}-weapon.png`)}" alt="" draggable="false"/></span>`).join('');
+  bindUpgradeArt(root);
+}
+
 export function renderEncounterStatus(combat: Combat, run?: RunFlow) {
   const c=combat.encounters, root=document.getElementById('encounter-status')!;
   const enemy=c.boss ?? (c.elite?.active ? c.elite : undefined);
@@ -204,6 +270,8 @@ export function renderEncounterStatus(combat: Combat, run?: RunFlow) {
   document.getElementById('hud')!.classList.toggle('encounter-active',!root.hidden);
   if(root.hidden || !enemy) return;
   const boss=enemy.rank==='boss', max=combat.enemyHealth(enemy);
+  root.classList.toggle('enraged', boss && c.enraged);
+  root.dataset.rank = boss ? 'boss' : 'elite';
   document.getElementById('encounter-name')!.textContent=boss ? `荆冠兽王${c.enraged?' · 狂暴':''}` : '精英岩甲';
   document.getElementById('encounter-health')!.textContent=`${Math.ceil(enemy.hp)} / ${max}`;
   document.getElementById('encounter-fill')!.style.width=`${Math.max(0,enemy.hp/max)*100}%`;

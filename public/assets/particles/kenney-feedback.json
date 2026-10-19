@@ -1,0 +1,141 @@
+{
+  "license": "CC0; see ../kenney_particle-pack/License.txt",
+  "columns": 4,
+  "rows": 2,
+  "cell_size": 128,
+  "method": "nonzero-alpha bounds + 16px margin; contain nearest to 124px; minimum 2px cell padding; RGBA retained",
+  "entries": [
+    {
+      "frame": 0,
+      "source": "public/assets/kenney_particle-pack/PNG (Transparent)/star_01.png",
+      "sha256": "3ba3999c944a0767677449412d306c1f230daa1743b31f929533cf77a22ecf5d",
+      "source_size": [
+        512,
+        512
+      ],
+      "source_mode": "P",
+      "cell": [
+        0,
+        0,
+        128,
+        128
+      ],
+      "crop": [
+        0,
+        0,
+        512,
+        512
+      ]
+    },
+    {
+      "frame": 1,
+      "source": "public/assets/kenney_particle-pack/PNG (Transparent)/star_04.png",
+      "sha256": "6485ac16c773663bd39346f3bedae04465ac14c661eb47cc5cfa935cdbf6c2ec",
+      "source_size": [
+        512,
+        512
+      ],
+      "source_mode": "P",
+      "cell": [
+        128,
+        0,
+        128,
+        128
+      ],
+      "crop": [
+        48,
+        0,
+        465,
+        465
+      ]
+    },
+    {
+      "frame": 2,
+      "source": "public/assets/kenney_particle-pack/PNG (Transparent)/trace_06.png",
+      "sha256": "22c61c0e280db28b6cb6033c015dde4360a124b3488302ea708566b7f36fd900",
+      "source_size": [
+        512,
+        512
+      ],
+      "source_mode": "P",
+      "cell": [
+        256,
+        0,
+        128,
+        128
+      ],
+      "crop": [
+        139,
+        9,
+        373,
+        503
+      ]
+    },
+    {
+      "frame": 3,
+      "source": "public/assets/kenney_particle-pack/PNG (Transparent)/slash_02.png",
+      "sha256": "a79a9e297790e6126b78d41015a3045cda3f1863b421c88321d2442ed6f9032e",
+      "source_size": [
+        512,
+        512
+      ],
+      "source_mode": "P",
+      "cell": [
+        384,
+        0,
+        128,
+        128
+      ],
+      "crop": [
+        79,
+        135,
+        433,
+        512
+      ]
+    },
+    {
+      "frame": 4,
+      "source": "public/assets/kenney_particle-pack/PNG (Transparent)/flame_05.png",
+      "sha256": "4c5cc587260010e4bb58b03cc2561ca0e96409e7db25ea4183cd3fb1d0237dc8",
+      "source_size": [
+        512,
+        512
+      ],
+      "source_mode": "P",
+      "cell": [
+        0,
+        128,
+        128,
+        128
+      ],
+      "crop": [
+        193,
+        96,
+        325,
+        398
+      ]
+    },
+    {
+      "frame": 5,
+      "source": "public/assets/kenney_particle-pack/PNG (Transparent)/flame_06.png",
+      "sha256": "fc95ac4d0e61b22d079aeb5feabf2914d380858ad95852e5b1638ad820526948",
+      "source_size": [
+        512,
+        512
+      ],
+      "source_mode": "P",
+      "cell": [
+        128,
+        128,
+        128,
+        128
+      ],
+      "crop": [
+        185,
+        58,
+        340,
+        398
+      ]
+    }
+  ]
+}

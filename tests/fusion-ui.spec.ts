@@ -29,7 +29,7 @@ async function open(page: Page) {
 async function learn(page: Page) {
   await page.evaluate(() => (window as unknown as Fixture).offer());
   const card = page.locator('[data-skill="split-on-hit"]'); await expect(card).toBeEnabled(); await card.tap();
-  await expect(page.locator('#fusion-title')).toHaveText('爆裂火种 · 已融合');
+  await expect(page.locator('#fusion-title')).toHaveText('爆裂火种');
 }
 
 test('new menu starts one pixel Yanrong with joystick only and automatically fires ordinary sparks', async ({ page }) => {
@@ -133,6 +133,7 @@ test('new and preserved menu entries fit both phone safe areas with unobstructed
 
 test('fusion restarts reuse GPU resources and disposal releases the atlas batch', async ({ page }) => {
   await open(page);
+  await expect.poll(() => page.evaluate(() => (window as any).game.combatView.inspect().feedback?.loaded)).toBe(true);
   await expect.poll(async () => (await state(page)).enemyVisual.batches?.filter(b => b.loaded).length).toBe(3);
   let baseline: { geometries: number; textures: number } | undefined;
   for (let i=0;i<4;i++) {

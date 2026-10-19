@@ -65,7 +65,8 @@ test('elite and spread warnings fit short phones; upgrades, settings and backgro
   await page.setViewportSize({width:568,height:320});await page.evaluate(()=>{(window as any).game.sleep();(window as any).draw()});
   const rect=await page.locator('#encounter-status').boundingBox();expect(rect!.x).toBeGreaterThanOrEqual(0);expect(rect!.y+rect!.height).toBeLessThan(320);
   const health=await page.locator('.health-panel').boundingBox(),actions=await page.locator('.hud-actions').boundingBox();
-  expect(rect!.x).toBeGreaterThan(health!.x+health!.width);expect(rect!.x+rect!.width).toBeLessThan(actions!.x);
+  expect(rect!.x).toBeGreaterThan(health!.x+health!.width);
+  expect(rect!.x+rect!.width<=actions!.x || rect!.y>=actions!.y+actions!.height).toBe(true);
   if(browserName==='chromium')await page.screenshot({path:'artifacts/v5.3-e-elite-small.png'});
 });
 

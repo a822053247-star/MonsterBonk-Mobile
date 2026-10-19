@@ -1,0 +1,478 @@
+{
+  "coordinates": "[left, top, right, bottom), source pixels",
+  "source_files": [
+    {
+      "source": "raw/三系元素魔法爆发特效.png",
+      "width": 2172,
+      "height": 724,
+      "mode": "RGBA",
+      "bands": [
+        "R",
+        "G",
+        "B",
+        "A"
+      ],
+      "alpha_min": 0,
+      "alpha_max": 253,
+      "alpha_levels": 254,
+      "sha256": "69fab60c5c4313c6f5d5a2ec078117611ef659a3953437efb281bdc0ed242d02",
+      "order": [
+        "命中分裂：火焰版本",
+        "命中分裂：荆棘版本",
+        "范围扩张"
+      ]
+    },
+    {
+      "source": "raw/水叶双链魔法特效.png",
+      "width": 2172,
+      "height": 724,
+      "mode": "RGBA",
+      "bands": [
+        "R",
+        "G",
+        "B",
+        "A"
+      ],
+      "alpha_min": 0,
+      "alpha_max": 254,
+      "alpha_levels": 255,
+      "sha256": "14ab90deb5a4a0a76ff0488425ae16cbe9330fd86d63ead4acd0627f0ddd1089",
+      "order": [
+        "连锁弹射：水系版本",
+        "连锁弹射：草系版本"
+      ]
+    },
+    {
+      "source": "raw/三枚魔法神器图标.png",
+      "width": 2172,
+      "height": 724,
+      "mode": "RGBA",
+      "bands": [
+        "R",
+        "G",
+        "B",
+        "A"
+      ],
+      "alpha_min": 0,
+      "alpha_max": 255,
+      "alpha_levels": 256,
+      "sha256": "6fd239cf4ddcb619bd85dbaf390423f819938dae0aa0b72a32717cd447b388af",
+      "order": [
+        "过载核心",
+        "追猎之眼",
+        "破碎晶核"
+      ]
+    },
+    {
+      "source": "raw/三件奇幻魔法神器图标.png",
+      "width": 2172,
+      "height": 724,
+      "mode": "RGBA",
+      "bands": [
+        "R",
+        "G",
+        "B",
+        "A"
+      ],
+      "alpha_min": 0,
+      "alpha_max": 255,
+      "alpha_levels": 256,
+      "sha256": "fde86342d16a8a98d7be17249dce5ac57a07c33a0fbe9e11cb3ec497b96ad361",
+      "order": [
+        "潮汐遗珠",
+        "专精徽记",
+        "回声符石"
+      ]
+    }
+  ],
+  "assets": [
+    {
+      "code": "F01",
+      "title": "命中分裂：火焰版本",
+      "id": "split-on-hit-fire",
+      "category": "skills",
+      "source": "raw/三系元素魔法爆发特效.png",
+      "order": 1,
+      "source_region": [
+        0,
+        0,
+        732,
+        724
+      ],
+      "crop_box": [
+        0,
+        9,
+        732,
+        724
+      ],
+      "output": "skills/split-on-hit-fire.png",
+      "output_size": [
+        780,
+        780
+      ],
+      "paste_offset": [
+        24,
+        32
+      ],
+      "padding_min": 24,
+      "transparency": "original RGBA, unchanged",
+      "split_method": "alpha projection, manually reviewed coordinates",
+      "split_edge_alpha_max": 1,
+      "accepted": true,
+      "notes": "保留全部非零透明度像素，包括低透明度残点；未去背景、缩放或补画。"
+    },
+    {
+      "code": "F02",
+      "title": "命中分裂：荆棘版本",
+      "id": "split-on-hit-thorn",
+      "category": "skills",
+      "source": "raw/三系元素魔法爆发特效.png",
+      "order": 2,
+      "source_region": [
+        732,
+        0,
+        1438,
+        724
+      ],
+      "crop_box": [
+        732,
+        9,
+        1438,
+        724
+      ],
+      "output": "skills/split-on-hit-thorn.png",
+      "output_size": [
+        763,
+        763
+      ],
+      "paste_offset": [
+        28,
+        24
+      ],
+      "padding_min": 24,
+      "transparency": "original RGBA, unchanged",
+      "split_method": "alpha projection, manually reviewed coordinates",
+      "split_edge_alpha_max": 1,
+      "accepted": true,
+      "notes": "保留全部非零透明度像素，包括低透明度残点；未去背景、缩放或补画。"
+    },
+    {
+      "code": "F03",
+      "title": "范围扩张",
+      "id": "area-expansion",
+      "category": "skills",
+      "source": "raw/三系元素魔法爆发特效.png",
+      "order": 3,
+      "source_region": [
+        1438,
+        0,
+        2172,
+        724
+      ],
+      "crop_box": [
+        1438,
+        0,
+        2172,
+        724
+      ],
+      "output": "skills/area-expansion.png",
+      "output_size": [
+        782,
+        782
+      ],
+      "paste_offset": [
+        24,
+        29
+      ],
+      "padding_min": 24,
+      "transparency": "original RGBA, unchanged",
+      "split_method": "alpha projection, manually reviewed coordinates",
+      "split_edge_alpha_max": 1,
+      "accepted": true,
+      "notes": "保留全部非零透明度像素，包括低透明度残点；未去背景、缩放或补画。"
+    },
+    {
+      "code": "G01",
+      "title": "连锁弹射：水系版本",
+      "id": "chain-bounce-water",
+      "category": "skills",
+      "source": "raw/水叶双链魔法特效.png",
+      "order": 1,
+      "source_region": [
+        0,
+        0,
+        1054,
+        724
+      ],
+      "crop_box": [
+        0,
+        9,
+        1050,
+        708
+      ],
+      "output": "skills/chain-bounce-water.png",
+      "output_size": [
+        1098,
+        1098
+      ],
+      "paste_offset": [
+        24,
+        199
+      ],
+      "padding_min": 24,
+      "transparency": "original RGBA, unchanged",
+      "split_method": "alpha projection, manually reviewed coordinates",
+      "split_edge_alpha_max": 0,
+      "accepted": true,
+      "notes": "保留全部非零透明度像素，包括低透明度残点；未去背景、缩放或补画。"
+    },
+    {
+      "code": "G02",
+      "title": "连锁弹射：草系版本",
+      "id": "chain-bounce-grass",
+      "category": "skills",
+      "source": "raw/水叶双链魔法特效.png",
+      "order": 2,
+      "source_region": [
+        1054,
+        0,
+        2172,
+        724
+      ],
+      "crop_box": [
+        1055,
+        9,
+        2172,
+        724
+      ],
+      "output": "skills/chain-bounce-grass.png",
+      "output_size": [
+        1165,
+        1165
+      ],
+      "paste_offset": [
+        24,
+        225
+      ],
+      "padding_min": 24,
+      "transparency": "original RGBA, unchanged",
+      "split_method": "alpha projection, manually reviewed coordinates",
+      "split_edge_alpha_max": 0,
+      "accepted": true,
+      "notes": "保留全部非零透明度像素，包括低透明度残点；未去背景、缩放或补画。"
+    },
+    {
+      "code": "H01",
+      "title": "过载核心",
+      "id": "overload-core",
+      "category": "relics",
+      "source": "raw/三枚魔法神器图标.png",
+      "order": 1,
+      "source_region": [
+        0,
+        0,
+        714,
+        724
+      ],
+      "crop_box": [
+        0,
+        15,
+        714,
+        724
+      ],
+      "output": "relics/overload-core.png",
+      "output_size": [
+        762,
+        762
+      ],
+      "paste_offset": [
+        24,
+        26
+      ],
+      "padding_min": 24,
+      "transparency": "original RGBA, unchanged",
+      "split_method": "alpha projection, manually reviewed coordinates",
+      "split_edge_alpha_max": 1,
+      "accepted": true,
+      "notes": "保留全部非零透明度像素，包括低透明度残点；未去背景、缩放或补画。"
+    },
+    {
+      "code": "H02",
+      "title": "追猎之眼",
+      "id": "hunter-eye",
+      "category": "relics",
+      "source": "raw/三枚魔法神器图标.png",
+      "order": 2,
+      "source_region": [
+        714,
+        0,
+        1486,
+        724
+      ],
+      "crop_box": [
+        714,
+        0,
+        1486,
+        724
+      ],
+      "output": "relics/hunter-eye.png",
+      "output_size": [
+        820,
+        820
+      ],
+      "paste_offset": [
+        24,
+        48
+      ],
+      "padding_min": 24,
+      "transparency": "original RGBA, unchanged",
+      "split_method": "alpha projection, manually reviewed coordinates",
+      "split_edge_alpha_max": 1,
+      "accepted": true,
+      "notes": "保留全部非零透明度像素，包括低透明度残点；未去背景、缩放或补画。"
+    },
+    {
+      "code": "H03",
+      "title": "破碎晶核",
+      "id": "shattered-core",
+      "category": "relics",
+      "source": "raw/三枚魔法神器图标.png",
+      "order": 3,
+      "source_region": [
+        1486,
+        0,
+        2172,
+        724
+      ],
+      "crop_box": [
+        1486,
+        8,
+        2172,
+        724
+      ],
+      "output": "relics/shattered-core.png",
+      "output_size": [
+        764,
+        764
+      ],
+      "paste_offset": [
+        39,
+        24
+      ],
+      "padding_min": 24,
+      "transparency": "original RGBA, unchanged",
+      "split_method": "alpha projection, manually reviewed coordinates",
+      "split_edge_alpha_max": 1,
+      "accepted": true,
+      "notes": "保留全部非零透明度像素，包括低透明度残点；未去背景、缩放或补画。"
+    },
+    {
+      "code": "I01",
+      "title": "潮汐遗珠",
+      "id": "tidal-pearl",
+      "category": "relics",
+      "source": "raw/三件奇幻魔法神器图标.png",
+      "order": 1,
+      "source_region": [
+        0,
+        0,
+        714,
+        724
+      ],
+      "crop_box": [
+        0,
+        0,
+        714,
+        724
+      ],
+      "output": "relics/tidal-pearl.png",
+      "output_size": [
+        772,
+        772
+      ],
+      "paste_offset": [
+        29,
+        24
+      ],
+      "padding_min": 24,
+      "transparency": "original RGBA, unchanged",
+      "split_method": "alpha projection, manually reviewed coordinates",
+      "split_edge_alpha_max": 1,
+      "accepted": true,
+      "notes": "保留全部非零透明度像素，包括低透明度残点；未去背景、缩放或补画。"
+    },
+    {
+      "code": "I02",
+      "title": "专精徽记",
+      "id": "specialist-badge",
+      "category": "relics",
+      "source": "raw/三件奇幻魔法神器图标.png",
+      "order": 2,
+      "source_region": [
+        714,
+        0,
+        1461,
+        724
+      ],
+      "crop_box": [
+        714,
+        0,
+        1461,
+        724
+      ],
+      "output": "relics/specialist-badge.png",
+      "output_size": [
+        795,
+        795
+      ],
+      "paste_offset": [
+        24,
+        35
+      ],
+      "padding_min": 24,
+      "transparency": "original RGBA, unchanged",
+      "split_method": "alpha projection, manually reviewed coordinates",
+      "split_edge_alpha_max": 2,
+      "accepted": true,
+      "notes": "保留全部非零透明度像素，包括低透明度残点；未去背景、缩放或补画。"
+    },
+    {
+      "code": "I03",
+      "title": "回声符石",
+      "id": "echo-rune",
+      "category": "relics",
+      "source": "raw/三件奇幻魔法神器图标.png",
+      "order": 3,
+      "source_region": [
+        1461,
+        0,
+        2172,
+        724
+      ],
+      "crop_box": [
+        1461,
+        0,
+        2172,
+        724
+      ],
+      "output": "relics/echo-rune.png",
+      "output_size": [
+        772,
+        772
+      ],
+      "paste_offset": [
+        30,
+        24
+      ],
+      "padding_min": 24,
+      "transparency": "original RGBA, unchanged",
+      "split_method": "alpha projection, manually reviewed coordinates",
+      "split_edge_alpha_max": 2,
+      "accepted": true,
+      "notes": "保留全部非零透明度像素，包括低透明度残点；未去背景、缩放或补画。"
+    }
+  ],
+  "historical_manifest": "asset-manifest.json",
+  "historical_note": "上一批次的来源、裁切坐标和12张成品见原清单；本次仅处理当前raw中的4张图，不覆盖历史成品。",
+  "validation": "11 exports reopened; exact RGBA comparison; all source nonzero alpha pixels and alpha sums retained; source SHA256 unchanged"
+}

@@ -9,6 +9,7 @@ import { CREATURES } from './party';
 import { ATTACKS } from './run-build';
 import { EnemyPixelView } from './enemy-pixel-view';
 import { FirePixelView } from './fire-pixel-view';
+import { ParticleFeedbackView } from './particle-feedback';
 import { BURST_SEED } from './fusion';
 import { FUSION_ASSET_ROOT, elementalClip, clipFrame } from './fusion-pixels';
 
@@ -47,6 +48,7 @@ export class CombatView {
   private pixelsEnabled = false;
   private firePixels?: FirePixelView;
   private fusionPixels?: FirePixelView;
+  private feedback?: ParticleFeedbackView;
   private encounters: EncounterView;
 
   constructor(private combat: Combat) {
@@ -111,13 +113,15 @@ export class CombatView {
     if (this.pixelEnemies) { this.pixelEnemies.group.visible = true; this.pixelEnemies.begin(); }
   }
 
-  updateView(camera: THREE.Camera, viewportHeight: number, frustumHeight: number) { this.encounters.setView(camera); this.pixelEnemies?.setView(camera, viewportHeight, frustumHeight); this.firePixels?.setView(camera); this.fusionPixels?.setView(camera); }
+  updateView(camera: THREE.Camera, viewportHeight: number, frustumHeight: number) { this.encounters.setView(camera); this.pixelEnemies?.setView(camera, viewportHeight, frustumHeight); this.firePixels?.setView(camera); this.fusionPixels?.setView(camera); this.feedback?.setView(camera); }
 
   setFusion(enabled: boolean, _elemental = false) {
     if (enabled && !this.firePixels) { this.firePixels = new FirePixelView(); this.group.add(this.firePixels.mesh); }
     if (enabled && !this.fusionPixels) { this.fusionPixels = new FirePixelView(FUSION_ASSET_ROOT + 'effects.normalized.png', 8, 4, 'WaterGrassFusionAtlas'); this.group.add(this.fusionPixels.mesh); }
+    if (enabled && !this.feedback) { this.feedback = new ParticleFeedbackView(); this.group.add(this.feedback.mesh); }
     this.firePixels?.begin();
     this.fusionPixels?.begin();
+    this.feedback?.begin(this.detail);
   }
 
   render(alpha: number, time: number, player: { x: number; z: number } = { x: this.combat.anchorX, z: this.combat.anchorZ }) {
@@ -126,6 +130,9 @@ export class CombatView {
     this.pixelEnemies?.begin();
     this.firePixels?.begin();
     this.fusionPixels?.begin();
+    this.feedback?.begin(this.detail);
+    // New feedback belongs to the current run mode; legacy visuals stay intact.
+    const feedback = this.combat.usesRunBuild ? this.feedback : undefined;
     for (const enemy of this.combat.enemies) {
       if (!enemy.active) continue;
       const type = ENEMY_TYPES[enemy.kind], size = this.combat.enemyRadius(enemy);
@@ -193,7 +200,8 @@ export class CombatView {
         this.put(this.bolts, x, 1.15, z, (bubble ? 0.34 : 0.22) * scale, (leaf ? 0.09 : bubble ? 0.34 : 0.22) * scale, (bubble ? 0.34 : leaf ? 0.65 : 0.48) * scale, 0, angle, 0, color);
         this.put(this.boltCores, x + Math.sin(angle) * 0.12, 1.15, z + Math.cos(angle) * 0.12, 0.12 * scale, 0.12 * scale, 0.3 * scale, 0, angle);
       }
-      // Fixed-capacity instance slots: a tapered trail, no per-shot meshes or textures.
+      if (feedback?.trail(shot, x, z, color, scale)) continue;
+      // Fixed-capacity fallback, also retained for curved elemental hops.
       for (let i = 1; i <= (this.combat.usesRunBuild ? 1 : this.detail + 1); i++) {
         if (shot.hopTargetId && !shot.hopDelay) {
           const t = Math.max(0, ((shot.hopElapsed ?? 0) / (shot.hopDuration || .12)) - i * .06);
@@ -243,6 +251,7 @@ export class CombatView {
         x: THREE.MathUtils.lerp(target.previousX, target.x, alpha),
         z: THREE.MathUtils.lerp(target.previousZ, target.z, alpha),
       } : undefined);
+      feedback?.embers(effect);
       const clip = elementalClip(effect.fusionId);
       if (clip?.impact.length && this.fusionPixels?.loaded) {
         const frame = clipFrame(clip.impact, effect.duration - effect.time, clip.impactFPS, false);
@@ -280,6 +289,7 @@ export class CombatView {
         }
       }
       const color = effect.kind === 'water' ? '#65dcff' : effect.kind === 'thorn' ? '#a5ec69' : effect.kind === 'burst' ? '#ffac48' : effect.kind === 'hurt' ? '#f7a08d' : effect.kind === 'collect' ? '#9cffe2' : effect.kind === 'death' ? '#ffe3a6' : '#f4ddff';
+      if (feedback?.impact(effect, visual.x, visual.z)) continue;
       for (let i = 0; i < this.detail; i++) {
         const angle = i / this.detail * Math.PI * 2 + 0.4, size = (1 - progress) * 0.15;
         this.put(this.sparks, visual.x + Math.sin(angle) * progress * 0.9, 0.7 + Math.sin(progress * Math.PI) * 0.6, visual.z + Math.cos(angle) * progress * 0.9, size, size * 1.7, size, 0, angle, progress * 5, color);
@@ -293,11 +303,12 @@ export class CombatView {
     this.pixelEnemies?.finish();
     this.firePixels?.finish();
     this.fusionPixels?.finish();
+    this.feedback?.finish();
   }
 
-  clear() { this.encounters.clear(); for (const mesh of this.batches) mesh.count = 0; this.pixelEnemies?.begin(); this.pixelEnemies?.resetDirections(); this.firePixels?.begin(); this.fusionPixels?.begin(); }
+  clear() { this.encounters.clear(); for (const mesh of this.batches) mesh.count = 0; this.pixelEnemies?.begin(); this.pixelEnemies?.resetDirections(); this.firePixels?.begin(); this.fusionPixels?.begin(); this.feedback?.begin(); }
   inspectElemental() { return this.fusionPixels?.inspect(); }
   inspectFusion() { return this.firePixels?.inspect(); }
-  inspect() { return { enabled: this.pixelsEnabled, ...this.pixelEnemies?.inspect(), encounters:this.encounters.inspect() }; }
-  dispose() { this.encounters.dispose(); this.pixelEnemies?.dispose(); this.pixelEnemies = undefined; this.firePixels?.dispose(); this.firePixels = undefined; this.fusionPixels?.dispose(); this.fusionPixels = undefined; }
+  inspect() { return { enabled: this.pixelsEnabled, ...this.pixelEnemies?.inspect(), encounters:this.encounters.inspect(), feedback:this.feedback?.inspect() }; }
+  dispose() { this.encounters.dispose(); this.pixelEnemies?.dispose(); this.pixelEnemies = undefined; this.firePixels?.dispose(); this.firePixels = undefined; this.fusionPixels?.dispose(); this.fusionPixels = undefined; this.feedback?.dispose(); this.feedback = undefined; }
 }

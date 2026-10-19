@@ -1,0 +1,126 @@
+[
+  {
+    "code": "UI12",
+    "source": "raw/冒险战报羊皮纸背景.png",
+    "output": "result/battle-report-panel.png",
+    "category": "战报背景",
+    "width": 1672,
+    "height": 941,
+    "mode": "RGBA",
+    "bands": [
+      "R",
+      "G",
+      "B",
+      "A"
+    ],
+    "alpha_range": [
+      0,
+      255
+    ],
+    "crop_box": [
+      0,
+      0,
+      1672,
+      941
+    ],
+    "resized": false,
+    "reencoded": false,
+    "sha256": "80ae848ba8b086ec480b9bf4f96d2559e2c0169454614cf2b418c96f453b2391",
+    "classification_accepted": true,
+    "integration_accepted": false,
+    "note": "中心羊皮纸保留，适合覆盖动态战斗数据与技能列表。"
+  },
+  {
+    "code": "UI13",
+    "source": "raw/森林魔法商店背景.png",
+    "output": "shop/shop-panel.png",
+    "category": "商店背景",
+    "width": 1672,
+    "height": 941,
+    "mode": "RGBA",
+    "bands": [
+      "R",
+      "G",
+      "B",
+      "A"
+    ],
+    "alpha_range": [
+      0,
+      255
+    ],
+    "crop_box": [
+      0,
+      0,
+      1672,
+      941
+    ],
+    "resized": false,
+    "reencoded": false,
+    "sha256": "9d477279ea5a5debb493726185828091abb1d18707049862a6b088c54816f2f8",
+    "classification_accepted": true,
+    "integration_accepted": false,
+    "note": "中心留白，商品槽位应由代码布局。"
+  },
+  {
+    "code": "UI14",
+    "source": "raw/商店商品槽位.png",
+    "output": "shop/item-slot.png",
+    "category": "商品卡底板",
+    "width": 1024,
+    "height": 1536,
+    "mode": "RGBA",
+    "bands": [
+      "R",
+      "G",
+      "B",
+      "A"
+    ],
+    "alpha_range": [
+      0,
+      254
+    ],
+    "crop_box": [
+      0,
+      0,
+      1024,
+      1536
+    ],
+    "resized": false,
+    "reencoded": false,
+    "sha256": "ad28b84db943fe0437bff86e1f351c086006ca70731a2114afd4c7046c99e1a3",
+    "classification_accepted": true,
+    "integration_accepted": false,
+    "note": "外部带背景氛围；保留原始透明度，不做自动抠图。下方留白可覆盖价格与购买按钮。"
+  },
+  {
+    "code": "UI15",
+    "source": "raw/幻兽生命状态面板.png",
+    "output": "hud/creature-health-panel.png",
+    "category": "生命状态面板",
+    "width": 2172,
+    "height": 724,
+    "mode": "RGBA",
+    "bands": [
+      "R",
+      "G",
+      "B",
+      "A"
+    ],
+    "alpha_range": [
+      0,
+      255
+    ],
+    "crop_box": [
+      0,
+      0,
+      2172,
+      724
+    ],
+    "resized": false,
+    "reencoded": false,
+    "sha256": "093ea3d1c086cb92da451fd1924ab818d04623dc1a6807ab3819a3a5edfe119d",
+    "classification_accepted": true,
+    "integration_accepted": false,
+    "note": "左侧头像区与右侧文字区保留羊皮纸底。绿色血条已画入原图，动态血量接入需另行处理，不能直接当空血条框使用。"
+  }
+]

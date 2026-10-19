@@ -151,6 +151,8 @@ h1>em{font-size:12px;line-height:1;letter-spacing:4px;display:inline-block;backg
 @media(max-width:680px) and (orientation:landscape){.upgrade-subtitle p{font-size:8px}.upgrade-footer>span:last-child{display:none}.upgrade-header>.text-button{font-size:8px}.upgrade-header h2{letter-spacing:1px}.skill-card h3{letter-spacing:.5px}}
 @media(prefers-reduced-motion:reduce){.skill-card{transition:none}}
 
+
+
 /* Thumb-sized controls, safe-area-aware settings, and a separate jump pointer. */
 .icon-button{width:48px;height:48px;min-width:48px;min-height:48px}
 .hud-actions{gap:8px}.hud-actions button{pointer-events:auto}
@@ -251,3 +253,518 @@ h1>em{font-size:12px;line-height:1;letter-spacing:4px;display:inline-block;backg
 .fusion-status strong{font-size:12px}
 .welcome .eyebrow,.upgrade-header .eyebrow{display:none}
 .pause-card #pause-reason:empty{display:none}
+
+/* Forest upgrade cards. Layout and art are independent of reward handling. */
+.upgrade-screen{background:radial-gradient(ellipse at 50% 35%,#284934a6,#102b26d9);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);padding:calc(14px + var(--safe-top)) calc(20px + var(--safe-right)) calc(12px + var(--safe-bottom)) calc(20px + var(--safe-left))}
+.upgrade-panel{--card-height:clamp(185px,calc(100dvh - 130px - var(--safe-top) - var(--safe-bottom)),510px);width:min(100%,1060px);display:flex;flex-direction:column;align-items:center;gap:7px}
+.upgrade-header{width:100%;position:relative;justify-content:center;min-height:48px;gap:0}
+.upgrade-heading-art{position:relative;width:250px;height:64px;display:grid;place-items:center;isolation:isolate}
+.upgrade-heading-art>img{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;image-rendering:pixelated;opacity:0;pointer-events:none;z-index:-1}
+.upgrade-heading-art.art-ready>img{opacity:1}
+.upgrade-header h2{color:#fff0c5;text-shadow:0 2px 4px #102c24;font-size:24px;letter-spacing:4px;margin:0}
+.upgrade-heading-art.art-ready h2{color:#553d27;text-shadow:0 1px #fff7df;font-size:20px;transform:translateY(4px)}
+.upgrade-header>.text-button{position:absolute;right:0;top:10px;align-self:auto;color:#f3e6b7;margin:0;padding:8px 10px;border:1px solid #dcc68a66;border-radius:6px;background:#183e3280;font-size:11px}
+.upgrade-subtitle{margin:0;gap:10px;font-size:11px;color:#f0e8cd;justify-content:center;width:100%}
+.upgrade-subtitle>span:first-child{background:#e8d5a4;color:#3b513d;border:1px solid #b99b5f;border-radius:4px;padding:3px 8px;font-size:10px;letter-spacing:0}
+.upgrade-subtitle p{font-size:11px;letter-spacing:0}
+.upgrade-subtitle .paused-badge{margin:0;font-size:9px;padding:3px 8px;color:#f0e8cd}
+.upgrade-cards{width:min(100%,calc(var(--card-height) * 2.15 + 24px));grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.skill-card{height:var(--card-height);min-height:0;min-width:0;padding:0;position:relative;isolation:isolate;border:1px solid #af9c6b;border-radius:15px;background:linear-gradient(135deg,#fff6db,#e9d7ac);color:#3d4b3a;box-shadow:0 6px 24px #001c2570;overflow:visible;text-align:center;transition:filter .16s,box-shadow .16s}
+.skill-card::before{display:none}
+.skill-card.frame-ready{background:transparent;border-color:transparent;box-shadow:none}
+.skill-frame{position:absolute;inset:0;width:100%;height:100%;opacity:0;object-fit:fill;pointer-events:none;image-rendering:pixelated;z-index:-1}
+.skill-frame.art-loaded{opacity:1}
+.skill-card:hover:not(:disabled),.skill-card:focus-visible{background:linear-gradient(135deg,#fff6db,#e9d7ac);border-color:#e6d8a5;filter:brightness(1.08);box-shadow:0 0 18px #e3ce8666}
+.skill-card.frame-ready:hover:not(:disabled),.skill-card.frame-ready:focus-visible{background:transparent;border-color:transparent}
+.skill-card:focus-visible{outline:3px solid #fff5bb;outline-offset:2px}
+.skill-card:disabled{opacity:1;filter:saturate(.8);cursor:default}
+.skill-card:active:not(:disabled){transform:translateY(2px)}
+.skill-card[data-category=relic]{--card-ink:#653f81;border-color:#af83b9}
+.skill-card[data-category=evolution]{--card-ink:#8a5515;border-color:#cba452;filter:drop-shadow(0 0 7px #e6b84d55)}
+.skill-card[data-element=fire]{--card-ink:#95471e}
+.skill-card[data-element=water]{--card-ink:#245d7d}
+.skill-card[data-element=grass]{--card-ink:#3b682e}
+.skill-card h3{position:absolute;top:13%;left:13%;right:13%;height:8%;display:flex;align-items:center;justify-content:center;font-size:clamp(11px,calc(var(--card-height) * .047),23px);line-height:1.15;letter-spacing:0;margin:0;color:var(--card-ink,#3d593f);text-shadow:0 1px #fffae3}
+.skill-emblem{position:absolute;top:23%;left:14%;width:72%;height:29%;display:flex;align-items:center;justify-content:center;gap:0;margin:0;border:0;border-radius:0;background:transparent;color:var(--skill-color);pointer-events:none}
+.skill-art-fallback{display:grid;place-items:center;width:72%;height:90%;border-radius:50%;background:radial-gradient(ellipse,#5c8c6b33,transparent 70%)}
+.skill-art-fallback>.icon{width:48%;height:48%;filter:drop-shadow(0 2px 1px #59664b55)}
+.skill-emblem.art-ready .skill-art-fallback{display:none}
+.skill-illustration{display:none;width:100%;height:100%;object-fit:contain;image-rendering:pixelated;filter:drop-shadow(0 2px 2px #594c3420)}
+.skill-illustration.art-loaded{display:block}
+.skill-emblem.multiple-art .skill-illustration{width:54%;flex:1;min-width:0;object-fit:contain}
+.skill-benefit{position:absolute;top:51%;left:14%;right:14%;font-size:clamp(9px,calc(var(--card-height) * .03),15px);line-height:1.3;min-height:0;letter-spacing:0;color:var(--card-ink,#375b3c)}
+.skill-preview{position:absolute;top:59%;left:14%;right:14%;margin:0;font-size:clamp(8px,calc(var(--card-height) * .026),13px);line-height:1.3;letter-spacing:0;color:#5e5744;text-wrap:pretty}
+.skill-card-meta{position:absolute;top:74%;left:14%;right:14%;gap:3px;font-size:clamp(7px,calc(var(--card-height) * .024),12px);line-height:1.25;letter-spacing:0;color:#67543a}
+.skill-card-meta>span:first-child{display:flex;align-items:center;gap:2px;color:var(--card-ink,#375b3c);font-size:inherit;letter-spacing:0;white-space:nowrap}
+.skill-card-meta>span:last-child{white-space:nowrap}
+.skill-card-meta small{font-size:.8em;opacity:.75}
+.skill-card-meta img{display:none;width:14px;height:14px;object-fit:contain;image-rendering:pixelated}
+.skill-card-meta img.art-loaded{display:inline-block}
+.skill-description{display:none!important}
+.skill-tradeoff{position:absolute;top:80%;left:14%;right:14%;margin:0;font-size:clamp(7px,calc(var(--card-height) * .022),11px);line-height:1.22;color:#7d422e;letter-spacing:0}
+.skill-ranks{position:absolute;top:90%;left:14%;right:14%;justify-content:center;gap:3px;margin:0}
+.skill-ranks>i{width:12px;height:3px;background:#8f81534d;border-radius:2px}
+.skill-ranks>i.filled{background:#52754c}
+.skill-ranks>i.next{background:#d4a34d;box-shadow:0 0 3px #edcc78}
+.skill-pick{position:absolute;top:93%;left:18%;right:18%;justify-content:center;gap:4px;border:0;padding:0;font-size:clamp(7px,calc(var(--card-height) * .025),12px);line-height:1;color:#4c623f;letter-spacing:0}
+.skill-pick>.icon{width:12px;height:12px;color:inherit}
+.upgrade-footer{width:min(100%,700px);justify-content:center;gap:20px;margin:0;font-size:10px;color:#ece2bc;letter-spacing:0;min-height:15px}
+.upgrade-footer>span:first-child{color:#ece2bc}
+@media(max-height:450px){
+  .upgrade-screen{padding:calc(7px + var(--safe-top)) calc(16px + var(--safe-right)) calc(6px + var(--safe-bottom)) calc(16px + var(--safe-left))}
+  .upgrade-panel{--card-height:clamp(175px,calc(100dvh - 104px - var(--safe-top) - var(--safe-bottom)),350px);gap:4px}
+  .upgrade-heading-art{height:45px;width:190px}
+  .upgrade-header{min-height:45px}
+  .upgrade-heading-art.art-ready h2{font-size:16px;letter-spacing:2px;transform:translateY(3px)}
+  .upgrade-header>.text-button{font-size:9px;top:8px;padding:5px 8px}
+  .upgrade-subtitle{font-size:9px;gap:7px}
+  .upgrade-subtitle p{font-size:9px}
+  .upgrade-subtitle>span:first-child{font-size:9px;padding:2px 6px}
+  .upgrade-subtitle .paused-badge{font-size:8px;padding:2px 6px}
+  .upgrade-cards{gap:8px}
+  .skill-card-meta img{width:10px;height:10px}
+  .skill-card-meta small{display:none}
+  .skill-card:has(.skill-tradeoff) .skill-description{display:none}
+  .upgrade-footer{font-size:8px;min-height:12px}
+}
+@media(prefers-reduced-motion:reduce){.skill-card{transition:none}}
+/* Keep copy readable at common phone sizes; compact only for short screens. */
+.skill-card.frame-ready[data-category]{border-color:transparent}
+.skill-card h3{font-size:clamp(12px,calc(var(--card-height) * .055),25px)}
+.skill-benefit{font-size:clamp(10px,calc(var(--card-height) * .039),17px)}
+.skill-preview{font-size:clamp(9px,calc(var(--card-height) * .032),14px)}
+.skill-card-meta{font-size:clamp(9px,calc(var(--card-height) * .029),13px)}
+.skill-tradeoff{font-size:clamp(8px,calc(var(--card-height) * .026),12px)}
+.skill-card:not(.has-tradeoff) .skill-ranks{top:82%}
+.skill-card:not(.has-tradeoff) .skill-pick{top:86%}
+.skill-card.has-tradeoff .skill-pick{display:none}
+@media(max-height:350px){
+  .skill-card h3{font-size:11px}
+  .skill-benefit{font-size:9px}
+  .skill-preview{font-size:8px}
+  .skill-card-meta{font-size:7px}
+  .skill-tradeoff{font-size:7px}
+}
+
+.skill-emblem{height:27%}
+.skill-benefit{top:50%;line-height:1.2}
+.skill-preview{top:62%}
+
+/* Fit visible artwork, then reserve separate rows for effects and values. */
+.skill-card h3{top:10.5%;height:7%;left:14%;right:14%}
+.skill-content{position:absolute;top:20%;bottom:37%;left:13%;right:13%;display:grid;grid-template-rows:minmax(0,1fr) auto auto;gap:clamp(3px,calc(var(--card-height) * .012),7px);min-height:0}
+.skill-content .skill-emblem{position:static;inset:auto;width:100%;height:100%;min-height:0;min-width:0;margin:0;overflow:hidden}
+.skill-content .skill-illustration{width:100%;height:100%;min-height:0;min-width:0;object-fit:contain}
+.skill-content .multiple-art .skill-illustration{width:50%}
+.skill-content .skill-benefit,.skill-content .skill-preview{position:static;inset:auto;margin:0;min-height:0;line-height:1.25}
+.skill-content .skill-preview{color:#66583e}
+.skill-card .skill-pick{display:none}
+.skill-card:not(.has-tradeoff) .skill-ranks{top:82%;gap:5px}
+
+/* Dynamic titles follow the arch of the parchment banner. */
+.skill-card h3{top:8%;height:11%;left:12%;right:12%;display:block;line-height:1}
+.skill-title-arc{display:block;width:100%;height:100%;overflow:visible;pointer-events:none;fill:currentColor;font-family:inherit;font-weight:700;letter-spacing:1px}
+
+/* One frame silhouette and one set of content safe areas for every reward. */
+.skill-content{grid-template-columns:minmax(0,1fr);overflow:hidden}
+.skill-content .skill-emblem{align-self:stretch;max-width:100%;max-height:100%}
+.skill-content .skill-illustration{max-width:100%;max-height:100%}
+.skill-card-meta{left:15%;right:15%}
+.skill-content .skill-benefit,.skill-content .skill-preview{min-width:0;max-width:100%;white-space:normal;overflow-wrap:anywhere}
+
+/* Forest shop: the offer and revision token still belong to RunShop. */
+.shop-screen{background:radial-gradient(ellipse at 50% 35%,#294d37b3,#102c25e0);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);padding:calc(15px + var(--safe-top)) calc(18px + var(--safe-right)) calc(15px + var(--safe-bottom)) calc(18px + var(--safe-left))}
+.shop-panel{--shop-card-height:clamp(215px,calc(100dvh - 215px - var(--safe-top) - var(--safe-bottom)),360px);position:relative;isolation:isolate;width:min(1120px,100%);max-height:100%;padding:36px 54px 40px;gap:10px;background:#f4e6c8;border:1px solid #b49c65;border-radius:18px;color:#3e513c;box-shadow:0 12px 40px #071f2970}
+.shop-panel-art{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;image-rendering:pixelated;pointer-events:none;z-index:-1;opacity:0}
+.shop-panel-art.art-loaded{opacity:1}
+.shop-panel:has(>.shop-panel-art.art-loaded){background:transparent;border-color:transparent;box-shadow:none}
+.shop-header{align-items:center;gap:10px;padding:0 5px}
+.shop-header h2{font-size:clamp(15px,2vw,23px);color:#36583f;margin:3px 0 0;letter-spacing:1px}
+.shop-header small{color:#7b7056;font-size:10px}
+.shop-header strong{color:#82591f;font-size:21px}
+.shop-wallet{display:flex;align-items:center;justify-content:flex-end;gap:5px}
+.shop-wallet img{display:none;width:27px;height:27px;object-fit:contain;image-rendering:pixelated}
+.shop-wallet img.art-loaded{display:block}
+.shop-header #shop-health{margin-top:2px;color:#49634a}
+.shop-message{font-size:11px;line-height:1.4;color:#6f6246;min-height:15px;padding:0 5px}
+.shop-items{grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;overflow-y:auto;overflow-x:hidden;padding:3px 2px;min-height:100px;scrollbar-width:thin;scrollbar-color:#a78d57 #e3d4ad;touch-action:pan-y}
+.shop-item{position:relative;isolation:isolate;display:block;min-width:0;min-height:var(--shop-card-height);height:var(--shop-card-height);padding:0;background:linear-gradient(145deg,#fff5da,#e9d6a8);border:1px solid #b39d6a;border-radius:12px;overflow:hidden;text-align:center;color:#35543c;box-shadow:none}
+.shop-slot-art{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;image-rendering:pixelated;pointer-events:none;z-index:-1;opacity:0}
+.shop-slot-art.art-loaded{opacity:1}
+.shop-item:has(>.shop-slot-art.art-loaded){background:transparent;border-color:transparent}
+.shop-item h3{position:absolute;top:10%;left:13%;right:13%;height:10%;display:flex;align-items:center;justify-content:center;margin:0;font-size:clamp(11px,calc(var(--shop-card-height) * .047),17px);line-height:1.15;color:#3c593d;overflow-wrap:anywhere}
+.shop-item-type{position:absolute;top:21%;left:15%;right:15%;font-size:9px;line-height:1.2;color:#8c784c}
+.shop-item-body{position:absolute;top:27%;bottom:33%;left:14%;right:14%;display:flex;flex-direction:column;gap:5px;min-height:0;overflow:hidden}
+.shop-illustration{display:flex;flex:1;align-items:center;justify-content:center;min-height:24px;min-width:0;overflow:hidden}
+.shop-illustration>img{display:none;min-width:0;max-width:100%;width:100%;height:100%;object-fit:contain;image-rendering:pixelated}
+.shop-illustration>img.art-loaded{display:block}
+.shop-illustration.multiple-art>img{width:50%}
+.shop-art-fallback{display:flex;align-items:center;justify-content:center;width:100%;height:100%;min-height:24px;color:#86aa71}
+.shop-art-fallback>.icon{width:40px;height:40px;max-height:100%}
+.shop-illustration.art-ready>.shop-art-fallback{display:none}
+.shop-item .shop-benefit{flex-shrink:0;margin:0;font-size:clamp(9px,calc(var(--shop-card-height) * .035),12px);line-height:1.3;color:#3c5b3e;overflow-wrap:anywhere}
+.shop-item .shop-cost{flex-shrink:0;margin:0;font-size:clamp(8px,calc(var(--shop-card-height) * .029),10px);line-height:1.25;color:#8a4c37;overflow-wrap:anywhere}
+.shop-price{position:absolute;top:70%;left:14%;right:14%;display:flex;align-items:center;justify-content:center;gap:3px;font-size:clamp(10px,calc(var(--shop-card-height) * .038),14px);font-weight:bold;color:#805b25;line-height:1.25}
+.shop-price img{display:none;width:18px;height:18px;object-fit:contain;image-rendering:pixelated}
+.shop-price img.art-loaded{display:block}
+.shop-buy{position:absolute;left:15%;right:15%;bottom:13%;height:12%;min-height:30px;margin:0;padding:3px 5px;border:1px solid #648257;border-radius:6px;background:linear-gradient(#7d9c61,#4d7547);color:#fff9df;box-shadow:0 2px 0 #304c3280;font-size:12px;font-weight:bold;line-height:1.15}
+.shop-buy:hover:not(:disabled){filter:brightness(1.12)}
+.shop-buy:disabled{background:#dbd2b8;color:#766e58;border-color:#ad9e7a;box-shadow:none}
+.shop-item.sold{opacity:1}
+.shop-item.sold .shop-illustration{filter:saturate(.35);opacity:.55}
+.shop-item.sold .shop-buy{color:#466549;background:#d7dfc3;border-color:#8b9c74}
+.shop-item.unaffordable:not(.sold) .shop-price{color:#9b543d}
+.shop-item[data-category=relic] h3,.shop-item[data-category=relic] .shop-item-type{color:#7d4e8c}
+.shop-item[data-category=evolution] h3,.shop-item[data-category=evolution] .shop-item-type{color:#98621b}
+.shop-item[data-kind=empty] .shop-illustration{opacity:.45}
+.shop-actions{gap:10px;padding:0 5px;min-height:40px}
+.shop-actions button{min-height:38px;font-size:12px;padding:8px 12px;border-radius:7px}
+.shop-actions .secondary{display:flex;align-items:center;justify-content:center;gap:5px;border:1px solid #ac945e;background:#fff2d4;color:#5e6243}
+.shop-actions .secondary>img{display:none;width:22px;height:22px;object-fit:contain;image-rendering:pixelated}
+.shop-actions .secondary>img.art-loaded{display:block}
+.shop-actions .secondary:disabled{color:#918876;background:#e1d6bb;border-color:#c2b491}
+.shop-actions .primary{min-width:0;margin:0 0 0 auto;background:linear-gradient(#78965a,#496e40);color:#fff7dc;box-shadow:0 2px 0 #33532d;border:1px solid #506e39}
+.shop-actions .text-button{color:#6e7257}
+@media(max-height:450px){
+  .shop-screen{padding:calc(8px + var(--safe-top)) calc(12px + var(--safe-right)) calc(8px + var(--safe-bottom)) calc(12px + var(--safe-left))}
+  .shop-panel{--shop-card-height:215px;padding:23px 32px 25px;gap:5px}
+  .shop-header h2{font-size:15px;margin:1px 0 0;letter-spacing:0}
+  .shop-header small{font-size:9px}
+  .shop-header strong{font-size:16px}
+  .shop-wallet img{width:21px;height:21px}
+  .shop-message{font-size:9px;min-height:12px}
+  .shop-items{gap:6px}
+  .shop-item-body{gap:3px}
+  .shop-buy{font-size:10px}
+  .shop-actions{min-height:34px;gap:6px}
+  .shop-actions button{min-height:34px;font-size:10px;padding:5px 8px}
+  .shop-actions .secondary>img{width:17px;height:17px}
+}
+@media(max-width:650px){
+  .shop-panel{padding-left:27px;padding-right:27px}
+  .shop-items{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .shop-actions .text-button{font-size:9px;padding-inline:2px}
+  .shop-header h2{font-size:13px}
+}
+.shop-header{position:relative;z-index:1;padding:6px 12px;background:#fff3d9f2;border:1px solid #baa36d;border-radius:8px;box-shadow:0 2px 8px #4d47242b}
+.shop-message{position:relative;margin:0 4px;padding:2px 6px;background:#f6ead3db;border-radius:4px}
+.shop-actions .text-button{background:#fff1d5;border:1px solid #bca979;color:#686348}
+.shop-header{background:none;border:0;box-shadow:none;padding:3px 5px}
+.shop-header>div{background:#fff3d9f2;border:1px solid #baa36d;border-radius:7px;padding:4px 9px;box-shadow:0 2px 6px #4d472424}
+.shop-item>.shop-item-type{color:#806b42}
+.shop-purchase{position:absolute;top:69%;bottom:11%;left:15%;right:15%;display:flex;flex-direction:column;gap:2px;min-height:0}
+.shop-purchase .shop-price{position:static;flex-shrink:0;line-height:1.2;font-size:10px;background:#fff1d9ed;border-radius:4px;padding:1px 3px;min-width:0}
+.shop-purchase .shop-price img{width:13px;height:13px}
+.shop-purchase .shop-buy{position:static;flex:1;min-height:23px;height:auto;font-size:10px;padding:2px 3px;min-width:0}
+
+/* Match the title ribbon, with quieter supporting shop chrome. */
+.shop-item h3{top:9.5%;height:13%;left:12%;right:12%;display:block;line-height:1}
+.shop-title-arc{display:block;width:100%;height:100%;overflow:visible;pointer-events:none;fill:currentColor;font-family:inherit;font-weight:700;letter-spacing:1px;transform:scale(.87);transform-origin:center}
+.shop-header>div:first-child>small{display:none}
+.shop-header>div{box-shadow:none}
+.shop-message{background:none;padding-block:1px;color:#756248}
+.shop-purchase .shop-price{align-self:center;max-width:100%;padding:0 5px;background:#fff2d9;border:1px solid #c2aa78;border-radius:4px;color:#704b21}
+
+/* Keep every control clear of the decorative panel corners. */
+.shop-panel{padding:0;gap:6px;background:none;border:0;border-radius:0;box-shadow:none}
+.shop-display{position:relative;isolation:isolate;display:flex;flex:1 1 auto;min-height:0;padding:30px 30px 28px;background:#f4e6c8;border-radius:15px}
+.shop-display:has(>.shop-panel-art.art-loaded){background:none}
+.shop-header{flex-shrink:0;justify-content:center;flex-wrap:wrap;gap:8px 24px;min-height:30px;padding:0}
+.shop-header>div{background:none;border:0;padding:0;box-shadow:none}
+.shop-header>div:last-child{display:flex;align-items:center;gap:12px;text-align:left}
+.shop-header h2{color:#f2e7c7;font-size:16px;margin:0;letter-spacing:.5px}
+.shop-header strong{font-size:17px;color:#f6d58d}
+.shop-header #shop-health{color:#d7e3c8;margin:0;font-size:10px}
+.shop-wallet img{width:23px;height:23px}
+.shop-message{flex-shrink:0;min-height:13px;margin:0;padding:0;text-align:center;color:#c5c9b0;font-size:10px;line-height:1.3}
+.shop-items{width:100%;min-height:80px}
+.shop-actions{justify-content:center;flex-shrink:0;padding:0;gap:12px;min-height:34px}
+.shop-actions .primary{margin:0}
+.shop-actions .text-button{background:none;border-color:transparent;color:#e4dfc6}
+@media(max-height:450px){
+  .shop-panel{padding:0;gap:4px}
+  .shop-display{padding:26px 28px 24px}
+  .shop-header h2{font-size:14px}
+  .shop-header strong{font-size:15px}
+  .shop-header{min-height:26px}
+}
+@media(max-width:650px){
+  .shop-panel{padding:0}
+  .shop-display{padding:24px 25px}
+  .shop-header{gap:6px 12px}
+  .shop-header h2{font-size:12px;letter-spacing:0}
+  .shop-header strong{font-size:13px}
+  .shop-header #shop-health{font-size:9px}
+  .shop-header>div:last-child{gap:8px}
+  .shop-wallet img{width:18px;height:18px}
+}
+
+/* One quiet purchase strip: price on the left, action on the right. */
+.shop-purchase{display:block;top:75%;bottom:12%;left:14%;right:14%;min-height:28px}
+.shop-purchase .shop-buy{position:absolute;inset:0;display:flex;align-items:center;justify-content:flex-end;width:100%;height:100%;min-height:0;margin:0;padding:2px 7px;border:1px solid #ad9159;border-radius:5px;background:linear-gradient(#fff4d6,#efddb1);box-shadow:0 1px 2px #564b2933;color:#3c643e;font-size:10px}
+.shop-purchase .shop-price{position:absolute;top:50%;left:6px;right:auto;transform:translateY(-50%);z-index:1;display:flex;align-items:center;gap:2px;max-width:none;margin:0;padding:0;border:0;background:none;border-radius:0;color:#755226;font-size:10px;line-height:1;pointer-events:none}
+.shop-purchase .shop-price[hidden]{display:none!important}
+.shop-purchase .shop-buy:disabled{background:#e7dfcb;border-color:#baad8c;box-shadow:none;color:#8b8067}
+.shop-item.sold .shop-purchase .shop-buy{background:#e4e8d3;border-color:#9dab81;color:#54704b}
+.shop-item.unaffordable:not(.sold) .shop-purchase .shop-price{color:#9b654f}
+.shop-item[data-kind=empty] .shop-purchase .shop-buy{justify-content:center}
+.shop-buy-label{white-space:nowrap}
+
+/* Leave a quiet gap below the title ribbon and its supporting type label. */
+.shop-item>.shop-item-type{top:23%;font-size:8px;line-height:1.25}
+.shop-item-body{top:32%}
+
+/* Adventure report: state-driven outcome, with live text over parchment. */
+#gameover-screen{background:radial-gradient(ellipse at 50% 40%,#2e5557bb,#0a2533ed);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);padding:calc(14px + var(--safe-top)) calc(18px + var(--safe-right)) calc(14px + var(--safe-bottom)) calc(18px + var(--safe-left))}
+#gameover-screen[data-outcome=victory]{background:radial-gradient(ellipse at 50% 38%,#e0ba5e4d,#173b32eb)}
+#gameover-screen .result-card{position:relative;isolation:isolate;display:flex;flex-direction:column;gap:16px;width:min(940px,100%);max-width:100%;max-height:100%;min-height:0;padding:46px 70px;background:#f7ebce;border:1px solid #a69a77;border-radius:18px;box-shadow:0 18px 60px #061f3059;color:#36504a;text-align:left;overflow:visible}
+.result-panel-art{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;image-rendering:pixelated;z-index:-1;pointer-events:none;opacity:0}
+.result-panel-art.art-loaded{opacity:1}
+#gameover-screen .result-card:has(>.result-panel-art.art-loaded){background:none;border-color:transparent;box-shadow:none}
+.result-header{display:flex;align-items:center;gap:18px;flex-shrink:0;min-width:0}
+.result-header>div{min-width:0}
+.result-insignia{position:relative;display:grid;place-items:center;flex-shrink:0;width:92px;height:92px}
+.result-insignia>img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;opacity:0;image-rendering:pixelated}
+.result-insignia>img.art-loaded{opacity:1}
+.result-art-fallback{display:grid;place-items:center;width:65%;height:65%;border-radius:50%;background:#6a8d8033;color:#45675a}
+.result-art-fallback>.icon{width:60%;height:60%}
+.result-insignia:has(>img.art-loaded:not([hidden])) .result-art-fallback{display:none}
+[data-outcome=victory] .result-insignia{filter:drop-shadow(0 0 14px #e6b33e80)}
+#gameover-screen .result-header h2{font-size:27px;line-height:1.2;letter-spacing:1px;margin:4px 0 7px;color:#37514c}
+#gameover-screen[data-outcome=victory] .result-header h2{color:#82601d;text-shadow:0 1px #fff4d2}
+#gameover-screen #result-eyebrow{font-size:10px;letter-spacing:2px;color:#867651}
+#gameover-screen #result-message{margin:0;font-size:12px;line-height:1.5;color:#5a6b64;letter-spacing:0}
+.result-body{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:26px;min-height:0;max-height:300px;overflow:auto;overscroll-behavior:contain;touch-action:pan-y;scrollbar-width:thin;scrollbar-color:#a99463 #e3d8bb;padding:2px}
+#gameover-screen .result-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:0;padding:15px 0;border-top:1px solid #a58e5c55;border-bottom:1px solid #a58e5c55;text-align:center}
+#gameover-screen .result-stats>div{gap:6px;min-width:0}
+#gameover-screen .result-stats strong{font-size:25px;color:#365b50;letter-spacing:0;line-height:1.2}
+#gameover-screen[data-outcome=victory] .result-stats strong{color:#8c681e}
+#gameover-screen .result-stats span{font-size:11px;color:#7b735c}
+#gameover-screen #result-run{margin:12px 0 0;font-size:11px;line-height:1.7;white-space:pre-line;color:#6f725f;letter-spacing:0}
+#gameover-screen #result-build{display:block;border-left:1px solid #a58e5c55;padding:0 0 0 22px;min-height:0;max-height:none;overflow:visible;touch-action:pan-y}
+#gameover-screen #result-build h3{font-size:16px;color:#4c6349;margin:0 0 10px;letter-spacing:1px}
+#gameover-screen #result-build p{margin:0 0 9px;font-size:12px;line-height:1.6;color:#5b624b;letter-spacing:0;overflow-wrap:anywhere;white-space:pre-line}
+#gameover-screen #result-weapons{font-weight:bold;color:#47613f}
+#gameover-screen #result-challenge{font-size:11px;line-height:1.5;color:#94712b;margin:10px 0}
+#gameover-screen .result-actions{display:flex;align-items:center;justify-content:center;gap:16px;margin:0;padding-top:10px;border-top:1px solid #a58e5c44;flex-shrink:0}
+#gameover-screen .result-actions .primary{flex:0 1 200px;width:auto;min-width:0;min-height:42px;margin:0;padding:9px 20px;justify-content:center;background:linear-gradient(#78965a,#496e40);border:1px solid #506e39;border-radius:7px;color:#fff5d8;font-size:13px;box-shadow:0 2px 0 #33532d}
+#gameover-screen .result-actions .text-button{margin:0;padding:8px 12px;min-height:42px;font-size:12px;color:#6b6954}
+@media(max-height:450px){
+  #gameover-screen{padding:calc(8px + var(--safe-top)) calc(12px + var(--safe-right)) calc(8px + var(--safe-bottom)) calc(12px + var(--safe-left))}
+  #gameover-screen .result-card{padding:28px 48px;gap:10px}
+  .result-insignia{width:64px;height:64px}
+  .result-header{gap:12px}
+  #gameover-screen .result-header h2{font-size:21px;margin:2px 0 4px}
+  #gameover-screen #result-eyebrow{font-size:9px}
+  #gameover-screen #result-message{font-size:10px;line-height:1.4}
+  .result-body{max-height:calc(100dvh - 195px - var(--safe-top) - var(--safe-bottom));gap:17px}
+  #gameover-screen .result-stats{padding:8px 0}
+  #gameover-screen .result-stats strong{font-size:21px}
+  #gameover-screen .result-stats span{font-size:9px}
+  #gameover-screen #result-run{font-size:10px;margin-top:8px}
+  #gameover-screen #result-build{padding-left:14px}
+  #gameover-screen #result-build h3{font-size:14px;margin-bottom:6px}
+  #gameover-screen #result-build p{font-size:10px;margin-bottom:6px}
+  #gameover-screen .result-actions{padding-top:7px}
+  #gameover-screen .result-actions button{min-height:36px!important;font-size:11px!important;padding:6px 12px!important}
+}
+@media(max-width:650px){
+  #gameover-screen .result-card{padding:25px 32px;gap:8px}
+  .result-insignia{width:51px;height:51px}
+  #gameover-screen .result-header h2{font-size:17px}
+  .result-body{grid-template-columns:minmax(0,1fr);gap:12px;max-height:calc(100dvh - 182px - var(--safe-top) - var(--safe-bottom))}
+  #gameover-screen #result-build{padding:10px 0 0;border-left:0;border-top:1px solid #a58e5c55}
+}
+
+/* Keep report headings and actions away from ornate parchment borders. */
+#gameover-screen .result-card{padding:0;background:none;border:0;border-radius:0;box-shadow:none;gap:12px}
+.result-report{position:relative;isolation:isolate;display:flex;flex:0 1 auto;height:300px;min-height:0;max-height:380px;padding:48px 72px;background:#f7ebce;border-radius:14px}
+.result-report:has(>.result-panel-art.art-loaded){background:none}
+.result-header{justify-content:center}
+#gameover-screen .result-header h2{color:#edf0db}
+#gameover-screen[data-outcome=victory] .result-header h2{color:#f5d791;text-shadow:0 1px 4px #473920}
+#gameover-screen #result-eyebrow{color:#c8ccae}
+#gameover-screen #result-message{color:#d5decc}
+.result-report .result-body{width:100%}
+#gameover-screen .result-actions{border:0;padding:0}
+#gameover-screen .result-actions .text-button{color:#e3dfc4}
+@media(max-height:450px){
+  #gameover-screen .result-card{padding:0;gap:8px}
+  .result-report{padding:40px 66px 36px;height:calc(100dvh - 155px - var(--safe-top) - var(--safe-bottom));max-height:calc(100dvh - 136px - var(--safe-top) - var(--safe-bottom))}
+  .result-report .result-body{max-height:none}
+}
+@media(max-width:650px){
+  #gameover-screen .result-card{padding:0;gap:7px}
+  .result-report{padding:30px 37px 28px}
+}
+
+/* Nine-slice the artwork into a border; ornaments never enter the text box. */
+#gameover-screen .result-report{flex:1 1 auto;height:auto;max-height:none;padding:14px;background:#f7ebce;border:24px solid #ac996e;border-image:var(--result-panel-url) 240 190 195 190 fill / 24px / 0 stretch;border-radius:0;overflow:hidden}
+#gameover-screen .result-panel-art{display:none}
+#gameover-screen .result-report:has(>.result-panel-art.art-loaded){background:transparent}
+#gameover-screen .result-report .result-body{max-height:min(280px,calc(100dvh - 205px - var(--safe-top) - var(--safe-bottom)));width:100%;min-height:0;padding:3px;gap:22px;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);background:#faf0d999;scrollbar-gutter:stable}
+#gameover-screen #result-eyebrow{display:none}
+#gameover-screen #result-run{font-size:11px;line-height:1.55}
+#gameover-screen .result-stats{padding-top:4px}
+#gameover-screen #result-build h3{margin-bottom:7px}
+@media(max-height:450px){
+  #gameover-screen .result-report{padding:9px;border-width:18px;border-image-width:18px}
+  #gameover-screen .result-report .result-body{gap:14px}
+  #gameover-screen #result-build p{line-height:1.35;margin-bottom:5px}
+  #gameover-screen #result-run{font-size:10px}
+}
+
+/* Compact forest HUD. Decorative art never receives pointer events. */
+.hud{--hud-card-width:230px;--hud-card-height:78px;padding:calc(12px + var(--safe-top)) calc(12px + var(--safe-right)) calc(12px + var(--safe-bottom)) calc(12px + var(--safe-left));font-family:inherit;font-variant-numeric:tabular-nums;color:#f5ecd1}
+.hud .hud-top{gap:12px}
+.hud .health-block{width:var(--hud-card-width);min-width:0;gap:3px;flex-shrink:0}
+.hud .health-panel{position:relative;isolation:isolate;width:100%;min-width:0;height:var(--hud-card-height);padding:0;gap:0;border:1px solid #ac9664;border-radius:6px;background:#f3e6c9;box-shadow:inset 0 0 0 2px #274e3e55}
+.health-frame-art{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;opacity:0;pointer-events:none;image-rendering:pixelated;z-index:-1}
+.health-frame-art.art-loaded{opacity:1}
+.hud .health-panel:has(>.health-frame-art.art-loaded){background:none;border-color:transparent;box-shadow:none}
+.hud .health-panel .portrait{position:absolute;left:7%;top:23%;width:27%;height:59%;object-fit:contain;border:1px solid #bfa773;border-radius:50%;background:#efe4c7;box-shadow:inset 0 0 0 2px #405d4440;pointer-events:none}
+.hud #creature-portrait{opacity:0;padding:1px}
+.hud #creature-portrait.art-loaded{opacity:1}
+.hud .health-copy{position:absolute;inset:0;min-width:0}
+.hud .health-title{position:absolute;left:40%;right:10%;top:37%;gap:5px;margin:0;line-height:1.2}
+.hud .health-title strong{color:#36533c;font-size:12px;letter-spacing:0;white-space:nowrap}
+.hud .health-title>span{color:#827043;font-size:9px;letter-spacing:0;white-space:nowrap}
+.hud .health-track{position:absolute;left:36%;right:10%;top:64%;height:12px;border:1px solid #9a814e;border-radius:4px;background:#1c352d;box-shadow:inset 0 1px 3px #081e23;overflow:hidden}
+.hud #health-fill{height:100%;background:linear-gradient(#79bb6b,#3f8c54);box-shadow:inset 0 1px #c4e7a477}
+.hud .health-track.low-health #health-fill{background:linear-gradient(#e99564,#bd5347)}
+.hud .health-values{position:absolute;left:36%;right:10%;top:64%;height:12px;margin:0;display:flex;justify-content:center;align-items:center;font-size:10px;line-height:1;color:#fff9dd;text-shadow:0 1px 2px #12291f;pointer-events:none}
+.hud .health-values>.icon{display:none}
+.hud .combat-stats{display:flex;justify-content:space-between;gap:8px;align-self:stretch;border:0;border-radius:0;background:none;box-shadow:none;padding:0 8px;font-size:9px;text-shadow:0 1px 3px #132e26}
+.hud .combat-stats>div{min-width:0;gap:4px}
+.hud .combat-stats>div+div{margin:0;padding:0;border:0}
+.hud .combat-stats .icon{width:11px;height:11px;color:#e5c980}
+.hud .combat-stats strong{font-size:10px;color:#f4e8b9}
+.hud .xp-row{width:100%;max-width:none;gap:5px;padding:0 6px;font-size:8px;letter-spacing:0;color:#d8f2ec}
+.hud .xp-label{min-width:0}
+.hud .xp-track{height:7px;min-width:30px;border:1px solid #89b9ad;border-radius:3px;background:#173e3b;box-shadow:inset 0 1px 2px #0c282a;overflow:hidden}
+.hud #xp-fill{height:100%;background:linear-gradient(#a7e6e6,#54b7c9)}
+.hud .xp-row>span:last-child{min-width:34px}
+.hud .run-status{top:2px;text-shadow:0 1px 3px #17352d;gap:1px}
+.hud .run-label{font-size:9px;letter-spacing:0;color:#dbdec2}
+.hud #timer{font-size:22px;line-height:1.15;letter-spacing:1px;margin:0;color:#fff2c8}
+.hud #run-wave,.hud #run-gold{font-size:9px;line-height:1.4}
+.hud .hud-actions{gap:6px}
+.hud .hud-actions .icon-button{width:48px;height:48px;min-width:48px;min-height:48px;border:1px solid #ad9562;border-radius:6px;background:linear-gradient(145deg,#294c3de8,#19382ee8);box-shadow:inset 0 0 0 2px #dbc78712;color:#ede0ac}
+.hud .hud-actions .icon{width:19px;height:19px}
+.hud .encounter-status{top:calc(14px + var(--safe-top));left:calc(50% + 37px + (var(--safe-left) - var(--safe-right)) / 2);right:auto;transform:translateX(-50%);width:min(330px,calc(100vw - var(--safe-left) - var(--safe-right) - 434px));padding:8px 10px;border:1px solid #d1af6e;border-radius:5px;background:linear-gradient(#243d35ed,#172e28ed);box-shadow:inset 0 0 0 2px #d6c59112;color:#f8e6bd;pointer-events:none}
+.hud .encounter-status>div:first-child{font-size:11px;line-height:1.25;gap:6px}
+.hud .encounter-status>div:first-child>span{font-size:10px}
+.hud .encounter-track{height:9px;margin:5px 0;border:1px solid #7d5f3f;border-radius:3px;background:#142d28;overflow:hidden}
+.hud #encounter-fill{display:block;height:100%;background:linear-gradient(#e1b76c,#b97c48);box-shadow:inset 0 1px #fff0ba66}
+.hud .encounter-status.enraged{border-color:#e49b67}
+.hud .encounter-status.enraged #encounter-fill{background:linear-gradient(#eeaa70,#c96949)}
+.hud .encounter-status small{font-size:9px;line-height:1.35;letter-spacing:0;color:#e0dac0}
+.hud .encounter-status #encounter-wave{color:#afc3b3;font-size:8px;margin-top:2px}
+.hud .fusion-status{max-width:min(360px,calc(100vw - var(--safe-left) - var(--safe-right) - 200px));gap:5px;padding:4px 8px;border:1px solid #aa9465;border-radius:5px;background:#18362de3;box-shadow:none}
+.hud .fusion-status strong{font-size:10px;line-height:1.35;color:#f3e4b8}
+.hud .fusion-status .fire-icon,.hud .fusion-status .fusion-icon{width:26px;height:26px}
+#hud-extra-weapons{display:flex;gap:3px;align-items:center}
+.hud-weapon-icon{position:relative;display:grid;place-items:center;width:26px;height:26px;flex-shrink:0}
+.hud-weapon-icon>img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;image-rendering:pixelated;opacity:0}
+.hud-weapon-icon>img.art-loaded{opacity:1}
+.hud-weapon-icon>.icon{width:20px;height:20px;color:#a9d2b6}
+.hud-weapon-icon.art-ready>.icon{display:none}
+.hud .joystick{border-color:#c3ad746e;background:#d5e1b90b;box-shadow:inset 0 0 0 8px #c7b2760a}
+.hud .joystick::before{border-color:#c8b88230}
+.hud .joystick-knob{border-color:#d6bd80a6;background:linear-gradient(#dddfb955,#aab68a33);box-shadow:0 3px 10px #163f2f44}
+.hud .dash-button{border-color:#c5aa71;background:radial-gradient(circle,#54784c,#284932);color:#f3e6bd}
+.hud .control-caption{font-size:8px;letter-spacing:0;color:#dfdfbb}
+@media(max-width:700px) and (orientation:landscape){
+  .hud{--hud-card-width:184px;--hud-card-height:64px}
+  .hud .health-title strong{font-size:11px}
+  .hud .health-title>span{font-size:8px}
+  .hud .health-track,.hud .health-values{height:12px}
+  .hud .health-values{font-size:9px}
+  .hud .combat-stats{font-size:8px}
+  .hud .combat-stats strong{font-size:9px}
+  .hud .run-status{top:3px;left:calc(50% + 16px)}
+  .hud .encounter-status{left:auto;right:calc(12px + var(--safe-right));top:calc(66px + var(--safe-top));transform:none;width:min(250px,calc(100vw - var(--safe-left) - var(--safe-right) - 220px));padding:6px 8px}
+  .hud .encounter-status>div:first-child{font-size:10px}
+  .hud .encounter-status>div:first-child>span{font-size:9px}
+  .hud .encounter-status small{font-size:8px}
+  .hud .encounter-track{height:8px}
+  .hud .fusion-status{max-width:calc(100vw - var(--safe-left) - var(--safe-right) - 190px);padding:3px 6px}
+  .hud .fusion-status strong{font-size:9px}
+}
+@media(max-width:650px){
+  #gameover-screen .result-report{padding:7px;border-width:15px;border-image-width:15px}
+  #gameover-screen .result-report .result-body{gap:12px}
+  #gameover-screen .result-report .result-body{max-height:calc(100dvh - 175px - var(--safe-top) - var(--safe-bottom))}
+  #gameover-screen #result-build{padding:0 0 0 10px;border-left:1px solid #a58e5c55;border-top:0}
+  #gameover-screen .result-stats strong{font-size:17px}
+  #gameover-screen #result-run,#gameover-screen #result-build p{font-size:9px}
+  #gameover-screen #result-build h3{font-size:12px}
+}
+
+/* Desktop copy needs its own scale instead of inheriting the phone header. */
+@media(min-width:1000px) and (min-height:600px){
+  .upgrade-panel{--card-height:clamp(300px,calc(100dvh - 250px - var(--safe-top) - var(--safe-bottom)),510px);gap:12px}
+  .upgrade-header{min-height:92px}
+  .upgrade-heading-art{width:360px;height:92px}
+  .upgrade-header h2,.upgrade-heading-art.art-ready h2{font-size:32px;letter-spacing:4px}
+  .upgrade-heading-art.art-ready h2{transform:translateY(5px)}
+  .upgrade-header>.text-button{top:24px;font-size:14px;padding:11px 15px}
+  .upgrade-subtitle{gap:14px;margin:0 0 20px;font-size:15px;line-height:1.4}
+  .upgrade-subtitle p{font-size:15px}
+  .upgrade-subtitle>span:first-child{font-size:14px;padding:4px 10px}
+  .upgrade-subtitle .paused-badge{font-size:13px;padding:4px 10px}
+  .upgrade-footer{font-size:14px;min-height:22px;gap:24px;margin-top:4px}
+  .upgrade-footer .icon{width:17px;height:17px}
+}
+
+/* UI-only motion: animate composited opacity/transform, never gameplay clocks.
+   Hidden screens remove these elements from rendering; no animation loop in JS. */
+@keyframes card-arrive{
+  from{opacity:0;transform:translateY(8px)}
+  to{opacity:1;transform:translateY(0)}
+}
+@keyframes rare-breathe{
+  0%,100%{opacity:.16}
+  50%{opacity:.48}
+}
+@keyframes legendary-drift{
+  0%,100%{opacity:.18;transform:translateY(3px)}
+  50%{opacity:.6;transform:translateY(-4px)}
+}
+@keyframes victory-arrive{
+  from{opacity:0;transform:translateY(10px)}
+  to{opacity:1;transform:translateY(0)}
+}
+.upgrade-screen:not([hidden]) .skill-card{animation:card-arrive .18s ease-out backwards}
+.upgrade-screen .skill-card::before{
+  content:'';display:block;position:absolute;inset:5% 7%;height:auto;
+  border:1px solid var(--card-glow,#ffe6a2);border-radius:18px;
+  background:none;box-shadow:inset 0 0 12px var(--card-glow,#ffe6a2),0 0 10px var(--card-glow,#ffe6a2);
+  opacity:0;pointer-events:none;transition:opacity .12s ease-out;
+}
+.upgrade-screen .skill-card[data-category=relic]{--card-glow:#c796ea}
+.upgrade-screen:not([hidden]) .skill-card[data-category=relic]::before{animation:rare-breathe 3.6s ease-in-out infinite}
+.upgrade-screen .skill-card[data-category=evolution]{--card-glow:#f4d586}
+.upgrade-screen .skill-card[data-category=evolution]::after{
+  content:'';position:absolute;inset:8% 8%;pointer-events:none;
+  background:radial-gradient(circle at 3% 20%,#fff5c4 0 1.5px,transparent 2.5px),
+    radial-gradient(circle at 97% 36%,#f9d982 0 1px,transparent 2px),
+    radial-gradient(circle at 5% 62%,#fff3b3 0 1px,transparent 2px),
+    radial-gradient(circle at 95% 78%,#ffdf87 0 1.5px,transparent 2.5px),
+    radial-gradient(circle at 22% 94%,#fff4c2 0 1px,transparent 2px),
+    radial-gradient(circle at 78% 5%,#ffdf87 0 1px,transparent 2px);
+  opacity:0;
+}
+.upgrade-screen:not([hidden]) .skill-card[data-category=evolution]::after{animation:legendary-drift 4.8s ease-in-out infinite}
+.upgrade-screen .skill-card:active:not(:disabled)::before,
+.upgrade-screen .skill-card:focus-visible::before{animation:none;opacity:.85}
+#gameover-screen:not([hidden])[data-outcome=victory] .result-card{animation:victory-arrive .32s ease-out backwards}
+@media(prefers-reduced-motion:reduce){
+  .upgrade-screen:not([hidden]) .skill-card,
+  .upgrade-screen:not([hidden]) .skill-card[data-category]::before,
+  .upgrade-screen:not([hidden]) .skill-card[data-category]::after,
+  #gameover-screen:not([hidden])[data-outcome=victory] .result-card{animation:none}
+  .upgrade-screen .skill-card,.upgrade-screen .skill-card::before{transition:none}
+  .upgrade-screen .skill-card[data-category=evolution]::after{display:none}
+  .upgrade-screen .skill-card:active:not(:disabled){transform:none}
+}

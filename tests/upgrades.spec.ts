@@ -154,7 +154,7 @@ test('the last remaining skill is valid and full mastery stops creating empty di
   await expect(page.locator('.skill-card')).toHaveCount(1);
   await page.locator('.skill-card').tap();
   await expect(page.locator('#upgrade-screen')).toBeHidden();
-  await expect(page.locator('#xp-progress')).toHaveText('MAX');
+  await expect(page.locator('#xp-progress')).toHaveText('满级');
   await page.evaluate(() => (window as unknown as Harness).testGame.combat.progression.gainExperience(500));
   await page.waitForTimeout(200);
   expect((await state(page)).mode).toBe('playing');

@@ -1,0 +1,500 @@
+{
+  "coordinates": "[left, top, right, bottom), source pixels",
+  "source_files": [
+    {
+      "source": "raw/三联魔法精灵像素特效.png",
+      "width": 2172,
+      "height": 724,
+      "mode": "RGBA",
+      "bands": [
+        "R",
+        "G",
+        "B",
+        "A"
+      ],
+      "alpha_min": 0,
+      "alpha_max": 255,
+      "alpha_levels": 256,
+      "sha256": "fdb85ce08e7c5e04a5f1702ac6f3879d6725dcc832c77255b0cd5d3cf5069e37",
+      "order": [
+        "魔力浓缩",
+        "分枝魔法",
+        "蓬勃生长"
+      ]
+    },
+    {
+      "source": "raw/四连魔法狐灵技能图标.png",
+      "width": 2172,
+      "height": 724,
+      "mode": "RGBA",
+      "bands": [
+        "R",
+        "G",
+        "B",
+        "A"
+      ],
+      "alpha_min": 0,
+      "alpha_max": 255,
+      "alpha_levels": 256,
+      "sha256": "a17a50780a5c2810344b88733001506742c999454f6f49524c4c1bb17e5ff0cd",
+      "order": [
+        "草叶轻步",
+        "远星回响",
+        "伴星魔法球",
+        "草原冲击波"
+      ]
+    },
+    {
+      "source": "raw/三元素萌宠攻击精灵图.png",
+      "width": 2172,
+      "height": 724,
+      "mode": "RGBA",
+      "bands": [
+        "R",
+        "G",
+        "B",
+        "A"
+      ],
+      "alpha_min": 0,
+      "alpha_max": 255,
+      "alpha_levels": 256,
+      "sha256": "6814e714c9c56697546b35518f994666398a1577f784fd7c7eb46be77b92a87e",
+      "order": [
+        "获得火花弹",
+        "获得水泡弹",
+        "获得叶刃"
+      ]
+    },
+    {
+      "source": "raw/双狐烈焰技能精灵图.png",
+      "width": 2172,
+      "height": 724,
+      "mode": "RGBA",
+      "bands": [
+        "R",
+        "G",
+        "B",
+        "A"
+      ],
+      "alpha_min": 0,
+      "alpha_max": 255,
+      "alpha_levels": 256,
+      "sha256": "00ad67807c99f07fa1b0714ee3f37e139579d8adf9a78a9de40b37034bbee903",
+      "order": [
+        "狂暴火种",
+        "追猎火种"
+      ]
+    }
+  ],
+  "assets": [
+    {
+      "code": "B01",
+      "title": "魔力浓缩",
+      "id": "damage",
+      "source": "raw/三联魔法精灵像素特效.png",
+      "order": 1,
+      "source_region": [
+        0,
+        0,
+        762,
+        724
+      ],
+      "crop_box": [
+        0,
+        14,
+        762,
+        724
+      ],
+      "output": "skills/damage.png",
+      "output_size": [
+        810,
+        810
+      ],
+      "paste_offset": [
+        24,
+        50
+      ],
+      "padding_min": 24,
+      "transparency": "original RGBA, unchanged",
+      "split_method": "alpha projection, manually reviewed coordinates",
+      "split_edge_alpha_max": 1,
+      "accepted": true,
+      "notes": "保留全部非零透明度像素，包括低透明度残点；未去背景、缩放或补画。"
+    },
+    {
+      "code": "B02",
+      "title": "分枝魔法",
+      "id": "multishot",
+      "source": "raw/三联魔法精灵像素特效.png",
+      "order": 2,
+      "source_region": [
+        762,
+        0,
+        1440,
+        724
+      ],
+      "crop_box": [
+        762,
+        9,
+        1435,
+        702
+      ],
+      "output": "skills/multishot.png",
+      "output_size": [
+        741,
+        741
+      ],
+      "paste_offset": [
+        34,
+        24
+      ],
+      "padding_min": 24,
+      "transparency": "original RGBA, unchanged",
+      "split_method": "alpha projection, manually reviewed coordinates",
+      "split_edge_alpha_max": 1,
+      "accepted": true,
+      "notes": "保留全部非零透明度像素，包括低透明度残点；未去背景、缩放或补画。"
+    },
+    {
+      "code": "B03",
+      "title": "蓬勃生长",
+      "id": "vitality",
+      "source": "raw/三联魔法精灵像素特效.png",
+      "order": 3,
+      "source_region": [
+        1440,
+        0,
+        2172,
+        724
+      ],
+      "crop_box": [
+        1447,
+        28,
+        2162,
+        724
+      ],
+      "output": "skills/vitality.png",
+      "output_size": [
+        763,
+        763
+      ],
+      "paste_offset": [
+        24,
+        33
+      ],
+      "padding_min": 24,
+      "transparency": "original RGBA, unchanged",
+      "split_method": "alpha projection, manually reviewed coordinates",
+      "split_edge_alpha_max": 0,
+      "accepted": true,
+      "notes": "保留全部非零透明度像素，包括低透明度残点；未去背景、缩放或补画。"
+    },
+    {
+      "code": "C01",
+      "title": "草叶轻步",
+      "id": "movement",
+      "source": "raw/四连魔法狐灵技能图标.png",
+      "order": 1,
+      "source_region": [
+        0,
+        0,
+        523,
+        724
+      ],
+      "crop_box": [
+        0,
+        0,
+        523,
+        724
+      ],
+      "output": "skills/movement.png",
+      "output_size": [
+        772,
+        772
+      ],
+      "paste_offset": [
+        124,
+        24
+      ],
+      "padding_min": 24,
+      "transparency": "original RGBA, unchanged",
+      "split_method": "alpha projection, manually reviewed coordinates",
+      "split_edge_alpha_max": 1,
+      "accepted": true,
+      "notes": "保留全部非零透明度像素，包括低透明度残点；未去背景、缩放或补画。"
+    },
+    {
+      "code": "C02",
+      "title": "远星回响",
+      "id": "range",
+      "source": "raw/四连魔法狐灵技能图标.png",
+      "order": 2,
+      "source_region": [
+        523,
+        0,
+        1126,
+        724
+      ],
+      "crop_box": [
+        523,
+        6,
+        1126,
+        724
+      ],
+      "output": "skills/range.png",
+      "output_size": [
+        766,
+        766
+      ],
+      "paste_offset": [
+        81,
+        24
+      ],
+      "padding_min": 24,
+      "transparency": "original RGBA, unchanged",
+      "split_method": "alpha projection, manually reviewed coordinates",
+      "split_edge_alpha_max": 2,
+      "accepted": true,
+      "notes": "保留全部非零透明度像素，包括低透明度残点；未去背景、缩放或补画。"
+    },
+    {
+      "code": "C03",
+      "title": "伴星魔法球",
+      "id": "orbit",
+      "source": "raw/四连魔法狐灵技能图标.png",
+      "order": 3,
+      "source_region": [
+        1126,
+        0,
+        1583,
+        724
+      ],
+      "crop_box": [
+        1126,
+        9,
+        1583,
+        684
+      ],
+      "output": "skills/orbit.png",
+      "output_size": [
+        723,
+        723
+      ],
+      "paste_offset": [
+        133,
+        24
+      ],
+      "padding_min": 24,
+      "transparency": "original RGBA, unchanged",
+      "split_method": "alpha projection, manually reviewed coordinates",
+      "split_edge_alpha_max": 2,
+      "accepted": true,
+      "notes": "保留全部非零透明度像素，包括低透明度残点；未去背景、缩放或补画。"
+    },
+    {
+      "code": "C04",
+      "title": "草原冲击波",
+      "id": "shockwave",
+      "source": "raw/四连魔法狐灵技能图标.png",
+      "order": 4,
+      "source_region": [
+        1583,
+        0,
+        2172,
+        724
+      ],
+      "crop_box": [
+        1584,
+        10,
+        2171,
+        724
+      ],
+      "output": "skills/shockwave.png",
+      "output_size": [
+        762,
+        762
+      ],
+      "paste_offset": [
+        87,
+        24
+      ],
+      "padding_min": 24,
+      "transparency": "original RGBA, unchanged",
+      "split_method": "alpha projection, manually reviewed coordinates",
+      "split_edge_alpha_max": 1,
+      "accepted": true,
+      "notes": "保留全部非零透明度像素，包括低透明度残点；未去背景、缩放或补画。"
+    },
+    {
+      "code": "D01",
+      "title": "获得火花弹",
+      "id": "spark-weapon",
+      "source": "raw/三元素萌宠攻击精灵图.png",
+      "order": 1,
+      "source_region": [
+        0,
+        0,
+        740,
+        724
+      ],
+      "crop_box": [
+        0,
+        19,
+        740,
+        724
+      ],
+      "output": "skills/spark-weapon.png",
+      "output_size": [
+        788,
+        788
+      ],
+      "paste_offset": [
+        24,
+        41
+      ],
+      "padding_min": 24,
+      "transparency": "original RGBA, unchanged",
+      "split_method": "alpha projection, manually reviewed coordinates",
+      "split_edge_alpha_max": 1,
+      "accepted": true,
+      "notes": "保留全部非零透明度像素，包括低透明度残点；未去背景、缩放或补画。"
+    },
+    {
+      "code": "D02",
+      "title": "获得水泡弹",
+      "id": "bubble-weapon",
+      "source": "raw/三元素萌宠攻击精灵图.png",
+      "order": 2,
+      "source_region": [
+        740,
+        0,
+        1407,
+        724
+      ],
+      "crop_box": [
+        748,
+        7,
+        1404,
+        577
+      ],
+      "output": "skills/bubble-weapon.png",
+      "output_size": [
+        704,
+        704
+      ],
+      "paste_offset": [
+        24,
+        67
+      ],
+      "padding_min": 24,
+      "transparency": "original RGBA, unchanged",
+      "split_method": "alpha projection, manually reviewed coordinates",
+      "split_edge_alpha_max": 1,
+      "accepted": true,
+      "notes": "保留全部非零透明度像素，包括低透明度残点；未去背景、缩放或补画。"
+    },
+    {
+      "code": "D03",
+      "title": "获得叶刃",
+      "id": "leaf-weapon",
+      "source": "raw/三元素萌宠攻击精灵图.png",
+      "order": 3,
+      "source_region": [
+        1407,
+        0,
+        2172,
+        724
+      ],
+      "crop_box": [
+        1409,
+        9,
+        2172,
+        724
+      ],
+      "output": "skills/leaf-weapon.png",
+      "output_size": [
+        811,
+        811
+      ],
+      "paste_offset": [
+        24,
+        48
+      ],
+      "padding_min": 24,
+      "transparency": "original RGBA, unchanged",
+      "split_method": "alpha projection, manually reviewed coordinates",
+      "split_edge_alpha_max": 0,
+      "accepted": true,
+      "notes": "保留全部非零透明度像素，包括低透明度残点；未去背景、缩放或补画。"
+    },
+    {
+      "code": "E01",
+      "title": "狂暴火种",
+      "id": "berserk-route",
+      "source": "raw/双狐烈焰技能精灵图.png",
+      "order": 1,
+      "source_region": [
+        0,
+        0,
+        1086,
+        724
+      ],
+      "crop_box": [
+        0,
+        9,
+        1086,
+        704
+      ],
+      "output": "skills/berserk-route.png",
+      "output_size": [
+        1134,
+        1134
+      ],
+      "paste_offset": [
+        24,
+        219
+      ],
+      "padding_min": 24,
+      "transparency": "original RGBA, unchanged",
+      "split_method": "alpha projection, manually reviewed coordinates",
+      "split_edge_alpha_max": 1,
+      "accepted": true,
+      "notes": "保留全部非零透明度像素，包括低透明度残点；未去背景、缩放或补画。"
+    },
+    {
+      "code": "E02",
+      "title": "追猎火种",
+      "id": "pursuit-route",
+      "source": "raw/双狐烈焰技能精灵图.png",
+      "order": 2,
+      "source_region": [
+        1086,
+        0,
+        2172,
+        724
+      ],
+      "crop_box": [
+        1087,
+        45,
+        2152,
+        724
+      ],
+      "output": "skills/pursuit-route.png",
+      "output_size": [
+        1113,
+        1113
+      ],
+      "paste_offset": [
+        24,
+        217
+      ],
+      "padding_min": 24,
+      "transparency": "original RGBA, unchanged",
+      "split_method": "alpha projection, manually reviewed coordinates",
+      "split_edge_alpha_max": 1,
+      "accepted": true,
+      "notes": "保留全部非零透明度像素，包括低透明度残点；未去背景、缩放或补画。"
+    }
+  ],
+  "validation": "12 exports reopened; exact RGBA comparison; all source nonzero alpha pixels and alpha sums retained; source SHA256 unchanged"
+}

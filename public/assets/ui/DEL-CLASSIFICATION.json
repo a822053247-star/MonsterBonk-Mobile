@@ -1,0 +1,87 @@
+[
+  {
+    "source": "del/普通魔法强化卡.png",
+    "output": "upgrade/card-frames/common.png",
+    "category": "普通强化卡底板",
+    "size": [
+      1024,
+      1536
+    ],
+    "mode": "RGBA",
+    "alpha_range": [
+      0,
+      254
+    ],
+    "note": "单张卡牌底板",
+    "sha256": "0bb28e73181c06ded50735c4ee0e672fe9d1cfd1721fc97950eea286e9c257ab",
+    "classification_accepted": true
+  },
+  {
+    "source": "del/稀有道具卡.png",
+    "output": "upgrade/card-frames/rare.png",
+    "category": "稀有道具卡底板",
+    "size": [
+      1024,
+      1536
+    ],
+    "mode": "RGBA",
+    "alpha_range": [
+      0,
+      254
+    ],
+    "note": "单张卡牌底板",
+    "sha256": "2b4f1da9f32d4da915a19800e771aaa35d924bf78cf88076b2e7d456b69c1408",
+    "classification_accepted": true
+  },
+  {
+    "source": "del/传奇进化卡.png",
+    "output": "upgrade/card-frames/legendary.png",
+    "category": "传奇进化卡底板",
+    "size": [
+      1024,
+      1536
+    ],
+    "mode": "RGBA",
+    "alpha_range": [
+      0,
+      254
+    ],
+    "note": "单张卡牌底板",
+    "sha256": "bc74fa72b9872e103b5288762a8d8bf320a9de2d122ffd9168782da055d8096f",
+    "classification_accepted": true
+  },
+  {
+    "source": "del/三款奇幻元素卡牌框架.png",
+    "output": "upgrade/card-frames/elements-sheet.png",
+    "category": "火／水／草元素卡框批量图",
+    "size": [
+      1774,
+      887
+    ],
+    "mode": "RGBA",
+    "alpha_range": [
+      0,
+      255
+    ],
+    "note": "从左到右：火、水、草；尚未切分",
+    "sha256": "99ba888f3286678cb4fffd726976df3fec00ddc051aecc004ec1ae9ca54d9cef",
+    "classification_accepted": true
+  },
+  {
+    "source": "del/森林魔法标题装饰.png",
+    "output": "common/forest-title-banner.png",
+    "category": "森林标题装饰",
+    "size": [
+      2172,
+      724
+    ],
+    "mode": "RGBA",
+    "alpha_range": [
+      0,
+      255
+    ],
+    "note": "通用标题横幅",
+    "sha256": "1c650baf00e529b3a8b14cebe2c94888dc976c56f816e727f55edd169833c06c",
+    "classification_accepted": true
+  }
+]

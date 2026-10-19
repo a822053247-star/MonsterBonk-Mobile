@@ -1,0 +1,424 @@
+{
+  "coordinates": "[left, top, right, bottom), source pixels",
+  "source_files": [
+    {
+      "source": "raw/奇幻RPG宝石花叶图标集.png",
+      "width": 1448,
+      "height": 1086,
+      "mode": "RGBA",
+      "bands": [
+        "R",
+        "G",
+        "B",
+        "A"
+      ],
+      "alpha_min": 0,
+      "alpha_max": 255,
+      "alpha_levels": 256,
+      "sha256": "d032bc5e42a33a53c5436cdf8538eef515250db9e348084b6b7e3fe72215e9f2",
+      "order": [
+        "金币",
+        "生命药水",
+        "商店刷新符文",
+        "经验魔法星",
+        "胜利皇冠",
+        "失败徽记",
+        "金色星级勋章",
+        "普通强化宝石",
+        "稀有宝石",
+        "传奇进化宝石",
+        "森林藤蔓装饰"
+      ]
+    }
+  ],
+  "assets": [
+    {
+      "code": "UI01",
+      "title": "金币",
+      "id": "coin",
+      "category": "common",
+      "source": "raw/奇幻RPG宝石花叶图标集.png",
+      "order": 1,
+      "source_region": [
+        0,
+        0,
+        393,
+        388
+      ],
+      "crop_box": [
+        0,
+        0,
+        392,
+        388
+      ],
+      "output": "common/coin.png",
+      "output_size": [
+        440,
+        440
+      ],
+      "paste_offset": [
+        24,
+        26
+      ],
+      "padding_min": 24,
+      "transparency": "original RGBA, unchanged",
+      "split_method": "alpha projection, manually reviewed coordinates",
+      "split_edge_alpha_max": 2,
+      "accepted": true,
+      "notes": "保留全部非零透明度像素，包括低透明度残点；未去背景、缩放或补画。"
+    },
+    {
+      "code": "UI02",
+      "title": "生命药水",
+      "id": "health-potion",
+      "category": "shop",
+      "source": "raw/奇幻RPG宝石花叶图标集.png",
+      "order": 2,
+      "source_region": [
+        393,
+        0,
+        696,
+        388
+      ],
+      "crop_box": [
+        411,
+        26,
+        695,
+        379
+      ],
+      "output": "shop/health-potion.png",
+      "output_size": [
+        401,
+        401
+      ],
+      "paste_offset": [
+        58,
+        24
+      ],
+      "padding_min": 24,
+      "transparency": "original RGBA, unchanged",
+      "split_method": "alpha projection, manually reviewed coordinates",
+      "split_edge_alpha_max": 0,
+      "accepted": true,
+      "notes": "保留全部非零透明度像素，包括低透明度残点；未去背景、缩放或补画。"
+    },
+    {
+      "code": "UI03",
+      "title": "商店刷新符文",
+      "id": "refresh-rune",
+      "category": "shop",
+      "source": "raw/奇幻RPG宝石花叶图标集.png",
+      "order": 3,
+      "source_region": [
+        696,
+        0,
+        1092,
+        388
+      ],
+      "crop_box": [
+        697,
+        23,
+        1091,
+        388
+      ],
+      "output": "shop/refresh-rune.png",
+      "output_size": [
+        442,
+        442
+      ],
+      "paste_offset": [
+        24,
+        38
+      ],
+      "padding_min": 24,
+      "transparency": "original RGBA, unchanged",
+      "split_method": "alpha projection, manually reviewed coordinates",
+      "split_edge_alpha_max": 1,
+      "accepted": true,
+      "notes": "保留全部非零透明度像素，包括低透明度残点；未去背景、缩放或补画。"
+    },
+    {
+      "code": "UI04",
+      "title": "经验魔法星",
+      "id": "experience-star",
+      "category": "hud",
+      "source": "raw/奇幻RPG宝石花叶图标集.png",
+      "order": 4,
+      "source_region": [
+        1092,
+        0,
+        1448,
+        388
+      ],
+      "crop_box": [
+        1101,
+        23,
+        1447,
+        388
+      ],
+      "output": "hud/experience-star.png",
+      "output_size": [
+        413,
+        413
+      ],
+      "paste_offset": [
+        33,
+        24
+      ],
+      "padding_min": 24,
+      "transparency": "original RGBA, unchanged",
+      "split_method": "alpha projection, manually reviewed coordinates",
+      "split_edge_alpha_max": 1,
+      "accepted": true,
+      "notes": "保留全部非零透明度像素，包括低透明度残点；未去背景、缩放或补画。"
+    },
+    {
+      "code": "UI05",
+      "title": "胜利皇冠",
+      "id": "victory-crown",
+      "category": "result",
+      "source": "raw/奇幻RPG宝石花叶图标集.png",
+      "order": 5,
+      "source_region": [
+        0,
+        388,
+        552,
+        776
+      ],
+      "crop_box": [
+        0,
+        388,
+        551,
+        776
+      ],
+      "output": "result/victory-crown.png",
+      "output_size": [
+        599,
+        599
+      ],
+      "paste_offset": [
+        24,
+        105
+      ],
+      "padding_min": 24,
+      "transparency": "original RGBA, unchanged",
+      "split_method": "alpha projection, manually reviewed coordinates",
+      "split_edge_alpha_max": 2,
+      "accepted": true,
+      "notes": "保留全部非零透明度像素，包括低透明度残点；未去背景、缩放或补画。"
+    },
+    {
+      "code": "UI06",
+      "title": "失败徽记",
+      "id": "defeat-badge",
+      "category": "result",
+      "source": "raw/奇幻RPG宝石花叶图标集.png",
+      "order": 6,
+      "source_region": [
+        552,
+        388,
+        945,
+        776
+      ],
+      "crop_box": [
+        560,
+        388,
+        939,
+        776
+      ],
+      "output": "result/defeat-badge.png",
+      "output_size": [
+        436,
+        436
+      ],
+      "paste_offset": [
+        28,
+        24
+      ],
+      "padding_min": 24,
+      "transparency": "original RGBA, unchanged",
+      "split_method": "alpha projection, manually reviewed coordinates",
+      "split_edge_alpha_max": 2,
+      "accepted": true,
+      "notes": "保留全部非零透明度像素，包括低透明度残点；未去背景、缩放或补画。"
+    },
+    {
+      "code": "UI07",
+      "title": "金色星级勋章",
+      "id": "star-medal",
+      "category": "result",
+      "source": "raw/奇幻RPG宝石花叶图标集.png",
+      "order": 7,
+      "source_region": [
+        945,
+        388,
+        1448,
+        776
+      ],
+      "crop_box": [
+        950,
+        388,
+        1422,
+        776
+      ],
+      "output": "result/star-medal.png",
+      "output_size": [
+        520,
+        520
+      ],
+      "paste_offset": [
+        24,
+        66
+      ],
+      "padding_min": 24,
+      "transparency": "original RGBA, unchanged",
+      "split_method": "alpha projection, manually reviewed coordinates",
+      "split_edge_alpha_max": 1,
+      "accepted": true,
+      "notes": "保留全部非零透明度像素，包括低透明度残点；未去背景、缩放或补画。"
+    },
+    {
+      "code": "UI08",
+      "title": "普通强化宝石",
+      "id": "gem-common",
+      "category": "upgrade",
+      "source": "raw/奇幻RPG宝石花叶图标集.png",
+      "order": 8,
+      "source_region": [
+        0,
+        776,
+        314,
+        1086
+      ],
+      "crop_box": [
+        0,
+        776,
+        314,
+        1086
+      ],
+      "output": "upgrade/gem-common.png",
+      "output_size": [
+        362,
+        362
+      ],
+      "paste_offset": [
+        24,
+        26
+      ],
+      "padding_min": 24,
+      "transparency": "original RGBA, unchanged",
+      "split_method": "alpha projection, manually reviewed coordinates",
+      "split_edge_alpha_max": 1,
+      "accepted": true,
+      "notes": "保留全部非零透明度像素，包括低透明度残点；未去背景、缩放或补画。"
+    },
+    {
+      "code": "UI09",
+      "title": "稀有宝石",
+      "id": "gem-rare",
+      "category": "upgrade",
+      "source": "raw/奇幻RPG宝石花叶图标集.png",
+      "order": 9,
+      "source_region": [
+        314,
+        776,
+        616,
+        1086
+      ],
+      "crop_box": [
+        315,
+        776,
+        615,
+        1086
+      ],
+      "output": "upgrade/gem-rare.png",
+      "output_size": [
+        358,
+        358
+      ],
+      "paste_offset": [
+        29,
+        24
+      ],
+      "padding_min": 24,
+      "transparency": "original RGBA, unchanged",
+      "split_method": "alpha projection, manually reviewed coordinates",
+      "split_edge_alpha_max": 1,
+      "accepted": true,
+      "notes": "保留全部非零透明度像素，包括低透明度残点；未去背景、缩放或补画。"
+    },
+    {
+      "code": "UI10",
+      "title": "传奇进化宝石",
+      "id": "gem-legendary",
+      "category": "upgrade",
+      "source": "raw/奇幻RPG宝石花叶图标集.png",
+      "order": 10,
+      "source_region": [
+        616,
+        776,
+        892,
+        1086
+      ],
+      "crop_box": [
+        618,
+        776,
+        891,
+        1086
+      ],
+      "output": "upgrade/gem-legendary.png",
+      "output_size": [
+        358,
+        358
+      ],
+      "paste_offset": [
+        42,
+        24
+      ],
+      "padding_min": 24,
+      "transparency": "original RGBA, unchanged",
+      "split_method": "alpha projection, manually reviewed coordinates",
+      "split_edge_alpha_max": 2,
+      "accepted": true,
+      "notes": "保留全部非零透明度像素，包括低透明度残点；未去背景、缩放或补画。"
+    },
+    {
+      "code": "UI11",
+      "title": "森林藤蔓装饰",
+      "id": "forest-vine",
+      "category": "common",
+      "source": "raw/奇幻RPG宝石花叶图标集.png",
+      "order": 11,
+      "source_region": [
+        892,
+        776,
+        1448,
+        1086
+      ],
+      "crop_box": [
+        894,
+        777,
+        1434,
+        1086
+      ],
+      "output": "common/forest-vine.png",
+      "output_size": [
+        588,
+        357
+      ],
+      "paste_offset": [
+        24,
+        24
+      ],
+      "padding_min": 24,
+      "transparency": "original RGBA, unchanged",
+      "split_method": "alpha projection, manually reviewed coordinates",
+      "split_edge_alpha_max": 1,
+      "accepted": true,
+      "notes": "保留全部非零透明度像素，包括低透明度残点；未去背景、缩放或补画。"
+    }
+  ],
+  "historical_manifest": "asset-manifest.json",
+  "historical_note": "本次仅处理当前raw中的图片，不覆盖历史成品；前两批清单分别为原版和v2。",
+  "validation": "11 exports reopened; exact RGBA comparison; all source nonzero alpha pixels and alpha sums retained; source SHA256 unchanged"
+}

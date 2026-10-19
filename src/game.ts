@@ -4,7 +4,7 @@ import { Monster } from './monster';
 import { createWorld, WORLD_RADIUS, type World } from './world';
 import { Combat } from './combat';
 import { CombatView } from './combat-view';
-import { renderUpgradeCards, setFusionIcons, renderBuildSummary, renderRunShop, renderRunResult, renderWeaponCooldowns, renderEncounterStatus } from './ui';
+import { renderUpgradeCards, setFusionIcons, renderBuildSummary, renderRunShop, renderRunResult, renderResultOutcome, renderWeaponCooldowns, renderHudWeaponIcons, renderEncounterStatus } from './ui';
 import { elementalClip, type ElementalFusionId } from './fusion-pixels';
 import type { SkillId } from './progression';
 import { RunFlow } from './run-flow';
@@ -174,7 +174,7 @@ export class Game {
       const button = event.target instanceof Element ? event.target.closest<HTMLButtonElement>('[data-buy]') : null;
       if (this.mode !== 'shop' || !button || button.disabled || !this.canShop()) return;
       const bought = this.run?.buy(Number(button.dataset.buy), button.dataset.shopToken!);
-      document.getElementById('shop-message')!.textContent = bought ? '购买完成，已应用到本局构筑。' : '商品已变化或金币不足，请重新选择。';
+      document.getElementById('shop-message')!.textContent = bought ? '已购买' : '商品已变化或金币不足';
       if (this.run) renderRunShop(this.run, this.combat);
       this.updateHUD();
     }, options);
@@ -595,7 +595,7 @@ export class Game {
       this.combatView.clear(); this.renderer.render(this.scene, this.camera);
       document.getElementById('hud')!.inert = true;
       document.getElementById('shop-screen')!.hidden = false;
-      document.getElementById('shop-message')!.textContent = `波次奖励 +${this.run.definition.reward} 金币。可以购物，也可以直接继续。`;
+      document.getElementById('shop-message')!.textContent = `本波奖励 +${this.run.definition.reward} 金币`;
       renderRunShop(this.run, this.combat); this.updateHUD();
       document.getElementById('shop-next')!.focus({ preventScroll: true }); this.wake(); return true;
     }
@@ -677,9 +677,10 @@ export class Game {
     document.getElementById('result-kills')!.textContent = String(this.combat.kills);
     document.getElementById('result-xp')!.textContent = String(this.combat.xp);
     const won = outcome === 'victory';
+    renderResultOutcome(won);
     document.getElementById('result-heading')!.textContent = this.run ? (won ? '六波挑战，通关！' : '冒险暂时结束。') : won ? '三波挑战，通关！' : '小火焰，休息一下。';
     document.getElementById('result-eyebrow')!.textContent = won ? '挑战完成' : '本局结束';
-    document.getElementById('result-message')!.textContent = won ? '走位、成长、冲锋，下一次挑战更高星级。' : '带着这次冒险的勇气，再出发吧。';
+    document.getElementById('result-message')!.textContent = won ? '三波挑战完成，再次出发。' : '生命耗尽，本次冒险结束。';
     if (this.run) document.getElementById('result-message')!.textContent = won ? '荆冠兽王已击败！构筑经受住了六波考验。' : this.run.failure === 'boss-timeout' ? '未能在 90 秒内击败荆冠兽王。调整构筑，再来挑战。' : `生命耗尽，止步第 ${this.run.wave} 波。换一种构筑再出发。`;
     renderRunResult(this.run, this.combat);
     const summary = document.getElementById('result-challenge')!;
@@ -702,6 +703,7 @@ export class Game {
   private updateHUD() {
     renderEncounterStatus(this.combat,this.run);
     renderWeaponCooldowns(this.combat);
+    renderHudWeaponIcons(this.combat);
     const wave = document.getElementById('run-wave')!, gold = document.getElementById('run-gold')!;
     wave.hidden = gold.hidden = !this.run;
     document.querySelector<HTMLElement>('.run-status .explore-label')!.hidden = !!this.run;
@@ -721,8 +723,8 @@ export class Game {
     document.getElementById('creature-name')!.textContent = CREATURES[species].name;
     document.getElementById('creature-code')!.textContent = '';
     const portrait = document.getElementById('creature-portrait') as HTMLImageElement;
-    portrait.hidden = species === 'yanrong';
-    if (species !== 'yanrong' && portrait.dataset.species !== species) { portrait.src = `${import.meta.env.BASE_URL}assets/pixel/${PIXEL_CREATURE_ASSETS[species]}`; portrait.dataset.species = species; }
+    portrait.hidden = false;
+    if (portrait.dataset.species !== species) { portrait.src = `${import.meta.env.BASE_URL}assets/pixel/${PIXEL_CREATURE_ASSETS[species]}`; portrait.dataset.species = species; }
     (document.querySelector('.health-panel svg.portrait') as SVGElement).style.display = species === 'yanrong' ? '' : 'none';
     if (title.textContent !== titleText) title.textContent = titleText;
     if (hint.textContent !== hintText) hint.textContent = hintText;
