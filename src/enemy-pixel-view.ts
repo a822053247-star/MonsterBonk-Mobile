@@ -111,7 +111,7 @@ export class EnemyPixelView {
   begin() { this.renderSerial++; for (const { mesh } of this.batches.values()) mesh.count = 0; }
   resetDirections() { this.directions.clear(); }
 
-  put(kind: PixelEnemyKind, x: number, z: number, bob: number, hurt: boolean, tint: string, lean = 0, squash = 0, scale = 1, opacity = 1, movement?: { id: number; dx: number; dz: number }) {
+  put(kind: PixelEnemyKind, x: number, z: number, bob: number, hurt: boolean | number, tint: string, lean = 0, squash = 0, scale = 1, opacity = 1, movement?: { id: number; dx: number; dz: number }) {
     const batch = this.batches.get(kind)!;
     if (batch.mesh.count >= COMBAT_LIMITS.enemies) return;
     const index = batch.mesh.count++, height = this.height(kind);
@@ -131,7 +131,7 @@ export class EnemyPixelView {
     this.pose.updateMatrix();
     batch.mesh.setMatrixAt(index, this.pose.matrix);
     batch.mesh.setColorAt(index, this.color.set(tint));
-    batch.hurt.setX(index, hurt ? 1 : 0);
+    batch.hurt.setX(index, typeof hurt === 'number' ? Math.max(0, Math.min(1, hurt)) : hurt ? 1 : 0);
     batch.fade.setX(index, opacity);
   }
 

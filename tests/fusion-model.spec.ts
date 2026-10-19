@@ -67,6 +67,8 @@ test('children can damage other enemies, never hit the original and never genera
 test('multishot and hit splitting coexist without replacing each other', () => {
   const { combat, learn } = fixture(); learn('multishot'); learn('split-on-hit');
   combat.spawn('tank', 5, 0, 0); combat.update(STEP, origin);
+  // Formal volleys fire their extra shots in sequence, not in the same tick.
+  combat.update(.08,origin);
   const shots = combat.projectiles.filter(s => s.active);
   expect(shots).toHaveLength(2); expect(shots.every(s => s.generation === 0 && s.burst)).toBe(true);
   expect(combat.stats.projectileCount).toBe(2); expect(combat.stats.splitOnHit).toBe(1);

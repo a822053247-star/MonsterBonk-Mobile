@@ -10,7 +10,7 @@ function fixture(species:SpeciesId,enabled=true,obstacles:{x:number;z:number;rad
   c.party=new PartySystem();c.party.reset([species]);c.fusionEnabled=enabled;c.reset();
   function learn(id:SkillId){const p=c.progression,candidates=p.skills.filter(s=>p.ranks[s.id]<s.maxRank),index=candidates.findIndex(s=>s.id===id);expect(index).toBeGreaterThanOrEqual(0);
     for(let i=candidates.length-1;i>0;i--)rolls.push(((i===index?0:i)+.1)/(i+1));p.gainExperience(p.threshold-p.experience);expect(p.offers).toContain(id);expect(c.chooseUpgrade(id)).toBe(true);}
-  function fire(){const target=c.spawn('tank',5,0,0)!;c.update(.001,origin);const shot=c.projectiles.find(s=>s.active)!;expect(shot).toBeTruthy();c.party!.leader.attackCooldown=999;return {target,shot};}
+  function fire(){const target=c.spawn('tank',5,0,0)!;c.update(.001,origin);const shot=c.projectiles.find(s=>s.active)!;expect(shot).toBeTruthy();c.party!.leader.attackCooldown=999;for(const a of c.runBuild.attacks)a.cooldown=999;return {target,shot};}
   function impact(shot:typeof c.projectiles[number],target:typeof c.enemies[number]){Object.assign(shot,{x:target.x,z:target.z,previousX:target.x,previousZ:target.z});c.update(.001,origin);}
   return {c,learn,fire,impact};
 }
@@ -45,17 +45,17 @@ test('leaf sweep pierces one additional enemy in the same tick, never hits the s
   expect(shot.hitIds).toEqual([target.id,second.id]);
 });
 
-for(const species of ['bubblesalamander','sproutspike'] as const)test(species+' chain flies to three fresh targets, respects cap and uses fixed subsequent damage',()=>{
+for(const species of ['bubblesalamander','sproutspike'] as const)test(species+' chain flies to two fresh targets, respects cap and uses fixed subsequent damage',()=>{
   const f=fixture(species);f.learn('chain');const {target,shot}=f.fire();
   const second=f.c.spawn('tank',7.4,0,0)!,third=f.c.spawn('tank',9.8,0,0)!,fourth=f.c.spawn('tank',12.2,0,0)!,fifth=f.c.spawn('tank',14.6,0,0)!;
-  f.impact(shot,target);expect(shot.active).toBe(true);expect(shot.bounces).toBe(2);expect(shot.hitIds).toEqual([target.id]);
+  f.impact(shot,target);expect(shot.active).toBe(true);expect(shot.bounces).toBe(1);expect(shot.hitIds).toEqual([target.id]);
   const initialDamage=species==='bubblesalamander'?15:16, multiplier=species==='bubblesalamander'?.65:.7;
   expect(shot.damage).toBeCloseTo(initialDamage*multiplier);
   if(species==='bubblesalamander'){const hp=second.hp;f.c.update(.09,origin);expect(second.hp).toBe(hp);}
   for(let i=0;i<100&&shot.active;i++)f.c.update(.01,origin);
-  expect(shot.hitIds).toEqual([target.id,second.id,third.id,fourth.id]);expect(shot.bounces).toBe(0);expect(shot.active).toBe(false);
-  for(const e of [second,third,fourth])expect(e.hp).toBeCloseTo(100-initialDamage*multiplier);
-  expect(fifth.hp).toBe(100);
+  expect(shot.hitIds).toEqual([target.id,second.id,third.id]);expect(shot.bounces).toBe(0);expect(shot.active).toBe(false);
+  for(const e of [second,third])expect(e.hp).toBeCloseTo(100-initialDamage*multiplier);
+  expect(fourth.hp).toBe(100);expect(fifth.hp).toBe(100);
 });
 
 test('scatter spawns three weaker children next tick, ignores original and never recursively splits',()=>{
@@ -66,16 +66,22 @@ test('scatter spawns three weaker children next tick, ignores original and never
   expect(f.c.childShots).toBe(3);expect(next.hp).toBeCloseTo(83.2);expect(target.hp).toBe(84);
 });
 
-for(const species of ['bubblesalamander','sproutspike'] as const)test(species+' simultaneous recipes alternate by volley and reset deterministically',()=>{
+for(const species of ['bubblesalamander','sproutspike'] as const)test(species+' simultaneous recipes coexist in every volley and reset deterministically',()=>{
   const f=fixture(species);f.learn(species==='bubblesalamander'?'area':'split-on-hit');f.learn('chain');
   const expected=species==='bubblesalamander'?['deep-bubble','chain-bubble']:['thorn-scatter','jump-thorn'];
-  const {shot}=f.fire();expect(shot.fusionIds).toEqual([expected[0]]);if(species==='sproutspike')expect(shot.bounces).toBe(0);
-  for(let i=1;i<4;i++){for(const s of f.c.projectiles)s.active=false;f.c.party!.leader.attackCooldown=0;f.c.update(.001,origin);const next=f.c.projectiles.find(s=>s.active)!;expect(next.fusionIds).toEqual([expected[i%2]]);}
-  f.c.reset();f.learn(species==='bubblesalamander'?'area':'split-on-hit');f.learn('chain');expect(f.fire().shot.fusionIds).toEqual([expected[0]]);
+  const {shot}=f.fire();expect(shot.fusionIds).toEqual(expected);expect(shot.bounces).toBe(2);
+  for(let i=1;i<4;i++){
+    for(const s of f.c.projectiles)s.active=false;
+    for(const a of f.c.runBuild.attacks)a.cooldown=0;
+    // Respect the shared volley gap instead of bypassing only the old party clock.
+    let next; for(let tick=0;tick<30&&!next;tick++){f.c.update(.01,origin);next=f.c.projectiles.find(s=>s.active);}
+    expect(next?.fusionIds).toEqual(expected);
+  }
+  f.c.reset();f.learn(species==='bubblesalamander'?'area':'split-on-hit');f.learn('chain');expect(f.fire().shot.fusionIds).toEqual(expected);
 });
 
 test('cover blocks elemental impacts and chain targets; full pools degrade safely without dropping direct damage',()=>{
-  const blocked=fixture('sproutspike',true,[{x:7,z:0,radius:.8}]);blocked.learn('chain');const b=blocked.fire();blocked.c.spawn('tank',9,0,0);blocked.impact(b.shot,b.target);expect(b.shot.bounces).toBe(3);
+  const blocked=fixture('sproutspike',true,[{x:7,z:0,radius:.8}]);blocked.learn('chain');const b=blocked.fire();blocked.c.spawn('tank',9,0,0);blocked.impact(b.shot,b.target);expect(b.shot.bounces).toBe(2);
   const f=fixture('sproutspike');f.learn('split-on-hit');const {target,shot}=f.fire();for(const s of f.c.projectiles)if(s!==shot)Object.assign(s,{active:true,life:10,bornTick:0,generation:0,x:-25,z:0,vx:0,vz:0});
   for(const e of f.c.effects)Object.assign(e,{active:true,time:10,duration:10});f.impact(shot,target);expect(target.hp).toBe(84);expect(f.c.childShots).toBe(0);expect(f.c.projectiles.length).toBe(COMBAT_LIMITS.projectiles);
 });
@@ -120,8 +126,11 @@ test('deep AoE respects cover and scatter angles, range and single-hit children 
  for(const kid of kids){expect(kid.distance).toBeCloseTo(3);expect(kid.active).toBe(false);expect(kid.pierces).toBe(0);}
 });
 
-test('multi-shot keeps one chosen recipe for each volley without advancing the attack clock',()=>{
+test('staggered multi-shot keeps compatible recipes on every shot in its volley',()=>{
  const f=fixture('sproutspike');f.learn('split-on-hit');f.learn('chain');f.learn('multishot');const {shot}=f.fire();
  expect(f.c.projectiles.filter(s=>s.active).every(s=>s.fusionIds?.[0]===shot.fusionIds?.[0])).toBe(true);
- expect(f.c.projectiles.filter(s=>s.active)).toHaveLength(2);expect(f.c.childShots).toBe(0);
+ expect(f.c.projectiles.filter(s=>s.active)).toHaveLength(1);
+ f.c.update(.08,origin);
+ expect(f.c.projectiles.filter(s=>s.active)).toHaveLength(2);
+ expect(f.c.projectiles.filter(s=>s.active).every(s=>JSON.stringify(s.fusionIds)===JSON.stringify(shot.fusionIds))).toBe(true);expect(f.c.childShots).toBe(0);
 });

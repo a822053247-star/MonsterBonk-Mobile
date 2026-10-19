@@ -24,7 +24,7 @@ export class FirePixelView {
     const geometry = new THREE.PlaneGeometry(1, 1);
     geometry.setAttribute('instanceFrame', this.frames);
     this.frames.setUsage(THREE.DynamicDrawUsage);
-    const material = new THREE.MeshBasicMaterial({ color: '#ffffff', alphaTest: 24 / 255, transparent: false, depthWrite: true, depthTest: true, toneMapped: false });
+    const material = new THREE.MeshBasicMaterial({ color: '#ffffff', alphaTest: 24 / 255, transparent: true, depthWrite: false, depthTest: true, toneMapped: false });
     material.onBeforeCompile = shader => {
       shader.vertexShader = 'attribute float instanceFrame;\n' + shader.vertexShader;
       shader.vertexShader = shader.vertexShader.replace('#include <uv_vertex>', `#include <uv_vertex>

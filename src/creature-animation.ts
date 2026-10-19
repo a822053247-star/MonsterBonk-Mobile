@@ -44,7 +44,7 @@ export function screenFacing(vx: number, vz: number, basis: ScreenBasis, previou
   }
   return FACING_ORDER[(Math.round(angle / sector) + 8) % 8];
 }
-export function clipFrame(clip: CreatureClip, time: number) {
+export function clipFrame(clip: Pick<CreatureClip, 'fps' | 'startFrame' | 'loop' | 'frameCount'>, time: number) {
   const frame = Math.floor(Math.max(0, time) * clip.fps + 1e-9);
   return clip.startFrame + (clip.loop ? frame % clip.frameCount : Math.min(clip.frameCount - 1, frame));
 }

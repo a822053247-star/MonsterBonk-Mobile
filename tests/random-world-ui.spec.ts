@@ -38,6 +38,15 @@ test('restart preserves the map; new adventures vary it without growing GPU reso
   const errors: string[] = [];
   page.on('pageerror', error => errors.push(error.message));
   await open(page);
+  // Measure steady-state GPU ownership, not whichever PNGs won the loading race.
+  await page.waitForFunction(() => (window as any).game.inspect().enemyVisual.batches.every((b:any)=>b.loaded));
+  await page.evaluate(()=>{
+    const g=(window as any).game;g.sleep();
+    const warm=['normal','fast','tank'].map((kind,i)=>g.combat.spawn(kind,(i-1)*3,4,0));
+    g.combatView.render(1,g.visualTime,g.position);g.renderer.render(g.scene,g.camera);
+    for(const enemy of warm)if(enemy)enemy.active=false;
+    g.combatView.clear();g.wake();
+  });
   const first = await snapshot(page);
   await page.locator('#pause').click(); await page.locator('#restart').click();
   const retry = await snapshot(page);

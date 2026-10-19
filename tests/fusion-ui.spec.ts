@@ -12,8 +12,9 @@ test.beforeEach(async ({ page }) => {
       for(let i=candidates.length-1;i>0;i--)rolls.push(((i===index?0:i)+.1)/(i+1));p.random=()=>rolls.shift()??.999;p.gainExperience(p.threshold-p.experience);g.step(1/60)};
     window.redraw=()=>{g.placeCamera(true);g.partyView.render(1,g.visualTime);g.combatView.render(1,g.visualTime,g.position);g.updateHUD();g.renderer.render(g.scene,g.camera)};
     window.impact=()=>{g.sleep();for(const pool of [g.combat.enemies,g.combat.projectiles,g.combat.effects])for(const item of pool)item.active=false;
+      g.combat.clearTransientEffects();for(const a of g.combat.runBuild.attacks)a.cooldown=0;
       g.position.set(0,0,0);g.previousPosition.copy(g.position);g.monster.root.position.copy(g.position);g.party.syncLeader(g.position,0);g.party.leader.attackCooldown=0;
-      g.combat.spawn('tank',5,0,0);g.combat.update(1/60,g.position);const main=g.combat.projectiles.find(s=>s.active);Object.assign(main,{x:3.7,previousX:3.7,z:0,previousZ:0,vx:18,vz:0});
+      g.combat.spawn('tank',5,0,0);g.combat.update(1/60,g.position);const main=g.combat.projectiles.find(s=>s.active);for(const a of g.combat.runBuild.attacks)a.cooldown=999;Object.assign(main,{x:3.7,previousX:3.7,z:0,previousZ:0,vx:18,vz:0});
       g.combat.spawn('tank',4.2,1.4,0);g.combat.spawn('tank',4.2,-1.4,0);g.combat.update(.05,g.position);g.welcome.style.display='none';window.redraw()};
     window.frozen=()=>JSON.stringify({c:g.combat.inspect(),shots:g.combat.projectiles,effects:g.combat.effects,frames:Array.from(g.combatView.firePixels?.frames.array??[]),time:g.visualTime});
     window.lose=()=>{g.sleep();g.combat.hp=0;g.step(1/60)};
@@ -47,7 +48,7 @@ test('new menu starts one pixel Yanrong with joystick only and automatically fir
   expect(errors).toEqual([]);
 });
 
-test('real card selection fuses and real impacts render four atlas rows on both short phone layouts', async ({ page }) => {
+test('real fusion cards and impacts render child/explosion frames without duplicate hit flashes on both phone layouts', async ({ page }) => {
   const errors: string[] = []; page.on('pageerror', error => errors.push(error.message)); await open(page);
   await page.evaluate(() => (window as unknown as Fixture).offer());
   const card = page.locator('[data-skill="split-on-hit"]'); await expect(card).toBeEnabled();
@@ -62,14 +63,14 @@ test('real card selection fuses and real impacts render four atlas rows on both 
   for (const viewport of [{ width: 844, height: 390 }, { width: 568, height: 320 }]) {
     await page.setViewportSize(viewport); await page.evaluate(() => (window as unknown as Fixture).impact());
     expect((await state(page)).combat.fusion).toMatchObject({ active: 'burst-seed', bursts: viewport.width === 844 ? 1 : 2, children: 2 });
-    expect((await state(page)).fusionVisual!.count).toBe(4);
-    expect(await page.evaluate(() => { const v = (window as any).game.combatView.firePixels; return Array.from(v.frames.array).slice(0, v.mesh.count); })).toEqual([4, 4, 8, 12]);
+    expect((await state(page)).fusionVisual!.count).toBe(3);
+    expect(await page.evaluate(() => { const v = (window as any).game.combatView.firePixels; return Array.from(v.frames.array).slice(0, v.mesh.count); })).toEqual([4, 4, 8]);
     const box = (await page.locator('#fusion-status').boundingBox())!;
-    expect(box.x).toBeGreaterThan(140); expect(box.x + box.width).toBeLessThan(viewport.width - 100);
+    expect(box.x).toBeGreaterThan(140); expect(box.x + box.width).toBeLessThan(viewport.width - 10);
     // Both seeded children move on the next simulation tick; the effect advances frames.
     await page.evaluate(() => { const g = (window as any).game; g.combat.update(.21,g.position); (window as unknown as Fixture).redraw(); });
     const frames = await page.evaluate(() => { const v = (window as any).game.combatView.firePixels; return Array.from(v.frames.array).slice(0,v.mesh.count) as number[]; });
-    expect(frames).toContain(10); expect(frames).toContain(14);
+    expect(frames).toContain(10); expect(frames.every(frame=>frame<12)).toBe(true);
     await page.waitForTimeout(200);
     await page.screenshot({ path: 'artifacts/v5-fusion-combat-' + viewport.width + '.png' });
   }

@@ -1,0 +1,538 @@
+[
+  {
+    "build": "specialist",
+    "seed": 17,
+    "policy": "fixed-circle",
+    "outcome": "won",
+    "wave": 6,
+    "reason": null,
+    "hp": 176,
+    "maxHp": 200,
+    "combatSeconds": 384,
+    "bossHp": 0,
+    "kills": 342,
+    "choiceCount": 23,
+    "coins": 460,
+    "peakShots": 16,
+    "peakEnemies": 6,
+    "peakHostile": 5,
+    "weapons": [
+      {
+        "id": "spark",
+        "level": 5
+      }
+    ],
+    "relics": [
+      "specialist-badge"
+    ]
+  },
+  {
+    "build": "specialist",
+    "seed": 17,
+    "policy": "reverse-on-warning",
+    "outcome": "won",
+    "wave": 6,
+    "reason": null,
+    "hp": 200,
+    "maxHp": 200,
+    "combatSeconds": 380,
+    "bossHp": 0,
+    "kills": 341,
+    "choiceCount": 23,
+    "coins": 358,
+    "peakShots": 16,
+    "peakEnemies": 6,
+    "peakHostile": 5,
+    "weapons": [
+      {
+        "id": "spark",
+        "level": 5
+      }
+    ],
+    "relics": [
+      "specialist-badge",
+      "overload-core"
+    ]
+  },
+  {
+    "build": "mixed",
+    "seed": 17,
+    "policy": "fixed-circle",
+    "outcome": "won",
+    "wave": 6,
+    "reason": null,
+    "hp": 31,
+    "maxHp": 120,
+    "combatSeconds": 397,
+    "bossHp": 0,
+    "kills": 346,
+    "choiceCount": 23,
+    "coins": 514,
+    "peakShots": 14,
+    "peakEnemies": 8,
+    "peakHostile": 5,
+    "weapons": [
+      {
+        "id": "spark",
+        "level": 5
+      },
+      {
+        "id": "bubble",
+        "level": 5
+      }
+    ],
+    "relics": [
+      "tidal-pearl"
+    ]
+  },
+  {
+    "build": "mixed",
+    "seed": 17,
+    "policy": "reverse-on-warning",
+    "outcome": "won",
+    "wave": 6,
+    "reason": null,
+    "hp": 200,
+    "maxHp": 200,
+    "combatSeconds": 431,
+    "bossHp": 0,
+    "kills": 349,
+    "choiceCount": 22,
+    "coins": 459,
+    "peakShots": 11,
+    "peakEnemies": 12,
+    "peakHostile": 5,
+    "weapons": [
+      {
+        "id": "spark",
+        "level": 4
+      },
+      {
+        "id": "bubble",
+        "level": 5
+      }
+    ],
+    "relics": [
+      "tidal-pearl"
+    ]
+  },
+  {
+    "build": "chain",
+    "seed": 17,
+    "policy": "fixed-circle",
+    "outcome": "won",
+    "wave": 6,
+    "reason": null,
+    "hp": 134,
+    "maxHp": 200,
+    "combatSeconds": 402,
+    "bossHp": 0,
+    "kills": 342,
+    "choiceCount": 23,
+    "coins": 478,
+    "peakShots": 16,
+    "peakEnemies": 8,
+    "peakHostile": 5,
+    "weapons": [
+      {
+        "id": "leaf",
+        "level": 3
+      }
+    ],
+    "relics": [
+      "echo-rune"
+    ]
+  },
+  {
+    "build": "chain",
+    "seed": 17,
+    "policy": "reverse-on-warning",
+    "outcome": "won",
+    "wave": 6,
+    "reason": null,
+    "hp": 168,
+    "maxHp": 200,
+    "combatSeconds": 398,
+    "bossHp": 0,
+    "kills": 347,
+    "choiceCount": 23,
+    "coins": 554,
+    "peakShots": 15,
+    "peakEnemies": 7,
+    "peakHostile": 5,
+    "weapons": [
+      {
+        "id": "leaf",
+        "level": 5
+      }
+    ],
+    "relics": [
+      "echo-rune"
+    ]
+  },
+  {
+    "build": "specialist",
+    "seed": 63,
+    "policy": "fixed-circle",
+    "outcome": "won",
+    "wave": 6,
+    "reason": null,
+    "hp": 188,
+    "maxHp": 200,
+    "combatSeconds": 382,
+    "bossHp": 0,
+    "kills": 334,
+    "choiceCount": 23,
+    "coins": 402,
+    "peakShots": 15,
+    "peakEnemies": 7,
+    "peakHostile": 5,
+    "weapons": [
+      {
+        "id": "spark",
+        "level": 5
+      }
+    ],
+    "relics": [
+      "specialist-badge"
+    ]
+  },
+  {
+    "build": "specialist",
+    "seed": 63,
+    "policy": "reverse-on-warning",
+    "outcome": "won",
+    "wave": 6,
+    "reason": null,
+    "hp": 200,
+    "maxHp": 200,
+    "combatSeconds": 393,
+    "bossHp": 0,
+    "kills": 343,
+    "choiceCount": 23,
+    "coins": 419,
+    "peakShots": 15,
+    "peakEnemies": 6,
+    "peakHostile": 5,
+    "weapons": [
+      {
+        "id": "spark",
+        "level": 5
+      }
+    ],
+    "relics": [
+      "specialist-badge",
+      "overload-core"
+    ]
+  },
+  {
+    "build": "mixed",
+    "seed": 63,
+    "policy": "fixed-circle",
+    "outcome": "won",
+    "wave": 6,
+    "reason": null,
+    "hp": 164,
+    "maxHp": 200,
+    "combatSeconds": 396,
+    "bossHp": 0,
+    "kills": 341,
+    "choiceCount": 23,
+    "coins": 376,
+    "peakShots": 12,
+    "peakEnemies": 8,
+    "peakHostile": 5,
+    "weapons": [
+      {
+        "id": "spark",
+        "level": 4
+      },
+      {
+        "id": "bubble",
+        "level": 5
+      }
+    ],
+    "relics": [
+      "tidal-pearl"
+    ]
+  },
+  {
+    "build": "mixed",
+    "seed": 63,
+    "policy": "reverse-on-warning",
+    "outcome": "won",
+    "wave": 6,
+    "reason": null,
+    "hp": 144,
+    "maxHp": 160,
+    "combatSeconds": 436,
+    "bossHp": 0,
+    "kills": 365,
+    "choiceCount": 23,
+    "coins": 542,
+    "peakShots": 11,
+    "peakEnemies": 7,
+    "peakHostile": 5,
+    "weapons": [
+      {
+        "id": "spark",
+        "level": 5
+      },
+      {
+        "id": "bubble",
+        "level": 5
+      }
+    ],
+    "relics": []
+  },
+  {
+    "build": "chain",
+    "seed": 63,
+    "policy": "fixed-circle",
+    "outcome": "won",
+    "wave": 6,
+    "reason": null,
+    "hp": 81,
+    "maxHp": 180,
+    "combatSeconds": 395,
+    "bossHp": 0,
+    "kills": 342,
+    "choiceCount": 23,
+    "coins": 480,
+    "peakShots": 15,
+    "peakEnemies": 7,
+    "peakHostile": 5,
+    "weapons": [
+      {
+        "id": "leaf",
+        "level": 5
+      }
+    ],
+    "relics": [
+      "echo-rune"
+    ]
+  },
+  {
+    "build": "chain",
+    "seed": 63,
+    "policy": "reverse-on-warning",
+    "outcome": "lost",
+    "wave": 6,
+    "reason": "boss-timeout",
+    "hp": 134,
+    "maxHp": 140,
+    "combatSeconds": 455,
+    "bossHp": 661.6665599999966,
+    "kills": 363,
+    "choiceCount": 23,
+    "coins": 573,
+    "peakShots": 20,
+    "peakEnemies": 9,
+    "peakHostile": 5,
+    "weapons": [
+      {
+        "id": "leaf",
+        "level": 5
+      },
+      {
+        "id": "spark",
+        "level": 1
+      }
+    ],
+    "relics": [
+      "echo-rune"
+    ]
+  },
+  {
+    "build": "specialist",
+    "seed": 211,
+    "policy": "fixed-circle",
+    "outcome": "won",
+    "wave": 6,
+    "reason": null,
+    "hp": 164,
+    "maxHp": 200,
+    "combatSeconds": 381,
+    "bossHp": 0,
+    "kills": 345,
+    "choiceCount": 23,
+    "coins": 454,
+    "peakShots": 15,
+    "peakEnemies": 5,
+    "peakHostile": 5,
+    "weapons": [
+      {
+        "id": "spark",
+        "level": 5
+      }
+    ],
+    "relics": [
+      "specialist-badge"
+    ]
+  },
+  {
+    "build": "specialist",
+    "seed": 211,
+    "policy": "reverse-on-warning",
+    "outcome": "won",
+    "wave": 6,
+    "reason": null,
+    "hp": 200,
+    "maxHp": 200,
+    "combatSeconds": 383,
+    "bossHp": 0,
+    "kills": 343,
+    "choiceCount": 23,
+    "coins": 358,
+    "peakShots": 15,
+    "peakEnemies": 6,
+    "peakHostile": 5,
+    "weapons": [
+      {
+        "id": "spark",
+        "level": 5
+      }
+    ],
+    "relics": [
+      "specialist-badge",
+      "overload-core"
+    ]
+  },
+  {
+    "build": "mixed",
+    "seed": 211,
+    "policy": "fixed-circle",
+    "outcome": "won",
+    "wave": 6,
+    "reason": null,
+    "hp": 140,
+    "maxHp": 200,
+    "combatSeconds": 386,
+    "bossHp": 0,
+    "kills": 341,
+    "choiceCount": 23,
+    "coins": 437,
+    "peakShots": 17,
+    "peakEnemies": 7,
+    "peakHostile": 5,
+    "weapons": [
+      {
+        "id": "spark",
+        "level": 5
+      },
+      {
+        "id": "bubble",
+        "level": 5
+      },
+      {
+        "id": "leaf",
+        "level": 1
+      }
+    ],
+    "relics": [
+      "shattered-core"
+    ]
+  },
+  {
+    "build": "mixed",
+    "seed": 211,
+    "policy": "reverse-on-warning",
+    "outcome": "won",
+    "wave": 6,
+    "reason": null,
+    "hp": 194,
+    "maxHp": 200,
+    "combatSeconds": 432,
+    "bossHp": 0,
+    "kills": 360,
+    "choiceCount": 23,
+    "coins": 467,
+    "peakShots": 16,
+    "peakEnemies": 10,
+    "peakHostile": 5,
+    "weapons": [
+      {
+        "id": "spark",
+        "level": 4
+      },
+      {
+        "id": "bubble",
+        "level": 5
+      },
+      {
+        "id": "leaf",
+        "level": 1
+      }
+    ],
+    "relics": [
+      "tidal-pearl",
+      "overload-core"
+    ]
+  },
+  {
+    "build": "chain",
+    "seed": 211,
+    "policy": "fixed-circle",
+    "outcome": "won",
+    "wave": 6,
+    "reason": null,
+    "hp": 97,
+    "maxHp": 180,
+    "combatSeconds": 391,
+    "bossHp": 0,
+    "kills": 341,
+    "choiceCount": 23,
+    "coins": 516,
+    "peakShots": 19,
+    "peakEnemies": 9,
+    "peakHostile": 5,
+    "weapons": [
+      {
+        "id": "leaf",
+        "level": 5
+      },
+      {
+        "id": "spark",
+        "level": 2
+      }
+    ],
+    "relics": [
+      "echo-rune"
+    ]
+  },
+  {
+    "build": "chain",
+    "seed": 211,
+    "policy": "reverse-on-warning",
+    "outcome": "won",
+    "wave": 6,
+    "reason": null,
+    "hp": 158,
+    "maxHp": 160,
+    "combatSeconds": 437,
+    "bossHp": 0,
+    "kills": 358,
+    "choiceCount": 23,
+    "coins": 580,
+    "peakShots": 17,
+    "peakEnemies": 10,
+    "peakHostile": 5,
+    "weapons": [
+      {
+        "id": "leaf",
+        "level": 5
+      },
+      {
+        "id": "spark",
+        "level": 1
+      },
+      {
+        "id": "bubble",
+        "level": 1
+      }
+    ],
+    "relics": [
+      "echo-rune"
+    ]
+  }
+]

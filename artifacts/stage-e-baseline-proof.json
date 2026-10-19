@@ -1,0 +1,20 @@
+{
+  "checkpoint": "MonsterBonk-Mobile-before-stage-E-20261019-163959.zip",
+  "baselinePort": 5174,
+  "reproducedTests": [
+    "  x  1 [chromium] › tests\\elemental-fusion-model.spec.ts:69:66 › bubblesalamander simultaneous recipes coexist in every volley and reset deterministically (19ms)",
+    "  x  2 [chromium] › tests\\elemental-fusion-model.spec.ts:69:66 › sproutspike simultaneous recipes coexist in every volley and reset deterministically (19ms)",
+    "  x  3 [chromium] › tests\\elemental-fusion-model.spec.ts:123:1 › multi-shot keeps one chosen recipe for each volley without advancing the attack clock (19ms)",
+    "  x  4 [chromium] › tests\\elemental-fusion-ui.spec.ts:14:1 › deep atlas loads, plays flight and one-shot impact, damages and slows in actual game (4.4s)",
+    "  x  1 [chromium] › tests\\elemental-fusion-ui.spec.ts:80:1 › changing only visual FPS preserves actual combat state; repeated starts reuse the elemental GPU batch (4.1s)",
+    "  x  2 [chromium] › tests\\enemy-motion-ui.spec.ts:23:1 › real pursuit on both phone layouts freezes on pause and reuses cached batches after restart (3.6s)",
+    "  x  3 [chromium] › tests\\enemy-motion-ui.spec.ts:32:52 › normal shows eight distinct GPU headings with independent mirrored UVs and holds direction at rest (3.7s)",
+    "  x  4 [chromium] › tests\\enemy-motion-ui.spec.ts:32:52 › fast shows eight distinct GPU headings with independent mirrored UVs and holds direction at rest (3.5s)",
+    "  x  5 [chromium] › tests\\enemy-motion-ui.spec.ts:32:52 › tank shows eight distinct GPU headings with independent mirrored UVs and holds direction at rest (3.6s)",
+    "  x  6 [chromium] › tests\\fusion-model.spec.ts:67:1 › multishot and hit splitting coexist without replacing each other (15ms)",
+    "  x  7 [chromium] › tests\\fusion-ui.spec.ts:50:1 › real card selection fuses and real impacts render four atlas rows on both short phone layouts (4.3s)",
+    "  x  1 [chromium] › tests\\three-weapon-ui.spec.ts:3:1 › grass creature acquires fire/water through upgrade cards, shows all five fusions and restarts cleanly (6.3s)",
+    "  x  2 [chromium] › tests\\three-weapon.spec.ts:32:1 › all three creatures acquire all weapons and five fusions through real upgrades (21ms)",
+    "  x  3 [chromium] › tests\\three-weapon.spec.ts:98:1 › 24-slot saturation preserves direct damage and main priority; death/restart clear all weapons and effects (30ms)"
+  ]
+}

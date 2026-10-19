@@ -4,9 +4,11 @@ import { Monster } from './monster';
 import { createWorld, WORLD_RADIUS, type World } from './world';
 import { Combat } from './combat';
 import { CombatView } from './combat-view';
-import { renderUpgradeCards, setFusionIcons } from './ui';
+import { renderUpgradeCards, setFusionIcons, renderBuildSummary, renderRunShop, renderRunResult, renderWeaponCooldowns, renderEncounterStatus } from './ui';
 import { elementalClip, type ElementalFusionId } from './fusion-pixels';
 import type { SkillId } from './progression';
+import { RunFlow } from './run-flow';
+import { ATTACKS } from './run-build';
 import { AdaptiveQuality, loadPreferences, savePreferences, type QualityMode } from './quality';
 import { GameAudio } from './audio';
 import { resize25DCamera, screenToGround, VIEW_25D } from './camera-25d';
@@ -16,7 +18,7 @@ import { PartySystem, CREATURES, type SpeciesId } from './party';
 import { PIXEL_CREATURE_ASSETS } from './pixel-sprite';
 import { PartyView } from './party-view';
 
-type Mode = 'menu' | 'playing' | 'paused' | 'gameover' | 'upgrading' | 'settings';
+type Mode = 'menu' | 'playing' | 'paused' | 'gameover' | 'upgrading' | 'settings' | 'shop';
 const STEP = 1 / 60;
 const DASH_COOLDOWN = 1.4;
 
@@ -48,6 +50,7 @@ export class Game {
   private mode: Mode = 'menu';
   private runRuleset: Ruleset = 'classic';
   private challenge?: Challenge;
+  private run?: RunFlow;
   private outcome: 'victory' | 'defeat' | null = null;
   private trialHornMounted = false;
   private dashAttack: DashStep = { active: false, started: false, fromX: 0, fromZ: 0, dx: 0, dz: 1 };
@@ -166,6 +169,29 @@ export class Game {
     click('gameover-restart', () => this.start());
     click('gameover-menu', () => this.showMenu());
     click('upgrade-menu', () => this.showMenu());
+    click('shop-menu', () => this.showMenu());
+    document.getElementById('shop-items')!.addEventListener('click', event => {
+      const button = event.target instanceof Element ? event.target.closest<HTMLButtonElement>('[data-buy]') : null;
+      if (this.mode !== 'shop' || !button || button.disabled || !this.canShop()) return;
+      const bought = this.run?.buy(Number(button.dataset.buy), button.dataset.shopToken!);
+      document.getElementById('shop-message')!.textContent = bought ? '购买完成，已应用到本局构筑。' : '商品已变化或金币不足，请重新选择。';
+      if (this.run) renderRunShop(this.run, this.combat);
+      this.updateHUD();
+    }, options);
+    click('shop-refresh', () => {
+      if (!this.canShop() || !this.run) return;
+      const token = document.getElementById('shop-refresh')!.dataset.shopToken!;
+      const refreshed = this.run.refresh(token);
+      document.getElementById('shop-message')!.textContent = refreshed ? '商品已刷新。' : '暂时无法刷新。';
+      renderRunShop(this.run, this.combat); this.updateHUD();
+    });
+    click('shop-next', () => {
+      if (!this.canShop() || !this.run?.nextWave(document.getElementById('shop-next')!.dataset.shopToken!, this.combat)) return;
+      document.getElementById('shop-screen')!.hidden = true;
+      document.getElementById('hud')!.inert = false;
+      this.mode = 'playing'; this.input.setEnabled(true);
+      this.audio.setActive(true); this.audio.unlock(); this.updateHUD(); this.wake();
+    });
     const upgradeScreen = document.getElementById('upgrade-screen')!;
     const cardFrom = (event: Event) => (event.target instanceof Element ? event.target.closest<HTMLButtonElement>('.skill-card') : null);
     upgradeScreen.addEventListener('pointerdown', (event) => {
@@ -215,7 +241,8 @@ export class Game {
         this.wake();
       }
     }, options);
-    window.addEventListener('blur', () => { this.audio.setActive(false); this.cardDown = this.armedCard = null; this.pause('窗口失去焦点，游戏已暂停。'); }, options);
+    window.addEventListener('focus', () => { if (this.mode === 'shop') this.wake(); }, options);
+    window.addEventListener('blur', () => { if (this.mode === 'shop') this.sleep(); this.audio.setActive(false); this.cardDown = this.armedCard = null; this.pause('窗口失去焦点，游戏已暂停。'); }, options);
     window.addEventListener('pagehide', () => { this.pause('游戏已暂停，准备好后继续。'); this.sleep(); }, options);
     window.addEventListener('pageshow', () => this.wake(), options);
     window.addEventListener('keydown', (event) => {
@@ -291,7 +318,7 @@ export class Game {
   private syncCreatureSelection() {
     const definition = CREATURES[this.selectedSpecies];
     for (const button of document.querySelectorAll<HTMLButtonElement>('[data-creature]')) button.setAttribute('aria-pressed', String(button.dataset.creature === this.selectedSpecies));
-    document.querySelector('.menu-description')!.textContent = `${definition.name}出战 · 自动迎战，升级组合你的魔法。`;
+    document.querySelector('.menu-description')!.textContent = `${definition.name}出战 · 六波自动战斗，波次间购物构筑。`;
     document.getElementById('start-selected-creature')!.firstChild!.textContent = `${definition.name} · 开始挑战 `;
     document.getElementById('choose-creature')!.setAttribute('aria-label', `选择出战幻兽，当前${definition.name}`);
   }
@@ -328,6 +355,10 @@ export class Game {
     this.jumpHeight = this.previousJump = this.jumpVelocity = 0;
     this.elapsed = this.cooldown = this.dashRemaining = this.distance = 0;
     this.combat.reset(ruleset);
+    this.run = this.combat.usesRunBuild ? new RunFlow() : undefined;
+    this.combat.automaticSpawning = !this.run;
+    this.run?.prepare(this.combat,this.position);
+    document.getElementById('shop-screen')!.hidden = true;
     this.party.syncLeader(this.position, this.facing);
     this.party.placeCompanions(this.world.obstacles, WORLD_RADIUS - 0.7);
     this.partyView.setAnimatedLeader((this.combat.fusionEnabled || this.prototypeVariant === 'legacy-party') && new URLSearchParams(window.location.search).get('creatureAnimation') !== 'static');
@@ -353,7 +384,7 @@ export class Game {
     (document.activeElement as HTMLElement | null)?.blur();
     this.welcome.classList.remove('faded');
     this.welcome.querySelector('h2')!.textContent = this.combat.fusionEnabled && species !== 'yanrong' ? `${CREATURES[species].name}，准备出发。` : this.combat.fusionEnabled ? '一簇火花，生长成烈焰。' : partyPrototype ? '草场已就绪，出发吧。' : this.challenge ? '三波迎战，冲出一条路。' : this.combat.isTrial ? '犄角已就绪，冲出一条路。' : '小小魔法，准备就绪。';
-    this.welcome.querySelector('p')!.textContent = this.combat.fusionEnabled && species !== 'yanrong' ? `${CREATURES[species].name}出战 · 摇杆移动 · 自动攻击 · 升级三选一` : this.combat.fusionEnabled ? '击败敌人收集经验 · 选择命中分裂，自动融合爆裂火种' : partyPrototype && variant === 'legacy-party' ? '三兽兼容模式 · 主控移动，伙伴跟随并自动攻击' : partyPrototype ? '摇杆操控焰绒 · 自动攻击 · 沿泥路绕过林地与水岸' : this.challenge ? '击败三波即可通关 · 冲锋命中 6 次、打断 2 次各加一星' : this.combat.isTrial ? '冲刺命中可击退和打断 · 留意黄色扑击预警线' : '移动躲避敌人，焰绒会自动施法 · 靠近拾取经验';
+    this.welcome.querySelector('p')!.textContent = this.combat.fusionEnabled && species !== 'yanrong' ? `${CREATURES[species].name}出战 · 摇杆移动 · 自动攻击 · 升级三选一` : this.combat.fusionEnabled ? '六波自动战斗 · 升级形成融合 · 波次间购物与恢复' : partyPrototype && variant === 'legacy-party' ? '三兽兼容模式 · 主控移动，伙伴跟随并自动攻击' : partyPrototype ? '摇杆操控焰绒 · 自动攻击 · 沿泥路绕过林地与水岸' : this.challenge ? '击败三波即可通关 · 冲锋命中 6 次、打断 2 次各加一星' : this.combat.isTrial ? '冲刺命中可击退和打断 · 留意黄色扑击预警线' : '移动躲避敌人，焰绒会自动施法 · 靠近拾取经验';
     this.accumulator = 0;
     this.placeCamera(true);
     this.updateHUD();
@@ -385,6 +416,8 @@ export class Game {
   }
 
   private showMenu() {
+    this.run = undefined; this.combat.automaticSpawning = true;
+    document.getElementById('shop-screen')!.hidden = true;
     this.world.setSample(false);
     this.combat.useNavigation = false;
     this.monster.root.visible = true;
@@ -448,7 +481,9 @@ export class Game {
   private step(dt: number) {
     if (this.mode !== 'playing') return;
     this.combat.useNavigation = this.partyPrototype && this.world.sampleActive;
-    if (this.combat.progression.awaitingChoice) { this.openUpgrade(); return; }
+    if (this.combat.progression.awaitingChoice && !this.combat.encounters.dying) { this.openUpgrade(); return; }
+    if (this.run && this.run.remaining <= 1e-8) { this.run.resolveBoundary(this.combat); if (this.syncRunPhase()) return; }
+    this.run?.prepare(this.combat,this.position);
     this.previousPosition.copy(this.position);
     this.previousJump = this.jumpHeight;
     if (this.input.consumeJump() && !this.partyPrototype && this.jumpHeight === 0) { this.jumpVelocity = 6; this.audio.play('jump'); }
@@ -536,14 +571,37 @@ export class Game {
     if (this.combat.hp < hp) this.audio.play('hurt');
     if (this.combat.hp === 0) this.endRun();
     else {
+      if (this.run) {
+        this.run.update(dt, this.combat, this.position);
+        if (this.syncRunPhase()) return;
+      }
       if (this.challenge) {
         const wave = this.challenge.wave, phase = this.challenge.phase;
         this.challenge.update(dt, this.combat, this.position);
         if (this.challenge.wave !== wave || this.challenge.phase !== phase) this.audio.play('level');
         if (this.challenge.phase === 'won') this.endRun('victory');
       }
-      if (this.mode === 'playing' && this.combat.progression.awaitingChoice) this.openUpgrade();
+      if (this.mode === 'playing' && this.combat.progression.awaitingChoice && !this.combat.encounters.dying) this.openUpgrade();
     }
+  }
+
+  private canShop() { return this.mode === 'shop' && !document.hidden && !this.portrait && !this.contextLost; }
+
+  private syncRunPhase() {
+    if (!this.run) return false;
+    if (this.run.phase === 'won' || this.run.phase === 'lost') { this.endRun(this.run.phase === 'won' ? 'victory' : 'defeat'); return true; }
+    if (this.run.phase === 'shop') {
+      this.mode = 'shop'; this.input.setEnabled(false); this.velocity.set(0, 0);
+      this.previousPosition.copy(this.position); this.partyView.stopAnimation(); this.sleep();
+      this.combatView.clear(); this.renderer.render(this.scene, this.camera);
+      document.getElementById('hud')!.inert = true;
+      document.getElementById('shop-screen')!.hidden = false;
+      document.getElementById('shop-message')!.textContent = `波次奖励 +${this.run.definition.reward} 金币。可以购物，也可以直接继续。`;
+      renderRunShop(this.run, this.combat); this.updateHUD();
+      document.getElementById('shop-next')!.focus({ preventScroll: true }); this.wake(); return true;
+    }
+    if (this.combat.progression.awaitingChoice && !this.combat.encounters.dying) { this.openUpgrade(); return true; }
+    return false;
   }
 
   private openUpgrade() {
@@ -578,8 +636,8 @@ export class Game {
     if (this.mode !== 'upgrading' || document.hidden || this.portrait || this.contextLost) return;
     const before = this.combat.fusions.map(f => f.id);
     if (!this.combat.chooseUpgrade(id)) return;
-    const unlocked = this.combat.fusions.find(f => !before.includes(f.id));
-    if (unlocked) { this.fusionNotice = `融合解锁：${unlocked.title}`; this.fusionNoticeUntil = this.combat.elapsed + 3; }
+    const unlocked = this.combat.fusions.filter(f => !before.includes(f.id));
+    if (unlocked.length) { this.fusionNotice = `融合解锁：${unlocked.map(f => f.title).join(' / ')}`; this.fusionNoticeUntil = this.combat.elapsed + 3; }
     this.updateHUD();
     if (this.combat.progression.awaitingChoice) {
       this.renderChoices();
@@ -603,6 +661,8 @@ export class Game {
   }
 
   private endRun(outcome: 'victory' | 'defeat' = 'defeat') {
+    this.run?.finish(this.combat, outcome === 'victory');
+    document.getElementById('shop-screen')!.hidden = true;
     this.combat.clearTransientEffects();
     this.combatView.clear();
     this.partyView.stopAnimation();
@@ -617,12 +677,15 @@ export class Game {
     this.accumulator = 0;
     this.monster.body.visible = true;
     document.getElementById('result-time')!.textContent = this.formatTime();
+    document.getElementById('result-time')!.nextElementSibling!.textContent = this.run ? '总用时' : '生存时间';
     document.getElementById('result-kills')!.textContent = String(this.combat.kills);
     document.getElementById('result-xp')!.textContent = String(this.combat.xp);
     const won = outcome === 'victory';
-    document.getElementById('result-heading')!.textContent = won ? '三波挑战，通关！' : '小火焰，休息一下。';
+    document.getElementById('result-heading')!.textContent = this.run ? (won ? '六波挑战，通关！' : '冒险暂时结束。') : won ? '三波挑战，通关！' : '小火焰，休息一下。';
     document.getElementById('result-eyebrow')!.textContent = won ? 'CHALLENGE CLEARED' : 'EVERY SPROUT GETS ANOTHER CHANCE';
     document.getElementById('result-message')!.textContent = won ? '走位、成长、冲锋，下一次挑战更高星级。' : '带着这次冒险的勇气，再出发吧。';
+    if (this.run) document.getElementById('result-message')!.textContent = won ? '荆冠兽王已击败！构筑经受住了六波考验。' : this.run.failure === 'boss-timeout' ? '未能在 90 秒内击败荆冠兽王。调整构筑，再来挑战。' : `生命耗尽，止步第 ${this.run.wave} 波。换一种构筑再出发。`;
+    renderRunResult(this.run, this.combat);
     const summary = document.getElementById('result-challenge')!;
     summary.hidden = !this.challenge;
     if (this.challenge) {
@@ -635,21 +698,33 @@ export class Game {
   }
 
   private formatTime() {
-    return `${String(Math.floor(this.elapsed / 60)).padStart(2, '0')}:${String(Math.floor(this.elapsed % 60)).padStart(2, '0')}`;
+    const seconds = this.run?.totalElapsed ?? this.elapsed;
+    return `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(Math.floor(seconds % 60)).padStart(2, '0')}`;
   }
 
   private fusionNotice = '';
   private fusionNoticeUntil = 0;
 
   private updateHUD() {
+    renderEncounterStatus(this.combat,this.run);
+    renderWeaponCooldowns(this.combat);
+    const wave = document.getElementById('run-wave')!, gold = document.getElementById('run-gold')!;
+    wave.hidden = gold.hidden = !this.run;
+    document.querySelector<HTMLElement>('.run-status .explore-label')!.hidden = !!this.run;
+    if (this.run) { wave.textContent = `第 ${this.run.wave} / 6 波 · ${this.run.wave===6?'兽王挑战 · ':''}剩余 ${Math.ceil(this.run.remaining)} 秒`; gold.textContent = `金币 ${this.run.coins}`; }
+    renderBuildSummary(this.combat.usesRunBuild ? this.combat.runBuild : undefined, this.combat.fusions);
     const fusionStatus = document.getElementById('fusion-status')!;
     fusionStatus.hidden = !this.combat.fusionEnabled;
     const fused = !!this.combat.fusion;
     fusionStatus.classList.toggle('activated', fused);
     const title = document.getElementById('fusion-title')!, hint = document.getElementById('fusion-hint')!;
     const base = this.combat.baseAttack;
-    const titleText = fused ? this.combat.fusions.map(f => f.title).join(' / ') + ' · 已融合' : base === 'bubble' ? '水泡弹' : base === 'leaf' ? '叶刃' : '火花弹';
-    const hintText = this.combat.elapsed < this.fusionNoticeUntil && this.fusionNotice && fused ? this.fusionNotice : this.combat.fusions.length > 1 ? '两种融合交替发射' : base === 'spark' ? (fused ? '命中爆炸 · 两枚小火种' : '升级寻找「命中分裂」') : fused ? base === 'bubble' ? '水泡命中 · 范围控制或连锁' : '叶刃命中 · 分裂或跳跃' : base === 'bubble' ? '升级寻找「范围扩张」「连锁弹射」' : '升级寻找「命中分裂」「连锁弹射」';
+    const titleText = this.combat.usesRunBuild && (this.combat.runBuild.attacks.length > 1 || this.combat.runBuild.attacks[0].level > 1) ? this.combat.runBuild.attacks.map(a => ATTACKS[a.attackId].title + (a.level > 1 ? ` Lv.${a.level}` : '')).join(' + ') + (fused ? ` · ${this.combat.fusions.length} 融合` : '') : fused ? this.combat.fusions.map(f => f.title).join(' / ') + ' · 已融合' : base === 'bubble' ? '水泡弹' : base === 'leaf' ? '叶刃' : '火花弹';
+    const hintText = this.combat.elapsed < this.fusionNoticeUntil && this.fusionNotice ? this.fusionNotice
+      : this.combat.fusions.length > 1 ? '融合协同 · 同一攻击可同时触发兼容效果'
+      : this.combat.usesRunBuild && this.combat.runBuild.attacks.length > 1 ? '分拍连射 · ' + this.combat.runBuild.attacks.map(a => a.attackId === 'bubble' ? '水泡减速' : a.attackId === 'leaf' ? '叶刃穿透' : '火花弹').join(' / ')
+      : fused ? this.combat.fusions[0].title + ' · 已生效' : '升级可获取其他武器或通用改造';
+    fusionStatus.title = this.combat.fusions.map(f => f.title).join(' / ');
     const species = this.party.leader.species;
     document.getElementById('creature-name')!.textContent = CREATURES[species].name;
     document.getElementById('creature-code')!.textContent = species === 'yanrong' ? 'YANRONG' : species === 'bubblesalamander' ? 'PAOPAOYUAN' : 'YACISHOU';
@@ -659,8 +734,11 @@ export class Game {
     (document.querySelector('.health-panel svg.portrait') as SVGElement).style.display = species === 'yanrong' ? '' : 'none';
     if (title.textContent !== titleText) title.textContent = titleText;
     if (hint.textContent !== hintText) hint.textContent = hintText;
-    document.getElementById('fusion-spark-icon')!.hidden = fused || base !== 'spark';
-    document.getElementById('fusion-burst-icon')!.hidden = !fused || base !== 'spark';
+    const hasSpark = this.combat.usesRunBuild ? this.combat.runBuild.has('spark') : base === 'spark';
+    const hasBurst = this.combat.fusions.some(f => f.id === 'burst-seed');
+    document.getElementById('fusion-spark-icon')!.hidden = !hasSpark || hasBurst;
+    document.getElementById('fusion-burst-icon')!.hidden = !hasBurst;
+    fusionStatus.setAttribute('aria-label', `${titleText}。${fusionStatus.title || hintText}`);
     let elementalIcons = document.getElementById('fusion-elemental-icons');
     if (!elementalIcons) { elementalIcons = document.createElement('span'); elementalIcons.id = 'fusion-elemental-icons'; fusionStatus.prepend(elementalIcons); }
     setFusionIcons(elementalIcons, this.combat.fusions.filter(f => elementalClip(f.id)).map(f => f.id as ElementalFusionId));
@@ -752,10 +830,11 @@ export class Game {
 
   private frame = (time: number) => {
     this.frameId = 0;
-    if (this.disposed || document.hidden || this.portrait || this.contextLost || (this.mode !== 'menu' && this.mode !== 'playing')) return;
+    if (this.disposed || document.hidden || this.portrait || this.contextLost || (this.mode !== 'menu' && this.mode !== 'playing' && this.mode !== 'shop')) return;
     const rawDt = this.lastTime ? (time - this.lastTime) / 1000 : 0;
     const dt = rawDt ? Math.min(rawDt, STEP * 5) : STEP;
     this.lastTime = time;
+    if (this.mode === 'shop') { this.run?.updateRest(dt); this.frameId = window.requestAnimationFrame(this.frame); return; }
     if (this.quality.sample(rawDt)) this.applyGraphics();
     this.visualTime += dt;
     if (this.mode === 'playing') {
@@ -785,7 +864,7 @@ export class Game {
   };
 
   private wake() {
-    if (this.frameId || this.disposed || document.hidden || this.portrait || this.contextLost || (this.mode !== 'menu' && this.mode !== 'playing')) return;
+    if (this.frameId || this.disposed || document.hidden || this.portrait || this.contextLost || (this.mode !== 'menu' && this.mode !== 'playing' && this.mode !== 'shop')) return;
     this.lastTime = this.renderTime = 0;
     this.quality.resetSamples();
     this.audio.setActive(true);
@@ -829,6 +908,7 @@ export class Game {
       partyVisual: this.partyView.inspect(),
       enemyVisual: this.combatView.inspect(),
       challenge: this.challenge?.inspect(this.combat),
+      run: this.run?.inspect(),
       position: { x: this.position.x, z: this.position.z },
       movement: { ...this.input.movement },
       elapsed: this.elapsed, cooldown: this.cooldown, distance: this.distance,

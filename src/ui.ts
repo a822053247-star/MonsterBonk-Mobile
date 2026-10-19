@@ -1,3 +1,7 @@
+import { RELICS, EVOLUTIONS } from './relics';
+import type { RunFlow } from './run-flow';
+import type { Combat } from './combat';
+import { ATTACKS, type RunBuild } from './run-build';
 import { upgradePreview, type Progression } from './progression';
 import { FUSION_ASSET_ROOT, type ElementalFusionId } from './fusion-pixels';
 
@@ -53,20 +57,26 @@ export function createUI(root: HTMLElement) {
     <section id="hud" class="hud screen" aria-label="游戏操作与状态" hidden>
       <div class="hud-top">
         <div class="health-block"><div class="health-panel">${portrait}<img id="creature-portrait" class="portrait" alt="" hidden style="object-fit:contain;image-rendering:pixelated"/><div class="health-copy"><div class="health-title"><strong id="creature-name">焰绒</strong><span id="level-value">Lv. 01</span></div><div class="health-track" role="progressbar" aria-label="生命值" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100"><div id="health-fill"></div></div><div class="health-values">${icon('heart')}<span id="health-value">100 / 100</span><small id="creature-code">YANRONG</small></div></div></div><div class="combat-stats"><div>${icon('battle')}<span>击败</span><strong id="kill-value">0</strong></div><div>${icon('spark')}<span>经验</span><strong id="xp-value">0</strong></div></div><div class="xp-row"><div id="xp-track" class="xp-track" role="progressbar" aria-label="升级经验" aria-valuemin="0" aria-valuemax="8" aria-valuenow="0"><div id="xp-fill"></div></div><span id="xp-progress">0 / 8</span></div></div>
-        <div class="run-status"><span class="run-label">${icon('compass')} 中央草场</span><strong id="timer">00:00</strong><span class="explore-label"><i></i> 草原遭遇</span></div>
+        <div class="run-status"><span class="run-label">${icon('compass')} 中央草场</span><strong id="timer">00:00</strong><small id="run-wave" hidden></small><small id="run-gold" hidden></small><span class="explore-label"><i></i> 草原遭遇</span></div>
         <div class="hud-actions"><button id="settings" class="icon-button" aria-label="画质与声音设置">${icon('settings')}</button><button id="fullscreen" class="icon-button" aria-label="切换全屏">${icon('expand')}</button><button id="pause" class="icon-button" aria-label="暂停游戏">${icon('pause')}</button></div>
       </div>
+      <div id="encounter-status" class="encounter-status" hidden><div><strong id="encounter-name"></strong><span id="encounter-health"></span></div><div id="encounter-track" class="encounter-track" role="progressbar" aria-label="遭遇敌人生命值" aria-valuemin="0"><i id="encounter-fill"></i></div><small id="encounter-hint"></small><small id="encounter-wave"></small></div>
       <div id="welcome" class="welcome"><span class="eyebrow">A LITTLE SPARK OF MAGIC</span><h2>小小魔法，准备就绪。</h2><p>移动躲避敌人，焰绒会自动施法 · 靠近拾取经验</p></div>
       <div id="party-status" class="party-status" hidden><strong>草场战斗样板</strong><span>焰绒 · 单兽自动攻击</span></div>
-      <div id="fusion-status" class="fusion-status" role="status" hidden><span id="fusion-spark-icon">${fireIcon(0)}</span><span id="fusion-burst-icon" hidden>${fireIcon(2)}</span><div><strong id="fusion-title">火花弹</strong><small id="fusion-hint">升级寻找「命中分裂」</small></div></div>
+      <div id="fusion-status" class="fusion-status" role="status" hidden><span id="fusion-spark-icon">${fireIcon(0)}</span><span id="fusion-burst-icon" hidden>${fireIcon(2)}</span><div><strong id="fusion-title">火花弹</strong><small id="fusion-hint">升级寻找「命中分裂」</small><small id="build-status" hidden></small><div id="weapon-cooldowns" class="weapon-cooldowns" role="group" aria-label="武器冷却" hidden></div></div></div>
       <div id="trial-status" class="trial-status" hidden><strong id="trial-title">冲锋犄角 · 开局已装备</strong><span id="trial-progress" aria-live="polite"></span><small id="trial-hint">黄线蓄力时侧移躲开；冲刺命中可打断，青环期间可反击</small></div><div class="location-label"><span>01</span><div>中央草场<small id="map-seed">WINDSONG MEADOW</small></div></div>
       <div class="movement-control"><div id="joystick" class="joystick" role="group" aria-label="虚拟摇杆：按住并拖动以移动"><span class="joystick-cross horizontal"></span><span class="joystick-cross vertical"></span><span class="joystick-knob"><span></span></span></div><span class="control-caption">移动 <b>W A S D</b></span></div>
       <div class="dash-control"><button id="dash" class="dash-button" aria-label="冲刺">${icon('dash')}<strong>冲刺</strong><span id="dash-status">就绪</span></button><span class="control-caption">轻点冲刺 <b>SPACE</b></span></div>
       <div id="boundary-hint" class="boundary-hint" hidden>草原边界 · 换个方向继续探索吧</div>
       <div class="stage-note">2.5D 原型 <span>·</span> 幻兽幸存者</div>
     </section>
-    <section id="pause-screen" class="modal-screen" aria-label="暂停菜单" hidden><div class="modal pause-card"><div class="modal-symbol">${icon('leaf')}</div><span class="eyebrow">TAKE A LITTLE BREATH</span><h2>冒险，歇一小会。</h2><p id="pause-reason">草原会在这里等你。</p><button id="resume" class="primary">继续冒险 ${icon('arrow')}</button><button id="pause-settings" class="text-button">画质与声音</button><div class="pause-links"><button id="restart" class="text-button">重新开始</button><button id="back-menu" class="text-button">返回主菜单</button></div><a id="map-replay" class="map-replay" hidden></a></div></section>
-    <section id="gameover-screen" class="modal-screen" aria-label="本局结束" hidden><div class="modal result-card"><div class="modal-symbol">${icon('spark')}</div><span id="result-eyebrow" class="eyebrow">EVERY SPROUT GETS ANOTHER CHANCE</span><h2 id="result-heading">小火焰，休息一下。</h2><p id="result-message">带着这次冒险的勇气，再出发吧。</p><div id="result-challenge" class="result-challenge" hidden></div><div class="result-stats"><div><strong id="result-time">00:00</strong><span>生存时间</span></div><div><strong id="result-kills">0</strong><span>击败怪物</span></div><div><strong id="result-xp">0</strong><span>收集经验</span></div></div><div class="result-actions"><button id="gameover-restart" class="primary">再来一次 ${icon('arrow')}</button><button id="gameover-menu" class="text-button">返回主菜单</button></div></div></section>
+    <section id="pause-screen" class="modal-screen" aria-label="暂停菜单" hidden><div class="modal pause-card"><div class="pause-controls"><div class="modal-symbol">${icon('leaf')}</div><span class="eyebrow">TAKE A LITTLE BREATH</span><h2>冒险，歇一小会。</h2><p id="pause-reason">草原会在这里等你。</p><button id="resume" class="primary">继续冒险 ${icon('arrow')}</button><button id="pause-settings" class="text-button">画质与声音</button><div class="pause-links"><button id="restart" class="text-button">重新开始</button><button id="back-menu" class="text-button">返回主菜单</button></div><a id="map-replay" class="map-replay" hidden></a></div><section id="build-summary" class="build-summary" aria-label="本局构筑" tabindex="0" hidden><h3>本局构筑</h3><div id="build-weapons"></div><h4>技能融合</h4><p id="build-fusions"></p><h4>稀有道具与进化</h4><p id="build-relics"></p><p id="build-evolution"></p></section></div></section>
+    <section id="gameover-screen" class="modal-screen" aria-label="本局结束" hidden><div class="modal result-card"><div class="result-overview"><div class="modal-symbol">${icon('spark')}</div><span id="result-eyebrow" class="eyebrow">EVERY SPROUT GETS ANOTHER CHANCE</span><h2 id="result-heading">小火焰，休息一下。</h2><p id="result-message">带着这次冒险的勇气，再出发吧。</p><div id="result-challenge" class="result-challenge" hidden></div><div class="result-stats"><div><strong id="result-time">00:00</strong><span>生存时间</span></div><div><strong id="result-kills">0</strong><span>击败怪物</span></div><div><strong id="result-xp">0</strong><span>收集经验</span></div></div><div class="result-actions"><button id="gameover-restart" class="primary">再来一次 ${icon('arrow')}</button><button id="gameover-menu" class="text-button">返回主菜单</button></div></div><section id="result-build" class="build-summary" aria-label="本局战报" tabindex="0" hidden><h3>本局战报</h3><p id="result-run"></p><h4>最终构筑</h4><p id="result-weapons"></p><p id="result-fusions"></p><p id="result-relics"></p></section></div></section>
+    <section id="shop-screen" class="shop-screen" role="dialog" aria-modal="true" aria-labelledby="shop-heading" hidden>
+      <div class="shop-panel"><header class="shop-header"><div><small>波次间休整 · 战斗已暂停</small><h2 id="shop-heading">草场商店</h2></div><div><strong id="shop-coins"></strong><small id="shop-health"></small></div></header>
+      <p id="shop-message" class="shop-message" role="status"></p><div id="shop-items" class="shop-items"></div>
+      <footer class="shop-actions"><button id="shop-refresh" class="secondary"></button><button id="shop-menu" class="text-button">返回主菜单</button><button id="shop-next" class="primary"></button></footer></div>
+    </section>
     <section id="upgrade-screen" class="upgrade-screen" role="dialog" aria-modal="true" aria-labelledby="upgrade-heading" hidden>
       <div id="upgrade-panel" class="upgrade-panel" tabindex="-1">
         <header class="upgrade-header"><div class="upgrade-emblem">${icon('leaf')}</div><div><span class="eyebrow">A LITTLE STRONGER, A LITTLE BRAVER</span><h2 id="upgrade-heading">新的魔法，正在发芽。</h2></div><button id="upgrade-menu" class="text-button">返回菜单</button></header>
@@ -75,7 +85,7 @@ export function createUI(root: HTMLElement) {
         <footer class="upgrade-footer"><span>${icon('spark')} <span id="upgrade-queue">本次选择后继续冒险</span></span><span>轻点卡牌选择 · 强化仅在本局生效</span></footer>
       </div>
     </section>
-    <section id="help-screen" class="modal-screen" aria-label="操作指南" hidden><div class="modal help-card"><button id="close-help" class="icon-button close-button" aria-label="关闭操作指南">${icon('close')}</button><span class="eyebrow">A SMALL FIELD GUIDE</span><h2>出发前，认识一下。</h2><div class="guide-row"><span>01</span><div><strong>走位与闪避</strong><p>左下角摇杆控制方向。电脑使用 WASD 或方向键。避开橙色出生预警圈。</p></div></div><div class="guide-row"><span>02</span><div><strong>自动迎战</strong><p>焰绒自动锁定射程内、未被障碍遮挡的敌人。水面、树干和岩石阻挡移动，沿宽路绕行。</p></div></div><div class="guide-row"><span>03</span><div><strong>收集经验，选择魔法</strong><p>自动施法击败敌人，靠近吸收经验。升级会暂停战斗，轻点卡牌叠加强化，融合原型中选择「命中分裂」，自动解锁爆裂火种；可与分枝魔法共存。</p></div></div><p class="guide-tip">手机请横屏，摇杆是草场样板唯一战斗操作。升级后重新按住摇杆；三兽兼容与底部旧版入口保留历史规则。</p></div></section>
+    <section id="help-screen" class="modal-screen" aria-label="操作指南" hidden><div class="modal help-card"><button id="close-help" class="icon-button close-button" aria-label="关闭操作指南">${icon('close')}</button><span class="eyebrow">A SMALL FIELD GUIDE</span><h2>出发前，认识一下。</h2><div class="guide-row"><span>01</span><div><strong>走位与闪避</strong><p>左下角摇杆控制方向，电脑使用 WASD 或方向键。近身圆环蓄力时退开；奔跑虫锁向长条出现后横向躲避。</p></div></div><div class="guide-row"><span>02</span><div><strong>自动迎战</strong><p>焰绒自动锁定射程内、未被障碍遮挡的敌人。水面、树干和岩石阻挡移动，沿宽路绕行。</p></div></div><div class="guide-row"><span>03</span><div><strong>收集经验，选择魔法</strong><p>自动施法击败敌人，靠近吸收经验。升级时选择武器与改造，自动形成融合。六波挑战每波结束进入商店，使用金币购买、刷新或恢复。第 4 波可挑战精英获取奖励，第 6 波须在 90 秒内击败荆冠兽王。</p></div></div><p class="guide-tip">手机请横屏，摇杆是草场样板唯一战斗操作。升级后重新按住摇杆；三兽兼容与底部旧版入口保留历史规则。</p></div></section>
     <section id="settings-screen" class="modal-screen settings-screen" role="dialog" aria-modal="true" aria-labelledby="settings-heading" hidden>
       <div class="settings-card"><header><div><span class="eyebrow">MAKE YOURSELF AT HOME</span><h2 id="settings-heading">按你的节奏冒险</h2></div><button id="close-settings" class="icon-button" aria-label="关闭设置">${icon('close')}</button></header>
       <div class="settings-grid"><div class="graphics-setting"><label for="quality">画面品质</label><select id="quality"><option value="auto">自动 · 优先流畅</option><option value="battery">省电 · 30 帧目标</option><option value="high">清晰 · 60 帧目标</option></select><p id="quality-description">根据运行负载动态调整清晰度。</p><small>帧率为目标，实际表现取决于设备。</small></div>
@@ -97,10 +107,11 @@ export function renderUpgradeCards(progression: Progression, version: number) {
   document.getElementById('upgrade-cards')!.innerHTML = offered.map((id) => {
     const skill = progression.skills.find((candidate) => candidate.id === id)!;
     const rank = progression.ranks[id];
-    return `<button class="skill-card" data-skill="${id}" data-offer="${version}" style="--skill-color:${skill.color}" disabled aria-label="${skill.title}：${skill.benefit}，提升到 ${rank + 1} 级">
-      <span class="skill-card-meta"><span>${rank === 0 && skill.effect.type === 'spell' ? '新技能' : '魔法强化'}</span><span>Lv. ${rank} → ${rank + 1}<small> / ${skill.maxRank}</small></span></span>
+    return `<button class="skill-card" data-skill="${id}" data-offer="${version}" data-category="${skill.category ?? 'normal'}" style="--skill-color:${skill.color}" disabled aria-label="${skill.title}：${skill.benefit}，提升到 ${rank + 1} 级">
+      <span class="skill-card-meta"><span>${skill.category === 'relic' ? '稀有道具' : skill.category === 'evolution' ? '互斥进化' : id.endsWith('-weapon') ? (rank ? '武器强化' : '新武器') : rank === 0 && skill.effect.type === 'spell' ? '新技能' : '魔法强化'}</span><span>Lv. ${rank} → ${rank + 1}<small> / ${skill.maxRank}</small></span></span>
       <span class="skill-emblem">${id === 'area' && progression.fusionBase === 'bubble' ? fusionIcon('deep-bubble') : id === 'chain' ? fusionIcon(progression.fusionBase === 'bubble' ? 'chain-bubble' : 'jump-thorn') : id === 'split-on-hit' && progression.fusionBase === 'leaf' ? fusionIcon('thorn-scatter') : id === 'split-on-hit' && progression.fusionBase === 'spark' ? fireIcon(1) : icon(skill.icon)}</span>
       <h3>${skill.title}</h3><strong class="skill-benefit">${skill.benefit}</strong>
+      ${skill.tradeoff ? `<p class="skill-tradeoff">代价：${skill.tradeoff}</p>` : ''}
       <p class="skill-description">${skill.description}</p>
       <span class="skill-preview">${upgradePreview(skill, progression.ranks)}</span>
       <span class="skill-ranks" aria-hidden="true">${Array.from({ length: skill.maxRank }, (_, index) => `<i class="${index <= rank ? 'filled' : ''}"></i>`).join('')}</span>
@@ -128,4 +139,89 @@ export function setFusionIcons(root: HTMLElement, ids: ElementalFusionId[]) {
   const key = ids.join(',');
   if (root.dataset.icons === key) return;
   root.dataset.icons = key; root.innerHTML = ids.map(fusionIcon).join(''); bindFireIcons(root);
+}
+
+/** Long build details live in the existing pause menu, never over the joystick. */
+export function renderBuildSummary(build: RunBuild | undefined, fusions: readonly { title: string }[]) {
+  const panel = document.getElementById('build-summary')!;
+  panel.hidden = !build;
+  panel.closest('.pause-card')!.classList.toggle('has-build', !!build);
+  const status = document.getElementById('build-status')!;
+  status.hidden = !build || (!build.relics.length && !build.evolution);
+  if (!build) return;
+  const evolution = build.evolution ? EVOLUTIONS[build.evolution].title : '未选择进化';
+  const key = JSON.stringify([build.attacks.map(a => [a.attackId, a.level]), build.relics, evolution, fusions.map(f => f.title)]);
+  status.textContent = `${build.relics.length} 件稀有道具 · ${evolution} · 暂停查看构筑`;
+  if (panel.dataset.snapshot === key) return;
+  panel.dataset.snapshot = key;
+  document.getElementById('build-weapons')!.textContent = build.attacks.map(a => `${a.slot ? '副武器' + a.slot : '主武器'}：${ATTACKS[a.attackId].title} Lv.${a.level} / 5`).join('\n');
+  document.getElementById('build-fusions')!.textContent = fusions.length ? fusions.map(f => f.title).join(' / ') : '尚未形成融合，升级选择通用改造。';
+  document.getElementById('build-relics')!.textContent = build.relics.length ? build.relics.map(id => {
+    const relic = RELICS[id];
+    const inactive = id === 'specialist-badge' && build.attacks.length > 1 ? '（副武器已装备，加成失效）' : '';
+    return `${relic.title}${inactive}：${relic.benefit}；${relic.tradeoff}`;
+  }).join('\n\n') : '尚未获得稀有道具，升级时偶尔出现。';
+  document.getElementById('build-evolution')!.textContent = build.evolution ? `${evolution}：${EVOLUTIONS[build.evolution].benefit}；${EVOLUTIONS[build.evolution].tradeoff}` : '火花弹获得命中分裂后，可出现互斥进化路线。';
+}
+
+export function renderRunShop(run: RunFlow, combat: Combat) {
+  const shop = run.shop;
+  if (!shop) return;
+  document.getElementById('shop-heading')!.textContent = `第 ${run.wave} 波完成 · 草场商店`;
+  document.getElementById('shop-coins')!.textContent = `${run.coins} 金币`;
+  document.getElementById('shop-health')!.textContent = `生命 ${Math.ceil(combat.hp)} / ${combat.maxHp}`;
+  document.getElementById('shop-items')!.innerHTML = shop.items.map((item, index) => `<article class="shop-item${item.sold ? ' sold' : ''}"><small>${['武器 / 强化', '通用改造', '随机道具', '恢复 / 防御'][index]}</small><h3>${item.title}</h3><p>${item.benefit}</p>${item.tradeoff ? `<p class="shop-cost">代价：${item.tradeoff}</p>` : ''}<button type="button" class="shop-buy" data-buy="${index}" data-shop-token="${shop.token}" ${item.sold || item.kind === 'empty' || item.price > run.coins ? 'disabled' : ''}>${item.sold ? '已购买' : item.kind === 'empty' ? '暂无适用商品' : `${item.price} 金币 · ${item.price > run.coins ? '金币不足' : '购买'}`}</button></article>`).join('');
+  const refresh = document.getElementById('shop-refresh') as HTMLButtonElement;
+  refresh.textContent = `刷新商品 · ${shop.refreshCost} 金币`;
+  refresh.dataset.shopToken = shop.token; refresh.disabled = run.coins < shop.refreshCost || !shop.canRefresh;
+  const next = document.getElementById('shop-next') as HTMLButtonElement;
+  next.textContent = `进入第 ${run.wave + 1} 波`;
+  next.dataset.shopToken = shop.token;
+}
+
+export function renderRunResult(run: RunFlow | undefined, combat: Combat) {
+  const panel = document.getElementById('result-build')!;
+  panel.hidden = !run; panel.closest('.result-card')!.classList.toggle('formal-result', !!run);
+  if (!run) return;
+  const build = combat.runBuild;
+  document.getElementById('result-run')!.textContent = `到达第 ${run.wave} / 6 波 · 完成 ${run.completedWaves} 波\n生命 ${Math.ceil(combat.hp)} / ${combat.maxHp} · 剩余 ${run.coins} 金币 · 共获得 ${run.earned} 金币\n战斗 ${Math.floor(run.combatElapsed)} 秒 / 休整 ${Math.floor(run.restElapsed)} 秒`;
+  document.getElementById('result-weapons')!.textContent = build.attacks.map(a => `${ATTACKS[a.attackId].title} Lv.${a.level}`).join(' / ');
+  document.getElementById('result-fusions')!.textContent = '融合：' + (combat.fusions.map(f => f.title).join(' / ') || '无');
+  document.getElementById('result-relics')!.textContent = '道具：' + (build.relics.map(id => RELICS[id].title).join(' / ') || '无') + '\n进化：' + (build.evolution ? EVOLUTIONS[build.evolution].title : '未选择');
+}
+
+export function renderWeaponCooldowns(combat: Combat) {
+  const root = document.getElementById('weapon-cooldowns')!;
+  root.hidden = !combat.usesRunBuild;
+  if (!combat.usesRunBuild) return;
+  const attacks = combat.runBuild.attacks, key = attacks.map(a => a.attackId).join(',');
+  if (root.dataset.weapons !== key) {
+    root.dataset.weapons = key;
+    root.innerHTML = attacks.map(a => `<span class="weapon-charge" data-charge="${a.attackId}"><span>${ATTACKS[a.attackId].title}</span><span class="charge-state"></span><i aria-hidden="true"><b></b></i></span>`).join('');
+  }
+  for (const attack of attacks) {
+    const element = root.querySelector<HTMLElement>(`[data-charge="${attack.attackId}"]`)!;
+    const state = combat.firingWeapon === attack.attackId ? '连射' : attack.cooldown > .01 ? `${attack.cooldown.toFixed(1)}秒` : '待发';
+    const label = element.querySelector('.charge-state')!;
+    if (label.textContent !== state) label.textContent = state;
+    element.setAttribute('aria-label', `${ATTACKS[attack.attackId].title}，${state}`);
+    element.classList.toggle('firing', combat.firingWeapon === attack.attackId);
+    element.querySelector('b')!.style.width = `${100 * (1 - Math.min(1, attack.cooldown / Math.max(.001, attack.cooldownTotal)))}%`;
+  }
+}
+
+export function renderEncounterStatus(combat: Combat, run?: RunFlow) {
+  const c=combat.encounters, root=document.getElementById('encounter-status')!;
+  const enemy=c.boss ?? (c.elite?.active ? c.elite : undefined);
+  root.hidden=!c.enabled || !enemy || c.defeated;
+  document.getElementById('hud')!.classList.toggle('encounter-active',!root.hidden);
+  if(root.hidden || !enemy) return;
+  const boss=enemy.rank==='boss', max=combat.enemyHealth(enemy);
+  document.getElementById('encounter-name')!.textContent=boss ? `荆冠兽王${c.enraged?' · 狂暴':''}` : '精英岩甲';
+  document.getElementById('encounter-health')!.textContent=`${Math.ceil(enemy.hp)} / ${max}`;
+  document.getElementById('encounter-fill')!.style.width=`${Math.max(0,enemy.hp/max)*100}%`;
+  const track=document.getElementById('encounter-track')!; track.setAttribute('aria-valuemax',String(max)); track.setAttribute('aria-valuenow',String(Math.ceil(enemy.hp)));
+  const hints:Record<string,string>={approach:'保持移动，留意下一次攻击', 'spread-windup':'扇形弹幕蓄力 · 离开紫色扇面',spread:'弹幕来袭 · 从间隙或侧面绕过', 'dash-windup':'锁定冲击 · 立即横向移出橙色长条',dash:'冲击！避开路径', 'summon-windup':'即将召唤 · 预留清怪空间',summon:'援兵出生预警 · 优先清理包围',recover:'攻击间隙 · 趁机反击',dying:'兽王倒下……'};
+  document.getElementById('encounter-hint')!.textContent=enemy.spawnTime>0 ? (boss?'最终挑战 · 90 秒内击败兽王':'精英出现 · 击败额外获得 18 金币') : boss ? hints[c.bossState]??'' : c.elitePulsing?'震地蓄力 · 离开金色圆环':'绕开震地，或集中火力获取奖励';
+  document.getElementById('encounter-wave')!.textContent=run ? `第 ${run.wave} / 6 波 · 剩余 ${Math.ceil(run.remaining)} 秒 · 金币 ${run.coins}` : '';
 }

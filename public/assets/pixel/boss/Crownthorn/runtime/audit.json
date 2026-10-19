@@ -1,0 +1,1027 @@
+{
+  "cell": 512,
+  "foot": [
+    256,
+    480
+  ],
+  "bodyHeight": 280,
+  "alphaCutoff": 24,
+  "sources": {
+    "directions": {
+      "path": "public/assets/pixel/boss/Crownthorn/Directional Sprites.png",
+      "sha256": "a7823e962090c7e44f916e2ccb211c7e04a12d8639396fef70da81b0182a15de",
+      "size": [
+        2109,
+        746
+      ],
+      "expected": 5,
+      "scale": 0.5511811023622047,
+      "frames": [
+        {
+          "frame": 0,
+          "usable": true,
+          "reason": null,
+          "box": [
+            12,
+            123,
+            479,
+            631
+          ],
+          "touchesSourceEdge": 0,
+          "sourceFoot": [
+            248.0,
+            631
+          ],
+          "contactBand": 61,
+          "destination": [
+            126,
+            200,
+            257,
+            280
+          ]
+        },
+        {
+          "frame": 1,
+          "usable": true,
+          "reason": null,
+          "box": [
+            493,
+            126,
+            918,
+            615
+          ],
+          "touchesSourceEdge": 0,
+          "sourceFoot": [
+            686.0,
+            615
+          ],
+          "contactBand": 59,
+          "destination": [
+            150,
+            210,
+            234,
+            270
+          ]
+        },
+        {
+          "frame": 2,
+          "usable": true,
+          "reason": null,
+          "box": [
+            941,
+            129,
+            1241,
+            621
+          ],
+          "touchesSourceEdge": 0,
+          "sourceFoot": [
+            1080.0,
+            621
+          ],
+          "contactBand": 59,
+          "destination": [
+            179,
+            209,
+            165,
+            271
+          ]
+        },
+        {
+          "frame": 3,
+          "usable": true,
+          "reason": null,
+          "box": [
+            1249,
+            123,
+            1645,
+            622
+          ],
+          "touchesSourceEdge": 0,
+          "sourceFoot": [
+            1482.0,
+            622
+          ],
+          "contactBand": 60,
+          "destination": [
+            128,
+            205,
+            218,
+            275
+          ]
+        },
+        {
+          "frame": 4,
+          "usable": true,
+          "reason": null,
+          "box": [
+            1660,
+            126,
+            2098,
+            616
+          ],
+          "touchesSourceEdge": 0,
+          "sourceFoot": [
+            1879.0,
+            616
+          ],
+          "contactBand": 59,
+          "destination": [
+            135,
+            210,
+            241,
+            270
+          ]
+        }
+      ],
+      "preservedParticlePixels": 0,
+      "discardedNoisePixels": 0,
+      "usableFrames": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    "idle": {
+      "path": "public/assets/pixel/boss/Crownthorn/Idle.png",
+      "sha256": "e48b22a127d92712b22895244ae9620b772d438cd44cad135d0d7d41894d18de",
+      "size": [
+        1024,
+        256
+      ],
+      "expected": 4,
+      "scale": 1.2962962962962963,
+      "frames": [
+        {
+          "frame": 0,
+          "usable": true,
+          "reason": null,
+          "box": [
+            26,
+            23,
+            229,
+            239
+          ],
+          "touchesSourceEdge": 0,
+          "sourceFoot": [
+            131.5,
+            239
+          ],
+          "contactBand": 26,
+          "destination": [
+            119,
+            200,
+            263,
+            280
+          ]
+        },
+        {
+          "frame": 1,
+          "usable": true,
+          "reason": null,
+          "box": [
+            281,
+            16,
+            486,
+            239
+          ],
+          "touchesSourceEdge": 0,
+          "sourceFoot": [
+            388.0,
+            239
+          ],
+          "contactBand": 27,
+          "destination": [
+            117,
+            191,
+            266,
+            289
+          ]
+        },
+        {
+          "frame": 2,
+          "usable": true,
+          "reason": null,
+          "box": [
+            538,
+            16,
+            742,
+            239
+          ],
+          "touchesSourceEdge": 0,
+          "sourceFoot": [
+            645.0,
+            239
+          ],
+          "contactBand": 27,
+          "destination": [
+            117,
+            191,
+            264,
+            289
+          ]
+        },
+        {
+          "frame": 3,
+          "usable": true,
+          "reason": null,
+          "box": [
+            794,
+            25,
+            998,
+            239
+          ],
+          "touchesSourceEdge": 0,
+          "sourceFoot": [
+            901.0,
+            239
+          ],
+          "contactBand": 26,
+          "destination": [
+            117,
+            203,
+            264,
+            277
+          ]
+        }
+      ],
+      "preservedParticlePixels": 0,
+      "discardedNoisePixels": 0,
+      "usableFrames": [
+        0,
+        1,
+        2,
+        3
+      ]
+    },
+    "dash-windup": {
+      "path": "public/assets/pixel/boss/Crownthorn/Dash Windup.png",
+      "sha256": "8887ae36a842e7974ce99cef6170efcf13e5068f3b22588a46929a979b9815ba",
+      "size": [
+        1024,
+        256
+      ],
+      "expected": 4,
+      "scale": 1.2556053811659194,
+      "frames": [
+        {
+          "frame": 0,
+          "usable": true,
+          "reason": null,
+          "box": [
+            36,
+            16,
+            221,
+            239
+          ],
+          "touchesSourceEdge": 0,
+          "sourceFoot": [
+            129.0,
+            239
+          ],
+          "contactBand": 27,
+          "destination": [
+            139,
+            200,
+            232,
+            280
+          ]
+        },
+        {
+          "frame": 1,
+          "usable": true,
+          "reason": null,
+          "box": [
+            295,
+            38,
+            473,
+            239
+          ],
+          "touchesSourceEdge": 0,
+          "sourceFoot": [
+            386.0,
+            239
+          ],
+          "contactBand": 24,
+          "destination": [
+            142,
+            228,
+            223,
+            252
+          ]
+        },
+        {
+          "frame": 2,
+          "usable": true,
+          "reason": null,
+          "box": [
+            554,
+            61,
+            725,
+            239
+          ],
+          "touchesSourceEdge": 0,
+          "sourceFoot": [
+            674.5,
+            239
+          ],
+          "contactBand": 21,
+          "destination": [
+            105,
+            257,
+            215,
+            223
+          ]
+        },
+        {
+          "frame": 3,
+          "usable": true,
+          "reason": null,
+          "box": [
+            805,
+            73,
+            987,
+            239
+          ],
+          "touchesSourceEdge": 0,
+          "sourceFoot": [
+            935.0,
+            239
+          ],
+          "contactBand": 20,
+          "destination": [
+            93,
+            272,
+            229,
+            208
+          ]
+        }
+      ],
+      "preservedParticlePixels": 0,
+      "discardedNoisePixels": 0,
+      "usableFrames": [
+        0,
+        1,
+        2,
+        3
+      ]
+    },
+    "dash": {
+      "path": "public/assets/pixel/boss/Crownthorn/Dash.png",
+      "sha256": "28030c30192433cadb45b7693b2aeccaa5cfb3b05aa88105ef87709b2dea6422",
+      "size": [
+        2172,
+        724
+      ],
+      "expected": 4,
+      "scale": 0.5303030303030303,
+      "frames": [
+        {
+          "frame": 0,
+          "usable": true,
+          "reason": null,
+          "box": [
+            25,
+            90,
+            586,
+            618
+          ],
+          "touchesSourceEdge": 0,
+          "sourceFoot": [
+            207.5,
+            618
+          ],
+          "contactBand": 63,
+          "destination": [
+            159,
+            200,
+            298,
+            280
+          ]
+        },
+        {
+          "frame": 1,
+          "usable": true,
+          "reason": null,
+          "box": [
+            574,
+            106,
+            1106,
+            625
+          ],
+          "touchesSourceEdge": 0,
+          "sourceFoot": [
+            782.0,
+            625
+          ],
+          "contactBand": 62,
+          "destination": [
+            146,
+            205,
+            282,
+            275
+          ]
+        },
+        {
+          "frame": 2,
+          "usable": true,
+          "reason": null,
+          "box": [
+            1098,
+            130,
+            1616,
+            664
+          ],
+          "touchesSourceEdge": 0,
+          "sourceFoot": [
+            1310.0,
+            664
+          ],
+          "contactBand": 64,
+          "destination": [
+            144,
+            197,
+            275,
+            283
+          ]
+        },
+        {
+          "frame": 3,
+          "usable": true,
+          "reason": null,
+          "box": [
+            1627,
+            113,
+            2153,
+            654
+          ],
+          "touchesSourceEdge": 0,
+          "sourceFoot": [
+            2002.0,
+            654
+          ],
+          "contactBand": 65,
+          "destination": [
+            57,
+            193,
+            279,
+            287
+          ]
+        }
+      ],
+      "preservedParticlePixels": 0,
+      "discardedNoisePixels": 0,
+      "usableFrames": [
+        0,
+        1,
+        2,
+        3
+      ]
+    },
+    "spread-cast": {
+      "path": "public/assets/pixel/boss/Crownthorn/Spread Cast.png",
+      "sha256": "e1c8a1a05fb096c9d19e08cd1548e7aba4254ed87c85cfc3fcc24642a57e360b",
+      "size": [
+        2172,
+        724
+      ],
+      "expected": 4,
+      "scale": 0.4605263157894737,
+      "frames": [
+        {
+          "frame": 0,
+          "usable": true,
+          "reason": null,
+          "box": [
+            15,
+            83,
+            586,
+            691
+          ],
+          "touchesSourceEdge": 0,
+          "sourceFoot": [
+            311.5,
+            691
+          ],
+          "contactBand": 73,
+          "destination": [
+            119,
+            200,
+            263,
+            280
+          ]
+        },
+        {
+          "frame": 1,
+          "usable": true,
+          "reason": null,
+          "box": [
+            556,
+            145,
+            1039,
+            668
+          ],
+          "touchesSourceEdge": 0,
+          "sourceFoot": [
+            811.5,
+            668
+          ],
+          "contactBand": 63,
+          "destination": [
+            138,
+            239,
+            222,
+            241
+          ]
+        },
+        {
+          "frame": 2,
+          "usable": true,
+          "reason": null,
+          "box": [
+            1033,
+            127,
+            1683,
+            687
+          ],
+          "touchesSourceEdge": 0,
+          "sourceFoot": [
+            1363.5,
+            687
+          ],
+          "contactBand": 67,
+          "destination": [
+            104,
+            222,
+            299,
+            258
+          ]
+        },
+        {
+          "frame": 3,
+          "usable": true,
+          "reason": null,
+          "box": [
+            1689,
+            132,
+            2163,
+            677
+          ],
+          "touchesSourceEdge": 0,
+          "sourceFoot": [
+            2002.5,
+            677
+          ],
+          "contactBand": 65,
+          "destination": [
+            112,
+            229,
+            218,
+            251
+          ]
+        }
+      ],
+      "preservedParticlePixels": 8146,
+      "discardedNoisePixels": 1,
+      "usableFrames": [
+        0,
+        1,
+        2,
+        3
+      ]
+    },
+    "summon": {
+      "path": "public/assets/pixel/boss/Crownthorn/Summon.png",
+      "sha256": "c8d0160aed6dbb147463f1f56d6c747df10e6c12ff8b2e11b32effcbc6c0a6d4",
+      "size": [
+        1024,
+        256
+      ],
+      "expected": 4,
+      "scale": 1.435897435897436,
+      "frames": [
+        {
+          "frame": 0,
+          "usable": true,
+          "reason": null,
+          "box": [
+            34,
+            44,
+            221,
+            239
+          ],
+          "touchesSourceEdge": 0,
+          "sourceFoot": [
+            128.0,
+            239
+          ],
+          "contactBand": 23,
+          "destination": [
+            121,
+            200,
+            269,
+            280
+          ]
+        },
+        {
+          "frame": 1,
+          "usable": true,
+          "reason": null,
+          "box": [
+            273,
+            51,
+            495,
+            239
+          ],
+          "touchesSourceEdge": 0,
+          "sourceFoot": [
+            383.5,
+            239
+          ],
+          "contactBand": 23,
+          "destination": [
+            97,
+            210,
+            319,
+            270
+          ]
+        },
+        {
+          "frame": 2,
+          "usable": true,
+          "reason": null,
+          "box": [
+            555,
+            52,
+            725,
+            239
+          ],
+          "touchesSourceEdge": 0,
+          "sourceFoot": [
+            639.0,
+            239
+          ],
+          "contactBand": 22,
+          "destination": [
+            135,
+            211,
+            244,
+            269
+          ]
+        },
+        {
+          "frame": 3,
+          "usable": true,
+          "reason": null,
+          "box": [
+            792,
+            26,
+            998,
+            239
+          ],
+          "touchesSourceEdge": 0,
+          "sourceFoot": [
+            889.0,
+            239
+          ],
+          "contactBand": 26,
+          "destination": [
+            117,
+            174,
+            296,
+            306
+          ]
+        }
+      ],
+      "preservedParticlePixels": 0,
+      "discardedNoisePixels": 0,
+      "usableFrames": [
+        0,
+        1,
+        2,
+        3
+      ]
+    },
+    "enraged-idle": {
+      "path": "public/assets/pixel/boss/Crownthorn/Enraged Idle.png",
+      "sha256": "9d285ef40d26a6dabd84445b148cbc8dfe025b9afe20650f397a4a55f79a86d6",
+      "size": [
+        1536,
+        256
+      ],
+      "expected": 6,
+      "scale": 1.2962962962962963,
+      "frames": [
+        {
+          "frame": 0,
+          "usable": true,
+          "reason": null,
+          "box": [
+            31,
+            23,
+            224,
+            239
+          ],
+          "touchesSourceEdge": 0,
+          "sourceFoot": [
+            128.0,
+            239
+          ],
+          "contactBand": 26,
+          "destination": [
+            130,
+            200,
+            250,
+            280
+          ]
+        },
+        {
+          "frame": 1,
+          "usable": true,
+          "reason": null,
+          "box": [
+            283,
+            16,
+            483,
+            239
+          ],
+          "touchesSourceEdge": 0,
+          "sourceFoot": [
+            382.5,
+            239
+          ],
+          "contactBand": 27,
+          "destination": [
+            127,
+            191,
+            259,
+            289
+          ]
+        },
+        {
+          "frame": 2,
+          "usable": true,
+          "reason": null,
+          "box": [
+            541,
+            26,
+            738,
+            239
+          ],
+          "touchesSourceEdge": 0,
+          "sourceFoot": [
+            639.0,
+            239
+          ],
+          "contactBand": 26,
+          "destination": [
+            129,
+            204,
+            255,
+            276
+          ]
+        },
+        {
+          "frame": 3,
+          "usable": true,
+          "reason": null,
+          "box": [
+            795,
+            16,
+            995,
+            239
+          ],
+          "touchesSourceEdge": 0,
+          "sourceFoot": [
+            895.0,
+            239
+          ],
+          "contactBand": 27,
+          "destination": [
+            126,
+            191,
+            259,
+            289
+          ]
+        },
+        {
+          "frame": 4,
+          "usable": true,
+          "reason": null,
+          "box": [
+            1055,
+            31,
+            1249,
+            239
+          ],
+          "touchesSourceEdge": 0,
+          "sourceFoot": [
+            1151.0,
+            239
+          ],
+          "contactBand": 25,
+          "destination": [
+            132,
+            210,
+            251,
+            270
+          ]
+        },
+        {
+          "frame": 5,
+          "usable": true,
+          "reason": null,
+          "box": [
+            1310,
+            24,
+            1505,
+            239
+          ],
+          "touchesSourceEdge": 0,
+          "sourceFoot": [
+            1407.5,
+            239
+          ],
+          "contactBand": 26,
+          "destination": [
+            130,
+            201,
+            253,
+            279
+          ]
+        }
+      ],
+      "preservedParticlePixels": 69,
+      "discardedNoisePixels": 0,
+      "usableFrames": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    "death": {
+      "path": "public/assets/pixel/boss/Crownthorn/Death.png",
+      "sha256": "4937f8e6154263c0972456e1a6b00d4405346ae32e9ad8a78cacf8b656576295",
+      "size": [
+        2172,
+        724
+      ],
+      "expected": 6,
+      "scale": 0.7608695652173914,
+      "frames": [
+        {
+          "frame": 0,
+          "usable": true,
+          "reason": null,
+          "box": [
+            12,
+            177,
+            332,
+            545
+          ],
+          "touchesSourceEdge": 0,
+          "sourceFoot": [
+            173.0,
+            545
+          ],
+          "contactBand": 44,
+          "destination": [
+            133,
+            200,
+            243,
+            280
+          ]
+        },
+        {
+          "frame": 1,
+          "usable": true,
+          "reason": null,
+          "box": [
+            339,
+            184,
+            678,
+            545
+          ],
+          "touchesSourceEdge": 0,
+          "sourceFoot": [
+            517.5,
+            545
+          ],
+          "contactBand": 43,
+          "destination": [
+            120,
+            205,
+            258,
+            275
+          ]
+        },
+        {
+          "frame": 2,
+          "usable": true,
+          "reason": null,
+          "box": [
+            684,
+            234,
+            997,
+            545
+          ],
+          "touchesSourceEdge": 0,
+          "sourceFoot": [
+            849.0,
+            545
+          ],
+          "contactBand": 37,
+          "destination": [
+            130,
+            243,
+            238,
+            237
+          ]
+        },
+        {
+          "frame": 3,
+          "usable": true,
+          "reason": null,
+          "box": [
+            1002,
+            292,
+            1341,
+            550
+          ],
+          "touchesSourceEdge": 0,
+          "sourceFoot": [
+            1176.0,
+            550
+          ],
+          "contactBand": 31,
+          "destination": [
+            124,
+            284,
+            258,
+            196
+          ]
+        },
+        {
+          "frame": 4,
+          "usable": true,
+          "reason": null,
+          "box": [
+            1350,
+            350,
+            1762,
+            551
+          ],
+          "touchesSourceEdge": 0,
+          "sourceFoot": [
+            1534.5,
+            551
+          ],
+          "contactBand": 24,
+          "destination": [
+            116,
+            327,
+            313,
+            153
+          ]
+        },
+        {
+          "frame": 5,
+          "usable": true,
+          "reason": null,
+          "box": [
+            1769,
+            391,
+            2161,
+            552
+          ],
+          "touchesSourceEdge": 0,
+          "sourceFoot": [
+            1952.0,
+            552
+          ],
+          "contactBand": 19,
+          "destination": [
+            117,
+            357,
+            298,
+            123
+          ]
+        }
+      ],
+      "preservedParticlePixels": 0,
+      "discardedNoisePixels": 1,
+      "usableFrames": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    }
+  }
+}

@@ -43,6 +43,9 @@ async function drive(page: Page, x: number, y: number, ticks = 30) { await page.
 test('real V5 leader renders all projected directions, mirrors left and retains heading when stopping', async ({ page }) => {
   const errors: string[]=[];page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error'&&m.text().includes('THREE.WebGLProgram'))errors.push(m.text());});
   await open(page);
+  // This checks artwork/idle, so keep the long screenshot sweep independent
+  // from the formal wave director and XP choices. Combat parity is tested below.
+  await page.evaluate(()=>{const g=(window as any).game;g.sleep();g.run=undefined;g.combat.automaticSpawning=false;g.combat.clearWave();});
   const directions = [['down',0,1],['up',0,-1],['right',1,0],['left',-1,0],['down-right',1,1],['down-left',-1,1],['up-right',1,-1],['up-left',-1,-1]] as const;
   for(const viewport of [{width:844,height:390},{width:568,height:320}]) {
     await page.setViewportSize(viewport);

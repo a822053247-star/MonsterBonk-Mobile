@@ -6,6 +6,7 @@ export default defineConfig({
   build: {
     target: ['es2020', 'safari15'],
     rolldownOptions: {
+      input: { main: 'index.html', crownthorn: 'crownthorn-preview.html' },
       output: { manualChunks: (id) => id.replaceAll('\\', '/').includes('/node_modules/three/') ? 'three' : undefined },
     },
   },

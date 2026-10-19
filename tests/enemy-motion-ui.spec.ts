@@ -3,7 +3,7 @@ test.use({viewport:{width:844,height:390},hasTouch:true,isMobile:true});
 test.beforeEach(async({page})=>{await page.route('**/enemy-motion-harness*',r=>r.fulfill({contentType:'text/html; charset=utf-8',body:`<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body><div id="app"></div><script type="module">
 import '/src/style.css';import{createUI}from'/src/ui.ts';import{Game}from'/src/game.ts';import * as THREE from '/node_modules/three/build/three.module.js';createUI(document.getElementById('app'));const g=window.game=new Game();
 window.draw=()=>{g.placeCamera(true);g.partyView.render(1,g.visualTime);g.combatView.render(1,g.visualTime,g.position);g.updateHUD();g.renderer.render(g.scene,g.camera)};
-window.arrange=(one=false)=>{g.sleep();g.combat.reset();g.combat.hp=1e9;g.combat.spawnClock=1e9;g.party.leader.attackCooldown=1e9;const rows=one?[['normal',-3,3]]:[['normal',-5,3],['fast',5,3],['normal',-2,6],['fast',2,6],['tank',0,-6]];for(const[k,x,z]of rows)g.combat.spawn(k,x,z,0);g.welcome.style.display='none';window.draw()};
+window.arrange=(one=false)=>{g.sleep();g.run=undefined;g.combat.reset();g.combat.automaticSpawning=false;for(const a of g.combat.runBuild.attacks)a.cooldown=1e9;g.combat.hp=1e9;g.combat.spawnClock=1e9;g.party.leader.attackCooldown=1e9;const rows=one?[['normal',-3,3]]:[['normal',-5,3],['fast',5,3],['normal',-2,6],['fast',2,6],['tank',0,-6]];for(const[k,x,z]of rows)g.combat.spawn(k,x,z,0);g.welcome.style.display='none';window.draw()};
 window.run=(ticks)=>{g.sleep();for(let i=0;i<ticks;i++)g.step(1/60);window.draw()};
 window.gpu=()=>{const visible=g.scene.children.map(o=>[o,o.visible]),bg=g.scene.background,group=g.combatView.group,children=group.children.map(o=>[o,o.visible]);for(const[o]of visible)o.visible=o===group;for(const[o]of children)o.visible=o===g.combatView.pixelEnemies.group;g.scene.background=new THREE.Color('#173b2e');g.renderer.render(g.scene,g.camera);const gl=g.renderer.getContext(),p=new Uint8Array(gl.drawingBufferWidth*gl.drawingBufferHeight*4);gl.readPixels(0,0,gl.drawingBufferWidth,gl.drawingBufferHeight,gl.RGBA,gl.UNSIGNED_BYTE,p);let count=0,light=0,hash=2166136261;for(let i=0;i<p.length;i+=4){if(p[i]!==p[0]||p[i+1]!==p[1]||p[i+2]!==p[2]){count++;light+=p[i]+p[i+1]+p[i+2];}for(let k=0;k<3;k++)hash=Math.imul(hash^p[i+k],16777619)>>>0;}for(const[o,v]of visible)o.visible=v;for(const[o,v]of children)o.visible=v;g.scene.background=bg;g.renderer.render(g.scene,g.camera);return{count,light:light/Math.max(1,count),hash}};
 window.motion=()=>{const e=g.combat.enemies.find(e=>e.active),v=g.combatView.pixelEnemies,b=v.batches.get(e.kind),m=new THREE.Matrix4(),p=new THREE.Vector3(),q=new THREE.Quaternion(),s=new THREE.Vector3();b.mesh.getMatrixAt(0,m);m.decompose(p,q,s);const forward=new THREE.Vector3(0,0,1).applyQuaternion(q),cameraForward=new THREE.Vector3(0,0,1).applyQuaternion(g.camera.quaternion);return{position:p.toArray(),scale:s.toArray(),quaternion:q.toArray(),normalDot:forward.dot(cameraForward)}};
@@ -33,9 +33,9 @@ for(const kind of ['normal','fast','tank']as const)test(kind+' shows eight disti
  await open(page);
  const samples=await page.evaluate(kind=>{const w=window as any,g=w.game;g.sleep();g.mode='paused';g.combat.reset();const e=g.combat.spawn(kind,-3,3,0),samples=[];
   for(const [dx,dy]of [[0,-1],[1,-1],[1,0],[1,1],[0,1],[-1,1],[-1,0],[-1,-1]]){
-   e.previousX=e.x-dx*.02;e.previousZ=e.z-dy*.02/Math.SQRT1_2;w.draw();samples.push({pixels:w.gpu(),frame:g.combatView.pixelEnemies.inspect().batches.find((b:any)=>b.kind===kind).frames[0]});
+   e.previousX=e.x-dx*.02;e.previousZ=e.z-dy*.02/Math.SQRT1_2;e.walkX=e.x-e.previousX;e.walkZ=e.z-e.previousZ;w.draw();samples.push({pixels:w.gpu(),frame:g.combatView.pixelEnemies.inspect().batches.find((b:any)=>b.kind===kind).frames[0]});
   }
-  e.previousX=e.x;e.previousZ=e.z;w.draw();return {samples,rest:g.combatView.pixelEnemies.inspect().batches.find((b:any)=>b.kind===kind).frames[0]};
+  e.previousX=e.x;e.previousZ=e.z;e.walkX=e.walkZ=0;w.draw();return {samples,rest:g.combatView.pixelEnemies.inspect().batches.find((b:any)=>b.kind===kind).frames[0]};
  },kind);
  expect(new Set(samples.samples.map(s=>s.pixels.hash)).size).toBe(8);
  expect(samples.samples.map(s=>s.frame)).toEqual([4,3,2,1,0,1,2,3].map((frame,i)=>({frame,mirror:i>=5})));
@@ -56,7 +56,7 @@ for(const viewport of [{width:844,height:390},{width:568,height:320}])test('thre
  await page.setViewportSize(viewport);await open(page);await page.evaluate(()=>{const w=window as any,g=w.game;g.sleep();g.mode='paused';g.combat.reset();g.welcome.style.display='none';
   const vectors=[[0,-1],[1,-1],[1,0],[1,1],[0,1],[-1,1],[-1,0],[-1,-1]];
   for(const [row,kind]of ['normal','fast','tank'].entries())for(const [col,[dx,dy]]of vectors.entries()){
-   const e=g.combat.spawn(kind,(col-3.5)*2.4,(row-1)*4,0);e.previousX=e.x-dx*.02;e.previousZ=e.z-dy*.02/Math.SQRT1_2;
+   const e=g.combat.spawn(kind,(col-3.5)*2.4,(row-1)*4,0);e.previousX=e.x-dx*.02;e.previousZ=e.z-dy*.02/Math.SQRT1_2;e.walkX=e.x-e.previousX;e.walkZ=e.z-e.previousZ;
   }w.draw();
  });
  const state=await page.evaluate(()=>(window as any).game.combatView.pixelEnemies.inspect());

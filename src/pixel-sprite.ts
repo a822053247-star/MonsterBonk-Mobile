@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import type { SpeciesId } from './party';
 import { ANIMATION_LAYOUT, CreatureAnimator, clipFrame, type AnimationAsset, type ScreenBasis, type CreatureClip } from './creature-animation';
 import { ENEMY_DIRECTION_ASSETS, ENEMY_DIRECTION_LAYOUT } from './enemy-directions';
+import { CROWNTHORN_ASSETS, CROWNTHORN_CLIPS, CROWNTHORN_LAYOUT, type CrownthornAction, type CrownthornAsset } from './crownthorn-animation';
 
 export const PIXEL_CREATURE_ASSETS: Readonly<Record<SpeciesId, string>> = {
   yanrong: 'creatures/yanrong-base.png',
@@ -17,9 +18,22 @@ export const PIXEL_ANIMATION_ASSETS = {
   'yacishou-walk': 'creatures/animation/yacishou-animation-sheet.normalized.png',
   'yacishou-diagonal': 'creatures/animation/yacishou-diagonal-walk.normalized.png',
 } as const;
-type PixelAssetId = SpeciesId | keyof typeof PIXEL_ENEMY_ASSETS | AnimationAsset;
-const PIXEL_ASSETS: Readonly<Record<PixelAssetId, string>> = { ...PIXEL_CREATURE_ASSETS, ...PIXEL_ENEMY_ASSETS, ...PIXEL_ANIMATION_ASSETS };
+type PixelAssetId = SpeciesId | keyof typeof PIXEL_ENEMY_ASSETS | AnimationAsset | CrownthornAsset;
+const PIXEL_ASSETS: Readonly<Record<PixelAssetId, string>> = { ...PIXEL_CREATURE_ASSETS, ...PIXEL_ENEMY_ASSETS, ...PIXEL_ANIMATION_ASSETS, ...CROWNTHORN_ASSETS };
 export const PIXEL_ALPHA = 24 / 255;
+
+/** Per-instance UVs keep the cached atlas immutable when multiple views play. */
+export function configurePixelFrame(material: THREE.SpriteMaterial, frameUv: THREE.Vector4) {
+  material.onBeforeCompile = shader => {
+    shader.uniforms.pixelFrame = { value: frameUv };
+    shader.vertexShader = 'uniform vec4 pixelFrame;\n' + shader.vertexShader;
+    shader.vertexShader = shader.vertexShader.replace('#include <uv_vertex>', `#include <uv_vertex>
+      #ifdef USE_MAP
+        vMapUv = vMapUv * pixelFrame.zw + pixelFrame.xy;
+      #endif`);
+  };
+  material.customProgramCacheKey = () => 'pixel-sprite-frame-v1';
+}
 
 /** Crop only transparent padding. Never resample or modify the original PNG. */
 export function preparePixelTexture(image: HTMLImageElement) {
@@ -84,9 +98,15 @@ export class PixelTextureCache {
         if (created.disposed) return;
         try {
           const atlas = species in PIXEL_ANIMATION_ASSETS;
+          const bossAtlas = species in CROWNTHORN_ASSETS;
+          if (bossAtlas) {
+            const key = species.slice('crownthorn-'.length);
+            const columns = key === 'directions' ? 5 : CROWNTHORN_CLIPS[key as CrownthornAction].expected;
+            if (image.naturalWidth !== CROWNTHORN_LAYOUT.cell * columns || image.naturalHeight !== CROWNTHORN_LAYOUT.cell) throw new Error('Invalid Crownthorn atlas dimensions');
+          }
           if (atlas && (image.naturalWidth !== ANIMATION_LAYOUT.frameWidth * 4 || image.naturalHeight !== ANIMATION_LAYOUT.frameHeight * (species.endsWith('-walk') ? 4 : 2))) throw new Error('Invalid animation atlas dimensions');
           if (directional && (image.naturalWidth !== ENEMY_DIRECTION_LAYOUT.cell * ENEMY_DIRECTION_LAYOUT.columns || image.naturalHeight !== ENEMY_DIRECTION_LAYOUT.cell)) throw new Error('Invalid enemy direction atlas dimensions');
-          const prepared = atlas || directional ? { canvas: image, aspect: 1, sourceSize: [image.naturalWidth, image.naturalHeight], crop: [0, 0, directional ? 256 : image.naturalWidth, image.naturalHeight] } : preparePixelTexture(image);
+          const prepared = atlas || directional || bossAtlas ? { canvas: image, aspect: 1, sourceSize: [image.naturalWidth, image.naturalHeight], crop: [0, 0, directional ? 256 : image.naturalWidth, image.naturalHeight] } : preparePixelTexture(image);
           created.texture.image = prepared.canvas;
           created.texture.colorSpace = THREE.SRGBColorSpace;
           created.texture.magFilter = created.texture.minFilter = THREE.NearestFilter;
@@ -143,15 +163,7 @@ export class PixelSpriteRenderer {
   constructor(readonly species: SpeciesId, private cache: PixelTextureCache) {
     this.animator = new CreatureAnimator(species);
     this.selectedAsset = species;
-    this.material.onBeforeCompile = shader => {
-      shader.uniforms.pixelFrame = { value: this.frameUv };
-      shader.vertexShader = 'uniform vec4 pixelFrame;\n' + shader.vertexShader;
-      shader.vertexShader = shader.vertexShader.replace('#include <uv_vertex>', `#include <uv_vertex>
-        #ifdef USE_MAP
-          vMapUv = vMapUv * pixelFrame.zw + pixelFrame.xy;
-        #endif`);
-    };
-    this.material.customProgramCacheKey = () => 'pixel-sprite-frame-v1';
+    configurePixelFrame(this.material, this.frameUv);
     this.group.name = `PixelCreature:${species}`;
     this.group.visible = false;
     this.sprite.name = 'PixelBillboard';
