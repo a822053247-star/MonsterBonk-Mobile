@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { Combat, COMBAT_LIMITS } from '../src/combat';
+import { impactVisualPosition } from '../src/combat-clarity';
 import { PartySystem, type SpeciesId } from '../src/party';
 import { resolveFusions, FUSION_RECIPES, ELEMENTAL_RULES } from '../src/fusion';
 import { emptyRanks, type SkillId } from '../src/progression';
@@ -29,6 +30,27 @@ test('base water slow expires, refreshes without stacking, and legacy bubbles do
   target.knockX=target.knockZ=0;const x=target.x;f.c.update(.1,origin);expect(x-target.x).toBeCloseTo(.75*.7*.1);
   target.knockX=target.knockZ=0;f.c.update(1.5,origin);expect(target.slowTime).toBe(0);
   const legacy=fixture('bubblesalamander',false),e=legacy.fire();legacy.impact(e.shot,e.target);expect(e.target.slowTime).toBe(0);
+});
+
+test('water impact visuals move into the victim and follow it without moving the damaging contact point',()=>{
+  const f=fixture('bubblesalamander'),{target,shot}=f.fire();
+  // Approach a tank from the left and keep the projectile ahead of other targets.
+  Object.assign(shot,{x:3.6,z:0,vx:18,vz:0,life:1});
+  f.c.update(.1,origin);
+  const effect=f.c.effects.find(e=>e.active&&e.kind==='water')!;
+  expect(effect).toBeTruthy();
+  expect(target.hp).toBe(85);
+  expect(effect.enemyId).toBe(target.id);
+  expect(effect.anchorX).toBeCloseTo(target.x);
+  expect(effect.anchorZ).toBeCloseTo(target.z);
+  const rawDistance=Math.hypot(effect.x-effect.anchorX!,effect.z-effect.anchorZ!);
+  const visual=impactVisualPosition(effect);
+  expect(Math.hypot(visual.x-effect.anchorX!,visual.z-effect.anchorZ!)).toBeCloseTo(rawDistance*.35);
+  const moved=impactVisualPosition(effect,{x:effect.anchorX!+.4,z:effect.anchorZ!-.2});
+  expect(moved.x-visual.x).toBeCloseTo(.4);
+  expect(moved.z-visual.z).toBeCloseTo(-.2);
+  expect(effect.x).not.toBeCloseTo(visual.x);
+  expect(impactVisualPosition({...effect,kind:'thorn'})).toEqual({x:effect.x,z:effect.z});
 });
 
 test('deep bubble damages and slows neighbors once per impact, excludes the direct victim and spawned enemies',()=>{

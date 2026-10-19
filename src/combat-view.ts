@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { COMBAT_CLARITY, readableEffects } from './combat-clarity';
+import { COMBAT_CLARITY, WATER_IMPACT_VISUAL, impactVisualPosition, readableEffects } from './combat-clarity';
 import { enemyPose } from './enemy-motion';
 import { Combat, COMBAT_LIMITS, ENEMY_TYPES, FORMAL_POUNCE } from './combat';
 import { EncounterView } from './encounter-view';
@@ -236,10 +236,25 @@ export class CombatView {
       if (!effect.active || this.combat.hp <= 0) continue;
       if (this.combat.usesRunBuild && effect.kind === 'collect') continue;
       const progress = 1 - effect.time / effect.duration;
+      // Keep the combat contact fixed; only water's billboard moves onto/with the struck body.
+      const target = effect.kind === 'water' && effect.enemyId !== undefined
+        ? this.combat.enemies.find(enemy => enemy.id === effect.enemyId) : undefined;
+      const visual = impactVisualPosition(effect, target ? {
+        x: THREE.MathUtils.lerp(target.previousX, target.x, alpha),
+        z: THREE.MathUtils.lerp(target.previousZ, target.z, alpha),
+      } : undefined);
       const clip = elementalClip(effect.fusionId);
       if (clip?.impact.length && this.fusionPixels?.loaded) {
         const frame = clipFrame(clip.impact, effect.duration - effect.time, clip.impactFPS, false);
-        if (frame !== undefined) this.fusionPixels.put(clip.row, frame, effect.x, 1.7, effect.z, Math.min(COMBAT_CLARITY.impactSize, Math.max(1, (effect.radius || .6) * 2)));
+        if (frame !== undefined) {
+          const baseSize = Math.min(COMBAT_CLARITY.impactSize, Math.max(1, (effect.radius || .6) * 2));
+          const size = baseSize * (effect.kind === 'water'
+            ? effect.enemyKind === 'tank' ? WATER_IMPACT_VISUAL.tankScale : WATER_IMPACT_VISUAL.normalScale : 1);
+          const enemyHeight = this.pixelEnemies?.height(effect.enemyKind)
+            ?? (effect.enemyKind === 'tank' ? 2.3 : effect.enemyKind === 'fast' ? 1.45 : 1.7);
+          const height = effect.kind === 'water' ? enemyHeight * WATER_IMPACT_VISUAL.heightRatio : 1.7;
+          this.fusionPixels.put(clip.row, frame, visual.x, height, visual.z, size);
+        }
         continue;
       }
       if (effect.kind === 'burst') {
@@ -267,7 +282,7 @@ export class CombatView {
       const color = effect.kind === 'water' ? '#65dcff' : effect.kind === 'thorn' ? '#a5ec69' : effect.kind === 'burst' ? '#ffac48' : effect.kind === 'hurt' ? '#f7a08d' : effect.kind === 'collect' ? '#9cffe2' : effect.kind === 'death' ? '#ffe3a6' : '#f4ddff';
       for (let i = 0; i < this.detail; i++) {
         const angle = i / this.detail * Math.PI * 2 + 0.4, size = (1 - progress) * 0.15;
-        this.put(this.sparks, effect.x + Math.sin(angle) * progress * 0.9, 0.7 + Math.sin(progress * Math.PI) * 0.6, effect.z + Math.cos(angle) * progress * 0.9, size, size * 1.7, size, 0, angle, progress * 5, color);
+        this.put(this.sparks, visual.x + Math.sin(angle) * progress * 0.9, 0.7 + Math.sin(progress * Math.PI) * 0.6, visual.z + Math.cos(angle) * progress * 0.9, size, size * 1.7, size, 0, angle, progress * 5, color);
       }
     }
     for (const mesh of this.batches) {

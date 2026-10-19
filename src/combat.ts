@@ -27,7 +27,7 @@ export interface Enemy extends Moving { rank?: 'elite' | 'boss'; maxHp?: number;
 export interface Projectile extends Moving { vx: number; vz: number; life: number; damage: number; distance: number; sourceId?: number; species?: SpeciesId; attackId?: BaseAttackId; attackRules?: AttackRules; homing?: boolean; generation?: number; bornTick?: number; ignoreEnemyId?: number; burst?: boolean; age?: number; elemental?: boolean; fusionIds?: FusionId[]; hitIds?: number[]; pierces?: number; bounces?: number; scatter?: boolean; baseDamage?: number; damageIds?: number[]; hopTargetId?: number; hopDelay?: number; hopElapsed?: number; hopDuration?: number; hopFromX?: number; hopFromZ?: number }
 export interface Shockwave { active: boolean; x: number; z: number; age: number; radius: number; previousRadius: number; maxRadius: number; damage: number; hitIds: Int32Array }
 export interface ExperienceOrb extends Moving { value: number; magnetized: boolean }
-export interface CombatEffect extends Point { active: boolean; time: number; duration: number; kind: 'hit' | 'death' | 'collect' | 'hurt' | 'burst' | 'water' | 'thorn'; enemyKind: EnemyKind; radius?: number; fusionId?: FusionId; enemyId?: number; moveX?: number; moveZ?: number }
+export interface CombatEffect extends Point { active: boolean; time: number; duration: number; kind: 'hit' | 'death' | 'collect' | 'hurt' | 'burst' | 'water' | 'thorn'; enemyKind: EnemyKind; radius?: number; fusionId?: FusionId; enemyId?: number; anchorX?: number; anchorZ?: number; moveX?: number; moveZ?: number }
 
 /** Earliest segment / circle intersection, including shots that start inside a circle. */
 export function segmentHit(ax: number, az: number, bx: number, bz: number, x: number, z: number, radius: number) {
@@ -696,8 +696,10 @@ export class Combat {
       const fusionId = shot.fusionIds?.[0];
       const deep = shot.fusionIds?.includes('deep-bubble'), waterChain = shot.fusionIds?.includes('chain-bubble');
       const rules = shot.attackRules ?? resolveAttackRules(shot.attackId ?? 'bubble', [], 1);
+      // Visual anchor only. AoE and direct damage retain the actual swept contact (x, z).
       this.effect(x, z, shot.attackId === 'bubble' ? 'water' : 'thorn', enemy.kind,
-        (deep ? DEEP_BUBBLE.radius : waterChain ? CHAIN_BUBBLE.radius : .6) * rules.areaMultiplier, fusionId);
+        (deep ? DEEP_BUBBLE.radius : waterChain ? CHAIN_BUBBLE.radius : .6) * rules.areaMultiplier, fusionId,
+        shot.attackId === 'bubble' ? enemy : undefined);
       if (shot.attackId === 'bubble') {
         if (enemy.active) enemy.slowTime = rules.slowDuration;
         if (deep || waterChain) {
@@ -886,7 +888,8 @@ export class Combat {
   private effect(x: number, z: number, kind: CombatEffect['kind'], enemyKind: EnemyKind = 'normal', radius = 0, fusionId?: FusionId, enemy?: Enemy) {
     const effect = this.effects.find((candidate) => !candidate.active);
     const duration = kind === 'burst' ? BURST_SEED.explosionDuration : fusionId === 'deep-bubble' ? DEEP_BUBBLE.duration : fusionId === 'thorn-scatter' ? .375 : kind === 'death' ? 0.55 : 0.32;
-    if (effect) Object.assign(effect, { active: true, x, z, kind, enemyKind, radius, duration, time: duration, fusionId, enemyId: enemy?.id, moveX: enemy?.walkX ?? 0, moveZ: enemy?.walkZ ?? 0 });
+    if (effect) Object.assign(effect, { active: true, x, z, kind, enemyKind, radius, duration, time: duration, fusionId, enemyId: enemy?.id,
+      anchorX: enemy?.x, anchorZ: enemy?.z, moveX: enemy?.walkX ?? 0, moveZ: enemy?.walkZ ?? 0 });
   }
 
   inspect() {
