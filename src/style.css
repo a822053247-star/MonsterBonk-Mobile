@@ -242,3 +242,12 @@ h1>em{font-size:12px;line-height:1;letter-spacing:4px;display:inline-block;backg
 .weapon-cooldowns{display:flex;gap:6px;margin-top:6px}.weapon-charge{flex:1;min-width:50px;font-size:9px;line-height:1.5;color:#e3e6cd}.weapon-charge>span{display:inline}.weapon-charge .charge-state{margin-left:4px;color:#c6d69f}.weapon-charge i{display:block;height:3px;margin-top:3px;background:#102e27;border-radius:2px;overflow:hidden}.weapon-charge b{display:block;height:100%;background:#8fe8ff}.weapon-charge.firing b{background:#ffe5a8}.weapon-charge.firing .charge-state{color:#ffe5a8}
 @media(max-height:380px){.weapon-charge{font-size:8px}.weapon-cooldowns{margin-top:4px;gap:4px}}
 @media(max-width:700px) and (orientation:landscape){.encounter-status{left:calc(50% + 26px);width:30vw}}
+
+/* 精简界面：隐藏装饰文字与重复状态，保留操作和战斗信息。 */
+.version,.character-tag small,.character-tag p,.character-tag strong span,
+#creature-code,.location-label,.stage-note,.explore-label,
+#fusion-hint,#build-status,#weapon-cooldowns{display:none!important}
+.fusion-status{gap:8px;padding:8px 12px}
+.fusion-status strong{font-size:12px}
+.welcome .eyebrow,.upgrade-header .eyebrow{display:none}
+.pause-card #pause-reason:empty{display:none}

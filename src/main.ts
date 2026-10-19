@@ -16,5 +16,5 @@ try {
   });
 } catch (error) {
   console.error('MonsterBonk initialization failed:', error);
-  showError('无法创建 3D 场景。请使用支持 WebGL 2 的新版 Chrome 或 Safari，并确认浏览器的硬件加速已开启。');
+  showError('无法显示场景，请更新浏览器并开启硬件加速。');
 }

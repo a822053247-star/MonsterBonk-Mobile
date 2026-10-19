@@ -47,7 +47,6 @@ export class CombatView {
   private pixelsEnabled = false;
   private firePixels?: FirePixelView;
   private fusionPixels?: FirePixelView;
-  private burstRings: THREE.InstancedMesh;
   private encounters: EncounterView;
 
   constructor(private combat: Combat) {
@@ -85,7 +84,6 @@ export class CombatView {
     this.orbitCores = make(sphere, basic('#effffe'), SKILL_RULES.maxOrbitBalls);
     this.orbitPath = make(new THREE.RingGeometry(0.993, 1, 64), new THREE.MeshBasicMaterial({ color: '#b8edf0', transparent: true, opacity: 0.3, side: THREE.DoubleSide, depthWrite: false }), 1);
     this.waveRings = make(new THREE.RingGeometry(0.9, 1, 48), new THREE.MeshBasicMaterial({ color: '#e9f5b0', transparent: true, opacity: 0.65, side: THREE.DoubleSide, depthWrite: false }), COMBAT_LIMITS.shockwaves);
-    this.burstRings = make(new THREE.RingGeometry(.97, 1, 32), new THREE.MeshBasicMaterial({ color: '#ffffff', transparent: true, opacity: 0.4, side: THREE.DoubleSide, depthWrite: false }), COMBAT_LIMITS.effects);
     this.pounceLanes = make(plane, new THREE.MeshBasicMaterial({ color: '#ffad43', transparent: true, opacity: 0.48, side: THREE.DoubleSide, depthWrite: false }), COMBAT_LIMITS.enemies);
     this.pounceArrows = make(new THREE.CircleGeometry(1, 3), new THREE.MeshBasicMaterial({ color: '#ffef9c', side: THREE.DoubleSide, depthWrite: false }), COMBAT_LIMITS.enemies);
     this.recoveryRings = make(ring, new THREE.MeshBasicMaterial({ color: '#a5f5da', transparent: true, opacity: 0.7, side: THREE.DoubleSide, depthWrite: false }), COMBAT_LIMITS.enemies);
@@ -241,7 +239,6 @@ export class CombatView {
       const clip = elementalClip(effect.fusionId);
       if (clip?.impact.length && this.fusionPixels?.loaded) {
         const frame = clipFrame(clip.impact, effect.duration - effect.time, clip.impactFPS, false);
-        if ((effect.radius ?? 0) > .7) this.put(this.burstRings, effect.x, .08, effect.z, effect.radius!, effect.radius!, 1, -Math.PI / 2, 0, 0, effect.kind === 'water' ? '#65dcff' : '#a5ec69');
         if (frame !== undefined) this.fusionPixels.put(clip.row, frame, effect.x, 1.7, effect.z, Math.min(COMBAT_CLARITY.impactSize, Math.max(1, (effect.radius || .6) * 2)));
         continue;
       }
@@ -250,14 +247,8 @@ export class CombatView {
         if (this.firePixels?.loaded) {
           const frame = Math.min(3, Math.floor(progress * 4));
           this.firePixels.put(2, frame, effect.x, 1.3, effect.z, Math.min(COMBAT_CLARITY.impactSize, radius * 2));
-          this.put(this.burstRings, effect.x, .08, effect.z, radius, radius, 1, -Math.PI / 2, 0, 0, '#ffab43');
           continue;
         }
-        this.put(this.burstRings, effect.x, 0.1, effect.z, radius * (0.3 + progress * 0.7), radius * (0.3 + progress * 0.7), 1, -Math.PI / 2, 0, 0, '#ffab43');
-      }
-      if (effect.kind === 'water' || effect.kind === 'thorn') {
-        const radius = effect.radius || .45, tint = effect.kind === 'water' ? '#65dcff' : '#a5ec69';
-        this.put(this.burstRings, effect.x, .12, effect.z, radius * (.3 + progress * .7), radius * (.3 + progress * .7), 1, -Math.PI/2, 0, 0, tint);
       }
       if (effect.kind === 'death') {
         if ((this.pixelsEnabled || effect.enemyKind === 'tank') && this.pixelEnemies?.ready(effect.enemyKind)) {

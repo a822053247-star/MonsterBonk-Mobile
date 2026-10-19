@@ -318,13 +318,12 @@ export class Game {
   private syncCreatureSelection() {
     const definition = CREATURES[this.selectedSpecies];
     for (const button of document.querySelectorAll<HTMLButtonElement>('[data-creature]')) button.setAttribute('aria-pressed', String(button.dataset.creature === this.selectedSpecies));
-    document.querySelector('.menu-description')!.textContent = `${definition.name}出战 · 六波自动战斗，波次间购物构筑。`;
+    document.querySelector('.menu-description')!.textContent = `${definition.name}出战 · 自动攻击，升级强化。`;
     document.getElementById('start-selected-creature')!.firstChild!.textContent = `${definition.name} · 开始挑战 `;
     document.getElementById('choose-creature')!.setAttribute('aria-label', `选择出战幻兽，当前${definition.name}`);
   }
 
   private start(ruleset: Ruleset = this.runRuleset, partyPrototype = this.partyPrototype, newMap = false, variant = this.prototypeVariant) {
-    this.fusionNotice = ''; this.fusionNoticeUntil = 0;
     if (this.portrait || this.contextLost) return;
     this.runRuleset = ruleset;
     this.partyPrototype = partyPrototype;
@@ -634,10 +633,7 @@ export class Game {
 
   private chooseUpgrade(id: SkillId) {
     if (this.mode !== 'upgrading' || document.hidden || this.portrait || this.contextLost) return;
-    const before = this.combat.fusions.map(f => f.id);
     if (!this.combat.chooseUpgrade(id)) return;
-    const unlocked = this.combat.fusions.filter(f => !before.includes(f.id));
-    if (unlocked.length) { this.fusionNotice = `融合解锁：${unlocked.map(f => f.title).join(' / ')}`; this.fusionNoticeUntil = this.combat.elapsed + 3; }
     this.updateHUD();
     if (this.combat.progression.awaitingChoice) {
       this.renderChoices();
@@ -682,7 +678,7 @@ export class Game {
     document.getElementById('result-xp')!.textContent = String(this.combat.xp);
     const won = outcome === 'victory';
     document.getElementById('result-heading')!.textContent = this.run ? (won ? '六波挑战，通关！' : '冒险暂时结束。') : won ? '三波挑战，通关！' : '小火焰，休息一下。';
-    document.getElementById('result-eyebrow')!.textContent = won ? 'CHALLENGE CLEARED' : 'EVERY SPROUT GETS ANOTHER CHANCE';
+    document.getElementById('result-eyebrow')!.textContent = won ? '挑战完成' : '本局结束';
     document.getElementById('result-message')!.textContent = won ? '走位、成长、冲锋，下一次挑战更高星级。' : '带着这次冒险的勇气，再出发吧。';
     if (this.run) document.getElementById('result-message')!.textContent = won ? '荆冠兽王已击败！构筑经受住了六波考验。' : this.run.failure === 'boss-timeout' ? '未能在 90 秒内击败荆冠兽王。调整构筑，再来挑战。' : `生命耗尽，止步第 ${this.run.wave} 波。换一种构筑再出发。`;
     renderRunResult(this.run, this.combat);
@@ -702,8 +698,6 @@ export class Game {
     return `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(Math.floor(seconds % 60)).padStart(2, '0')}`;
   }
 
-  private fusionNotice = '';
-  private fusionNoticeUntil = 0;
 
   private updateHUD() {
     renderEncounterStatus(this.combat,this.run);
@@ -719,15 +713,13 @@ export class Game {
     fusionStatus.classList.toggle('activated', fused);
     const title = document.getElementById('fusion-title')!, hint = document.getElementById('fusion-hint')!;
     const base = this.combat.baseAttack;
-    const titleText = this.combat.usesRunBuild && (this.combat.runBuild.attacks.length > 1 || this.combat.runBuild.attacks[0].level > 1) ? this.combat.runBuild.attacks.map(a => ATTACKS[a.attackId].title + (a.level > 1 ? ` Lv.${a.level}` : '')).join(' + ') + (fused ? ` · ${this.combat.fusions.length} 融合` : '') : fused ? this.combat.fusions.map(f => f.title).join(' / ') + ' · 已融合' : base === 'bubble' ? '水泡弹' : base === 'leaf' ? '叶刃' : '火花弹';
-    const hintText = this.combat.elapsed < this.fusionNoticeUntil && this.fusionNotice ? this.fusionNotice
-      : this.combat.fusions.length > 1 ? '融合协同 · 同一攻击可同时触发兼容效果'
-      : this.combat.usesRunBuild && this.combat.runBuild.attacks.length > 1 ? '分拍连射 · ' + this.combat.runBuild.attacks.map(a => a.attackId === 'bubble' ? '水泡减速' : a.attackId === 'leaf' ? '叶刃穿透' : '火花弹').join(' / ')
-      : fused ? this.combat.fusions[0].title + ' · 已生效' : '升级可获取其他武器或通用改造';
+    const titleText = this.combat.usesRunBuild && (this.combat.runBuild.attacks.length > 1 || this.combat.runBuild.attacks[0].level > 1) ? this.combat.runBuild.attacks.map(a => ATTACKS[a.attackId].title + (a.level > 1 ? ` ${a.level}级` : '')).join(' + ') + (fused ? ` · ${this.combat.fusions.length} 融合` : '') : fused ? this.combat.fusions.map(f => f.title).join(' / ')  : base === 'bubble' ? '水泡弹' : base === 'leaf' ? '叶刃' : '火花弹';
+    const hintText = '';
+    hint.hidden = true;
     fusionStatus.title = this.combat.fusions.map(f => f.title).join(' / ');
     const species = this.party.leader.species;
     document.getElementById('creature-name')!.textContent = CREATURES[species].name;
-    document.getElementById('creature-code')!.textContent = species === 'yanrong' ? 'YANRONG' : species === 'bubblesalamander' ? 'PAOPAOYUAN' : 'YACISHOU';
+    document.getElementById('creature-code')!.textContent = '';
     const portrait = document.getElementById('creature-portrait') as HTMLImageElement;
     portrait.hidden = species === 'yanrong';
     if (species !== 'yanrong' && portrait.dataset.species !== species) { portrait.src = `${import.meta.env.BASE_URL}assets/pixel/${PIXEL_CREATURE_ASSETS[species]}`; portrait.dataset.species = species; }
@@ -752,7 +744,7 @@ export class Game {
       replay.dataset.seed = map.seed;
     }
     const seedCharacters = Array.from(map.seed ?? '');
-    document.getElementById('map-seed')!.textContent = map.seed ? '种子 ' + (seedCharacters.length > 18 ? seedCharacters.slice(0, 18).join('') + '…' : map.seed) : 'WINDSONG MEADOW';
+    document.getElementById('map-seed')!.textContent = map.seed ? '种子 ' + (seedCharacters.length > 18 ? seedCharacters.slice(0, 18).join('') + '…' : map.seed) : '中央草场';
     document.getElementById('party-status')!.hidden = !this.partyPrototype || this.party.members.length < 2;
     const trialStatus = document.getElementById('trial-status')!;
     trialStatus.hidden = !this.combat.isTrial;
@@ -775,7 +767,7 @@ export class Game {
     this.dashButton.style.setProperty('--ready', `${ready * 100}%`);
     this.dashButton.classList.toggle('cooling', this.cooldown > 0);
     this.dashButton.setAttribute('aria-disabled', String(this.cooldown > 0));
-    this.dashStatus.textContent = this.cooldown > 0 ? `${this.cooldown.toFixed(1)}s` : '就绪';
+    this.dashStatus.textContent = this.cooldown > 0 ? '冷却中' : '就绪';
     if (this.challenge) {
       const resting = this.challenge.phase === 'rest';
       if (resting) {
@@ -797,8 +789,8 @@ export class Game {
     this.killValue.textContent = String(this.combat.kills);
     this.xpValue.textContent = String(this.combat.xp);
     const progression = this.combat.progression, maxed = !Number.isFinite(progression.threshold);
-    document.getElementById('level-value')!.textContent = `Lv. ${String(progression.level).padStart(2, '0')}${maxed ? ' MAX' : ''}`;
-    document.getElementById('xp-progress')!.textContent = maxed ? 'MAX' : `${progression.experience} / ${progression.threshold}`;
+    document.getElementById('level-value')!.textContent = `${progression.level}级${maxed ? ' · 满级' : ''}`;
+    document.getElementById('xp-progress')!.textContent = maxed ? '满级' : `${progression.experience} / ${progression.threshold}`;
     document.getElementById('xp-fill')!.style.width = `${maxed ? 100 : progression.experience / progression.threshold * 100}%`;
     const xpTrack = document.getElementById('xp-track')!;
     xpTrack.setAttribute('aria-valuemax', String(maxed ? 1 : progression.threshold));

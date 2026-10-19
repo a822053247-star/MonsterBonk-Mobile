@@ -93,7 +93,7 @@ export function upgradePreview(skill: SkillDefinition, ranks: SkillRanks) {
   }
   if (skill.category === 'relic') return '稀有道具 · 本局生效';
   if (skill.category === 'evolution') return '互斥进化 · 本局不可切换';
-  if (WEAPON_CARDS[skill.id]) return skill.title.includes('强化') ? `武器 Lv.${ranks[skill.id]} → Lv.${ranks[skill.id] + 1}` : `空副武器槽 → ${skill.title.replace('获得', '')} · 独立自动攻击`;
+  if (WEAPON_CARDS[skill.id]) return skill.title.includes('强化') ? `武器 ${ranks[skill.id]} → ${ranks[skill.id] + 1}级` : `空副武器槽 → ${skill.title.replace('获得', '')} · 独立自动攻击`;
   if (skill.id === 'orbit') return `${before.orbitCount ? `${before.orbitCount} 颗` : '未习得'} → ${after.orbitCount} 颗 · ${after.orbitDamage} 伤害`;
   if (skill.id === 'split-on-hit' && skill.description.includes('所有已装备')) return '已装备火花 / 叶刃 → 对应融合';
   if (skill.id === 'split-on-hit') return skill.icon === 'leaf' ? '叶刃 → 荆棘散射 · 自动融合' : '火花弹 → 爆裂火种 · 自动融合';
