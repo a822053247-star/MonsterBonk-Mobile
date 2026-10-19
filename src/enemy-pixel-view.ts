@@ -57,17 +57,14 @@ export class EnemyPixelView {
         shader.vertexShader = shader.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\nvPixelHurt = instanceHurt; vPixelFade = instanceFade;');
         shader.fragmentShader = 'varying float vPixelHurt; varying float vPixelFade;\n' + shader.fragmentShader;
         shader.fragmentShader = shader.fragmentShader.replace('#include <color_fragment>', '#include <color_fragment>\ndiffuseColor.rgb = mix(diffuseColor.rgb, vec3(1.0, 0.96, 0.84), vPixelHurt * 0.78);');
-      };
-      // Ordered pixel dissolve retains opaque depth/cutout behavior and needs no corpse sorting.
-      material.onBeforeCompile = ((original) => shader => {
-        original(shader, undefined as unknown as THREE.WebGLRenderer);
+        // Ordered pixel dissolve retains opaque depth/cutout behavior without corpse sorting.
         shader.fragmentShader = shader.fragmentShader.replace('#include <alphatest_fragment>', `#include <alphatest_fragment>
           if (vPixelFade < 1.0) {
             vec2 p = mod(floor(gl_FragCoord.xy), 4.0);
             float threshold = (mod(p.x,2.0)*8.0+mod(p.y,2.0)*4.0+floor(p.x/2.0)*2.0+floor(p.y/2.0)+0.5)/16.0;
             if (vPixelFade < threshold) discard;
           }`);
-      })(material.onBeforeCompile);
+      };
       material.customProgramCacheKey = () => 'enemy-pixel-hurt-fade-v2';
       const mesh = new THREE.InstancedMesh(geometry, material, COMBAT_LIMITS.enemies);
       mesh.name = `EnemyPixel:${kind}`; mesh.count = 0; mesh.frustumCulled = false;
