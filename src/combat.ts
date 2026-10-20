@@ -18,7 +18,7 @@ export type EnemyKind = 'normal' | 'fast' | 'tank' | 'draft-crystal-swarm' | 'dr
 export const ENEMY_TYPES = {
   normal: { name: '赤团', hp: 30, speed: 1.25, radius: 0.55, damage: 8, xp: 3, color: '#e59472' },
   fast: { name: '疾芽', hp: 18, speed: 2.7, radius: 0.4, damage: 6, xp: 2, color: '#edd779' },
-  tank: { name: '岩甲', hp: 100, speed: 0.75, radius: 0.85, damage: 16, xp: 8, color: '#a58b6e' },
+  tank: { name: '岩甲', hp: 125, speed: 0.75, radius: 0.85, damage: 16, xp: 8, color: '#a58b6e' },
   'draft-crystal-swarm': { name: '晶屑虫', hp: 8, speed: 1.65, radius: .3, damage: 3, xp: 0, color: '#ba83d5' },
   'draft-spore-bomber': { name: '爆孢怪', hp: 28, speed: 1.05, radius: .6, damage: 6, xp: 2, color: '#e97a73' },
   'draft-treasure-runner': { name: '携宝兽', hp: 65, speed: 3.5, radius: .48, damage: 0, xp: TREASURE_RUNNER.xp, color: '#f1cd68' },
@@ -265,7 +265,8 @@ export class Combat {
 
   /** One incoming sector per batch leaves the opposite side open at birth.
    * Finite placement attempts skip blocked members, never queue a catch-up burst. */
-  spawnSwarm(player: Point, count: number, cap: number, escort: EnemyKind = 'normal') {
+  spawnSwarm(player: Point, count: number, cap: number, escort: EnemyKind = 'normal',
+    mix?: { fastCap: number; tankCap: number }) {
     if (!this.encounters.enabled || !Number.isFinite(count) || !Number.isFinite(cap)) return 0;
     const available = Math.min(Math.floor(count), Math.floor(cap) - this.enemies.filter(e => e.active).length, COMBAT_LIMITS.enemies);
     if (available <= 0 || this.enemies.every(e => e.active)) return 0;
@@ -273,8 +274,16 @@ export class Combat {
     if (!anchor) return 0;
     const heading = Math.atan2(anchor.x-player.x, anchor.z-player.z);
     let spawned = 0;
+    let fast = mix ? this.enemies.filter(e => e.active && !e.rank && e.kind === 'fast').length : 0;
+    let tank = mix ? this.enemies.filter(e => e.active && !e.rank && e.kind === 'tank').length : 0;
     for (let i = 0; i < available; i++) {
-      const kind = i === available-1 ? escort : 'normal';
+      // A reproducible 3:1:1 target mix, with live quotas: fodder never disappears,
+      // and specialist-heavy swarms cannot grow unbounded in the 200-enemy pool.
+      const slot = (this.spawned + i) % 5;
+      const candidate: EnemyKind = !mix ? i === available-1 ? escort : 'normal'
+        : slot === 1 ? 'fast' : slot === 3 ? 'tank' : 'normal';
+      const kind = mix && candidate === 'fast' && fast >= mix.fastCap ? 'normal'
+        : mix && candidate === 'tank' && tank >= mix.tankCap ? 'normal' : candidate;
       const lane = i % 3 === 1 ? -SWARM_RULES.laneAngle : i % 3 === 2 ? SWARM_RULES.laneAngle : 0;
       const point = i === 0 ? anchor : this.spawnPosition(player, SWARM_RULES.minDistance, SWARM_RULES.maxDistance, ENEMY_TYPES[kind].radius, heading + lane);
       if (!point) continue;
@@ -283,7 +292,8 @@ export class Combat {
       if (kind === 'normal') {
         enemy.swarm = true;
         enemy.hp = enemy.maxHp = SWARM_RULES.health[this.encounters.wave-1] ?? 18;
-      }
+      } else if (mix && kind === 'fast') fast++;
+      else if (mix && kind === 'tank') tank++;
       spawned++;
     }
     return spawned;
@@ -472,7 +482,16 @@ export class Combat {
           const rule = this.encounters.enabled ? FORMAL_POUNCE : POUNCE;
           if (!this.encounters.enabled || enemy.intent !== 'chase' || !this.covered(enemy.x,enemy.z,player.x,player.z)) this.updatePounce(enemy, dt, dx, dz, length, rule);
           if (enemy.intent === 'pounce') { moveX = enemy.aimX * rule.speed; moveZ = enemy.aimZ * rule.speed; }
-          else if (enemy.intent !== 'chase') { moveX = moveZ = 0; }
+          else if (this.encounters.enabled && enemy.intent === 'recover') {
+            // Disengage after a missed leap; players can punish the recovery.
+            moveX = -dx / length * type.speed * .55; moveZ = -dz / length * type.speed * .55;
+          } else if (enemy.intent !== 'chase') { moveX = moveZ = 0; }
+          else if (this.encounters.enabled && length > 2.2 && length < 8 && enemy.intentCooldown > 0) {
+            // Alternate flanking sides per enemy; lock-on/charge remains fully telegraphed.
+            const side = enemy.id % 2 ? 1 : -1;
+            moveX = (moveX - steerZ * type.speed * .72 * side) * .8;
+            moveZ = (moveZ + steerX * type.speed * .72 * side) * .8;
+          }
         }
         else if (this.encounters.enabled) {
           this.updateMelee(enemy,dt,dx,dz,length);
