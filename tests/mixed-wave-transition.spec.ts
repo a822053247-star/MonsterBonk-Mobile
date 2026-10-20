@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { Combat, ENEMY_TYPES, SWARM_RULES } from '../src/combat';
+import { Combat, ENEMY_TYPES, SWARM_RULES, FORMAL_ROCK_HP } from '../src/combat';
 import { PartySystem } from '../src/party';
 import { RunFlow, SHOP_AFTER_WAVE, WAVE_INTERMISSION_SECONDS } from '../src/run-flow';
 import { WAVE_DIRECTOR } from '../src/wave-director';
@@ -26,7 +26,7 @@ test('real formal batches contain fodder, fast flankers and rock tanks, limited 
   expect(fast.length).toBeLessThanOrEqual(9);
   expect(tanks.length).toBeLessThanOrEqual(7);
   expect(red.every(e=>e.swarm && e.hp===SWARM_RULES.health[2])).toBe(true);
-  expect(tanks.every(e=>!e.swarm && e.hp===ENEMY_TYPES.tank.hp*1.5)).toBe(true);
+  expect(tanks.every(e=>!e.swarm && e.hp===FORMAL_ROCK_HP*1.5)).toBe(true);
   for(let i=0;i<16;i++) c.spawnSwarm(origin,24,120,'normal',{fastCap:9,tankCap:7});
   expect(c.enemies.filter(e=>e.active&&e.kind==='fast').length).toBeLessThanOrEqual(9);
   expect(c.enemies.filter(e=>e.active&&e.kind==='tank').length).toBeLessThanOrEqual(7);
@@ -35,7 +35,7 @@ test('real formal batches contain fodder, fast flankers and rock tanks, limited 
 
 test('rock tanks have more HP but elite and boss have independent rank pools',()=>{
   const {c}=fixture();c.encounters.beginWave(4);
-  expect(ENEMY_TYPES.tank.hp).toBe(125);
+  expect(ENEMY_TYPES.tank.hp).toBe(100); expect(FORMAL_ROCK_HP).toBe(125);
   const tank=c.spawn('tank',5,0,0)!;
   expect(tank.maxHp).toBe(225);
   expect(tank.hp).toBe(225);
