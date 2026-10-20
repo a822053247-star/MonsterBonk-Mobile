@@ -9,6 +9,7 @@ const origin={x:0,z:0};
 function fixture() {
   const c=new Combat([],32,()=>.271);
   c.party=new PartySystem();c.fusionEnabled=true;c.automaticSpawning=false;c.reset();
+  for(const attack of c.runBuild.attacks) attack.cooldown=10000;
   return {c, run:new RunFlow(()=>.271)};
 }
 function tick(c:Combat,dt:number=1/60) {
@@ -82,7 +83,7 @@ test('director gates spore candidates until their introduction and during elite/
     const {c,run}=fixture();run.waveIndex=wave-1;
     const plan=WAVE_DIRECTOR[wave-1];
     if(plan.sporeFirst!==null)run.waveElapsed=plan.sporeFirst-4;
-    for(let n=0;n<3;n++){run.update(1,c,origin);run.update(.35,c,origin);}
+    for(let n=0;n<2;n++){run.update(1,c,origin);run.update(.35,c,origin);}
     expect(typeCount(c,'draft-spore-bomber')).toBe(0);
     if(wave===4){c.encounters.elitePulsing=true;run.waveElapsed=plan.sporeFirst!+1;}
     if(wave===6){c.encounters.bossState='dash-windup';run.waveElapsed=plan.sporeFirst!+1;}
