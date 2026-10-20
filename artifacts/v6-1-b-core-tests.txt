@@ -1,0 +1,191 @@
+
+Running 98 tests using 1 worker
+
+(node:11576) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+(node:11576) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[1/98] [chromium] › tests\build-depth.spec.ts:37:1 › weapon upgrades use real cards, cap at five and do not duplicate slots
+[2/98] [chromium] › tests\build-depth.spec.ts:48:1 › single-weapon specialization loses its bonus when a side weapon is equipped
+[3/98] [chromium] › tests\build-depth.spec.ts:57:1 › overload and berserk expand real splash while slowing fire, and evolution is exclusive
+[4/98] [chromium] › tests\build-depth.spec.ts:70:1 › hunter and shattered core change child motion/count with real damage costs and bounded generation
+[5/98] [chromium] › tests\build-depth.spec.ts:83:1 › pursuit route creates homing fire children at the cost of explosion radius
+[6/98] [chromium] › tests\build-depth.spec.ts:91:1 › tidal pearl extends water control and reduces direct hits without reducing splash
+[7/98] [chromium] › tests\build-depth.spec.ts:99:1 › echo extends leaf chain reach and increases damage decay at each extra hop
+[8/98] [chromium] › tests\build-depth.spec.ts:110:1 › reset clears levels/relics/evolution; legacy card pools never receive build rewards
+[9/98] [chromium] › tests\build-depth.spec.ts:120:1 › large experience queues keep rare offers bounded and finish without an empty upgrade trap
+[10/98] [chromium] › tests\enemy-challenge.spec.ts:22:1 › formal melee warns before contact, can be walked out of, and legacy contact is unchanged
+[11/98] [chromium] › tests\enemy-challenge.spec.ts:30:1 › formal runners share the trial lock/windup/dash/recover machine and stop at cover
+[12/98] [chromium] › tests\enemy-challenge.spec.ts:40:1 › Boss locks a visible predictive aim, cycles all three attacks, and summons only pooled warned enemies
+[13/98] [chromium] › tests\enemy-challenge.spec.ts:57:1 › hostile projectiles sweep against players and cover with shared invulnerability; full pools stay bounded
+[14/98] [chromium] › tests\enemy-challenge.spec.ts:71:1 › elite has a dodgeable pulse and pays gold and XP exactly once through shared death settlement
+[15/98] [chromium] › tests\enemy-challenge.spec.ts:84:1 › all three real weapons and existing fusions damage the Boss; water cannot immobilize or knock it away
+[16/98] [chromium] › tests\enemy-challenge.spec.ts:97:1 › final wave requires a real Boss death, waits for death animation, and resolves timeout/death correctly
+[17/98] [chromium] › tests\enemy-challenge.spec.ts:111:1 › wave four retries a saturated elite spawn, and wave clears/restarts remove every hostile state
+[18/98] [chromium] › tests\enemy-challenge.spec.ts:121:1 › a locked predictive charge hits an unchanged circle but a warning-time reversal avoids it
+[19/98] [chromium] › tests\progression.spec.ts:24:1 › exact XP boundaries and overflow preserve every earned level and choice
+[20/98] [chromium] › tests\progression.spec.ts:42:1 › all cards are unique, below their cap and selectable; max level never deadlocks
+[21/98] [chromium] › tests\progression.spec.ts:69:1 › invalid XP, stale choices and unoffered skills do not change progression
+[22/98] [chromium] › tests\progression.spec.ts:86:1 › data-driven stacks use additive base bonuses and independent spell ranks
+[23/98] [chromium] › tests\progression.spec.ts:100:1 › damage, multishot and range upgrades affect real projectiles and pool limits
+[24/98] [chromium] › tests\progression.spec.ts:119:1 › haste increases actual volleys per second; vitality increases max HP and heals
+[25/98] [chromium] › tests\progression.spec.ts:136:1 › orbit damages enemies, uses seconds-based hit immunity and resets cleanly
+[26/98] [chromium] › tests\progression.spec.ts:151:1 › shockwave expands, hits each enemy once, repeats and freezes throughout upgrade choice
+[27/98] [chromium] › tests\progression.spec.ts:177:1 › reset clears level, accumulated XP, choices, stats and both learned skills
+[28/98] [chromium] › tests\run-flow.spec.ts:14:1 › six waves provide five shops, 455 combat seconds and a 9m15s reference run with 20s rests
+[29/98] [chromium] › tests\run-flow.spec.ts:34:1 › wave boundary claims loose XP once, resolves pending upgrades, and clears combat without resetting build/HP
+[30/98] [chromium] › tests\run-flow.spec.ts:49:1 › real kills award gold once and recycling a living enemy does not count
+[31/98] [chromium] › tests\run-flow.spec.ts:58:1 › buying a weapon is atomic, costs gold rather than XP, and rejects stale/double/poor purchases
+[32/98] [chromium] › tests\run-flow.spec.ts:68:1 › healing preserves max HP; refresh prices increase and stale shop tokens cannot spend
+[33/98] [chromium] › tests\run-flow.spec.ts:80:1 › fixed rewards give a low-kill build real purchasing tradeoffs
+[34/98] [chromium] › tests\run-flow.spec.ts:88:1 › death at the last boundary defeats rather than wins and leaves historical modes unchanged
+[35/98] [chromium] › tests\swarm.spec.ts:20:1 › first batch is a real group; later waves grow to 24–36 active enemies with wave five the densest
+[36/98] [chromium] › tests\swarm.spec.ts:36:1 › placement is seeded, stays in one incoming sector, and does not overlap player, enemies, cover or bounds
+[37/98] [chromium] › tests\swarm.spec.ts:62:1 › unreachable terrain skips the batch within bounded attempts, without unsafe fallback or queued burst
+[38/98] [chromium] › tests\swarm.spec.ts:71:1 › full pool and partial capacity degrade safely without replacing live objects or overfilling
+[39/98] [chromium] › tests\swarm.spec.ts:83:1 › swarm rewards are integer XP and one coin per three real kills; carry survives waves and resets with run
+[40/98] [chromium] › tests\swarm.spec.ts:104:1 › escorts preserve formal health and warning rules; wave six keeps its original sparse support
+[41/98] [chromium] › tests\swarm.spec.ts:115:1 › high-throughput clearing has bounded economy, pooled XP merge and exactly-once boundary settlement
+[42/98] [chromium] › tests\swarm.spec.ts:138:1 › legacy automatic spawning and health are untouched and cannot opt into swarms accidentally
+[43/98] [chromium] › tests\swarm.spec.ts:147:1 › a real area attack clears multiple low-health swarm members in one burst
+[44/98] [chromium] › tests\swarm.spec.ts:160:1 › 24/36/48 pooled enemies with all fusions terminate ticks and keep child generations and resources bounded
+[45/98] [chromium] › tests\three-weapon.spec.ts:34:1 › all three creatures acquire all weapons and five fusions through real upgrades
+[46/98] [chromium] › tests\three-weapon.spec.ts:50:1 › upgrade pool filters irrelevant modifiers and acquisition keeps side cooldowns staggered
+  1) [chromium] › tests\three-weapon.spec.ts:50:1 › upgrade pool filters irrelevant modifiers and acquisition keeps side cooldowns staggered 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 63
+    Received: 58
+
+      57 |   f.learn('bubble-weapon');
+      58 |   expect(f.c.progression.skills.some(s => s.id === 'area')).toBe(true);
+    > 59 |   expect(f.c.progression.maxLevel).toBe(maxLevel - 1); // Unclaimed single-weapon badge is no longer eligible.
+         |                                    ^
+      60 |   expect(f.c.runBuild.attacks.map(a => a.cooldown)).toEqual([0, .31, .62]);
+      61 |   f.c.spawn('tank', 9, 0, 0);
+      62 |   f.c.update(.001, origin);
+        at D:\projects\MonsterBonk-Mobile\tests\three-weapon.spec.ts:59:36
+
+    Error Context: test-results\three-weapon-upgrade-pool--9798d-ps-side-cooldowns-staggered-chromium\error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\three-weapon-upgrade-pool--9798d-ps-side-cooldowns-staggered-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\three-weapon-upgrade-pool--9798d-ps-side-cooldowns-staggered-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+
+(node:34312) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+(node:34312) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[47/98] [chromium] › tests\three-weapon.spec.ts:72:1 › water expansion and two chain hops coexist with one damage ledger
+[48/98] [chromium] › tests\three-weapon.spec.ts:88:1 › leaf scatters only once while its main shot chains, never recursively deriving children
+[49/98] [chromium] › tests\three-weapon.spec.ts:100:1 › 24-slot saturation preserves direct damage and main priority; death/restart clear all weapons and effects
+
+(node:39460) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+(node:39460) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[50/98] [webkit] › tests\build-depth.spec.ts:37:1 › weapon upgrades use real cards, cap at five and do not duplicate slots
+[51/98] [webkit] › tests\build-depth.spec.ts:48:1 › single-weapon specialization loses its bonus when a side weapon is equipped
+[52/98] [webkit] › tests\build-depth.spec.ts:57:1 › overload and berserk expand real splash while slowing fire, and evolution is exclusive
+[53/98] [webkit] › tests\build-depth.spec.ts:70:1 › hunter and shattered core change child motion/count with real damage costs and bounded generation
+[54/98] [webkit] › tests\build-depth.spec.ts:83:1 › pursuit route creates homing fire children at the cost of explosion radius
+[55/98] [webkit] › tests\build-depth.spec.ts:91:1 › tidal pearl extends water control and reduces direct hits without reducing splash
+[56/98] [webkit] › tests\build-depth.spec.ts:99:1 › echo extends leaf chain reach and increases damage decay at each extra hop
+[57/98] [webkit] › tests\build-depth.spec.ts:110:1 › reset clears levels/relics/evolution; legacy card pools never receive build rewards
+[58/98] [webkit] › tests\build-depth.spec.ts:120:1 › large experience queues keep rare offers bounded and finish without an empty upgrade trap
+[59/98] [webkit] › tests\enemy-challenge.spec.ts:22:1 › formal melee warns before contact, can be walked out of, and legacy contact is unchanged
+[60/98] [webkit] › tests\enemy-challenge.spec.ts:30:1 › formal runners share the trial lock/windup/dash/recover machine and stop at cover
+[61/98] [webkit] › tests\enemy-challenge.spec.ts:40:1 › Boss locks a visible predictive aim, cycles all three attacks, and summons only pooled warned enemies
+[62/98] [webkit] › tests\enemy-challenge.spec.ts:57:1 › hostile projectiles sweep against players and cover with shared invulnerability; full pools stay bounded
+[63/98] [webkit] › tests\enemy-challenge.spec.ts:71:1 › elite has a dodgeable pulse and pays gold and XP exactly once through shared death settlement
+[64/98] [webkit] › tests\enemy-challenge.spec.ts:84:1 › all three real weapons and existing fusions damage the Boss; water cannot immobilize or knock it away
+[65/98] [webkit] › tests\enemy-challenge.spec.ts:97:1 › final wave requires a real Boss death, waits for death animation, and resolves timeout/death correctly
+[66/98] [webkit] › tests\enemy-challenge.spec.ts:111:1 › wave four retries a saturated elite spawn, and wave clears/restarts remove every hostile state
+[67/98] [webkit] › tests\enemy-challenge.spec.ts:121:1 › a locked predictive charge hits an unchanged circle but a warning-time reversal avoids it
+[68/98] [webkit] › tests\progression.spec.ts:24:1 › exact XP boundaries and overflow preserve every earned level and choice
+[69/98] [webkit] › tests\progression.spec.ts:42:1 › all cards are unique, below their cap and selectable; max level never deadlocks
+[70/98] [webkit] › tests\progression.spec.ts:69:1 › invalid XP, stale choices and unoffered skills do not change progression
+[71/98] [webkit] › tests\progression.spec.ts:86:1 › data-driven stacks use additive base bonuses and independent spell ranks
+[72/98] [webkit] › tests\progression.spec.ts:100:1 › damage, multishot and range upgrades affect real projectiles and pool limits
+[73/98] [webkit] › tests\progression.spec.ts:119:1 › haste increases actual volleys per second; vitality increases max HP and heals
+[74/98] [webkit] › tests\progression.spec.ts:136:1 › orbit damages enemies, uses seconds-based hit immunity and resets cleanly
+[75/98] [webkit] › tests\progression.spec.ts:151:1 › shockwave expands, hits each enemy once, repeats and freezes throughout upgrade choice
+[76/98] [webkit] › tests\progression.spec.ts:177:1 › reset clears level, accumulated XP, choices, stats and both learned skills
+[77/98] [webkit] › tests\run-flow.spec.ts:14:1 › six waves provide five shops, 455 combat seconds and a 9m15s reference run with 20s rests
+[78/98] [webkit] › tests\run-flow.spec.ts:34:1 › wave boundary claims loose XP once, resolves pending upgrades, and clears combat without resetting build/HP
+[79/98] [webkit] › tests\run-flow.spec.ts:49:1 › real kills award gold once and recycling a living enemy does not count
+[80/98] [webkit] › tests\run-flow.spec.ts:58:1 › buying a weapon is atomic, costs gold rather than XP, and rejects stale/double/poor purchases
+[81/98] [webkit] › tests\run-flow.spec.ts:68:1 › healing preserves max HP; refresh prices increase and stale shop tokens cannot spend
+[82/98] [webkit] › tests\run-flow.spec.ts:80:1 › fixed rewards give a low-kill build real purchasing tradeoffs
+[83/98] [webkit] › tests\run-flow.spec.ts:88:1 › death at the last boundary defeats rather than wins and leaves historical modes unchanged
+[84/98] [webkit] › tests\swarm.spec.ts:20:1 › first batch is a real group; later waves grow to 24–36 active enemies with wave five the densest
+[85/98] [webkit] › tests\swarm.spec.ts:36:1 › placement is seeded, stays in one incoming sector, and does not overlap player, enemies, cover or bounds
+[86/98] [webkit] › tests\swarm.spec.ts:62:1 › unreachable terrain skips the batch within bounded attempts, without unsafe fallback or queued burst
+[87/98] [webkit] › tests\swarm.spec.ts:71:1 › full pool and partial capacity degrade safely without replacing live objects or overfilling
+[88/98] [webkit] › tests\swarm.spec.ts:83:1 › swarm rewards are integer XP and one coin per three real kills; carry survives waves and resets with run
+[89/98] [webkit] › tests\swarm.spec.ts:104:1 › escorts preserve formal health and warning rules; wave six keeps its original sparse support
+[90/98] [webkit] › tests\swarm.spec.ts:115:1 › high-throughput clearing has bounded economy, pooled XP merge and exactly-once boundary settlement
+[91/98] [webkit] › tests\swarm.spec.ts:138:1 › legacy automatic spawning and health are untouched and cannot opt into swarms accidentally
+[92/98] [webkit] › tests\swarm.spec.ts:147:1 › a real area attack clears multiple low-health swarm members in one burst
+[93/98] [webkit] › tests\swarm.spec.ts:160:1 › 24/36/48 pooled enemies with all fusions terminate ticks and keep child generations and resources bounded
+[94/98] [webkit] › tests\three-weapon.spec.ts:34:1 › all three creatures acquire all weapons and five fusions through real upgrades
+[95/98] [webkit] › tests\three-weapon.spec.ts:50:1 › upgrade pool filters irrelevant modifiers and acquisition keeps side cooldowns staggered
+  2) [webkit] › tests\three-weapon.spec.ts:50:1 › upgrade pool filters irrelevant modifiers and acquisition keeps side cooldowns staggered 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 63
+    Received: 58
+
+      57 |   f.learn('bubble-weapon');
+      58 |   expect(f.c.progression.skills.some(s => s.id === 'area')).toBe(true);
+    > 59 |   expect(f.c.progression.maxLevel).toBe(maxLevel - 1); // Unclaimed single-weapon badge is no longer eligible.
+         |                                    ^
+      60 |   expect(f.c.runBuild.attacks.map(a => a.cooldown)).toEqual([0, .31, .62]);
+      61 |   f.c.spawn('tank', 9, 0, 0);
+      62 |   f.c.update(.001, origin);
+        at D:\projects\MonsterBonk-Mobile\tests\three-weapon.spec.ts:59:36
+
+    Error Context: test-results\three-weapon-upgrade-pool--9798d-ps-side-cooldowns-staggered-webkit\error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\three-weapon-upgrade-pool--9798d-ps-side-cooldowns-staggered-webkit\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\three-weapon-upgrade-pool--9798d-ps-side-cooldowns-staggered-webkit\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+
+(node:23172) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+(node:23172) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[96/98] [webkit] › tests\three-weapon.spec.ts:72:1 › water expansion and two chain hops coexist with one damage ledger
+[97/98] [webkit] › tests\three-weapon.spec.ts:88:1 › leaf scatters only once while its main shot chains, never recursively deriving children
+[98/98] [webkit] › tests\three-weapon.spec.ts:100:1 › 24-slot saturation preserves direct damage and main priority; death/restart clear all weapons and effects
+  2 failed
+    [chromium] › tests\three-weapon.spec.ts:50:1 › upgrade pool filters irrelevant modifiers and acquisition keeps side cooldowns staggered 
+    [webkit] › tests\three-weapon.spec.ts:50:1 › upgrade pool filters irrelevant modifiers and acquisition keeps side cooldowns staggered 
+  96 passed (8.4s)

@@ -211,7 +211,7 @@ export function renderRunShop(run: RunFlow, combat: Combat) {
       </div>
     </article>`;
   }).join('');
-  if (resetScroll) items.scrollTop = 0;
+  if (resetScroll) { items.scrollTop = 0; items.scrollLeft = 0; }
   const refresh = document.getElementById('shop-refresh') as HTMLButtonElement;
   refresh.innerHTML = `<img data-upgrade-art="refresh" src="${uiArtUrl('shop/refresh-rune.png')}" alt="" draggable="false"/><span>刷新商品 · ${shop.refreshCost} 金币</span>`;
   refresh.dataset.shopToken = shop.token; refresh.disabled = run.coins < shop.refreshCost || !shop.canRefresh;
@@ -259,7 +259,7 @@ export function renderHudWeaponIcons(combat: Combat) {
   const key = ids.join(',');
   if (root.dataset.weapons === key) return;
   root.dataset.weapons = key;
-  root.innerHTML = ids.map(id => `<span class="hud-weapon-icon" title="${ATTACKS[id].title}">${icon(id === 'bubble' ? 'wave' : 'leaf')}<img data-upgrade-art="hud-weapon" src="${uiArtUrl(`upgrade/illustrations/skills/${id}-weapon.png`)}" alt="" draggable="false"/></span>`).join('');
+  root.innerHTML = ids.map(id => `<span class="hud-weapon-icon" title="${ATTACKS[id].title}">${icon(id === 'bubble' ? 'wave' : id === 'flame-sweep' ? 'battle' : 'leaf')}<img data-upgrade-art="hud-weapon" src="${uiArtUrl(`upgrade/illustrations/skills/${id}-weapon.png`)}" alt="" draggable="false"/></span>`).join('');
   bindUpgradeArt(root);
 }
 

@@ -1,0 +1,24 @@
+{
+  "BaselineFailed": 16,
+  "CurrentFailed": 16,
+  "Identical": true,
+  "Differences": [],
+  "Failures": [
+    "chromium/build-depth-ui.spec.ts:3:1 rare choices expose costs, and pause shows levels, all six relics and the exclusive route",
+    "chromium/combat-clarity-ui.spec.ts:3:1 fully fused three-weapon build stays readable with CD indicators and pooled impact visuals",
+    "chromium/elemental-fusion-ui.spec.ts:30:11 paopaoyuan development entry uses one animated creature, real cards, automatic fusions and bounded colored effects",
+    "chromium/elemental-fusion-ui.spec.ts:30:11 yacishou development entry uses one animated creature, real cards, automatic fusions and bounded colored effects",
+    "chromium/elemental-fusion-ui.spec.ts:73:1 missing elemental textures and icons preserve procedural effects, readable cards and damage",
+    "chromium/fusion-ui.spec.ts:51:1 real fusion cards and impacts render child/explosion frames without duplicate hit flashes on both phone layouts",
+    "chromium/fusion-ui.spec.ts:98:1 missing atlas and icons keep procedural attack/explosion and readable cards",
+    "chromium/three-weapon-ui.spec.ts:3:1 grass creature acquires fire/water through upgrade cards, shows all five fusions and restarts cleanly",
+    "webkit/build-depth-ui.spec.ts:3:1 rare choices expose costs, and pause shows levels, all six relics and the exclusive route",
+    "webkit/combat-clarity-ui.spec.ts:3:1 fully fused three-weapon build stays readable with CD indicators and pooled impact visuals",
+    "webkit/elemental-fusion-ui.spec.ts:30:11 paopaoyuan development entry uses one animated creature, real cards, automatic fusions and bounded colored effects",
+    "webkit/elemental-fusion-ui.spec.ts:30:11 yacishou development entry uses one animated creature, real cards, automatic fusions and bounded colored effects",
+    "webkit/elemental-fusion-ui.spec.ts:73:1 missing elemental textures and icons preserve procedural effects, readable cards and damage",
+    "webkit/fusion-ui.spec.ts:51:1 real fusion cards and impacts render child/explosion frames without duplicate hit flashes on both phone layouts",
+    "webkit/fusion-ui.spec.ts:98:1 missing atlas and icons keep procedural attack/explosion and readable cards",
+    "webkit/three-weapon-ui.spec.ts:3:1 grass creature acquires fire/water through upgrade cards, shows all five fusions and restarts cleanly"
+  ]
+}

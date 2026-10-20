@@ -2,7 +2,7 @@ import type { RunBuild } from './run-build';
 import type { BaseAttackId } from './fusion';
 import { RELICS, EVOLUTIONS, type RelicId, type EvolutionId } from './relics';
 
-export type SkillId = 'damage' | 'haste' | 'multishot' | 'vitality' | 'movement' | 'range' | 'orbit' | 'shockwave' | 'split-on-hit' | 'area' | 'chain' | 'bubble-weapon' | 'spark-weapon' | 'leaf-weapon' | RelicId | EvolutionId;
+export type SkillId = 'damage' | 'haste' | 'multishot' | 'vitality' | 'movement' | 'range' | 'orbit' | 'shockwave' | 'split-on-hit' | 'area' | 'chain' | 'bubble-weapon' | 'spark-weapon' | 'leaf-weapon' | 'flame-sweep-weapon' | RelicId | EvolutionId;
 export type SkillRanks = Record<SkillId, number>;
 export interface SkillStats {
   damageMultiplier: number; attackRateMultiplier: number; projectileCount: number;
@@ -49,8 +49,9 @@ const CHAIN_CARD: SkillDefinition = { id: 'chain', title: '连锁弹射', benefi
 export const WATER_SKILLS: readonly SkillDefinition[] = [...SKILLS, AREA_CARD, CHAIN_CARD];
 export const GRASS_SKILLS: readonly SkillDefinition[] = [...SKILLS, { ...FUSION_SKILLS[FUSION_SKILLS.length - 1], title: '命中分裂', benefit: '叶刃命中散射三枚荆棘', description: '叶刃自动融合为荆棘散射；派生荆棘不会再次分裂。', icon: 'leaf', color: '#b4ea86' }, CHAIN_CARD];
 const BUBBLE_WEAPON: SkillDefinition = { id: 'bubble-weapon', title: '获得水泡弹', benefit: '增加独立自动攻击 · 命中减速', description: '装备第二种武器。水泡弹独立索敌、自动释放，命中使敌人减速 30%，持续 1.5 秒。副武器初始攻击间隔为基础的 1.6 倍。', maxRank: 1, icon: 'wave', color: '#55c9ed', effect: { type: 'spell', levels: [{}] } };
-export const WEAPON_CARDS: Partial<Record<SkillId, BaseAttackId>> = { 'spark-weapon': 'spark', 'bubble-weapon': 'bubble', 'leaf-weapon': 'leaf' };
+export const WEAPON_CARDS: Partial<Record<SkillId, BaseAttackId>> = { 'spark-weapon': 'spark', 'bubble-weapon': 'bubble', 'leaf-weapon': 'leaf', 'flame-sweep-weapon': 'flame-sweep' };
 const BUILD_SKILLS: readonly SkillDefinition[] = [...SKILLS,
+  { ...BUBBLE_WEAPON, id: 'flame-sweep-weapon', title: '获得火焰横扫', benefit: '身体前方自动近战 · 扇形清群', description: '自动锁定附近敌人，向前方释放 220° 火焰横扫。基础伤害 36、半径 2.8、间隔 0.9 秒；占一个武器槽，不占子弹池，不穿实心障碍。分枝、分裂和连锁不增加横扫次数。', icon: 'battle', color: '#ff8c35' },
   { ...FUSION_SKILLS[FUSION_SKILLS.length - 1], benefit: '火花爆炸分裂 / 叶刃散射', description: '所有已装备火花弹自动形成爆裂火种，叶刃形成荆棘散射；派生最多一代，可与连锁共存。' },
   AREA_CARD, CHAIN_CARD,
   { ...BUBBLE_WEAPON, description: '独立自动释放水泡弹，命中减速 30%，持续 1.5 秒。副武器一 / 二的攻击间隔分别为基础的 1.6 / 1.9 倍。' },
@@ -123,6 +124,8 @@ export class Progression {
   get skills() {
     if (!this.build || !this.fusionSkills) return this.pool;
     return this.pool.filter(skill => {
+      const weapon = WEAPON_CARDS[skill.id];
+      if (weapon && !this.build!.has(weapon) && this.build!.attacks.length >= 3) return false;
       if (skill.category === 'evolution') return this.build!.has('spark') && this.ranks['split-on-hit'] > 0 && !this.build!.evolution;
       if (skill.id === 'overload-core') return (this.build!.has('spark') && this.ranks['split-on-hit'] > 0) || (this.build!.has('bubble') && this.ranks.area > 0);
       if (skill.id === 'hunter-eye' || skill.id === 'shattered-core') return this.ranks['split-on-hit'] > 0 && (this.build!.has('spark') || this.build!.has('leaf'));
@@ -137,10 +140,12 @@ export class Progression {
       const weapon = WEAPON_CARDS[skill.id];
       if (!weapon || !this.build!.has(weapon)) return skill;
       const title = skill.title.replace('获得', '');
+      if (weapon === 'flame-sweep') return { ...skill, title: title+'强化', benefit: '横扫基础伤害 +20%', description: '只强化火焰横扫，最高 5 级；保持独立近战冷却和单次扇形命中，不生成子弹。' };
       return { ...skill, title: title + '强化', benefit: '该武器基础伤害 +20%', description: '只强化这件武器，最高 5 级。火花每级爆炸半径 +6%；水泡每级减速时长 +0.1 秒；叶刃 3 级额外穿透一名敌人。' };
     });
   }
-  get maxLevel() { return 1 + this.pool.reduce((total, skill) => total + skill.maxRank, 0) - this.purchasedRanks - (this.build && this.fusionSkills ? 2 + (this.build.attacks.length > 1 && !this.ranks['specialist-badge'] ? 1 : 0) : 0); }
+  get maxLevel() { return 1 + this.pool.reduce((total, skill) => total + skill.maxRank, 0) - this.purchasedRanks - (this.build && this.fusionSkills ? 2 + (this.build.attacks.length > 1 && !this.ranks['specialist-badge'] ? 1 : 0)
+    + (this.build.attacks.length >= 3 ? this.pool.filter(s => WEAPON_CARDS[s.id] && !this.build!.has(WEAPON_CARDS[s.id]!)).reduce((sum,s) => sum+s.maxRank,0) : 0) : 0); }
   get awaitingChoice() { return this.pendingChoices > 0; }
   get offers(): readonly SkillId[] { return this.currentOffers; }
   get threshold() { return this.level >= this.maxLevel ? Infinity : EXPERIENCE.initial + Math.max(0, this.level - 1) * EXPERIENCE.increment; }

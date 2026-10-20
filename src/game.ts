@@ -355,6 +355,7 @@ export class Game {
     this.elapsed = this.cooldown = this.dashRemaining = this.distance = 0;
     this.combat.reset(ruleset);
     this.run = this.combat.usesRunBuild ? new RunFlow() : undefined;
+    if (this.run && new URLSearchParams(window.location.search).get('meleeDev') === 'flame-sweep') this.combat.grantUpgrade('flame-sweep-weapon');
     this.combat.automaticSpawning = !this.run;
     this.run?.prepare(this.combat,this.position);
     document.getElementById('shop-screen')!.hidden = true;

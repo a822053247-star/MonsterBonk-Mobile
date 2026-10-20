@@ -1,0 +1,19 @@
+
+Running 7 tests using 1 worker
+
+
+
+(node:41660) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:41660) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/7] [chromium] › tests\flame-sweep-ui.spec.ts:26:1 › selected retimed frames render with a stable low root, no render damage and clean lifecycle
+[2/7] [chromium] › tests\flame-sweep-ui.spec.ts:59:1 › three preset peaks compare the same scene without changing combat and stay readable at phone size
+[3/7] [chromium] › tests\flame-sweep-ui.spec.ts:84:1 › GPU core attenuation reduces actual scene highlights while keeping the attack intact
+[4/7] [chromium] › tests\flame-sweep-ui.spec.ts:112:1 › missing sweep atlas keeps a bounded visible fallback and real melee damage
+[5/7] [chromium] › tests\flame-sweep-ui.spec.ts:117:1 › all eight equal cells decode transparently and retain a luminous base at the shared pixel anchor
+[6/7] [chromium] › tests\flame-sweep-visual.spec.ts:5:1 › visual presets keep bounded scale, use short windup and fast tails, and finish before the unchanged combat clock
+[7/7] [chromium] › tests\flame-sweep-visual.spec.ts:20:1 › preset query falls back safely, and the balanced tail rapidly fades instead of lingering
+  7 passed (10.8s)

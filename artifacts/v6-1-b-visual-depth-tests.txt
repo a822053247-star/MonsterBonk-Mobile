@@ -1,0 +1,16 @@
+
+Running 4 tests using 1 worker
+
+
+
+(node:42568) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:42568) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[1/4] [chromium] › tests\flame-sweep-ui.spec.ts:26:1 › selected retimed frames render with a stable low root, no render damage and clean lifecycle
+[2/4] [chromium] › tests\flame-sweep-ui.spec.ts:59:1 › three preset peaks compare the same scene without changing combat and stay readable at phone size
+[3/4] [chromium] › tests\flame-sweep-ui.spec.ts:84:1 › missing sweep atlas keeps a bounded visible fallback and real melee damage
+[4/4] [chromium] › tests\flame-sweep-ui.spec.ts:89:1 › all eight equal cells decode transparently and retain a luminous base at the shared pixel anchor
+  4 passed (8.9s)

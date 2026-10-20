@@ -56,7 +56,9 @@ test('upgrade pool filters irrelevant modifiers and acquisition keeps side coold
   expect(f.c.progression.skills.some(s => s.id === 'area')).toBe(false);
   f.learn('bubble-weapon');
   expect(f.c.progression.skills.some(s => s.id === 'area')).toBe(true);
-  expect(f.c.progression.maxLevel).toBe(maxLevel - 1); // Unclaimed single-weapon badge is no longer eligible.
+  // Full slots exclude all five unowned flame-sweep ranks as well as the unclaimed single-weapon badge.
+  expect(f.c.progression.maxLevel).toBe(maxLevel - 6);
+  expect(f.c.progression.skills.some(s => s.id === 'flame-sweep-weapon')).toBe(false);
   expect(f.c.runBuild.attacks.map(a => a.cooldown)).toEqual([0, .31, .62]);
   f.c.spawn('tank', 9, 0, 0);
   f.c.update(.001, origin);

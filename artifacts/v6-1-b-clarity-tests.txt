@@ -1,0 +1,50 @@
+
+Running 30 tests using 1 worker
+
+
+
+(node:41644) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:41644) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[1/30] [chromium] › tests\flame-sweep-ui.spec.ts:26:1 › selected retimed frames render with a stable low root, no render damage and clean lifecycle
+[2/30] [chromium] › tests\flame-sweep-ui.spec.ts:59:1 › three preset peaks compare the same scene without changing combat and stay readable at phone size
+[3/30] [chromium] › tests\flame-sweep-ui.spec.ts:84:1 › GPU core attenuation reduces actual scene highlights while keeping the attack intact
+[4/30] [chromium] › tests\flame-sweep-ui.spec.ts:112:1 › missing sweep atlas keeps a bounded visible fallback and real melee damage
+[5/30] [chromium] › tests\flame-sweep-ui.spec.ts:117:1 › all eight equal cells decode transparently and retain a luminous base at the shared pixel anchor
+[6/30] [chromium] › tests\flame-sweep-visual.spec.ts:5:1 › visual presets keep bounded scale, use short windup and fast tails, and finish before the unchanged combat clock
+[7/30] [chromium] › tests\flame-sweep-visual.spec.ts:20:1 › preset query falls back safely, and the balanced tail rapidly fades instead of lingering
+[8/30] [chromium] › tests\flame-sweep.spec.ts:20:1 › supplied originals remain byte-identical; eight equal cells have one common root and no black removal
+[9/30] [chromium] › tests\flame-sweep.spec.ts:32:1 › finite 220 degree sector respects back, radial limit and circle edges
+[10/30] [chromium] › tests\flame-sweep.spec.ts:41:1 › sweep really clears a cluster with a full projectile pool and settles kills, coins and XP once
+[11/30] [chromium] › tests\flame-sweep.spec.ts:54:1 › cover, warnings, back-facing targets and targets outside the arc are not damaged
+[12/30] [chromium] › tests\flame-sweep.spec.ts:63:1 › automatic melee waits for a target and repeats on its own cooldown after the animation ends
+[13/30] [chromium] › tests\flame-sweep.spec.ts:76:1 › direction locks per swing; upgrades/death freeze animation and reset or wave boundary clears it
+[14/30] [chromium] › tests\flame-sweep.spec.ts:87:1 › shared three slots, five upgrades, modifier compatibility and legacy card pools remain explicit
+[15/30] [chromium] › tests\flame-sweep.spec.ts:101:1 › melee uses the Boss death gate and cannot override same-frame player death
+(node:14324) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+(node:14324) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[16/30] [webkit] › tests\flame-sweep-ui.spec.ts:26:1 › selected retimed frames render with a stable low root, no render damage and clean lifecycle
+[17/30] [webkit] › tests\flame-sweep-ui.spec.ts:59:1 › three preset peaks compare the same scene without changing combat and stay readable at phone size
+[18/30] [webkit] › tests\flame-sweep-ui.spec.ts:84:1 › GPU core attenuation reduces actual scene highlights while keeping the attack intact
+[19/30] [webkit] › tests\flame-sweep-ui.spec.ts:112:1 › missing sweep atlas keeps a bounded visible fallback and real melee damage
+[20/30] [webkit] › tests\flame-sweep-ui.spec.ts:117:1 › all eight equal cells decode transparently and retain a luminous base at the shared pixel anchor
+[21/30] [webkit] › tests\flame-sweep-visual.spec.ts:5:1 › visual presets keep bounded scale, use short windup and fast tails, and finish before the unchanged combat clock
+[22/30] [webkit] › tests\flame-sweep-visual.spec.ts:20:1 › preset query falls back safely, and the balanced tail rapidly fades instead of lingering
+[23/30] [webkit] › tests\flame-sweep.spec.ts:20:1 › supplied originals remain byte-identical; eight equal cells have one common root and no black removal
+[24/30] [webkit] › tests\flame-sweep.spec.ts:32:1 › finite 220 degree sector respects back, radial limit and circle edges
+[25/30] [webkit] › tests\flame-sweep.spec.ts:41:1 › sweep really clears a cluster with a full projectile pool and settles kills, coins and XP once
+[26/30] [webkit] › tests\flame-sweep.spec.ts:54:1 › cover, warnings, back-facing targets and targets outside the arc are not damaged
+[27/30] [webkit] › tests\flame-sweep.spec.ts:63:1 › automatic melee waits for a target and repeats on its own cooldown after the animation ends
+[28/30] [webkit] › tests\flame-sweep.spec.ts:76:1 › direction locks per swing; upgrades/death freeze animation and reset or wave boundary clears it
+[29/30] [webkit] › tests\flame-sweep.spec.ts:87:1 › shared three slots, five upgrades, modifier compatibility and legacy card pools remain explicit
+[30/30] [webkit] › tests\flame-sweep.spec.ts:101:1 › melee uses the Boss death gate and cannot override same-frame player death
+  30 passed (21.3s)

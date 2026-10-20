@@ -514,6 +514,77 @@ h1>em{font-size:12px;line-height:1;letter-spacing:4px;display:inline-block;backg
 .shop-item>.shop-item-type{top:23%;font-size:8px;line-height:1.25}
 .shop-item-body{top:32%}
 
+/* Give the merchandise the available screen space, with full-size cards on phones. */
+.shop-screen{padding:calc(6px + var(--safe-top)) calc(8px + var(--safe-right)) calc(6px + var(--safe-bottom)) calc(8px + var(--safe-left))}
+.shop-panel{width:min(1400px,100%);height:100%;gap:4px;--shop-card-height:clamp(205px,calc(100dvh - 118px - var(--safe-top) - var(--safe-bottom)),520px)}
+.shop-display{padding:12px 14px;overflow:hidden}
+.shop-items{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:calc((100% - 30px)/4);gap:10px;overflow:auto;align-items:center;scroll-snap-type:x mandatory;touch-action:pan-x pan-y}
+.shop-item{scroll-snap-align:start}
+.shop-title-arc{transform:none}
+.shop-item>.shop-item-type{font-size:11px}
+.shop-item-body{top:32%;bottom:26%;gap:4px}
+.shop-item .shop-benefit{font-size:12px;line-height:1.4}
+.shop-item .shop-cost{font-size:11px;line-height:1.3}
+.shop-purchase{top:76%;bottom:9%;min-height:34px;left:12%;right:12%}
+.shop-purchase .shop-buy,.shop-purchase .shop-price{font-size:12px}
+.shop-actions button{min-height:40px;font-size:12px}
+@media(max-width:1000px){
+  .shop-items{grid-auto-columns:calc((100% - 24px)/3.15)}
+}
+@media(max-width:700px){
+  .shop-items{grid-auto-columns:calc((100% - 16px)/2.12)}
+  .shop-display{padding:10px}
+  .shop-header{gap:6px 12px}
+}
+@media(max-height:350px){
+  .shop-screen{padding-top:calc(4px + var(--safe-top));padding-bottom:calc(4px + var(--safe-bottom))}
+  .shop-panel{gap:2px}
+  .shop-message{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+  .shop-display{padding:6px 10px}
+  .shop-actions{min-height:34px}
+  .shop-actions button{min-height:34px;padding-block:4px;font-size:11px}
+  .shop-item-body{top:33%;bottom:23%}
+  .shop-item .shop-benefit{font-size:11px}
+  .shop-item .shop-cost{font-size:10px}
+  .shop-purchase{top:77%;bottom:6%}
+}
+
+/* Desktop browsers use the viewport for readable, four-column merchandise. */
+@media(min-width:1001px) and (min-height:451px){
+  .shop-screen{padding:3dvh 2vw}
+  .shop-panel{width:min(1800px,100%);height:100%;gap:10px;--shop-card-height:min(800px,calc(94dvh - 180px))}
+  .shop-header{min-height:40px;gap:32px}
+  .shop-header h2{font-size:24px}
+  .shop-header strong{font-size:25px}
+  .shop-header #shop-health{font-size:16px}
+  .shop-wallet img{width:32px;height:32px}
+  .shop-message{font-size:14px;min-height:20px}
+  .shop-display{padding:16px 18px}
+  .shop-items{grid-auto-columns:calc((100% - 42px)/4);gap:14px}
+  .shop-item h3{top:8.2%}
+  .shop-item>.shop-item-type{font-size:clamp(16px,1.3vw,22px)}
+  .shop-item-body{top:30%;bottom:32%}
+  .shop-illustration>img{width:88%;height:88%}
+  .shop-illustration.multiple-art>img{width:44%}
+  .shop-item .shop-benefit{font-size:clamp(14px,1.15vw,20px);line-height:1.5}
+  .shop-item .shop-cost{font-size:clamp(12px,1vw,17px);line-height:1.4}
+  .shop-purchase .shop-buy,.shop-purchase .shop-price{font-size:clamp(14px,1.15vw,20px)}
+  .shop-purchase{top:75%;bottom:9%;left:16%;right:16%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;min-height:0}
+  .shop-purchase .shop-buy{position:relative;inset:auto;flex:0 0 auto;width:82%;max-width:224px;height:clamp(42px,4.6dvh,50px);min-height:42px;justify-content:center;padding:8px 30px;border:2px solid #b99550;border-radius:12px 5px;background:linear-gradient(180deg,#52755a,#2e523f);color:#fff0c1;box-shadow:inset 0 0 0 2px #243e32,inset 0 0 0 3px #d8bb7159,inset 0 5px 10px #c2dc8c17,0 3px 0 #654c2d,0 5px 8px #42391d26;text-shadow:0 1px 2px #152e25;transition:background .15s,box-shadow .15s,filter .15s}
+  .shop-purchase .shop-buy::before,.shop-purchase .shop-buy::after{content:'';position:absolute;top:50%;width:5px;height:5px;border:1px solid #e5c880;background:#a78b4d;transform:translateY(-50%) rotate(45deg);pointer-events:none}
+  .shop-purchase .shop-buy::before{left:14px}
+  .shop-purchase .shop-buy::after{right:14px}
+  .shop-purchase .shop-buy-label{letter-spacing:2px;padding-left:2px}
+  .shop-purchase .shop-buy:hover:not(:disabled){background:linear-gradient(#668966,#3b6348);box-shadow:inset 0 0 0 2px #2d4836,inset 0 0 0 3px #e9cd8777,0 3px 0 #654c2d,0 5px 12px #42391d33}
+  .shop-purchase .shop-buy:active:not(:disabled){box-shadow:inset 0 0 0 2px #243e32,inset 0 0 0 3px #d8bb7159,0 1px 0 #654c2d}
+  .shop-purchase .shop-buy:disabled{border-color:#aaa17e;background:linear-gradient(#dfdfc9,#c7cbb3);box-shadow:inset 0 0 0 2px #eae5d2; color:#66715a;text-shadow:none}
+  .shop-purchase .shop-buy:disabled::before,.shop-purchase .shop-buy:disabled::after{border-color:#999b7b;background:#b1b394}
+  .shop-purchase .shop-price{position:static;transform:none;flex:0 0 auto;align-self:center;gap:5px;font-weight:700;line-height:1.2}
+  .shop-purchase .shop-price img{width:22px;height:22px}
+  .shop-actions{gap:20px;min-height:48px}
+  .shop-actions button{min-height:48px;font-size:16px;padding:10px 20px}
+}
+
 /* Adventure report: state-driven outcome, with live text over parchment. */
 #gameover-screen{background:radial-gradient(ellipse at 50% 40%,#2e5557bb,#0a2533ed);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);padding:calc(14px + var(--safe-top)) calc(18px + var(--safe-right)) calc(14px + var(--safe-bottom)) calc(18px + var(--safe-left))}
 #gameover-screen[data-outcome=victory]{background:radial-gradient(ellipse at 50% 38%,#e0ba5e4d,#173b32eb)}

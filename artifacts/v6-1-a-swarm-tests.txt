@@ -1,0 +1,47 @@
+
+Running 22 tests using 1 worker
+
+
+
+(node:44092) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+(node:44092) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[1/22] [chromium] › tests\swarm-ui.spec.ts:3:1 › browser renders first-wave groups and the dense fifth wave, and pause/restart freeze and clear them
+[2/22] [chromium] › tests\swarm.spec.ts:20:1 › first batch is a real group; later waves grow to 24–36 active enemies with wave five the densest
+[3/22] [chromium] › tests\swarm.spec.ts:36:1 › placement is seeded, stays in one incoming sector, and does not overlap player, enemies, cover or bounds
+[4/22] [chromium] › tests\swarm.spec.ts:62:1 › unreachable terrain skips the batch within bounded attempts, without unsafe fallback or queued burst
+[5/22] [chromium] › tests\swarm.spec.ts:71:1 › full pool and partial capacity degrade safely without replacing live objects or overfilling
+[6/22] [chromium] › tests\swarm.spec.ts:83:1 › swarm rewards are integer XP and one coin per three real kills; carry survives waves and resets with run
+[7/22] [chromium] › tests\swarm.spec.ts:104:1 › escorts preserve formal health and warning rules; wave six keeps its original sparse support
+[8/22] [chromium] › tests\swarm.spec.ts:115:1 › high-throughput clearing has bounded economy, pooled XP merge and exactly-once boundary settlement
+[9/22] [chromium] › tests\swarm.spec.ts:138:1 › legacy automatic spawning and health are untouched and cannot opt into swarms accidentally
+[10/22] [chromium] › tests\swarm.spec.ts:147:1 › a real area attack clears multiple low-health swarm members in one burst
+[11/22] [chromium] › tests\swarm.spec.ts:160:1 › 24/36/48 pooled enemies with all fusions terminate ticks and keep child generations and resources bounded
+
+(node:46396) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+(node:46396) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[12/22] [webkit] › tests\swarm-ui.spec.ts:3:1 › browser renders first-wave groups and the dense fifth wave, and pause/restart freeze and clear them
+[13/22] [webkit] › tests\swarm.spec.ts:20:1 › first batch is a real group; later waves grow to 24–36 active enemies with wave five the densest
+[14/22] [webkit] › tests\swarm.spec.ts:36:1 › placement is seeded, stays in one incoming sector, and does not overlap player, enemies, cover or bounds
+[15/22] [webkit] › tests\swarm.spec.ts:62:1 › unreachable terrain skips the batch within bounded attempts, without unsafe fallback or queued burst
+[16/22] [webkit] › tests\swarm.spec.ts:71:1 › full pool and partial capacity degrade safely without replacing live objects or overfilling
+[17/22] [webkit] › tests\swarm.spec.ts:83:1 › swarm rewards are integer XP and one coin per three real kills; carry survives waves and resets with run
+[18/22] [webkit] › tests\swarm.spec.ts:104:1 › escorts preserve formal health and warning rules; wave six keeps its original sparse support
+[19/22] [webkit] › tests\swarm.spec.ts:115:1 › high-throughput clearing has bounded economy, pooled XP merge and exactly-once boundary settlement
+[20/22] [webkit] › tests\swarm.spec.ts:138:1 › legacy automatic spawning and health are untouched and cannot opt into swarms accidentally
+[21/22] [webkit] › tests\swarm.spec.ts:147:1 › a real area attack clears multiple low-health swarm members in one burst
+[22/22] [webkit] › tests\swarm.spec.ts:160:1 › 24/36/48 pooled enemies with all fusions terminate ticks and keep child generations and resources bounded
+  22 passed (21.2s)
+npm notice
+npm notice New major version of npm available! 10.9.2 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

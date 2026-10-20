@@ -1,14 +1,16 @@
 import { CREATURES, type SpeciesId } from './party';
 import type { BaseAttackId } from './fusion';
 import { resolveAttackRules, type RelicId, type EvolutionId } from './relics';
+import { FLAME_SWEEP } from './flame-sweep';
 
 export const MAX_WEAPON_LEVEL = 5;
 
 /** Weapon identity is independent of its caster. Three distinct weapons share a bounded combat pool. */
 export const ATTACKS = {
-  spark: { title: '火花弹', damage: 18, interval: .44, range: 10.5, color: '#ff9849' },
-  bubble: { title: '水泡弹', damage: 15, interval: .62, range: 10.5, color: '#55c9ed' },
-  leaf: { title: '叶刃', damage: 16, interval: .54, range: 10.5, color: '#70bc52' },
+  spark: { kind: 'projectile', title: '火花弹', damage: 18, interval: .44, range: 10.5, color: '#ff9849' },
+  bubble: { kind: 'projectile', title: '水泡弹', damage: 15, interval: .62, range: 10.5, color: '#55c9ed' },
+  leaf: { kind: 'projectile', title: '叶刃', damage: 16, interval: .54, range: 10.5, color: '#70bc52' },
+  'flame-sweep': { kind: 'melee_arc', title: '火焰横扫', damage: FLAME_SWEEP.damage, interval: FLAME_SWEEP.interval, range: FLAME_SWEEP.radius, color: '#ff8c35' },
 } as const;
 
 export interface EquippedAttack {

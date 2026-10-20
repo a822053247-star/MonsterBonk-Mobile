@@ -1,0 +1,187 @@
+{
+  "frames": 8,
+  "frameSize": [
+    448,
+    448
+  ],
+  "atlasSize": [
+    3584,
+    448
+  ],
+  "anchor": [
+    96,
+    368
+  ],
+  "backgroundRemoval": "none; sources already have alpha",
+  "fps": 20,
+  "sources": [
+    {
+      "size": [
+        2172,
+        724
+      ],
+      "sha256": "24d9d5d3c2b5357dab01f88a03ce3e1f0215591824be2c165043358649dc5400"
+    },
+    {
+      "size": [
+        2172,
+        724
+      ],
+      "sha256": "f850fa400012451f2363fb5299bb827b302f28a5422186868a05b9c5fc26079c"
+    }
+  ],
+  "records": [
+    {
+      "index": 0,
+      "source": 1,
+      "rect": [
+        0,
+        0,
+        470,
+        724
+      ],
+      "sourceRoot": [
+        108,
+        619
+      ],
+      "anchor": [
+        96,
+        368
+      ],
+      "scale": 0.5
+    },
+    {
+      "index": 1,
+      "source": 1,
+      "rect": [
+        470,
+        0,
+        470,
+        724
+      ],
+      "sourceRoot": [
+        548,
+        617
+      ],
+      "anchor": [
+        96,
+        368
+      ],
+      "scale": 0.5
+    },
+    {
+      "index": 2,
+      "source": 1,
+      "rect": [
+        940,
+        0,
+        548,
+        724
+      ],
+      "sourceRoot": [
+        1036,
+        631
+      ],
+      "anchor": [
+        96,
+        368
+      ],
+      "scale": 0.5
+    },
+    {
+      "index": 3,
+      "source": 1,
+      "rect": [
+        1488,
+        0,
+        684,
+        724
+      ],
+      "sourceRoot": [
+        1626,
+        630
+      ],
+      "anchor": [
+        96,
+        368
+      ],
+      "scale": 0.5
+    },
+    {
+      "index": 4,
+      "source": 2,
+      "rect": [
+        0,
+        0,
+        700,
+        724
+      ],
+      "sourceRoot": [
+        150,
+        636
+      ],
+      "anchor": [
+        96,
+        368
+      ],
+      "scale": 0.5
+    },
+    {
+      "index": 5,
+      "source": 2,
+      "rect": [
+        700,
+        0,
+        475,
+        724
+      ],
+      "sourceRoot": [
+        716,
+        636
+      ],
+      "anchor": [
+        96,
+        368
+      ],
+      "scale": 0.5
+    },
+    {
+      "index": 6,
+      "source": 2,
+      "rect": [
+        1175,
+        0,
+        535,
+        724
+      ],
+      "sourceRoot": [
+        1242,
+        637
+      ],
+      "anchor": [
+        96,
+        368
+      ],
+      "scale": 0.5
+    },
+    {
+      "index": 7,
+      "source": 2,
+      "rect": [
+        1710,
+        0,
+        462,
+        724
+      ],
+      "sourceRoot": [
+        1742,
+        637
+      ],
+      "anchor": [
+        96,
+        368
+      ],
+      "scale": 0.5
+    }
+  ]
+}

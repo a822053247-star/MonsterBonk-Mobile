@@ -1,0 +1,44 @@
+
+Running 24 tests using 1 worker
+
+
+
+(node:44100) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:44100) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[1/24] [chromium] › tests\flame-sweep.spec.ts:20:1 › supplied originals remain byte-identical; eight equal cells have one common root and no black removal
+[2/24] [chromium] › tests\flame-sweep.spec.ts:32:1 › finite 220 degree sector respects back, radial limit and circle edges
+[3/24] [chromium] › tests\flame-sweep.spec.ts:41:1 › sweep really clears a cluster with a full projectile pool and settles kills, coins and XP once
+[4/24] [chromium] › tests\flame-sweep.spec.ts:54:1 › cover, warnings, back-facing targets and targets outside the arc are not damaged
+[5/24] [chromium] › tests\flame-sweep.spec.ts:63:1 › direction locks per swing; upgrades/death freeze animation and reset or wave boundary clears it
+[6/24] [chromium] › tests\flame-sweep.spec.ts:74:1 › shared three slots, five upgrades, modifier compatibility and legacy card pools remain explicit
+[7/24] [chromium] › tests\flame-sweep.spec.ts:88:1 › melee uses the Boss death gate and cannot override same-frame player death
+[8/24] [chromium] › tests\three-weapon.spec.ts:34:1 › all three creatures acquire all weapons and five fusions through real upgrades
+[9/24] [chromium] › tests\three-weapon.spec.ts:50:1 › upgrade pool filters irrelevant modifiers and acquisition keeps side cooldowns staggered
+[10/24] [chromium] › tests\three-weapon.spec.ts:74:1 › water expansion and two chain hops coexist with one damage ledger
+[11/24] [chromium] › tests\three-weapon.spec.ts:90:1 › leaf scatters only once while its main shot chains, never recursively deriving children
+[12/24] [chromium] › tests\three-weapon.spec.ts:102:1 › 24-slot saturation preserves direct damage and main priority; death/restart clear all weapons and effects
+
+(node:46212) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+(node:46212) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[13/24] [webkit] › tests\flame-sweep.spec.ts:20:1 › supplied originals remain byte-identical; eight equal cells have one common root and no black removal
+[14/24] [webkit] › tests\flame-sweep.spec.ts:32:1 › finite 220 degree sector respects back, radial limit and circle edges
+[15/24] [webkit] › tests\flame-sweep.spec.ts:41:1 › sweep really clears a cluster with a full projectile pool and settles kills, coins and XP once
+[16/24] [webkit] › tests\flame-sweep.spec.ts:54:1 › cover, warnings, back-facing targets and targets outside the arc are not damaged
+[17/24] [webkit] › tests\flame-sweep.spec.ts:63:1 › direction locks per swing; upgrades/death freeze animation and reset or wave boundary clears it
+[18/24] [webkit] › tests\flame-sweep.spec.ts:74:1 › shared three slots, five upgrades, modifier compatibility and legacy card pools remain explicit
+[19/24] [webkit] › tests\flame-sweep.spec.ts:88:1 › melee uses the Boss death gate and cannot override same-frame player death
+[20/24] [webkit] › tests\three-weapon.spec.ts:34:1 › all three creatures acquire all weapons and five fusions through real upgrades
+[21/24] [webkit] › tests\three-weapon.spec.ts:50:1 › upgrade pool filters irrelevant modifiers and acquisition keeps side cooldowns staggered
+[22/24] [webkit] › tests\three-weapon.spec.ts:74:1 › water expansion and two chain hops coexist with one damage ledger
+[23/24] [webkit] › tests\three-weapon.spec.ts:90:1 › leaf scatters only once while its main shot chains, never recursively deriving children
+[24/24] [webkit] › tests\three-weapon.spec.ts:102:1 › 24-slot saturation preserves direct damage and main priority; death/restart clear all weapons and effects
+  24 passed (2.1s)

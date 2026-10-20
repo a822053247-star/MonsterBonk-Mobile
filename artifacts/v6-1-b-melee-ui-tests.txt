@@ -1,0 +1,26 @@
+
+Running 6 tests using 1 worker
+
+
+
+(node:45600) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:45600) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[1/6] [chromium] › tests\flame-sweep-ui.spec.ts:26:1 › eight supplied frames render in the real game with a stable root, no render damage and clean lifecycle
+[2/6] [chromium] › tests\flame-sweep-ui.spec.ts:49:1 › missing sweep atlas keeps a bounded visible fallback and real melee damage
+[3/6] [chromium] › tests\flame-sweep-ui.spec.ts:54:1 › all eight equal cells decode transparently and retain a luminous base at the shared pixel anchor
+(node:20044) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+(node:20044) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[4/6] [webkit] › tests\flame-sweep-ui.spec.ts:26:1 › eight supplied frames render in the real game with a stable root, no render damage and clean lifecycle
+[5/6] [webkit] › tests\flame-sweep-ui.spec.ts:49:1 › missing sweep atlas keeps a bounded visible fallback and real melee damage
+[6/6] [webkit] › tests\flame-sweep-ui.spec.ts:54:1 › all eight equal cells decode transparently and retain a luminous base at the shared pixel anchor
+  6 passed (12.3s)

@@ -1,0 +1,1543 @@
+
+> monsterbonk-mobile@0.4.0 test
+> playwright test
+
+
+Running 566 tests using 1 worker
+
+(node:37380) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:37380) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok   1 [chromium] › tests\25d-model.spec.ts:7:1 › screen input maps to projected ground direction without changing speed or analog strength (55ms)
+  ok   2 [chromium] › tests\25d-model.spec.ts:17:1 › landscape frustum keeps horizontal and vertical combat visibility across phone sizes (10ms)
+  ok   3 [chromium] › tests\25d-model.spec.ts:27:1 › independent organs replace once, survive form socket changes, reuse resources, and dispose detached props (43ms)
+  ok   4 [chromium] › tests\25d.spec.ts:21:1 › mobile touches follow all screen directions with fixed orientation and ground height (7.4s)
+  ok   5 [chromium] › tests\25d.spec.ts:47:1 › Yanrong and two socket props render with clear low scenery, combat and responsive frustum (2.7s)
+  x    6 [chromium] › tests\build-depth-ui.spec.ts:3:1 › rare choices expose costs, and pause shows levels, all six relics and the exclusive route (15.9s)
+(node:17696) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:17696) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok   7 [chromium] › tests\build-depth.spec.ts:37:1 › weapon upgrades use real cards, cap at five and do not duplicate slots (20ms)
+  ok   8 [chromium] › tests\build-depth.spec.ts:48:1 › single-weapon specialization loses its bonus when a side weapon is equipped (5ms)
+  ok   9 [chromium] › tests\build-depth.spec.ts:57:1 › overload and berserk expand real splash while slowing fire, and evolution is exclusive (5ms)
+  ok  10 [chromium] › tests\build-depth.spec.ts:70:1 › hunter and shattered core change child motion/count with real damage costs and bounded generation (5ms)
+  ok  11 [chromium] › tests\build-depth.spec.ts:83:1 › pursuit route creates homing fire children at the cost of explosion radius (5ms)
+  ok  12 [chromium] › tests\build-depth.spec.ts:91:1 › tidal pearl extends water control and reduces direct hits without reducing splash (3ms)
+  ok  13 [chromium] › tests\build-depth.spec.ts:99:1 › echo extends leaf chain reach and increases damage decay at each extra hop (4ms)
+  ok  14 [chromium] › tests\build-depth.spec.ts:110:1 › reset clears levels/relics/evolution; legacy card pools never receive build rewards (5ms)
+  ok  15 [chromium] › tests\build-depth.spec.ts:120:1 › large experience queues keep rare offers bounded and finish without an empty upgrade trap (53ms)
+  ok  16 [chromium] › tests\challenge-model.spec.ts:11:1 › finite waves spawn exactly their configured enemies and victory never requires optional techniques (20ms)
+  ok  17 [chromium] › tests\challenge-model.spec.ts:21:1 › remaining queued enemies prevent early clears, rest lasts three simulation seconds, and running away respawns targets (5ms)
+  ok  18 [chromium] › tests\challenge-model.spec.ts:35:1 › upgrades/death freeze wave timers, and final kills win before an unused upgrade (4ms)
+  ok  19 [chromium] › tests\challenge-model.spec.ts:49:1 › bonuses add stars only after winning and fresh directors carry no previous progress (11ms)
+  ok  20 [chromium] › tests\challenge-model.spec.ts:57:1 › encounter retries respect cover, boundaries and pool capacity without losing the wave queue (7ms)
+  ok  21 [chromium] › tests\challenge-model.spec.ts:66:1 › 30/60/120 Hz render schedules produce the same fixed-step wave progression (10ms)
+  ok  22 [chromium] › tests\challenge-ui.spec.ts:32:1 › challenge clears three finite waves into victory, freezes, retries, and preserves classic defeat text (4.0s)
+  ok  23 [chromium] › tests\challenge-ui.spec.ts:46:1 › wave break, three-choice upgrades, pause and background freeze the director (6.8s)
+  ok  24 [chromium] › tests\challenge-ui.spec.ts:59:1 › new entry, wave HUD and victory controls fit two phone landscape safe areas (4.6s)
+challenge simulated playthrough: {"outcome":"victory","time":26.21666666666646,"hp":80,"kills":15,"horns":7,"interrupts":1,"level":4}
+  x   25 [chromium] › tests\challenge-ui.spec.ts:72:1 › real movement, auto attacks, dash damage and normal upgrades can complete the encounter without forced kills (2.7s)
+(node:40104) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:40104) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x   26 [chromium] › tests\combat-clarity-ui.spec.ts:3:1 › fully fused three-weapon build stays readable with CD indicators and pooled impact visuals (12.0s)
+(node:23452) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:23452) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  27 [chromium] › tests\combat-clarity.spec.ts:6:1 › even a single multishot weapon spaces its shots over time (9ms)
+  ok  28 [chromium] › tests\combat-clarity.spec.ts:14:1 › three ready weapons and multishot emit distinguishable bullets instead of same-frame stacks (130ms)
+  ok  29 [chromium] › tests\combat-clarity.spec.ts:32:1 › overlapping impact visuals keep the major explosion and leave combat state untouched (3ms)
+  ok  30 [chromium] › tests\combat-clarity.spec.ts:40:1 › pause/upgrade freezes a partially emitted volley and wave cleanup discards it (2ms)
+  ok  31 [chromium] › tests\combat-model.spec.ts:13:1 › three enemies have distinct pursuit speeds and durability (3ms)
+  ok  32 [chromium] › tests\combat-model.spec.ts:28:1 › targeting excludes blocked, distant, spawning and dead enemies (2ms)
+  ok  33 [chromium] › tests\combat-model.spec.ts:40:1 › magic bolts damage, flash, kill and drop XP which nearby players collect once (3ms)
+  ok  34 [chromium] › tests\combat-model.spec.ts:61:1 › contact damage has a shared invulnerability window and death freezes combat (5ms)
+  ok  35 [chromium] › tests\combat-model.spec.ts:81:1 › swept collision catches tunneling and only the first enemy is hit (1ms)
+  ok  36 [chromium] › tests\combat-model.spec.ts:91:1 › spawn positions stay near the player, inside the map and outside obstacles (22ms)
+  ok  37 [chromium] › tests\combat-model.spec.ts:108:1 › 30, 60 and 120 Hz frame schedules give identical fixed-step combat results (37ms)
+  ok  38 [chromium] › tests\combat-model.spec.ts:129:1 › all pools are bounded, full XP pool merges drops, and reset removes old entities (456ms)
+  ok  39 [chromium] › tests\companion-animation.spec.ts:6:1 › companion clips use audited frames, correct diagonal orientation and last-heading idle (214ms)
+  ok  40 [chromium] › tests\companion-animation.spec.ts:62:1 › actual companion GPU frames change independently with stable size and release every texture (1.7s)
+  ok  41 [chromium] › tests\companion-animation.spec.ts:68:1 › real legacy formation animates followers and freezes on pause, background, death and restart (3.2s)
+  ok  42 [chromium] › tests\companion-animation.spec.ts:85:1 › missing companion atlases keep original static PNGs visible without disabling movement (2.1s)
+  ok  43 [chromium] › tests\companion-animation.spec.ts:92:1 › legacy Yanrong leader visibly walks through frames, keeps heading when stopping (2.1s)
+  ok  44 [chromium] › tests\creature-animation-assets.spec.ts:6:1 › direction changes preserve visible character height instead of shrinking the side walk (1.7s)
+  ok  45 [chromium] › tests\creature-animation-assets.spec.ts:28:1 › audited silhouettes preserve originals and explicitly reject the clipped front frame (61ms)
+  ok  46 [chromium] › tests\creature-animation-assets.spec.ts:46:1 › decoded runtime frames share a foot line, contain no neighboring character, and visibly differ (1.4s)
+  ok  47 [chromium] › tests\creature-animation-model.spec.ts:8:1 › all eight directions follow projected screen velocity, including rotated cameras and left mirrors (13ms)
+  ok  48 [chromium] › tests\creature-animation-model.spec.ts:26:1 › continuous analog motion is not quantized and sector boundaries use hysteresis (4ms)
+  ok  49 [chromium] › tests\creature-animation-model.spec.ts:36:1 › walk and idle clips loop at their configured FPS and never select the clipped source frame (11ms)
+  ok  50 [chromium] › tests\creature-animation-model.spec.ts:51:1 › animation clocks only change on explicit simulation steps; stop and restart retain/reset direction appropriately (7ms)
+  ok  51 [chromium] › tests\creature-animation-ui.spec.ts:43:1 › real V5 leader renders all projected directions, mirrors left and retains heading when stopping (3.3s)
+  ok  52 [chromium] › tests\creature-animation-ui.spec.ts:63:1 › visible GPU pixels change across real walking/idle frames, with stable foot, size and frame sequence (2.9s)
+  ok  53 [chromium] › tests\creature-animation-ui.spec.ts:77:1 › actual collision displacement controls animation and animated/static visuals have identical combat and positions (5.8s)
+  ok  54 [chromium] › tests\creature-animation-ui.spec.ts:91:1 › pause, choices, background and death freeze frames; restart resets the real leader (3.6s)
+  ok  55 [chromium] › tests\creature-animation-ui.spec.ts:102:1 › missing diagonal falls back to a mirrored side; both missing atlases retain the original PNG (3.7s)
+  ok  56 [chromium] › tests\creature-animation-ui.spec.ts:115:1 › shared atlases render independent real frames/mirrors without shared UV mutations and release all leases (2.1s)
+  ok  57 [chromium] › tests\creature-animation-ui.spec.ts:121:1 › disposal during animation loading releases leases and late callbacks never reattach (2.5s)
+  ok  58 [chromium] › tests\creature-selection.spec.ts:5:168 › choose yanrong directly from menu and keep only that creature through restart (2.4s)
+  ok  59 [chromium] › tests\creature-selection.spec.ts:5:168 › choose bubblesalamander directly from menu and keep only that creature through restart (2.4s)
+  ok  60 [chromium] › tests\creature-selection.spec.ts:5:168 › choose sproutspike directly from menu and keep only that creature through restart (2.4s)
+  ok  61 [chromium] › tests\creature-selection.spec.ts:13:1 › selection dialog, cards and start targets fit both phone safe areas and closing does not start a run (4.6s)
+  x   62 [chromium] › tests\creature-selection.spec.ts:21:1 › menu selection overrides development URL and remains selected after returning from compatibility mode (3.4s)
+(node:34380) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:34380) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  63 [chromium] › tests\crownthorn.spec.ts:8:1 › projected eight directions, mirroring and independent front combat poses (49ms)
+  ok  64 [chromium] › tests\crownthorn.spec.ts:37:1 › replacement sources have complete distinct slots, matching hashes and valid anchors (125ms)
+  ok  65 [chromium] › tests\crownthorn.spec.ts:59:1 › real renderer shows eight directions, front actions, fixed foot anchor, pause and reset (4.0s)
+  ok  66 [chromium] › tests\crownthorn.spec.ts:91:1 › decoded atlas frames have clear cell edges, fixed foot line and empty rejected slots (997ms)
+  ok  67 [chromium] › tests\crownthorn.spec.ts:114:1 › failed atlases expose real fallback; dispose releases shared references and rejects late loads (1.6s)
+  ok  68 [chromium] › tests\dual-weapon-ui.spec.ts:3:1 › stage A: pick bubble through the mobile upgrade screen, pause and restart (2.6s)
+  ok  69 [chromium] › tests\dual-weapon.spec.ts:20:1 › stage A: real upgrade equips a unique bubble, independent cooldowns and shared haste (12ms)
+  ok  70 [chromium] › tests\dual-weapon.spec.ts:37:1 › stage A: Yanrong bubble damages and slows while spark retains burst seed (11ms)
+  ok  71 [chromium] › tests\dual-weapon.spec.ts:56:1 › stage A: frozen upgrades/death and restart clear build; legacy party has no weapon card (6ms)
+  ok  72 [chromium] › tests\elemental-assets.spec.ts:7:1 › source remains byte-identical, curated rectangles exclude icons and overlap zones (16ms)
+  ok  73 [chromium] › tests\elemental-assets.spec.ts:15:1 › all extracted cells and four icons decode with transparent safe margins (1.8s)
+  ok  74 [chromium] › tests\elemental-assets.spec.ts:28:1 › visual FPS and counts loop only flight; impacts end without changing any combat tuning (4ms)
+  ok  75 [chromium] › tests\elemental-fusion-model.spec.ts:19:1 › only four new recipes exist, modifiers form independent water/grass fusions and do not leak to legacy pools (4ms)
+  ok  76 [chromium] › tests\elemental-fusion-model.spec.ts:28:1 › base water slow expires, refreshes without stacking, and legacy bubbles do not acquire it (4ms)
+  ok  77 [chromium] › tests\elemental-fusion-model.spec.ts:35:1 › water impact visuals move into the victim and follow it without moving the damaging contact point (4ms)
+  ok  78 [chromium] › tests\elemental-fusion-model.spec.ts:56:1 › deep bubble damages and slows neighbors once per impact, excludes the direct victim and spawned enemies (4ms)
+  ok  79 [chromium] › tests\elemental-fusion-model.spec.ts:63:1 › leaf sweep pierces one additional enemy in the same tick, never hits the same victim twice (3ms)
+  ok  80 [chromium] › tests\elemental-fusion-model.spec.ts:70:66 › bubblesalamander chain flies to two fresh targets, respects cap and uses fixed subsequent damage (9ms)
+  ok  81 [chromium] › tests\elemental-fusion-model.spec.ts:70:66 › sproutspike chain flies to two fresh targets, respects cap and uses fixed subsequent damage (6ms)
+  ok  82 [chromium] › tests\elemental-fusion-model.spec.ts:83:1 › scatter spawns three weaker children next tick, ignores original and never recursively splits (7ms)
+  ok  83 [chromium] › tests\elemental-fusion-model.spec.ts:91:66 › bubblesalamander simultaneous recipes coexist in every volley and reset deterministically (8ms)
+  ok  84 [chromium] › tests\elemental-fusion-model.spec.ts:91:66 › sproutspike simultaneous recipes coexist in every volley and reset deterministically (7ms)
+  ok  85 [chromium] › tests\elemental-fusion-model.spec.ts:105:1 › cover blocks elemental impacts and chain targets; full pools degrade safely without dropping direct damage (7ms)
+  ok  86 [chromium] › tests\elemental-fusion-model.spec.ts:111:1 › death, choice and zero time freeze elemental clocks; reset clears slow, recipes, hits and projectiles (5ms)
+  ok  87 [chromium] › tests\elemental-fusion-model.spec.ts:120:1 › elemental deaths use the shared kill and XP path exactly once and snapshots do not change in flight (4ms)
+  ok  88 [chromium] › tests\elemental-fusion-model.spec.ts:126:1 › water chain ledger includes splash victims, excludes them from future primary hits and repeat splashes (4ms)
+  ok  89 [chromium] › tests\elemental-fusion-model.spec.ts:135:65 › bubblesalamander reselects a dead hop target and terminates if none remain (5ms)
+  ok  90 [chromium] › tests\elemental-fusion-model.spec.ts:135:65 › sproutspike reselects a dead hop target and terminates if none remain (4ms)
+  ok  91 [chromium] › tests\elemental-fusion-model.spec.ts:142:1 › deep AoE respects cover and scatter angles, range and single-hit children are independent of animations (7ms)
+  ok  92 [chromium] › tests\elemental-fusion-model.spec.ts:151:1 › staggered multi-shot keeps compatible recipes on every shot in its volley (5ms)
+  ok  93 [chromium] › tests\elemental-fusion-ui.spec.ts:14:1 › deep atlas loads, plays flight and one-shot impact, damages and slows in actual game (2.3s)
+  x   94 [chromium] › tests\elemental-fusion-ui.spec.ts:30:11 › paopaoyuan development entry uses one animated creature, real cards, automatic fusions and bounded colored effects (3.4s)
+(node:15796) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:15796) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x   95 [chromium] › tests\elemental-fusion-ui.spec.ts:30:11 › yacishou development entry uses one animated creature, real cards, automatic fusions and bounded colored effects (3.1s)
+(node:10980) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:10980) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  96 [chromium] › tests\elemental-fusion-ui.spec.ts:44:1 › unknown developer value preserves Yanrong and old three-party ignores developer species and new cards (1.7s)
+  ok  97 [chromium] › tests\elemental-fusion-ui.spec.ts:53:11 › deep-bubble individual skill renders audited pixels, icon and real damage; lifecycle clears batch (2.5s)
+  ok  98 [chromium] › tests\elemental-fusion-ui.spec.ts:53:11 › chain-bubble individual skill renders audited pixels, icon and real damage; lifecycle clears batch (2.8s)
+  ok  99 [chromium] › tests\elemental-fusion-ui.spec.ts:53:11 › thorn-scatter individual skill renders audited pixels, icon and real damage; lifecycle clears batch (3.2s)
+  x  100 [chromium] › tests\elemental-fusion-ui.spec.ts:53:11 › jump-thorn individual skill renders audited pixels, icon and real damage; lifecycle clears batch (2.9s)
+(node:25772) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:25772) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  101 [chromium] › tests\elemental-fusion-ui.spec.ts:73:1 › missing elemental textures and icons preserve procedural effects, readable cards and damage (3.6s)
+(node:33968) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:33968) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 102 [chromium] › tests\elemental-fusion-ui.spec.ts:80:1 › changing only visual FPS preserves actual combat state; repeated starts reuse the elemental GPU batch (2.7s)
+  ok 103 [chromium] › tests\enemy-challenge-ui.spec.ts:18:1 › real Boss shows front combat poses and independent warnings, freezes, dies, wins, and resets to legacy safely (3.6s)
+  ok 104 [chromium] › tests\enemy-challenge-ui.spec.ts:47:1 › elite and spread warnings fit short phones; upgrades, settings and background freeze Boss hazards (3.2s)
+  ok 105 [chromium] › tests\enemy-challenge-ui.spec.ts:73:1 › final timer cannot grant victory and failed Boss assets stay an honest visible fallback (2.0s)
+  ok 106 [chromium] › tests\enemy-challenge.spec.ts:22:1 › formal melee warns before contact, can be walked out of, and legacy contact is unchanged (13ms)
+  ok 107 [chromium] › tests\enemy-challenge.spec.ts:30:1 › formal runners share the trial lock/windup/dash/recover machine and stop at cover (17ms)
+  ok 108 [chromium] › tests\enemy-challenge.spec.ts:40:1 › Boss locks a visible predictive aim, cycles all three attacks, and summons only pooled warned enemies (225ms)
+  ok 109 [chromium] › tests\enemy-challenge.spec.ts:57:1 › hostile projectiles sweep against players and cover with shared invulnerability; full pools stay bounded (6ms)
+  ok 110 [chromium] › tests\enemy-challenge.spec.ts:71:1 › elite has a dodgeable pulse and pays gold and XP exactly once through shared death settlement (17ms)
+  ok 111 [chromium] › tests\enemy-challenge.spec.ts:84:1 › all three real weapons and existing fusions damage the Boss; water cannot immobilize or knock it away (20ms)
+  ok 112 [chromium] › tests\enemy-challenge.spec.ts:97:1 › final wave requires a real Boss death, waits for death animation, and resolves timeout/death correctly (9ms)
+  ok 113 [chromium] › tests\enemy-challenge.spec.ts:111:1 › wave four retries a saturated elite spawn, and wave clears/restarts remove every hostile state (4ms)
+  ok 114 [chromium] › tests\enemy-challenge.spec.ts:121:1 › a locked predictive charge hits an unchanged circle but a warning-time reversal avoids it (14ms)
+  ok 115 [chromium] › tests\enemy-directions.spec.ts:7:1 › screen-projected movement selects eight directions, mirrors only left views and holds at rest (5ms)
+  ok 116 [chromium] › tests\enemy-directions.spec.ts:17:1 › supplied images remain unchanged, individual directions match original sheets and feet are audited (26ms)
+  ok 117 [chromium] › tests\enemy-directions.spec.ts:28:1 › three runtime direction atlases decode with visible silhouettes and transparent safe gutters (2.4s)
+  ok 118 [chromium] › tests\enemy-hit-facing.spec.ts:3:1 › hit knockback does not reverse enemy art, while chasing can still turn it (2.3s)
+  ok 119 [chromium] › tests\enemy-motion-model.spec.ts:5:1 › coincident crowds separate gradually without exceeding species speed or teleporting (676ms)
+  ok 120 [chromium] › tests\enemy-motion-model.spec.ts:11:1 › swept collision stops tunneling and tangent sliding keeps every moving frame outside cover (230ms)
+  ok 121 [chromium] › tests\enemy-motion-model.spec.ts:18:1 › render pose is restrained, allocation-free and stops at rest; animation cadence follows real displacement (312ms)
+  ok 122 [chromium] › tests\enemy-motion-ui.spec.ts:12:1 › PNG walk visibly changes at a fixed collision anchor and always faces the camera (2.2s)
+  ok 123 [chromium] › tests\enemy-motion-ui.spec.ts:16:1 › real hit flash brightens PNG and death shrinks/dissolves it before releasing the instance (2.4s)
+  ok 124 [chromium] › tests\enemy-motion-ui.spec.ts:23:1 › real pursuit on both phone layouts freezes on pause and reuses cached batches after restart (2.7s)
+  ok 125 [chromium] › tests\enemy-motion-ui.spec.ts:32:52 › normal shows eight distinct GPU headings with independent mirrored UVs and holds direction at rest (2.3s)
+  ok 126 [chromium] › tests\enemy-motion-ui.spec.ts:32:52 › fast shows eight distinct GPU headings with independent mirrored UVs and holds direction at rest (2.8s)
+  ok 127 [chromium] › tests\enemy-motion-ui.spec.ts:32:52 › tank shows eight distinct GPU headings with independent mirrored UVs and holds direction at rest (2.3s)
+  ok 128 [chromium] › tests\enemy-motion-ui.spec.ts:45:1 › actual pursuit faces its displacement; death retains its heading and finished corpses release direction state (2.5s)
+  ok 129 [chromium] › tests\enemy-motion-ui.spec.ts:55:71 › three species render every direction at 844 without per-enemy textures (3.4s)
+  ok 130 [chromium] › tests\enemy-motion-ui.spec.ts:55:71 › three species render every direction at 568 without per-enemy textures (2.6s)
+  ok 131 [chromium] › tests\enemy-motion-ui.spec.ts:70:1 › a missing direction atlas falls back only that species to its original static PNG (3.1s)
+  ok 132 [chromium] › tests\enemy-pixel.spec.ts:46:1 › three fixed-capacity pixel batches preserve proportions, anchors and all existing enemy cues (3.3s)
+  ok 133 [chromium] › tests\enemy-pixel.spec.ts:70:1 › pixel and legacy enemy displays give identical movement, combat and experience with no new monster types (4.7s)
+  ok 134 [chromium] › tests\enemy-pixel.spec.ts:76:1 › one missing enemy texture only falls back that kind and retains original body parts (2.2s)
+  ok 135 [chromium] › tests\enemy-pixel.spec.ts:86:1 › real depth buffer handles transparent cutouts, foreground cover and visible per-instance hit flash (2.7s)
+  ok 136 [chromium] › tests\enemy-pixel.spec.ts:96:1 › 48 enemies reuse the same batches and textures, clear on reset and release on disposal (2.1s)
+  ok 137 [chromium] › tests\enemy-pixel.spec.ts:105:1 › disposing during enemy PNG loading prevents late resource attachment (2.6s)
+  ok 138 [chromium] › tests\enemy-pixel.spec.ts:114:1 › tank never uses removed blue geometry in legacy mode or after PNG failure (4.7s)
+  ok 139 [chromium] › tests\fox-model.spec.ts:29:1 › all four repaired paws stride and lift, weights normalize, soles stay grounded and the loop closes (1.9s)
+  ok 140 [chromium] › tests\fox-model.spec.ts:38:1 › real game model has phone size, movement blending, pause and restart without resource growth (4.8s)
+  ok 141 [chromium] › tests\fox-model.spec.ts:53:1 › GLB and procedural views give identical gameplay; missing model falls back to sprite (3.2s)
+  ok 142 [chromium] › tests\fusion-assets.spec.ts:5:1 › supplied PNGs stay byte-identical and normalized atlases match the declared grids (42ms)
+  ok 143 [chromium] › tests\fusion-assets.spec.ts:22:1 › all 19 runtime frames decode with transparent gutters and visible silhouettes (1.8s)
+  ok 144 [chromium] › tests\fusion-model.spec.ts:28:1 › ordinary spark uses existing automatic attacks and never splits without its card (4ms)
+  ok 145 [chromium] › tests\fusion-model.spec.ts:34:1 › real split card resolves the matching spark and leaf recipes; historical card pools stay unchanged (7ms)
+  ok 146 [chromium] › tests\fusion-model.spec.ts:42:1 › one main hit damages its target once, explodes once over multiple other targets, and defers two children (10ms)
+  ok 147 [chromium] › tests\fusion-model.spec.ts:54:1 › children can damage other enemies, never hit the original and never generate another explosion or generation (3ms)
+  ok 148 [chromium] › tests\fusion-model.spec.ts:67:1 › multishot and hit splitting coexist without replacing each other (5ms)
+  ok 149 [chromium] › tests\fusion-model.spec.ts:77:1 › full projectile and effect pools preserve direct/AoE damage and degrade to available child slots (4ms)
+  ok 150 [chromium] › tests\fusion-model.spec.ts:87:1 › kill credit and experience use the shared damage path exactly once for blast victims (3ms)
+  ok 151 [chromium] › tests\fusion-model.spec.ts:95:1 › choice and death freeze all damage, children and effect ages; restart clears the run (7ms)
+  ok 152 [chromium] › tests\fusion-model.spec.ts:109:1 › hundreds of fused hits stay inside original pools with generation capped at one (1.1s)
+  ok 153 [chromium] › tests\fusion-ui.spec.ts:35:1 › new menu starts one pixel Yanrong with joystick only and automatically fires ordinary sparks (2.8s)
+  x  154 [chromium] › tests\fusion-ui.spec.ts:51:1 › real fusion cards and impacts render child/explosion frames without duplicate hit flashes on both phone layouts (12.6s)
+(node:3312) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:3312) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 155 [chromium] › tests\fusion-ui.spec.ts:80:1 › pause, background, death and restart freeze animations/damage and clear learned fusion (3.0s)
+  x  156 [chromium] › tests\fusion-ui.spec.ts:98:1 › missing atlas and icons keep procedural attack/explosion and readable cards (3.1s)
+(node:14208) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:14208) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 157 [chromium] › tests\fusion-ui.spec.ts:108:1 › legacy three-creature entry retains following/automatic attacks and does not learn fusion (3.9s)
+  ok 158 [chromium] › tests\fusion-ui.spec.ts:119:1 › new and preserved menu entries fit both phone safe areas with unobstructed touch targets (8.7s)
+  ok 159 [chromium] › tests\fusion-ui.spec.ts:134:1 › fusion restarts reuse GPU resources and disposal releases the atlas batch (4.8s)
+  ok 160 [chromium] › tests\fusion-ui.spec.ts:149:1 › late fire atlas completion cannot attach resources after disposal (2.4s)
+chromium render budget: {"mode":"playing","ruleset":"classic","outcome":null,"partyPrototype":false,"prototypeVariant":"sample","world":{"layout":"legacy","status":"ready","obstacles":136,"seed":null,"generation":null},"party":[{"id":1,"species":"yanrong","x":0,"z":0,"previousX":0,"previousZ":0,"facing":0,"attackCooldown":0,"targetId":0,"shotsFired":0,"rank":1,"evolution":"base","blockedTime":0}],"partyVisual":{"enabled":true,"leader":"original","members":[],"cache":{"textures":0,"references":0}},"enemyVisual":{"enabled":false,"cache":{"textures":3,"references":3},"directionStates":0,"batches":[{"kind":"normal","loaded":false,"failed":false,"directional":false,"directionFailed":false,"frames":[],"count":0,"capacity":48,"aspect":1,"height":1.7,"crop":[],"sourceSize":[],"nearest":false,"mipmaps":true,"depthTest":true,"depthWrite":true,"alphaTest":0.09411764705882353},{"kind":"fast","loaded":false,"failed":false,"directional":false,"directionFailed":false,"frames":[],"count":0,"capacity":48,"aspect":1,"height":1.45,"crop":[],"sourceSize":[],"nearest":false,"mipmaps":true,"depthTest":true,"depthWrite":true,"alphaTest":0.09411764705882353},{"kind":"tank","loaded":true,"failed":false,"directional":true,"directionFailed":false,"frames":[],"count":0,"capacity":48,"aspect":1,"height":2.3,"crop":[0,0,256,256],"sourceSize":[1280,256],"nearest":true,"mipmaps":false,"depthTest":true,"depthWrite":true,"alphaTest":0.09411764705882353}],"encounters":{"shots":0,"capacity":16,"boss":null,"lane":false,"cone":false,"elite":false,"fallback":false}},"position":{"x":0,"z":0},"movement":{"x":0,"y":0},"elapsed":0.6000000000000002,"cooldown":0,"distance":0,"jumpHeight":0,"graphics":{"mode":"auto","scale":0.9,"targetFps":60,"pixelRatio":0.9,"particles":4},"audio":{"music":true,"sound":true,"active":true,"state":"running","supported":true,"voices":0,"played":0},"camera":{"x":0,"y":17.57056274847714,"z":16.970562748477143,"type":"OrthographicCamera","pitch":45,"quaternion":[-0.3826834323650898,0,0,0.9238795325112867],"width":30.22222222222222,"height":17},"creature":{"name":"焰绒","legs":4,"slots":["head","back","tail"],"equipped":{},"visual":"gltf","model":{"loaded":true,"failed":false,"height":2.85,"blend":0,"animation":"WalkInPlace","time":0.6165333333333337,"bones":14}},"portrait":false,"rendering":true,"drawCalls":22,"triangles":38540,"geometries":53,"textures":8,"combat":{"build":{"enabled":false,"species":"yanrong","relics":[],"evolution":null,"attacks":[{"attackId":"spark","slot":0,"level":1,"cooldown":0,"cooldownTotal":0,"shotsFired":0}]},"firing":{"weapon":null,"remaining":0,"gap":0},"hp":100,"kills":0,"goldEarned":0,"xp":0,"shotsFired":0,"hits":0,"fusion":{"enabled":false,"active":null,"recipes":[],"bursts":0,"childShots":0,"children":0},"spawned":0,"collected":0,"invulnerability":0,"enemies":[],"projectiles":0,"orbs":[],"effects":0,"targetId":0,"limits":{"enemies":48,"projectiles":24,"orbs":96,"effects":48,"shockwaves":2},"maxHp":100,"progression":{"level":1,"experience":0,"totalExperience":0,"threshold":8,"pendingChoices":0,"choiceLevel":2,"offers":[],"ranks":{"damage":0,"haste":0,"multishot":0,"vitality":0,"movement":0,"range":0,"orbit":0,"shockwave":0,"split-on-hit":0,"area":0,"chain":0,"bubble-weapon":0,"spark-weapon":0,"leaf-weapon":0,"overload-core":0,"hunter-eye":0,"shattered-core":0,"tidal-pearl":0,"specialist-badge":0,"echo-rune":0,"berserk-route":0,"pursuit-route":0},"stats":{"damageMultiplier":1,"attackRateMultiplier":1,"projectileCount":1,"maxHp":100,"moveMultiplier":1,"rangeMultiplier":1,"orbitCount":0,"orbitDamage":0,"orbitRadius":0,"orbitSpeed":0,"shockDamage":0,"shockRadius":0,"shockInterval":0,"splitOnHit":0},"maxLevel":35},"encounters":{"enabled":false,"wave":0,"boss":null,"elite":null,"shots":[],"limit":16},"orbitAngle":0,"shockwaves":[]}}
+  ok 161 [chromium] › tests\game.spec.ts:14:1 › main menu renders a real 3D world and starts exploration without errors (4.6s)
+  ok 162 [chromium] › tests\game.spec.ts:41:1 › keyboard moves, normalizes diagonals, dashes and stops after release (4.3s)
+  ok 163 [chromium] › tests\game.spec.ts:59:1 › joystick deadzone, drag outside, release and pointer cancellation (4.2s)
+  ok 164 [chromium] › tests\game.spec.ts:86:1 › pause freezes simulation and resets held input; menu can restart cleanly (7.1s)
+  ok 165 [chromium] › tests\game.spec.ts:112:1 › portrait prompts rotation, pauses play and resumes only on request (6.1s)
+  ok 166 [chromium] › tests\game.spec.ts:132:1 › visibility and blur handlers freeze time and release controls (4.8s)
+  x  167 [chromium] › tests\game.spec.ts:157:1 › real multitouch keeps joystick and dash independent on mobile (22.4s)
+(node:42968) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:42968) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 168 [chromium] › tests\game.spec.ts:193:1 › automatic combat updates HUD, collects XP and restart clears every combat entity (9.3s)
+  ok 169 [chromium] › tests\gameover.spec.ts:7:1 › lethal contact ends the real game loop and both restart routes clear combat (2.6s)
+  ok 170 [chromium] › tests\horn-model.spec.ts:14:1 › horn sweep hits crossed targets once per dash, knocks survivors, and preserves classic damage (9ms)
+  ok 171 [chromium] › tests\horn-model.spec.ts:30:1 › horn kills use the existing XP drop and pickup path; rear, spawning and covered targets are excluded (5ms)
+  ok 172 [chromium] › tests\horn-model.spec.ts:46:1 › pounce telegraph locks direction, cannot deal windup damage, sweeps its hit, then recovers (4ms)
+  ok 173 [chromium] › tests\horn-model.spec.ts:63:1 › a horn strike interrupts a committed pounce, protects its hit target, and allows a later pounce (7ms)
+  ok 174 [chromium] › tests\horn-model.spec.ts:73:1 › upgrade/death freeze intents and horn hits; reset clears the trial and reused slots (6ms)
+  ok 175 [chromium] › tests\horn-model.spec.ts:85:1 › the same fixed steps give identical trial outcomes under 30, 60 and 120 Hz frame schedules (13ms)
+  ok 176 [chromium] › tests\horn-ui.spec.ts:19:1 › phone trial equips horns, touch dash damages and interrupts; restart and classic clear it (3.7s)
+  ok 177 [chromium] › tests\horn-ui.spec.ts:48:1 › telegraph has real instanced geometry, trial upgrades freeze and resume without losing horns (2.2s)
+  x  178 [chromium] › tests\horn-ui.spec.ts:61:1 › trial entry and instructions fit small phone safe areas without covering joystick (3.4s)
+(node:14568) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:14568) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 179 [chromium] › tests\hud-art.spec.ts:3:1 › forest HUD keeps live values, weapon artwork and safe touch targets on landscape phones (2.3s)
+  ok 180 [chromium] › tests\navigation-model.spec.ts:6:1 › an enemy behind the pond can reach the player without entering water (445ms)
+  ok 181 [chromium] › tests\navigation-model.spec.ts:22:1 › reinforcements still find dry connected ground when random attempts hit water (10ms)
+  ok 182 [chromium] › tests\navigation-model.spec.ts:33:1 › main roads retain a 4.8-unit clear corridor and all open regions connect to spawn (267ms)
+  ok 183 [chromium] › tests\navigation-model.spec.ts:55:1 › pond approaches remain reachable from both steering sides (3.4s)
+  ok 184 [chromium] › tests\navigation-model.spec.ts:78:1 › crowded tank pursuits keep progressing after upgrade choices (182ms)
+  ok 185 [chromium] › tests\navigation-model.spec.ts:96:1 › encounters and automatic waves spawn on dry ground with space and warning time (500ms)
+  ok 186 [chromium] › tests\particle-feedback.spec.ts:31:1 › feedback uses real event clocks, one bounded GPU batch, preserves combat and stops with lifecycle (2.4s)
+  ok 187 [chromium] › tests\particle-feedback.spec.ts:87:1 › missing feedback atlas retains existing trail and hit fallback and real damage (1.9s)
+  ok 188 [chromium] › tests\party-model.spec.ts:15:1 › formal roster starts with one, permits duplicates, caps three and supports future four (6ms)
+  ok 189 [chromium] › tests\party-model.spec.ts:28:1 › companions follow a moving leader around cover and remain separate within the boundary (15.1s)
+  ok 190 [chromium] › tests\party-model.spec.ts:56:1 › three independent emitters use their own origin, target and cooldown without a duplicate player shot (7ms)
+  ok 191 [chromium] › tests\party-model.spec.ts:76:1 › cover and range are checked from each member rather than from the leader (2ms)
+  ok 192 [chromium] › tests\party-model.spec.ts:92:1 › only leader contact hurts shared HP, only leader collects XP, death freezes every emitter (6ms)
+  ok 193 [chromium] › tests\party-model.spec.ts:117:1 › existing upgrade choice freezes all attacks and central stats apply after picking (2ms)
+  ok 194 [chromium] › tests\party-ui.spec.ts:21:1 › single joystick moves Yanrong alone and automatic attacks continue (3.1s)
+  ok 195 [chromium] › tests\party-ui.spec.ts:47:1 › pause, upgrade and background freeze the entire party; death and restart reset shared combat (3.3s)
+  x  196 [chromium] › tests\party-ui.spec.ts:77:1 › prototype entry and party HUD fit short phones and safe areas (3.0s)
+(node:16004) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:16004) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 197 [chromium] › tests\pixel-party.spec.ts:41:1 › single Yanrong PNG retains aspect, nearest sampling, foot anchor and readable phone scale (2.2s)
+  ok 198 [chromium] › tests\pixel-party.spec.ts:63:1 › pixel view and original fallback produce identical party movement, collisions, attacks and XP (3.6s)
+  ok 199 [chromium] › tests\pixel-party.spec.ts:71:1 › transparent corners reveal terrain, opaque art writes depth and real cover occludes it (1.9s)
+  ok 200 [chromium] › tests\pixel-party.spec.ts:79:1 › missing art falls back per creature while movement and auto attacks continue (1.9s)
+  ok 201 [chromium] › tests\pixel-party.spec.ts:89:1 › same-species sprites share textures and disposal releases leases, materials and groups (2.0s)
+  ok 202 [chromium] › tests\pixel-party.spec.ts:95:1 › disposing during PNG loading never reattaches late resources (2.2s)
+  ok 203 [chromium] › tests\presentation-model.spec.ts:6:1 › adaptive graphics reduces pixels under sustained load and recovers with hysteresis (4ms)
+  ok 204 [chromium] › tests\presentation-model.spec.ts:20:1 › graphics modes bound pixel area, ignore suspended time, and reset sample windows (2ms)
+  ok 205 [chromium] › tests\presentation-model.spec.ts:36:1 › camera sweep catches foliage between player and lens and retains a padded gap (3ms)
+  ok 206 [chromium] › tests\presentation-model.spec.ts:48:1 › projectile trails and death fragments reuse bounded simulation slots and reset cleanly (10ms)
+  ok 207 [chromium] › tests\presentation.spec.ts:22:1 › audio waits for a gesture; settings persist and gameplay remains paused on closing (3.7s)
+  x  208 [chromium] › tests\presentation.spec.ts:59:1 › jump is cosmetic, freezes on pause/upgrade, lands, and restart clears it (3.5s)
+(node:42972) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:42972) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 209 [chromium] › tests\presentation.spec.ts:88:1 › orthographic camera follows with a fixed pitch and orientation (1.9s)
+  ok 210 [chromium] › tests\presentation.spec.ts:95:1 › pooled trails, hit flash and dissolving corpses render through the real loop (3.0s)
+  ok 211 [chromium] › tests\presentation.spec.ts:109:1 › small landscape HUD and settings fit safe areas with thumb-size touch targets (1.9s)
+  ok 212 [chromium] › tests\presentation.spec.ts:122:1 › independent touch pointers keep moving while dashing (2.1s)
+  ok 213 [chromium] › tests\presentation.spec.ts:137:1 › missing Web Audio fails gracefully and never blocks combat or settings (2.0s)
+  ok 214 [chromium] › tests\progression.spec.ts:24:1 › exact XP boundaries and overflow preserve every earned level and choice (7ms)
+  ok 215 [chromium] › tests\progression.spec.ts:42:1 › all cards are unique, below their cap and selectable; max level never deadlocks (76ms)
+  ok 216 [chromium] › tests\progression.spec.ts:69:1 › invalid XP, stale choices and unoffered skills do not change progression (5ms)
+  ok 217 [chromium] › tests\progression.spec.ts:86:1 › data-driven stacks use additive base bonuses and independent spell ranks (9ms)
+  ok 218 [chromium] › tests\progression.spec.ts:100:1 › damage, multishot and range upgrades affect real projectiles and pool limits (22ms)
+  ok 219 [chromium] › tests\progression.spec.ts:119:1 › haste increases actual volleys per second; vitality increases max HP and heals (16ms)
+  ok 220 [chromium] › tests\progression.spec.ts:136:1 › orbit damages enemies, uses seconds-based hit immunity and resets cleanly (5ms)
+  ok 221 [chromium] › tests\progression.spec.ts:151:1 › shockwave expands, hits each enemy once, repeats and freezes throughout upgrade choice (15ms)
+  ok 222 [chromium] › tests\progression.spec.ts:177:1 › reset clears level, accumulated XP, choices, stats and both learned skills (9ms)
+  ok 223 [chromium] › tests\random-world-ui.spec.ts:21:1 › a replay link reproduces the rendered terrain, collision map and seed across reloads (3.8s)
+  ok 224 [chromium] › tests\random-world-ui.spec.ts:37:1 › restart preserves the map; new adventures vary it without growing GPU resources (5.6s)
+  ok 225 [chromium] › tests\random-world-ui.spec.ts:67:1 › pinned seeds remain pinned on new adventures; fixed override still uses the curated sample (4.3s)
+  ok 226 [chromium] › tests\random-world-ui.spec.ts:77:1 › movement and safe automatic spawns use the current map after regeneration (4.9s)
+  ok 227 [chromium] › tests\random-world-ui.spec.ts:93:1 › different seeds render different regions and fit phone replay controls (7.3s)
+  ok 228 [chromium] › tests\result-art.spec.ts:30:1 › victory motion is one shot and reduced motion removes it without delaying actions (3.3s)
+  ok 229 [chromium] › tests\result-art.spec.ts:43:1 › real victory shows crown, exact current scores and complete build without invented reward (2.1s)
+  ok 230 [chromium] › tests\result-art.spec.ts:67:1 › health and timeout defeats show real reasons, soft badge, and no victory art or stars (3.6s)
+  ok 231 [chromium] › tests\result-art.spec.ts:107:1 › missing report images retain readable live data, fallback emblem and usable actions (1.8s)
+  ok 232 [chromium] › tests\run-flow-ui.spec.ts:20:1 › complete six-wave UI with shopping, healing, refresh, victory, clean restart, defeat and legacy return (4.0s)
+  ok 233 [chromium] › tests\run-flow.spec.ts:14:1 › six waves provide five shops, 455 combat seconds and a 9m15s reference run with 20s rests (26ms)
+  ok 234 [chromium] › tests\run-flow.spec.ts:34:1 › wave boundary claims loose XP once, resolves pending upgrades, and clears combat without resetting build/HP (4ms)
+  ok 235 [chromium] › tests\run-flow.spec.ts:49:1 › real kills award gold once and recycling a living enemy does not count (5ms)
+  ok 236 [chromium] › tests\run-flow.spec.ts:58:1 › buying a weapon is atomic, costs gold rather than XP, and rejects stale/double/poor purchases (5ms)
+  ok 237 [chromium] › tests\run-flow.spec.ts:68:1 › healing preserves max HP; refresh prices increase and stale shop tokens cannot spend (6ms)
+  ok 238 [chromium] › tests\run-flow.spec.ts:80:1 › fixed rewards give a low-kill build real purchasing tradeoffs (5ms)
+  ok 239 [chromium] › tests\run-flow.spec.ts:88:1 › death at the last boundary defeats rather than wins and leaves historical modes unchanged (3ms)
+  ok 240 [chromium] › tests\shockwave-art.spec.ts:3:1 › Kenney shockwave follows combat clocks, stays pooled and clears with the scene (2.0s)
+  ok 241 [chromium] › tests\shop-art.spec.ts:23:1 › cards reflect real offers, show weapons, relics and healing art, and fit safe-area phones (2.0s)
+  ok 242 [chromium] › tests\shop-art.spec.ts:73:1 › desktop shop scales merchandise and text to the browser viewport (3.9s)
+  ok 243 [chromium] › tests\shop-art.spec.ts:92:1 › purchases replace invalid offers, reject stale tokens, heal correctly and retain sold prices (2.0s)
+  ok 244 [chromium] › tests\shop-art.spec.ts:120:1 › empty offers and missing art keep useful text, disabled purchases and a working next-wave action (1.5s)
+  ok 245 [chromium] › tests\sprite.spec.ts:32:1 › complete sprite keeps its aspect, ground anchor, soft shadow and phone size (1.3s)
+  ok 246 [chromium] › tests\sprite.spec.ts:47:1 › sprite and 3D fallback give identical movement, targeting, damage and XP results (1.1s)
+  ok 247 [chromium] › tests\sprite.spec.ts:52:1 › real depth buffer occludes behind cover and transparent corners reveal the scene (1.1s)
+  ok 248 [chromium] › tests\sprite.spec.ts:60:1 › dash afterimages, stretch and hurt flash affect visuals only and restart clears them (1.6s)
+  ok 249 [chromium] › tests\sprite.spec.ts:72:1 › missing PNG falls back safely and explicit 3D mode does not request the image (1.7s)
+  ok 250 [chromium] › tests\swarm.spec.ts:20:1 › first batch is a real group; later waves grow to 24–36 active enemies with wave five the densest (35ms)
+  ok 251 [chromium] › tests\swarm.spec.ts:36:1 › placement is seeded, stays in one incoming sector, and does not overlap player, enemies, cover or bounds (199ms)
+  ok 252 [chromium] › tests\swarm.spec.ts:62:1 › unreachable terrain skips the batch within bounded attempts, without unsafe fallback or queued burst (8ms)
+  ok 253 [chromium] › tests\swarm.spec.ts:71:1 › full pool and partial capacity degrade safely without replacing live objects or overfilling (4ms)
+  ok 254 [chromium] › tests\swarm.spec.ts:83:1 › swarm rewards are integer XP and one coin per three real kills; carry survives waves and resets with run (4ms)
+  ok 255 [chromium] › tests\swarm.spec.ts:104:1 › escorts preserve formal health and warning rules; wave six keeps its original sparse support (2ms)
+  ok 256 [chromium] › tests\swarm.spec.ts:115:1 › high-throughput clearing has bounded economy, pooled XP merge and exactly-once boundary settlement (38ms)
+  ok 257 [chromium] › tests\swarm.spec.ts:138:1 › legacy automatic spawning and health are untouched and cannot opt into swarms accidentally (1ms)
+  x  258 [chromium] › tests\three-weapon-ui.spec.ts:3:1 › grass creature acquires fire/water through upgrade cards, shows all five fusions and restarts cleanly (11.9s)
+(node:31072) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:31072) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 259 [chromium] › tests\three-weapon.spec.ts:34:1 › all three creatures acquire all weapons and five fusions through real upgrades (33ms)
+  ok 260 [chromium] › tests\three-weapon.spec.ts:50:1 › upgrade pool filters irrelevant modifiers and acquisition keeps side cooldowns staggered (5ms)
+  ok 261 [chromium] › tests\three-weapon.spec.ts:72:1 › water expansion and two chain hops coexist with one damage ledger (9ms)
+  ok 262 [chromium] › tests\three-weapon.spec.ts:88:1 › leaf scatters only once while its main shot chains, never recursively deriving children (7ms)
+  ok 263 [chromium] › tests\three-weapon.spec.ts:100:1 › 24-slot saturation preserves direct damage and main priority; death/restart clear all weapons and effects (8ms)
+  ok 264 [chromium] › tests\upgrade-art.spec.ts:34:1 › card motion follows rarity, preserves pointer feedback and respects reduced motion (1.9s)
+  ok 265 [chromium] › tests\upgrade-art.spec.ts:67:1 › all 22 real IDs are covered, element variants follow equipped weapons, categories stay data-driven (1.4s)
+  ok 266 [chromium] › tests\upgrade-art.spec.ts:100:1 › real art loads and short landscape cards keep visible copy and safe-area bounds (618ms)
+  ok 267 [chromium] › tests\upgrade-art.spec.ts:125:1 › failed illustrations, gems and frames keep an intact selectable fallback card (386ms)
+  ok 268 [chromium] › tests\upgrade-art.spec.ts:138:1 › all reward copy fits without overlapping effects, previews or costs at both phone sizes (1.0s)
+  ok 269 [chromium] › tests\upgrade-art.spec.ts:167:1 › mixed magic and weapon rewards share frame geometry and keep their title and illustration apart (529ms)
+  ok 270 [chromium] › tests\upgrades.spec.ts:34:1 › XP opens three valid cards, freezes the entire simulation and touch picks once (2.3s)
+  ok 271 [chromium] › tests\upgrades.spec.ts:65:1 › XP overflow queues separate choices; duplicate old clicks cannot spend the next reward (2.4s)
+  ok 272 [chromium] › tests\upgrades.spec.ts:85:1 › cards fit short landscape phones and safe areas; rotation/background keeps choices frozen (2.6s)
+  ok 273 [chromium] › tests\upgrades.spec.ts:124:1 › new spells coexist, max HP updates HUD and a fresh run clears all skills (3.4s)
+  ok 274 [chromium] › tests\upgrades.spec.ts:147:1 › the last remaining skill is valid and full mastery stops creating empty dialogs (2.3s)
+  ok 275 [chromium] › tests\upgrades.spec.ts:164:1 › an existing joystick finger cannot pick a card or leave movement stuck (2.1s)
+  ok 276 [chromium] › tests\world-art.spec.ts:3:1 › every used tree and rock cutout has one connected body and no isolated white square (361ms)
+  ok 277 [chromium] › tests\world-generator.spec.ts:5:1 › same seed reproduces the complete layout and validation, independently of global RNG (125ms)
+  ok 278 [chromium] › tests\world-generator.spec.ts:15:1 › 256 seeds vary regions, trees, rocks and ponds while preserving spawn and every navigable cell (6.3s)
+  ok 279 [chromium] › tests\world-generator.spec.ts:40:1 › validation rejects blocked spawn, blocked roads and isolated walkable pockets (11ms)
+  ok 280 [chromium] › tests\world-sample.spec.ts:13:1 › sample loads, preserves an open start, and returns to the original map for old modes (2.4s)
+  ok 281 [chromium] › tests\world-sample.spec.ts:34:1 › water blocks Yanrong and no followers are created (1.7s)
+  ok 282 [chromium] › tests\world-sample.spec.ts:45:1 › failed assets and explicit legacy override retain a visible collidable original world (3.5s)
+  ok 283 [chromium] › tests\world-sample.spec.ts:58:1 › desktop and short phone previews retain readable scale and bounded draw calls (1.9s)
+(node:13788) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:13788) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 284 [webkit] › tests\25d-model.spec.ts:7:1 › screen input maps to projected ground direction without changing speed or analog strength (24ms)
+  ok 285 [webkit] › tests\25d-model.spec.ts:17:1 › landscape frustum keeps horizontal and vertical combat visibility across phone sizes (5ms)
+  ok 286 [webkit] › tests\25d-model.spec.ts:27:1 › independent organs replace once, survive form socket changes, reuse resources, and dispose detached props (22ms)
+  -  287 [webkit] › tests\25d.spec.ts:21:1 › mobile touches follow all screen directions with fixed orientation and ground height
+  ok 288 [webkit] › tests\25d.spec.ts:47:1 › Yanrong and two socket props render with clear low scenery, combat and responsive frustum (2.0s)
+  x  289 [webkit] › tests\build-depth-ui.spec.ts:3:1 › rare choices expose costs, and pause shows levels, all six relics and the exclusive route (17.2s)
+(node:45532) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:45532) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 290 [webkit] › tests\build-depth.spec.ts:37:1 › weapon upgrades use real cards, cap at five and do not duplicate slots (19ms)
+  ok 291 [webkit] › tests\build-depth.spec.ts:48:1 › single-weapon specialization loses its bonus when a side weapon is equipped (7ms)
+  ok 292 [webkit] › tests\build-depth.spec.ts:57:1 › overload and berserk expand real splash while slowing fire, and evolution is exclusive (8ms)
+  ok 293 [webkit] › tests\build-depth.spec.ts:70:1 › hunter and shattered core change child motion/count with real damage costs and bounded generation (6ms)
+  ok 294 [webkit] › tests\build-depth.spec.ts:83:1 › pursuit route creates homing fire children at the cost of explosion radius (4ms)
+  ok 295 [webkit] › tests\build-depth.spec.ts:91:1 › tidal pearl extends water control and reduces direct hits without reducing splash (3ms)
+  ok 296 [webkit] › tests\build-depth.spec.ts:99:1 › echo extends leaf chain reach and increases damage decay at each extra hop (5ms)
+  ok 297 [webkit] › tests\build-depth.spec.ts:110:1 › reset clears levels/relics/evolution; legacy card pools never receive build rewards (3ms)
+  ok 298 [webkit] › tests\build-depth.spec.ts:120:1 › large experience queues keep rare offers bounded and finish without an empty upgrade trap (54ms)
+  ok 299 [webkit] › tests\challenge-model.spec.ts:11:1 › finite waves spawn exactly their configured enemies and victory never requires optional techniques (10ms)
+  ok 300 [webkit] › tests\challenge-model.spec.ts:21:1 › remaining queued enemies prevent early clears, rest lasts three simulation seconds, and running away respawns targets (2ms)
+  ok 301 [webkit] › tests\challenge-model.spec.ts:35:1 › upgrades/death freeze wave timers, and final kills win before an unused upgrade (2ms)
+  ok 302 [webkit] › tests\challenge-model.spec.ts:49:1 › bonuses add stars only after winning and fresh directors carry no previous progress (6ms)
+  ok 303 [webkit] › tests\challenge-model.spec.ts:57:1 › encounter retries respect cover, boundaries and pool capacity without losing the wave queue (4ms)
+  ok 304 [webkit] › tests\challenge-model.spec.ts:66:1 › 30/60/120 Hz render schedules produce the same fixed-step wave progression (6ms)
+  ok 305 [webkit] › tests\challenge-ui.spec.ts:32:1 › challenge clears three finite waves into victory, freezes, retries, and preserves classic defeat text (3.4s)
+  ok 306 [webkit] › tests\challenge-ui.spec.ts:46:1 › wave break, three-choice upgrades, pause and background freeze the director (6.3s)
+  ok 307 [webkit] › tests\challenge-ui.spec.ts:59:1 › new entry, wave HUD and victory controls fit two phone landscape safe areas (2.6s)
+challenge simulated playthrough: {"outcome":"victory","time":26.21666666666646,"hp":80,"kills":15,"horns":7,"interrupts":1,"level":4}
+  ok 308 [webkit] › tests\challenge-ui.spec.ts:72:1 › real movement, auto attacks, dash damage and normal upgrades can complete the encounter without forced kills (1.5s)
+  x  309 [webkit] › tests\combat-clarity-ui.spec.ts:3:1 › fully fused three-weapon build stays readable with CD indicators and pooled impact visuals (10.4s)
+(node:43280) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:43280) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 310 [webkit] › tests\combat-clarity.spec.ts:6:1 › even a single multishot weapon spaces its shots over time (10ms)
+  ok 311 [webkit] › tests\combat-clarity.spec.ts:14:1 › three ready weapons and multishot emit distinguishable bullets instead of same-frame stacks (117ms)
+  ok 312 [webkit] › tests\combat-clarity.spec.ts:32:1 › overlapping impact visuals keep the major explosion and leave combat state untouched (2ms)
+  ok 313 [webkit] › tests\combat-clarity.spec.ts:40:1 › pause/upgrade freezes a partially emitted volley and wave cleanup discards it (2ms)
+  ok 314 [webkit] › tests\combat-model.spec.ts:13:1 › three enemies have distinct pursuit speeds and durability (1ms)
+  ok 315 [webkit] › tests\combat-model.spec.ts:28:1 › targeting excludes blocked, distant, spawning and dead enemies (1ms)
+  ok 316 [webkit] › tests\combat-model.spec.ts:40:1 › magic bolts damage, flash, kill and drop XP which nearby players collect once (3ms)
+  ok 317 [webkit] › tests\combat-model.spec.ts:61:1 › contact damage has a shared invulnerability window and death freezes combat (3ms)
+  ok 318 [webkit] › tests\combat-model.spec.ts:81:1 › swept collision catches tunneling and only the first enemy is hit (2ms)
+  ok 319 [webkit] › tests\combat-model.spec.ts:91:1 › spawn positions stay near the player, inside the map and outside obstacles (21ms)
+  ok 320 [webkit] › tests\combat-model.spec.ts:108:1 › 30, 60 and 120 Hz frame schedules give identical fixed-step combat results (36ms)
+  ok 321 [webkit] › tests\combat-model.spec.ts:129:1 › all pools are bounded, full XP pool merges drops, and reset removes old entities (413ms)
+  ok 322 [webkit] › tests\companion-animation.spec.ts:6:1 › companion clips use audited frames, correct diagonal orientation and last-heading idle (315ms)
+  ok 323 [webkit] › tests\companion-animation.spec.ts:62:1 › actual companion GPU frames change independently with stable size and release every texture (1.6s)
+  ok 324 [webkit] › tests\companion-animation.spec.ts:68:1 › real legacy formation animates followers and freezes on pause, background, death and restart (4.5s)
+  ok 325 [webkit] › tests\companion-animation.spec.ts:85:1 › missing companion atlases keep original static PNGs visible without disabling movement (2.2s)
+  ok 326 [webkit] › tests\companion-animation.spec.ts:92:1 › legacy Yanrong leader visibly walks through frames, keeps heading when stopping (2.0s)
+  ok 327 [webkit] › tests\creature-animation-assets.spec.ts:6:1 › direction changes preserve visible character height instead of shrinking the side walk (1.5s)
+  ok 328 [webkit] › tests\creature-animation-assets.spec.ts:28:1 › audited silhouettes preserve originals and explicitly reject the clipped front frame (65ms)
+  ok 329 [webkit] › tests\creature-animation-assets.spec.ts:46:1 › decoded runtime frames share a foot line, contain no neighboring character, and visibly differ (1.2s)
+  ok 330 [webkit] › tests\creature-animation-model.spec.ts:8:1 › all eight directions follow projected screen velocity, including rotated cameras and left mirrors (17ms)
+  ok 331 [webkit] › tests\creature-animation-model.spec.ts:26:1 › continuous analog motion is not quantized and sector boundaries use hysteresis (6ms)
+  ok 332 [webkit] › tests\creature-animation-model.spec.ts:36:1 › walk and idle clips loop at their configured FPS and never select the clipped source frame (13ms)
+  ok 333 [webkit] › tests\creature-animation-model.spec.ts:51:1 › animation clocks only change on explicit simulation steps; stop and restart retain/reset direction appropriately (7ms)
+  x  334 [webkit] › tests\creature-animation-ui.spec.ts:43:1 › real V5 leader renders all projected directions, mirrors left and retains heading when stopping (3.0s)
+(node:26056) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:26056) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  335 [webkit] › tests\creature-animation-ui.spec.ts:63:1 › visible GPU pixels change across real walking/idle frames, with stable foot, size and frame sequence (3.2s)
+(node:46840) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:46840) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 336 [webkit] › tests\creature-animation-ui.spec.ts:77:1 › actual collision displacement controls animation and animated/static visuals have identical combat and positions (7.7s)
+  ok 337 [webkit] › tests\creature-animation-ui.spec.ts:91:1 › pause, choices, background and death freeze frames; restart resets the real leader (9.9s)
+  ok 338 [webkit] › tests\creature-animation-ui.spec.ts:102:1 › missing diagonal falls back to a mirrored side; both missing atlases retain the original PNG (5.9s)
+  ok 339 [webkit] › tests\creature-animation-ui.spec.ts:115:1 › shared atlases render independent real frames/mirrors without shared UV mutations and release all leases (2.7s)
+  ok 340 [webkit] › tests\creature-animation-ui.spec.ts:121:1 › disposal during animation loading releases leases and late callbacks never reattach (2.7s)
+  ok 341 [webkit] › tests\creature-selection.spec.ts:5:168 › choose yanrong directly from menu and keep only that creature through restart (2.6s)
+  ok 342 [webkit] › tests\creature-selection.spec.ts:5:168 › choose bubblesalamander directly from menu and keep only that creature through restart (2.6s)
+  ok 343 [webkit] › tests\creature-selection.spec.ts:5:168 › choose sproutspike directly from menu and keep only that creature through restart (2.0s)
+  ok 344 [webkit] › tests\creature-selection.spec.ts:13:1 › selection dialog, cards and start targets fit both phone safe areas and closing does not start a run (3.0s)
+  ok 345 [webkit] › tests\creature-selection.spec.ts:21:1 › menu selection overrides development URL and remains selected after returning from compatibility mode (3.0s)
+  ok 346 [webkit] › tests\crownthorn.spec.ts:8:1 › projected eight directions, mirroring and independent front combat poses (24ms)
+  ok 347 [webkit] › tests\crownthorn.spec.ts:37:1 › replacement sources have complete distinct slots, matching hashes and valid anchors (78ms)
+  ok 348 [webkit] › tests\crownthorn.spec.ts:59:1 › real renderer shows eight directions, front actions, fixed foot anchor, pause and reset (3.8s)
+  ok 349 [webkit] › tests\crownthorn.spec.ts:91:1 › decoded atlas frames have clear cell edges, fixed foot line and empty rejected slots (1.1s)
+  ok 350 [webkit] › tests\crownthorn.spec.ts:114:1 › failed atlases expose real fallback; dispose releases shared references and rejects late loads (1.8s)
+  ok 351 [webkit] › tests\dual-weapon-ui.spec.ts:3:1 › stage A: pick bubble through the mobile upgrade screen, pause and restart (2.6s)
+  ok 352 [webkit] › tests\dual-weapon.spec.ts:20:1 › stage A: real upgrade equips a unique bubble, independent cooldowns and shared haste (10ms)
+  ok 353 [webkit] › tests\dual-weapon.spec.ts:37:1 › stage A: Yanrong bubble damages and slows while spark retains burst seed (6ms)
+  ok 354 [webkit] › tests\dual-weapon.spec.ts:56:1 › stage A: frozen upgrades/death and restart clear build; legacy party has no weapon card (4ms)
+  ok 355 [webkit] › tests\elemental-assets.spec.ts:7:1 › source remains byte-identical, curated rectangles exclude icons and overlap zones (15ms)
+  ok 356 [webkit] › tests\elemental-assets.spec.ts:15:1 › all extracted cells and four icons decode with transparent safe margins (1.1s)
+  ok 357 [webkit] › tests\elemental-assets.spec.ts:28:1 › visual FPS and counts loop only flight; impacts end without changing any combat tuning (2ms)
+  ok 358 [webkit] › tests\elemental-fusion-model.spec.ts:19:1 › only four new recipes exist, modifiers form independent water/grass fusions and do not leak to legacy pools (3ms)
+  ok 359 [webkit] › tests\elemental-fusion-model.spec.ts:28:1 › base water slow expires, refreshes without stacking, and legacy bubbles do not acquire it (4ms)
+  ok 360 [webkit] › tests\elemental-fusion-model.spec.ts:35:1 › water impact visuals move into the victim and follow it without moving the damaging contact point (5ms)
+  ok 361 [webkit] › tests\elemental-fusion-model.spec.ts:56:1 › deep bubble damages and slows neighbors once per impact, excludes the direct victim and spawned enemies (4ms)
+  ok 362 [webkit] › tests\elemental-fusion-model.spec.ts:63:1 › leaf sweep pierces one additional enemy in the same tick, never hits the same victim twice (2ms)
+  ok 363 [webkit] › tests\elemental-fusion-model.spec.ts:70:66 › bubblesalamander chain flies to two fresh targets, respects cap and uses fixed subsequent damage (8ms)
+  ok 364 [webkit] › tests\elemental-fusion-model.spec.ts:70:66 › sproutspike chain flies to two fresh targets, respects cap and uses fixed subsequent damage (7ms)
+  ok 365 [webkit] › tests\elemental-fusion-model.spec.ts:83:1 › scatter spawns three weaker children next tick, ignores original and never recursively splits (9ms)
+  ok 366 [webkit] › tests\elemental-fusion-model.spec.ts:91:66 › bubblesalamander simultaneous recipes coexist in every volley and reset deterministically (9ms)
+  ok 367 [webkit] › tests\elemental-fusion-model.spec.ts:91:66 › sproutspike simultaneous recipes coexist in every volley and reset deterministically (9ms)
+  ok 368 [webkit] › tests\elemental-fusion-model.spec.ts:105:1 › cover blocks elemental impacts and chain targets; full pools degrade safely without dropping direct damage (6ms)
+  ok 369 [webkit] › tests\elemental-fusion-model.spec.ts:111:1 › death, choice and zero time freeze elemental clocks; reset clears slow, recipes, hits and projectiles (5ms)
+  ok 370 [webkit] › tests\elemental-fusion-model.spec.ts:120:1 › elemental deaths use the shared kill and XP path exactly once and snapshots do not change in flight (6ms)
+  ok 371 [webkit] › tests\elemental-fusion-model.spec.ts:126:1 › water chain ledger includes splash victims, excludes them from future primary hits and repeat splashes (5ms)
+  ok 372 [webkit] › tests\elemental-fusion-model.spec.ts:135:65 › bubblesalamander reselects a dead hop target and terminates if none remain (4ms)
+  ok 373 [webkit] › tests\elemental-fusion-model.spec.ts:135:65 › sproutspike reselects a dead hop target and terminates if none remain (4ms)
+  ok 374 [webkit] › tests\elemental-fusion-model.spec.ts:142:1 › deep AoE respects cover and scatter angles, range and single-hit children are independent of animations (9ms)
+  ok 375 [webkit] › tests\elemental-fusion-model.spec.ts:151:1 › staggered multi-shot keeps compatible recipes on every shot in its volley (7ms)
+  ok 376 [webkit] › tests\elemental-fusion-ui.spec.ts:14:1 › deep atlas loads, plays flight and one-shot impact, damages and slows in actual game (2.1s)
+  x  377 [webkit] › tests\elemental-fusion-ui.spec.ts:30:11 › paopaoyuan development entry uses one animated creature, real cards, automatic fusions and bounded colored effects (3.3s)
+(node:30756) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:30756) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  378 [webkit] › tests\elemental-fusion-ui.spec.ts:30:11 › yacishou development entry uses one animated creature, real cards, automatic fusions and bounded colored effects (3.5s)
+(node:15796) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:15796) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 379 [webkit] › tests\elemental-fusion-ui.spec.ts:44:1 › unknown developer value preserves Yanrong and old three-party ignores developer species and new cards (2.3s)
+  x  380 [webkit] › tests\elemental-fusion-ui.spec.ts:53:11 › deep-bubble individual skill renders audited pixels, icon and real damage; lifecycle clears batch (3.2s)
+(node:46048) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:46048) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 381 [webkit] › tests\elemental-fusion-ui.spec.ts:53:11 › chain-bubble individual skill renders audited pixels, icon and real damage; lifecycle clears batch (3.4s)
+  ok 382 [webkit] › tests\elemental-fusion-ui.spec.ts:53:11 › thorn-scatter individual skill renders audited pixels, icon and real damage; lifecycle clears batch (3.2s)
+  x  383 [webkit] › tests\elemental-fusion-ui.spec.ts:53:11 › jump-thorn individual skill renders audited pixels, icon and real damage; lifecycle clears batch (3.4s)
+(node:10908) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:10908) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  384 [webkit] › tests\elemental-fusion-ui.spec.ts:73:1 › missing elemental textures and icons preserve procedural effects, readable cards and damage (3.2s)
+(node:23644) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:23644) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 385 [webkit] › tests\elemental-fusion-ui.spec.ts:80:1 › changing only visual FPS preserves actual combat state; repeated starts reuse the elemental GPU batch (2.4s)
+  ok 386 [webkit] › tests\enemy-challenge-ui.spec.ts:18:1 › real Boss shows front combat poses and independent warnings, freezes, dies, wins, and resets to legacy safely (3.7s)
+  ok 387 [webkit] › tests\enemy-challenge-ui.spec.ts:47:1 › elite and spread warnings fit short phones; upgrades, settings and background freeze Boss hazards (3.8s)
+  ok 388 [webkit] › tests\enemy-challenge-ui.spec.ts:73:1 › final timer cannot grant victory and failed Boss assets stay an honest visible fallback (1.9s)
+  ok 389 [webkit] › tests\enemy-challenge.spec.ts:22:1 › formal melee warns before contact, can be walked out of, and legacy contact is unchanged (13ms)
+  ok 390 [webkit] › tests\enemy-challenge.spec.ts:30:1 › formal runners share the trial lock/windup/dash/recover machine and stop at cover (18ms)
+  ok 391 [webkit] › tests\enemy-challenge.spec.ts:40:1 › Boss locks a visible predictive aim, cycles all three attacks, and summons only pooled warned enemies (257ms)
+  ok 392 [webkit] › tests\enemy-challenge.spec.ts:57:1 › hostile projectiles sweep against players and cover with shared invulnerability; full pools stay bounded (9ms)
+  ok 393 [webkit] › tests\enemy-challenge.spec.ts:71:1 › elite has a dodgeable pulse and pays gold and XP exactly once through shared death settlement (19ms)
+  ok 394 [webkit] › tests\enemy-challenge.spec.ts:84:1 › all three real weapons and existing fusions damage the Boss; water cannot immobilize or knock it away (25ms)
+  ok 395 [webkit] › tests\enemy-challenge.spec.ts:97:1 › final wave requires a real Boss death, waits for death animation, and resolves timeout/death correctly (18ms)
+  ok 396 [webkit] › tests\enemy-challenge.spec.ts:111:1 › wave four retries a saturated elite spawn, and wave clears/restarts remove every hostile state (6ms)
+  ok 397 [webkit] › tests\enemy-challenge.spec.ts:121:1 › a locked predictive charge hits an unchanged circle but a warning-time reversal avoids it (12ms)
+  ok 398 [webkit] › tests\enemy-directions.spec.ts:7:1 › screen-projected movement selects eight directions, mirrors only left views and holds at rest (5ms)
+  ok 399 [webkit] › tests\enemy-directions.spec.ts:17:1 › supplied images remain unchanged, individual directions match original sheets and feet are audited (29ms)
+  ok 400 [webkit] › tests\enemy-directions.spec.ts:28:1 › three runtime direction atlases decode with visible silhouettes and transparent safe gutters (1.4s)
+  ok 401 [webkit] › tests\enemy-hit-facing.spec.ts:3:1 › hit knockback does not reverse enemy art, while chasing can still turn it (1.7s)
+  ok 402 [webkit] › tests\enemy-motion-model.spec.ts:5:1 › coincident crowds separate gradually without exceeding species speed or teleporting (571ms)
+  ok 403 [webkit] › tests\enemy-motion-model.spec.ts:11:1 › swept collision stops tunneling and tangent sliding keeps every moving frame outside cover (197ms)
+  ok 404 [webkit] › tests\enemy-motion-model.spec.ts:18:1 › render pose is restrained, allocation-free and stops at rest; animation cadence follows real displacement (260ms)
+  ok 405 [webkit] › tests\enemy-motion-ui.spec.ts:12:1 › PNG walk visibly changes at a fixed collision anchor and always faces the camera (1.9s)
+  ok 406 [webkit] › tests\enemy-motion-ui.spec.ts:16:1 › real hit flash brightens PNG and death shrinks/dissolves it before releasing the instance (2.1s)
+  ok 407 [webkit] › tests\enemy-motion-ui.spec.ts:23:1 › real pursuit on both phone layouts freezes on pause and reuses cached batches after restart (2.5s)
+  ok 408 [webkit] › tests\enemy-motion-ui.spec.ts:32:52 › normal shows eight distinct GPU headings with independent mirrored UVs and holds direction at rest (2.2s)
+  ok 409 [webkit] › tests\enemy-motion-ui.spec.ts:32:52 › fast shows eight distinct GPU headings with independent mirrored UVs and holds direction at rest (2.8s)
+  ok 410 [webkit] › tests\enemy-motion-ui.spec.ts:32:52 › tank shows eight distinct GPU headings with independent mirrored UVs and holds direction at rest (2.3s)
+  ok 411 [webkit] › tests\enemy-motion-ui.spec.ts:45:1 › actual pursuit faces its displacement; death retains its heading and finished corpses release direction state (2.3s)
+  ok 412 [webkit] › tests\enemy-motion-ui.spec.ts:55:71 › three species render every direction at 844 without per-enemy textures (2.7s)
+  x  413 [webkit] › tests\enemy-motion-ui.spec.ts:55:71 › three species render every direction at 568 without per-enemy textures (3.1s)
+(node:46744) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:46744) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 414 [webkit] › tests\enemy-motion-ui.spec.ts:70:1 › a missing direction atlas falls back only that species to its original static PNG (2.4s)
+  ok 415 [webkit] › tests\enemy-pixel.spec.ts:46:1 › three fixed-capacity pixel batches preserve proportions, anchors and all existing enemy cues (2.5s)
+  ok 416 [webkit] › tests\enemy-pixel.spec.ts:70:1 › pixel and legacy enemy displays give identical movement, combat and experience with no new monster types (3.8s)
+  ok 417 [webkit] › tests\enemy-pixel.spec.ts:76:1 › one missing enemy texture only falls back that kind and retains original body parts (1.9s)
+  ok 418 [webkit] › tests\enemy-pixel.spec.ts:86:1 › real depth buffer handles transparent cutouts, foreground cover and visible per-instance hit flash (1.8s)
+  ok 419 [webkit] › tests\enemy-pixel.spec.ts:96:1 › 48 enemies reuse the same batches and textures, clear on reset and release on disposal (1.8s)
+  ok 420 [webkit] › tests\enemy-pixel.spec.ts:105:1 › disposing during enemy PNG loading prevents late resource attachment (2.3s)
+  ok 421 [webkit] › tests\enemy-pixel.spec.ts:114:1 › tank never uses removed blue geometry in legacy mode or after PNG failure (3.6s)
+  ok 422 [webkit] › tests\fox-model.spec.ts:29:1 › all four repaired paws stride and lift, weights normalize, soles stay grounded and the loop closes (1.3s)
+  ok 423 [webkit] › tests\fox-model.spec.ts:38:1 › real game model has phone size, movement blending, pause and restart without resource growth (3.7s)
+  ok 424 [webkit] › tests\fox-model.spec.ts:53:1 › GLB and procedural views give identical gameplay; missing model falls back to sprite (2.5s)
+  ok 425 [webkit] › tests\fusion-assets.spec.ts:5:1 › supplied PNGs stay byte-identical and normalized atlases match the declared grids (40ms)
+  ok 426 [webkit] › tests\fusion-assets.spec.ts:22:1 › all 19 runtime frames decode with transparent gutters and visible silhouettes (1.1s)
+  ok 427 [webkit] › tests\fusion-model.spec.ts:28:1 › ordinary spark uses existing automatic attacks and never splits without its card (10ms)
+  ok 428 [webkit] › tests\fusion-model.spec.ts:34:1 › real split card resolves the matching spark and leaf recipes; historical card pools stay unchanged (5ms)
+  ok 429 [webkit] › tests\fusion-model.spec.ts:42:1 › one main hit damages its target once, explodes once over multiple other targets, and defers two children (9ms)
+  ok 430 [webkit] › tests\fusion-model.spec.ts:54:1 › children can damage other enemies, never hit the original and never generate another explosion or generation (4ms)
+  ok 431 [webkit] › tests\fusion-model.spec.ts:67:1 › multishot and hit splitting coexist without replacing each other (4ms)
+  ok 432 [webkit] › tests\fusion-model.spec.ts:77:1 › full projectile and effect pools preserve direct/AoE damage and degrade to available child slots (5ms)
+  ok 433 [webkit] › tests\fusion-model.spec.ts:87:1 › kill credit and experience use the shared damage path exactly once for blast victims (5ms)
+  ok 434 [webkit] › tests\fusion-model.spec.ts:95:1 › choice and death freeze all damage, children and effect ages; restart clears the run (7ms)
+  ok 435 [webkit] › tests\fusion-model.spec.ts:109:1 › hundreds of fused hits stay inside original pools with generation capped at one (890ms)
+  ok 436 [webkit] › tests\fusion-ui.spec.ts:35:1 › new menu starts one pixel Yanrong with joystick only and automatically fires ordinary sparks (2.4s)
+  x  437 [webkit] › tests\fusion-ui.spec.ts:51:1 › real fusion cards and impacts render child/explosion frames without duplicate hit flashes on both phone layouts (10.9s)
+(node:44868) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:44868) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 438 [webkit] › tests\fusion-ui.spec.ts:80:1 › pause, background, death and restart freeze animations/damage and clear learned fusion (4.1s)
+  x  439 [webkit] › tests\fusion-ui.spec.ts:98:1 › missing atlas and icons keep procedural attack/explosion and readable cards (3.2s)
+(node:46340) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:46340) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 440 [webkit] › tests\fusion-ui.spec.ts:108:1 › legacy three-creature entry retains following/automatic attacks and does not learn fusion (2.8s)
+  ok 441 [webkit] › tests\fusion-ui.spec.ts:119:1 › new and preserved menu entries fit both phone safe areas with unobstructed touch targets (4.1s)
+  ok 442 [webkit] › tests\fusion-ui.spec.ts:134:1 › fusion restarts reuse GPU resources and disposal releases the atlas batch (4.5s)
+  ok 443 [webkit] › tests\fusion-ui.spec.ts:149:1 › late fire atlas completion cannot attach resources after disposal (1.8s)
+webkit render budget: {"mode":"playing","ruleset":"classic","outcome":null,"partyPrototype":false,"prototypeVariant":"sample","world":{"layout":"legacy","status":"ready","obstacles":136,"seed":null,"generation":null},"party":[{"id":1,"species":"yanrong","x":0,"z":0,"previousX":0,"previousZ":0,"facing":0,"attackCooldown":0,"targetId":0,"shotsFired":0,"rank":1,"evolution":"base","blockedTime":0}],"partyVisual":{"enabled":true,"leader":"original","members":[],"cache":{"textures":0,"references":0}},"enemyVisual":{"enabled":false,"cache":{"textures":3,"references":3},"directionStates":0,"batches":[{"kind":"normal","loaded":false,"failed":false,"directional":false,"directionFailed":false,"frames":[],"count":0,"capacity":48,"aspect":1,"height":1.7,"crop":[],"sourceSize":[],"nearest":false,"mipmaps":true,"depthTest":true,"depthWrite":true,"alphaTest":0.09411764705882353},{"kind":"fast","loaded":false,"failed":false,"directional":false,"directionFailed":false,"frames":[],"count":0,"capacity":48,"aspect":1,"height":1.45,"crop":[],"sourceSize":[],"nearest":false,"mipmaps":true,"depthTest":true,"depthWrite":true,"alphaTest":0.09411764705882353},{"kind":"tank","loaded":true,"failed":false,"directional":true,"directionFailed":false,"frames":[],"count":0,"capacity":48,"aspect":1,"height":2.3,"crop":[0,0,256,256],"sourceSize":[1280,256],"nearest":true,"mipmaps":false,"depthTest":true,"depthWrite":true,"alphaTest":0.09411764705882353}],"encounters":{"shots":0,"capacity":16,"boss":null,"lane":false,"cone":false,"elite":false,"fallback":false}},"position":{"x":0,"z":0},"movement":{"x":0,"y":0},"elapsed":0.6166666666666669,"cooldown":0,"distance":0,"jumpHeight":0,"graphics":{"mode":"auto","scale":1,"targetFps":60,"pixelRatio":1,"particles":4},"audio":{"music":true,"sound":true,"active":true,"state":"unavailable","supported":false,"voices":0,"played":0},"camera":{"x":0,"y":17.570562748477144,"z":16.970562748477143,"type":"OrthographicCamera","pitch":45,"quaternion":[-0.3826834323650898,0,0,0.9238795325112867],"width":30.22222222222222,"height":17},"creature":{"name":"焰绒","legs":4,"slots":["head","back","tail"],"equipped":{},"visual":"gltf","model":{"loaded":true,"failed":false,"height":2.85,"blend":0,"animation":"WalkInPlace","time":0.6403333333333335,"bones":14}},"portrait":false,"rendering":true,"drawCalls":22,"triangles":38540,"geometries":53,"textures":8,"combat":{"build":{"enabled":false,"species":"yanrong","relics":[],"evolution":null,"attacks":[{"attackId":"spark","slot":0,"level":1,"cooldown":0,"cooldownTotal":0,"shotsFired":0}]},"firing":{"weapon":null,"remaining":0,"gap":0},"hp":100,"kills":0,"goldEarned":0,"xp":0,"shotsFired":0,"hits":0,"fusion":{"enabled":false,"active":null,"recipes":[],"bursts":0,"childShots":0,"children":0},"spawned":0,"collected":0,"invulnerability":0,"enemies":[],"projectiles":0,"orbs":[],"effects":0,"targetId":0,"limits":{"enemies":48,"projectiles":24,"orbs":96,"effects":48,"shockwaves":2},"maxHp":100,"progression":{"level":1,"experience":0,"totalExperience":0,"threshold":8,"pendingChoices":0,"choiceLevel":2,"offers":[],"ranks":{"damage":0,"haste":0,"multishot":0,"vitality":0,"movement":0,"range":0,"orbit":0,"shockwave":0,"split-on-hit":0,"area":0,"chain":0,"bubble-weapon":0,"spark-weapon":0,"leaf-weapon":0,"overload-core":0,"hunter-eye":0,"shattered-core":0,"tidal-pearl":0,"specialist-badge":0,"echo-rune":0,"berserk-route":0,"pursuit-route":0},"stats":{"damageMultiplier":1,"attackRateMultiplier":1,"projectileCount":1,"maxHp":100,"moveMultiplier":1,"rangeMultiplier":1,"orbitCount":0,"orbitDamage":0,"orbitRadius":0,"orbitSpeed":0,"shockDamage":0,"shockRadius":0,"shockInterval":0,"splitOnHit":0},"maxLevel":35},"encounters":{"enabled":false,"wave":0,"boss":null,"elite":null,"shots":[],"limit":16},"orbitAngle":0,"shockwaves":[]}}
+  ok 444 [webkit] › tests\game.spec.ts:14:1 › main menu renders a real 3D world and starts exploration without errors (3.0s)
+  ok 445 [webkit] › tests\game.spec.ts:41:1 › keyboard moves, normalizes diagonals, dashes and stops after release (3.1s)
+  ok 446 [webkit] › tests\game.spec.ts:59:1 › joystick deadzone, drag outside, release and pointer cancellation (2.5s)
+  ok 447 [webkit] › tests\game.spec.ts:86:1 › pause freezes simulation and resets held input; menu can restart cleanly (4.2s)
+  ok 448 [webkit] › tests\game.spec.ts:112:1 › portrait prompts rotation, pauses play and resumes only on request (2.0s)
+  ok 449 [webkit] › tests\game.spec.ts:132:1 › visibility and blur handlers freeze time and release controls (2.5s)
+  -  450 [webkit] › tests\game.spec.ts:157:1 › real multitouch keeps joystick and dash independent on mobile
+  ok 451 [webkit] › tests\game.spec.ts:193:1 › automatic combat updates HUD, collects XP and restart clears every combat entity (9.5s)
+  ok 452 [webkit] › tests\gameover.spec.ts:7:1 › lethal contact ends the real game loop and both restart routes clear combat (2.2s)
+  ok 453 [webkit] › tests\horn-model.spec.ts:14:1 › horn sweep hits crossed targets once per dash, knocks survivors, and preserves classic damage (7ms)
+  ok 454 [webkit] › tests\horn-model.spec.ts:30:1 › horn kills use the existing XP drop and pickup path; rear, spawning and covered targets are excluded (4ms)
+  ok 455 [webkit] › tests\horn-model.spec.ts:46:1 › pounce telegraph locks direction, cannot deal windup damage, sweeps its hit, then recovers (5ms)
+  ok 456 [webkit] › tests\horn-model.spec.ts:63:1 › a horn strike interrupts a committed pounce, protects its hit target, and allows a later pounce (4ms)
+  ok 457 [webkit] › tests\horn-model.spec.ts:73:1 › upgrade/death freeze intents and horn hits; reset clears the trial and reused slots (5ms)
+  ok 458 [webkit] › tests\horn-model.spec.ts:85:1 › the same fixed steps give identical trial outcomes under 30, 60 and 120 Hz frame schedules (9ms)
+  ok 459 [webkit] › tests\horn-ui.spec.ts:19:1 › phone trial equips horns, touch dash damages and interrupts; restart and classic clear it (2.8s)
+  ok 460 [webkit] › tests\horn-ui.spec.ts:48:1 › telegraph has real instanced geometry, trial upgrades freeze and resume without losing horns (1.9s)
+  ok 461 [webkit] › tests\horn-ui.spec.ts:61:1 › trial entry and instructions fit small phone safe areas without covering joystick (2.5s)
+  ok 462 [webkit] › tests\hud-art.spec.ts:3:1 › forest HUD keeps live values, weapon artwork and safe touch targets on landscape phones (2.0s)
+  ok 463 [webkit] › tests\navigation-model.spec.ts:6:1 › an enemy behind the pond can reach the player without entering water (469ms)
+  ok 464 [webkit] › tests\navigation-model.spec.ts:22:1 › reinforcements still find dry connected ground when random attempts hit water (11ms)
+  ok 465 [webkit] › tests\navigation-model.spec.ts:33:1 › main roads retain a 4.8-unit clear corridor and all open regions connect to spawn (232ms)
+  ok 466 [webkit] › tests\navigation-model.spec.ts:55:1 › pond approaches remain reachable from both steering sides (5.9s)
+  ok 467 [webkit] › tests\navigation-model.spec.ts:78:1 › crowded tank pursuits keep progressing after upgrade choices (333ms)
+  ok 468 [webkit] › tests\navigation-model.spec.ts:96:1 › encounters and automatic waves spawn on dry ground with space and warning time (1.5s)
+  ok 469 [webkit] › tests\particle-feedback.spec.ts:31:1 › feedback uses real event clocks, one bounded GPU batch, preserves combat and stops with lifecycle (4.5s)
+  ok 470 [webkit] › tests\particle-feedback.spec.ts:87:1 › missing feedback atlas retains existing trail and hit fallback and real damage (2.3s)
+  ok 471 [webkit] › tests\party-model.spec.ts:15:1 › formal roster starts with one, permits duplicates, caps three and supports future four (7ms)
+  ok 472 [webkit] › tests\party-model.spec.ts:28:1 › companions follow a moving leader around cover and remain separate within the boundary (14.3s)
+  ok 473 [webkit] › tests\party-model.spec.ts:56:1 › three independent emitters use their own origin, target and cooldown without a duplicate player shot (5ms)
+  ok 474 [webkit] › tests\party-model.spec.ts:76:1 › cover and range are checked from each member rather than from the leader (1ms)
+  ok 475 [webkit] › tests\party-model.spec.ts:92:1 › only leader contact hurts shared HP, only leader collects XP, death freezes every emitter (3ms)
+  ok 476 [webkit] › tests\party-model.spec.ts:117:1 › existing upgrade choice freezes all attacks and central stats apply after picking (1ms)
+  ok 477 [webkit] › tests\party-ui.spec.ts:21:1 › single joystick moves Yanrong alone and automatic attacks continue (3.0s)
+  ok 478 [webkit] › tests\party-ui.spec.ts:47:1 › pause, upgrade and background freeze the entire party; death and restart reset shared combat (3.8s)
+  ok 479 [webkit] › tests\party-ui.spec.ts:77:1 › prototype entry and party HUD fit short phones and safe areas (2.7s)
+  ok 480 [webkit] › tests\pixel-party.spec.ts:41:1 › single Yanrong PNG retains aspect, nearest sampling, foot anchor and readable phone scale (2.0s)
+  ok 481 [webkit] › tests\pixel-party.spec.ts:63:1 › pixel view and original fallback produce identical party movement, collisions, attacks and XP (3.0s)
+  ok 482 [webkit] › tests\pixel-party.spec.ts:71:1 › transparent corners reveal terrain, opaque art writes depth and real cover occludes it (1.8s)
+  ok 483 [webkit] › tests\pixel-party.spec.ts:79:1 › missing art falls back per creature while movement and auto attacks continue (1.6s)
+  ok 484 [webkit] › tests\pixel-party.spec.ts:89:1 › same-species sprites share textures and disposal releases leases, materials and groups (1.8s)
+  ok 485 [webkit] › tests\pixel-party.spec.ts:95:1 › disposing during PNG loading never reattaches late resources (2.1s)
+  ok 486 [webkit] › tests\presentation-model.spec.ts:6:1 › adaptive graphics reduces pixels under sustained load and recovers with hysteresis (2ms)
+  ok 487 [webkit] › tests\presentation-model.spec.ts:20:1 › graphics modes bound pixel area, ignore suspended time, and reset sample windows (2ms)
+  ok 488 [webkit] › tests\presentation-model.spec.ts:36:1 › camera sweep catches foliage between player and lens and retains a padded gap (2ms)
+  ok 489 [webkit] › tests\presentation-model.spec.ts:48:1 › projectile trails and death fragments reuse bounded simulation slots and reset cleanly (3ms)
+  ok 490 [webkit] › tests\presentation.spec.ts:22:1 › audio waits for a gesture; settings persist and gameplay remains paused on closing (4.3s)
+  ok 491 [webkit] › tests\presentation.spec.ts:59:1 › jump is cosmetic, freezes on pause/upgrade, lands, and restart clears it (3.4s)
+  ok 492 [webkit] › tests\presentation.spec.ts:88:1 › orthographic camera follows with a fixed pitch and orientation (1.3s)
+  ok 493 [webkit] › tests\presentation.spec.ts:95:1 › pooled trails, hit flash and dissolving corpses render through the real loop (2.3s)
+  ok 494 [webkit] › tests\presentation.spec.ts:109:1 › small landscape HUD and settings fit safe areas with thumb-size touch targets (1.5s)
+  -  495 [webkit] › tests\presentation.spec.ts:122:1 › independent touch pointers keep moving while dashing
+  ok 496 [webkit] › tests\presentation.spec.ts:137:1 › missing Web Audio fails gracefully and never blocks combat or settings (1.9s)
+  ok 497 [webkit] › tests\progression.spec.ts:24:1 › exact XP boundaries and overflow preserve every earned level and choice (5ms)
+  ok 498 [webkit] › tests\progression.spec.ts:42:1 › all cards are unique, below their cap and selectable; max level never deadlocks (65ms)
+  ok 499 [webkit] › tests\progression.spec.ts:69:1 › invalid XP, stale choices and unoffered skills do not change progression (4ms)
+  ok 500 [webkit] › tests\progression.spec.ts:86:1 › data-driven stacks use additive base bonuses and independent spell ranks (8ms)
+  ok 501 [webkit] › tests\progression.spec.ts:100:1 › damage, multishot and range upgrades affect real projectiles and pool limits (14ms)
+  ok 502 [webkit] › tests\progression.spec.ts:119:1 › haste increases actual volleys per second; vitality increases max HP and heals (14ms)
+  ok 503 [webkit] › tests\progression.spec.ts:136:1 › orbit damages enemies, uses seconds-based hit immunity and resets cleanly (3ms)
+  ok 504 [webkit] › tests\progression.spec.ts:151:1 › shockwave expands, hits each enemy once, repeats and freezes throughout upgrade choice (12ms)
+  ok 505 [webkit] › tests\progression.spec.ts:177:1 › reset clears level, accumulated XP, choices, stats and both learned skills (6ms)
+  ok 506 [webkit] › tests\random-world-ui.spec.ts:21:1 › a replay link reproduces the rendered terrain, collision map and seed across reloads (3.6s)
+  ok 507 [webkit] › tests\random-world-ui.spec.ts:37:1 › restart preserves the map; new adventures vary it without growing GPU resources (7.0s)
+  ok 508 [webkit] › tests\random-world-ui.spec.ts:67:1 › pinned seeds remain pinned on new adventures; fixed override still uses the curated sample (4.2s)
+  ok 509 [webkit] › tests\random-world-ui.spec.ts:77:1 › movement and safe automatic spawns use the current map after regeneration (4.9s)
+  ok 510 [webkit] › tests\random-world-ui.spec.ts:93:1 › different seeds render different regions and fit phone replay controls (7.1s)
+  ok 511 [webkit] › tests\result-art.spec.ts:30:1 › victory motion is one shot and reduced motion removes it without delaying actions (2.7s)
+  ok 512 [webkit] › tests\result-art.spec.ts:43:1 › real victory shows crown, exact current scores and complete build without invented reward (2.0s)
+  ok 513 [webkit] › tests\result-art.spec.ts:67:1 › health and timeout defeats show real reasons, soft badge, and no victory art or stars (3.5s)
+  ok 514 [webkit] › tests\result-art.spec.ts:107:1 › missing report images retain readable live data, fallback emblem and usable actions (1.7s)
+  ok 515 [webkit] › tests\run-flow-ui.spec.ts:20:1 › complete six-wave UI with shopping, healing, refresh, victory, clean restart, defeat and legacy return (5.3s)
+  ok 516 [webkit] › tests\run-flow.spec.ts:14:1 › six waves provide five shops, 455 combat seconds and a 9m15s reference run with 20s rests (20ms)
+  ok 517 [webkit] › tests\run-flow.spec.ts:34:1 › wave boundary claims loose XP once, resolves pending upgrades, and clears combat without resetting build/HP (4ms)
+  ok 518 [webkit] › tests\run-flow.spec.ts:49:1 › real kills award gold once and recycling a living enemy does not count (2ms)
+  ok 519 [webkit] › tests\run-flow.spec.ts:58:1 › buying a weapon is atomic, costs gold rather than XP, and rejects stale/double/poor purchases (5ms)
+  ok 520 [webkit] › tests\run-flow.spec.ts:68:1 › healing preserves max HP; refresh prices increase and stale shop tokens cannot spend (6ms)
+  ok 521 [webkit] › tests\run-flow.spec.ts:80:1 › fixed rewards give a low-kill build real purchasing tradeoffs (5ms)
+  ok 522 [webkit] › tests\run-flow.spec.ts:88:1 › death at the last boundary defeats rather than wins and leaves historical modes unchanged (1ms)
+  ok 523 [webkit] › tests\shockwave-art.spec.ts:3:1 › Kenney shockwave follows combat clocks, stays pooled and clears with the scene (2.0s)
+  ok 524 [webkit] › tests\shop-art.spec.ts:23:1 › cards reflect real offers, show weapons, relics and healing art, and fit safe-area phones (2.6s)
+  ok 525 [webkit] › tests\shop-art.spec.ts:73:1 › desktop shop scales merchandise and text to the browser viewport (4.0s)
+  ok 526 [webkit] › tests\shop-art.spec.ts:92:1 › purchases replace invalid offers, reject stale tokens, heal correctly and retain sold prices (2.8s)
+  ok 527 [webkit] › tests\shop-art.spec.ts:120:1 › empty offers and missing art keep useful text, disabled purchases and a working next-wave action (2.0s)
+  ok 528 [webkit] › tests\sprite.spec.ts:32:1 › complete sprite keeps its aspect, ground anchor, soft shadow and phone size (1.3s)
+  ok 529 [webkit] › tests\sprite.spec.ts:47:1 › sprite and 3D fallback give identical movement, targeting, damage and XP results (1.3s)
+  ok 530 [webkit] › tests\sprite.spec.ts:52:1 › real depth buffer occludes behind cover and transparent corners reveal the scene (1.2s)
+  ok 531 [webkit] › tests\sprite.spec.ts:60:1 › dash afterimages, stretch and hurt flash affect visuals only and restart clears them (2.1s)
+  ok 532 [webkit] › tests\sprite.spec.ts:72:1 › missing PNG falls back safely and explicit 3D mode does not request the image (1.8s)
+  ok 533 [webkit] › tests\swarm.spec.ts:20:1 › first batch is a real group; later waves grow to 24–36 active enemies with wave five the densest (61ms)
+  ok 534 [webkit] › tests\swarm.spec.ts:36:1 › placement is seeded, stays in one incoming sector, and does not overlap player, enemies, cover or bounds (309ms)
+  ok 535 [webkit] › tests\swarm.spec.ts:62:1 › unreachable terrain skips the batch within bounded attempts, without unsafe fallback or queued burst (8ms)
+  ok 536 [webkit] › tests\swarm.spec.ts:71:1 › full pool and partial capacity degrade safely without replacing live objects or overfilling (2ms)
+  ok 537 [webkit] › tests\swarm.spec.ts:83:1 › swarm rewards are integer XP and one coin per three real kills; carry survives waves and resets with run (3ms)
+  ok 538 [webkit] › tests\swarm.spec.ts:104:1 › escorts preserve formal health and warning rules; wave six keeps its original sparse support (2ms)
+  ok 539 [webkit] › tests\swarm.spec.ts:115:1 › high-throughput clearing has bounded economy, pooled XP merge and exactly-once boundary settlement (50ms)
+  ok 540 [webkit] › tests\swarm.spec.ts:138:1 › legacy automatic spawning and health are untouched and cannot opt into swarms accidentally (2ms)
+  x  541 [webkit] › tests\three-weapon-ui.spec.ts:3:1 › grass creature acquires fire/water through upgrade cards, shows all five fusions and restarts cleanly (12.9s)
+(node:30160) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:30160) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 542 [webkit] › tests\three-weapon.spec.ts:34:1 › all three creatures acquire all weapons and five fusions through real upgrades (37ms)
+  ok 543 [webkit] › tests\three-weapon.spec.ts:50:1 › upgrade pool filters irrelevant modifiers and acquisition keeps side cooldowns staggered (8ms)
+  ok 544 [webkit] › tests\three-weapon.spec.ts:72:1 › water expansion and two chain hops coexist with one damage ledger (10ms)
+  ok 545 [webkit] › tests\three-weapon.spec.ts:88:1 › leaf scatters only once while its main shot chains, never recursively deriving children (7ms)
+  ok 546 [webkit] › tests\three-weapon.spec.ts:100:1 › 24-slot saturation preserves direct damage and main priority; death/restart clear all weapons and effects (5ms)
+  ok 547 [webkit] › tests\upgrade-art.spec.ts:34:1 › card motion follows rarity, preserves pointer feedback and respects reduced motion (1.4s)
+  ok 548 [webkit] › tests\upgrade-art.spec.ts:67:1 › all 22 real IDs are covered, element variants follow equipped weapons, categories stay data-driven (2.2s)
+  ok 549 [webkit] › tests\upgrade-art.spec.ts:100:1 › real art loads and short landscape cards keep visible copy and safe-area bounds (1.1s)
+  ok 550 [webkit] › tests\upgrade-art.spec.ts:125:1 › failed illustrations, gems and frames keep an intact selectable fallback card (686ms)
+  ok 551 [webkit] › tests\upgrade-art.spec.ts:138:1 › all reward copy fits without overlapping effects, previews or costs at both phone sizes (2.1s)
+  ok 552 [webkit] › tests\upgrade-art.spec.ts:167:1 › mixed magic and weapon rewards share frame geometry and keep their title and illustration apart (878ms)
+  ok 553 [webkit] › tests\upgrades.spec.ts:34:1 › XP opens three valid cards, freezes the entire simulation and touch picks once (2.3s)
+  ok 554 [webkit] › tests\upgrades.spec.ts:65:1 › XP overflow queues separate choices; duplicate old clicks cannot spend the next reward (2.4s)
+  ok 555 [webkit] › tests\upgrades.spec.ts:85:1 › cards fit short landscape phones and safe areas; rotation/background keeps choices frozen (2.4s)
+  ok 556 [webkit] › tests\upgrades.spec.ts:124:1 › new spells coexist, max HP updates HUD and a fresh run clears all skills (3.2s)
+  ok 557 [webkit] › tests\upgrades.spec.ts:147:1 › the last remaining skill is valid and full mastery stops creating empty dialogs (2.1s)
+  -  558 [webkit] › tests\upgrades.spec.ts:164:1 › an existing joystick finger cannot pick a card or leave movement stuck
+  ok 559 [webkit] › tests\world-art.spec.ts:3:1 › every used tree and rock cutout has one connected body and no isolated white square (536ms)
+  ok 560 [webkit] › tests\world-generator.spec.ts:5:1 › same seed reproduces the complete layout and validation, independently of global RNG (99ms)
+  ok 561 [webkit] › tests\world-generator.spec.ts:15:1 › 256 seeds vary regions, trees, rocks and ponds while preserving spawn and every navigable cell (6.7s)
+  ok 562 [webkit] › tests\world-generator.spec.ts:40:1 › validation rejects blocked spawn, blocked roads and isolated walkable pockets (12ms)
+  ok 563 [webkit] › tests\world-sample.spec.ts:13:1 › sample loads, preserves an open start, and returns to the original map for old modes (2.1s)
+  ok 564 [webkit] › tests\world-sample.spec.ts:34:1 › water blocks Yanrong and no followers are created (1.4s)
+  ok 565 [webkit] › tests\world-sample.spec.ts:45:1 › failed assets and explicit legacy override retain a visible collidable original world (2.7s)
+  ok 566 [webkit] › tests\world-sample.spec.ts:58:1 › desktop and short phone previews retain readable scale and bounded draw calls (1.6s)
+
+
+  1) [chromium] › tests\build-depth-ui.spec.ts:3:1 › rare choices expose costs, and pause shows levels, all six relics and the exclusive route 
+
+    Error: expect(locator).toContainText(expected) failed
+
+    Locator: locator('#fusion-title')
+    Expected substring: "火花弹 Lv.2"
+    Received string:    "火花弹 2级 + 水泡弹 + 叶刃 · 5 融合"
+    Timeout: 8000ms
+
+    Call log:
+      - Expect "toContainText" locator('#fusion-title') with timeout 8000ms
+      - waiting for locator('#fusion-title')
+        20 × locator resolved to <strong id="fusion-title">火花弹 2级 + 水泡弹 + 叶刃 · 5 融合</strong>
+           - unexpected value "火花弹 2级 + 水泡弹 + 叶刃 · 5 融合"
+
+
+      28 |     await card.click();
+      29 |   }
+    > 30 |   await expect(page.locator('#fusion-title')).toContainText('火花弹 Lv.2');
+         |                                               ^
+      31 |   await expect(page.locator('#build-status')).toHaveText('6 件稀有道具 · 追猎火种 · 暂停查看构筑');
+      32 |   await page.locator('#pause').click();
+      33 |   await expect(page.locator('#build-weapons')).toContainText('主武器：火花弹 Lv.2 / 5');
+        at D:\projects\MonsterBonk-Mobile\tests\build-depth-ui.spec.ts:30:47
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\build-depth-ui-rare-choice-6b012-ics-and-the-exclusive-route-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\build-depth-ui-rare-choice-6b012-ics-and-the-exclusive-route-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\build-depth-ui-rare-choice-6b012-ics-and-the-exclusive-route-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\build-depth-ui-rare-choice-6b012-ics-and-the-exclusive-route-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [chromium] › tests\challenge-ui.spec.ts:72:1 › real movement, auto attacks, dash damage and normal upgrades can complete the encounter without forced kills 
+
+    Error: browserContext.close: ENOENT: no such file or directory, open 'D:\projects\MonsterBonk-Mobile\test-results\.playwright-artifacts-1\traces\00f5b1a8d1792eaf1538-21e600612b33c7d4ea7b-recording6.trace'
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\challenge-ui-real-movement-21d2f-ounter-without-forced-kills-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\challenge-ui-real-movement-21d2f-ounter-without-forced-kills-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\challenge-ui-real-movement-21d2f-ounter-without-forced-kills-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\challenge-ui-real-movement-21d2f-ounter-without-forced-kills-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) [chromium] › tests\combat-clarity-ui.spec.ts:3:1 › fully fused three-weapon build stays readable with CD indicators and pooled impact visuals 
+
+    Error: expect(locator).toHaveCount(expected) failed
+
+    Locator:  locator('.weapon-charge')
+    Expected: 3
+    Received: 0
+    Timeout:  8000ms
+
+    Call log:
+      - Expect "toHaveCount" locator('.weapon-charge') with timeout 8000ms
+      - waiting for locator('.weapon-charge')
+        19 × locator resolved to 0 elements
+           - unexpected value "0"
+
+
+      41 |     expect(state.largest).toBeLessThanOrEqual(1.551); expect(state.noDepthWrite).toBe(true); expect(state.maxHurt).toBeLessThanOrEqual(.301); expect(state.limits).toBe(24);
+      42 |     if (index === 1) expect(state.shots.every((count: number) => count > 0)).toBe(true);
+    > 43 |     await expect(page.locator('.weapon-charge')).toHaveCount(3);
+         |                                                  ^
+      44 |     await page.screenshot({ path: `artifacts/combat-clarity-${index === 0 ? 'volleys' : 'impacts'}.png` });
+      45 |   }
+      46 |   await page.locator('#pause').click();
+        at D:\projects\MonsterBonk-Mobile\tests\combat-clarity-ui.spec.ts:43:50
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\combat-clarity-ui-fully-fu-ae086-s-and-pooled-impact-visuals-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\combat-clarity-ui-fully-fu-ae086-s-and-pooled-impact-visuals-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\combat-clarity-ui-fully-fu-ae086-s-and-pooled-impact-visuals-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\combat-clarity-ui-fully-fu-ae086-s-and-pooled-impact-visuals-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  4) [chromium] › tests\creature-selection.spec.ts:21:1 › menu selection overrides development URL and remains selected after returning from compatibility mode 
+
+    Error: browserContext.close: ENOENT: no such file or directory, open 'D:\projects\MonsterBonk-Mobile\test-results\.playwright-artifacts-3\traces\18077a185e51290af9d5-e7a46a7e2fdfe94de2ae-recording36.trace'
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\creature-selection-menu-se-b4eca-ing-from-compatibility-mode-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\creature-selection-menu-se-b4eca-ing-from-compatibility-mode-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\creature-selection-menu-se-b4eca-ing-from-compatibility-mode-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\creature-selection-menu-se-b4eca-ing-from-compatibility-mode-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  5) [chromium] › tests\elemental-fusion-ui.spec.ts:30:11 › paopaoyuan development entry uses one animated creature, real cards, automatic fusions and bounded colored effects 
+
+    Error: page.evaluate: TypeError: Cannot read properties of undefined (reading 'count')
+        at eval (eval at evaluate (:370:30), <anonymous>:6:38)
+        at UtilityScript.evaluate (<anonymous>:372:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at eval (eval at evaluate (:370:30), <anonymous>:6:38)
+        at UtilityScript.evaluate (<anonymous>:372:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at D:\projects\MonsterBonk-Mobile\tests\elemental-fusion-ui.spec.ts:35:25
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\elemental-fusion-ui-paopao-625ea-and-bounded-colored-effects-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\elemental-fusion-ui-paopao-625ea-and-bounded-colored-effects-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\elemental-fusion-ui-paopao-625ea-and-bounded-colored-effects-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\elemental-fusion-ui-paopao-625ea-and-bounded-colored-effects-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  6) [chromium] › tests\elemental-fusion-ui.spec.ts:30:11 › yacishou development entry uses one animated creature, real cards, automatic fusions and bounded colored effects 
+
+    Error: page.evaluate: TypeError: Cannot read properties of undefined (reading 'count')
+        at eval (eval at evaluate (:370:30), <anonymous>:6:38)
+        at UtilityScript.evaluate (<anonymous>:372:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at eval (eval at evaluate (:370:30), <anonymous>:6:38)
+        at UtilityScript.evaluate (<anonymous>:372:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at D:\projects\MonsterBonk-Mobile\tests\elemental-fusion-ui.spec.ts:35:25
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\elemental-fusion-ui-yacish-1fef3-and-bounded-colored-effects-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\elemental-fusion-ui-yacish-1fef3-and-bounded-colored-effects-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\elemental-fusion-ui-yacish-1fef3-and-bounded-colored-effects-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\elemental-fusion-ui-yacish-1fef3-and-bounded-colored-effects-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  7) [chromium] › tests\elemental-fusion-ui.spec.ts:53:11 › jump-thorn individual skill renders audited pixels, icon and real damage; lifecycle clears batch 
+
+    Error: browserContext.close: ENOENT: no such file or directory, open 'D:\projects\MonsterBonk-Mobile\test-results\.playwright-artifacts-6\traces\ff01734f2e423bd74f9e-c6a415df6d19a78849a4-recording8.trace'
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\elemental-fusion-ui-jump-t-9bce7-mage-lifecycle-clears-batch-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\elemental-fusion-ui-jump-t-9bce7-mage-lifecycle-clears-batch-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\elemental-fusion-ui-jump-t-9bce7-mage-lifecycle-clears-batch-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\elemental-fusion-ui-jump-t-9bce7-mage-lifecycle-clears-batch-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  8) [chromium] › tests\elemental-fusion-ui.spec.ts:73:1 › missing elemental textures and icons preserve procedural effects, readable cards and damage 
+
+    Error: page.evaluate: TypeError: Cannot read properties of undefined (reading 'count')
+        at eval (eval at evaluate (:370:30), <anonymous>:1:41)
+        at UtilityScript.evaluate (<anonymous>:372:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at eval (eval at evaluate (:370:30), <anonymous>:1:41)
+        at UtilityScript.evaluate (<anonymous>:372:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at D:\projects\MonsterBonk-Mobile\tests\elemental-fusion-ui.spec.ts:76:105
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\elemental-fusion-ui-missin-e8229-s-readable-cards-and-damage-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\elemental-fusion-ui-missin-e8229-s-readable-cards-and-damage-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\elemental-fusion-ui-missin-e8229-s-readable-cards-and-damage-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\elemental-fusion-ui-missin-e8229-s-readable-cards-and-damage-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  9) [chromium] › tests\fusion-ui.spec.ts:51:1 › real fusion cards and impacts render child/explosion frames without duplicate hit flashes on both phone layouts 
+
+    Error: expect(locator).toHaveClass(expected) failed
+
+    Locator: locator('[data-skill="split-on-hit"]').locator('.fire-icon')
+    Expected pattern: /ready/
+    Timeout: 8000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toHaveClass" locator('[data-skill="split-on-hit"]').locator('.fire-icon') with timeout 8000ms
+      - waiting for locator('[data-skill="split-on-hit"]').locator('.fire-icon')
+
+
+      53 |   await page.evaluate(() => (window as unknown as Fixture).offer());
+      54 |   const card = page.locator('[data-skill="split-on-hit"]'); await expect(card).toBeEnabled();
+    > 55 |   await expect(card.locator('.fire-icon')).toHaveClass(/ready/);
+         |                                            ^
+      56 |   await page.screenshot({ path: 'artifacts/v5-fusion-card-844.png' });
+      57 |   await page.setViewportSize({ width: 568, height: 320 });
+      58 |   await page.screenshot({ path: 'artifacts/v5-fusion-card-568.png' });
+        at D:\projects\MonsterBonk-Mobile\tests\fusion-ui.spec.ts:55:44
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\fusion-ui-real-fusion-card-e5c41-ashes-on-both-phone-layouts-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\fusion-ui-real-fusion-card-e5c41-ashes-on-both-phone-layouts-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\fusion-ui-real-fusion-card-e5c41-ashes-on-both-phone-layouts-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\fusion-ui-real-fusion-card-e5c41-ashes-on-both-phone-layouts-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  10) [chromium] › tests\fusion-ui.spec.ts:98:1 › missing atlas and icons keep procedural attack/explosion and readable cards 
+
+    Error: page.evaluate: TypeError: Cannot read properties of undefined (reading 'count')
+        at eval (eval at evaluate (:370:30), <anonymous>:5:27)
+        at UtilityScript.evaluate (<anonymous>:372:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at eval (eval at evaluate (:370:30), <anonymous>:5:27)
+        at UtilityScript.evaluate (<anonymous>:372:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at D:\projects\MonsterBonk-Mobile\tests\fusion-ui.spec.ts:104:21
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\fusion-ui-missing-atlas-an-4f1a2-xplosion-and-readable-cards-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\fusion-ui-missing-atlas-an-4f1a2-xplosion-and-readable-cards-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\fusion-ui-missing-atlas-an-4f1a2-xplosion-and-readable-cards-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\fusion-ui-missing-atlas-an-4f1a2-xplosion-and-readable-cards-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  11) [chromium] › tests\game.spec.ts:157:1 › real multitouch keeps joystick and dash independent on mobile 
+
+    Error: apiRequestContext._wrapApiCall: ENOENT: no such file or directory, copyfile 'D:\projects\MonsterBonk-Mobile\test-results\.playwright-artifacts-10\traces\8b1bb1493a64c9fc3ab6-08e383773988d7dcb23b-recording23.network' -> 'D:\projects\MonsterBonk-Mobile\test-results\.playwright-artifacts-10\traces\8b1bb1493a64c9fc3ab6-08e383773988d7dcb23b-recording23-pwnetcopy-1.network'
+
+      188 |     await page.screenshot({ path: 'artifacts/game-mobile.png' });
+      189 |     await testInfo.attach('mobile gameplay', { path: 'artifacts/game-mobile.png', contentType: 'image/png' });
+    > 190 |   } finally { await context.close(); }
+          |                             ^
+      191 | });
+      192 |
+      193 | test('automatic combat updates HUD, collects XP and restart clears every combat entity', async ({ page }, testInfo) => {
+        at D:\projects\MonsterBonk-Mobile\tests\game.spec.ts:190:29
+
+    Error: apiRequestContext._wrapApiCall: ENOENT: no such file or directory, copyfile 'D:\projects\MonsterBonk-Mobile\test-results\.playwright-artifacts-10\traces\8b1bb1493a64c9fc3ab6-08e383773988d7dcb23b-recording21.network' -> 'D:\projects\MonsterBonk-Mobile\test-results\.playwright-artifacts-10\traces\8b1bb1493a64c9fc3ab6-08e383773988d7dcb23b-recording21-pwnetcopy-1.network'
+
+    Error: browserContext._wrapApiCall: ENOENT: no such file or directory, open 'D:\projects\MonsterBonk-Mobile\test-results\.playwright-artifacts-10\traces\8b1bb1493a64c9fc3ab6-08e383773988d7dcb23b-recording20.trace'
+
+    Error: ENOENT: no such file or directory, open 'D:\projects\MonsterBonk-Mobile\test-results\.playwright-artifacts-10\6842f889cca646877dec111fad002ab3.zip'
+
+    attachment #1: mobile gameplay (image/png) ─────────────────────────────────────────────────────
+    test-results\game-real-multitouch-keeps-e046b--dash-independent-on-mobile-chromium\attachments\mobile-gameplay-4d91373b9bc0cfb691451013ec4e720723eacf06.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\game-real-multitouch-keeps-e046b--dash-independent-on-mobile-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #3: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\game-real-multitouch-keeps-e046b--dash-independent-on-mobile-chromium\test-failed-2.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  12) [chromium] › tests\horn-ui.spec.ts:61:1 › trial entry and instructions fit small phone safe areas without covering joystick 
+
+    Error: UNKNOWN: unknown error, open 'D:\projects\MonsterBonk-Mobile\artifacts\horn-trial-568.png'
+
+      70 |     expect(status.y + status.height).toBeLessThanOrEqual(joystick.y);
+      71 |     expect(status.x + status.width).toBeLessThan(viewport.width / 2);
+    > 72 |     if (info.project.name === 'chromium') await page.screenshot({ path: `artifacts/horn-trial-${viewport.width}.png` });
+         |                                           ^
+      73 |     await page.locator('#pause').tap(); await page.locator('#back-menu').tap();
+      74 |   }
+      75 | });
+        at D:\projects\MonsterBonk-Mobile\tests\horn-ui.spec.ts:72:43
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\horn-ui-trial-entry-and-in-e4d44-s-without-covering-joystick-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\horn-ui-trial-entry-and-in-e4d44-s-without-covering-joystick-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\horn-ui-trial-entry-and-in-e4d44-s-without-covering-joystick-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\horn-ui-trial-entry-and-in-e4d44-s-without-covering-joystick-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  13) [chromium] › tests\party-ui.spec.ts:77:1 › prototype entry and party HUD fit short phones and safe areas 
+
+    Error: UNKNOWN: unknown error, open 'D:\projects\MonsterBonk-Mobile\artifacts\v4-party-844.png'
+
+      90 |     await expect(page.locator('#party-status')).toBeHidden();
+      91 |     await expect(page.locator('#joystick')).toBeVisible();
+    > 92 |     if (info.project.name === 'chromium') await page.screenshot({ path: 'artifacts/v4-party-' + viewport.width + '.png' });
+         |                                           ^
+      93 |   }
+      94 | });
+      95 |
+        at D:\projects\MonsterBonk-Mobile\tests\party-ui.spec.ts:92:43
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\party-ui-prototype-entry-a-c1ede-short-phones-and-safe-areas-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\party-ui-prototype-entry-a-c1ede-short-phones-and-safe-areas-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\party-ui-prototype-entry-a-c1ede-short-phones-and-safe-areas-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\party-ui-prototype-entry-a-c1ede-short-phones-and-safe-areas-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  14) [chromium] › tests\presentation.spec.ts:59:1 › jump is cosmetic, freezes on pause/upgrade, lands, and restart clears it 
+
+    Error: browserContext.close: ENOENT: no such file or directory, open 'D:\projects\MonsterBonk-Mobile\test-results\.playwright-artifacts-13\traces\57a964c83dbf6a737e02-89521dd341cc39abb1bf-recording14.trace'
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\presentation-jump-is-cosme-101f4-lands-and-restart-clears-it-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\presentation-jump-is-cosme-101f4-lands-and-restart-clears-it-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\presentation-jump-is-cosme-101f4-lands-and-restart-clears-it-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\presentation-jump-is-cosme-101f4-lands-and-restart-clears-it-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  15) [chromium] › tests\three-weapon-ui.spec.ts:3:1 › grass creature acquires fire/water through upgrade cards, shows all five fusions and restarts cleanly 
+
+    Error: expect(locator).toContainText(expected) failed
+
+    Locator: locator('#fusion-hint')
+    Expected substring: "融合协同"
+    Received string:    ""
+    Timeout: 8000ms
+
+    Call log:
+      - Expect "toContainText" locator('#fusion-hint') with timeout 8000ms
+      - waiting for locator('#fusion-hint')
+        20 × locator resolved to <small hidden="" id="fusion-hint"></small>
+           - unexpected value ""
+
+
+      49 |   });
+      50 |   expect(fired).toEqual(expect.arrayContaining([{ id: 'leaf', recipes: 2 }, { id: 'spark', recipes: 1 }, { id: 'bubble', recipes: 2 }]));
+    > 51 |   await expect(page.locator('#fusion-hint')).toContainText('融合协同');
+         |                                              ^
+      52 |   await expect(page.locator('#fusion-burst-icon')).toBeVisible();
+      53 |   await page.screenshot({ path: 'artifacts/v5.1-b-three-weapon.png' });
+      54 |   await page.setViewportSize({ width: 568, height: 320 });
+        at D:\projects\MonsterBonk-Mobile\tests\three-weapon-ui.spec.ts:51:46
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\three-weapon-ui-grass-crea-4b618-usions-and-restarts-cleanly-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\three-weapon-ui-grass-crea-4b618-usions-and-restarts-cleanly-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\three-weapon-ui-grass-crea-4b618-usions-and-restarts-cleanly-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\three-weapon-ui-grass-crea-4b618-usions-and-restarts-cleanly-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  16) [webkit] › tests\build-depth-ui.spec.ts:3:1 › rare choices expose costs, and pause shows levels, all six relics and the exclusive route 
+
+    Error: expect(locator).toContainText(expected) failed
+
+    Locator: locator('#fusion-title')
+    Expected substring: "火花弹 Lv.2"
+    Received string:    "火花弹 2级 + 水泡弹 + 叶刃 · 5 融合"
+    Timeout: 8000ms
+
+    Call log:
+      - Expect "toContainText" locator('#fusion-title') with timeout 8000ms
+      - waiting for locator('#fusion-title')
+        19 × locator resolved to <strong id="fusion-title">火花弹 2级 + 水泡弹 + 叶刃 · 5 融合</strong>
+           - unexpected value "火花弹 2级 + 水泡弹 + 叶刃 · 5 融合"
+
+
+      28 |     await card.click();
+      29 |   }
+    > 30 |   await expect(page.locator('#fusion-title')).toContainText('火花弹 Lv.2');
+         |                                               ^
+      31 |   await expect(page.locator('#build-status')).toHaveText('6 件稀有道具 · 追猎火种 · 暂停查看构筑');
+      32 |   await page.locator('#pause').click();
+      33 |   await expect(page.locator('#build-weapons')).toContainText('主武器：火花弹 Lv.2 / 5');
+        at D:\projects\MonsterBonk-Mobile\tests\build-depth-ui.spec.ts:30:47
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\build-depth-ui-rare-choice-6b012-ics-and-the-exclusive-route-webkit\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\build-depth-ui-rare-choice-6b012-ics-and-the-exclusive-route-webkit\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\build-depth-ui-rare-choice-6b012-ics-and-the-exclusive-route-webkit\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\build-depth-ui-rare-choice-6b012-ics-and-the-exclusive-route-webkit\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  17) [webkit] › tests\combat-clarity-ui.spec.ts:3:1 › fully fused three-weapon build stays readable with CD indicators and pooled impact visuals 
+
+    Error: expect(locator).toHaveCount(expected) failed
+
+    Locator:  locator('.weapon-charge')
+    Expected: 3
+    Received: 0
+    Timeout:  8000ms
+
+    Call log:
+      - Expect "toHaveCount" locator('.weapon-charge') with timeout 8000ms
+      - waiting for locator('.weapon-charge')
+        19 × locator resolved to 0 elements
+           - unexpected value "0"
+
+
+      41 |     expect(state.largest).toBeLessThanOrEqual(1.551); expect(state.noDepthWrite).toBe(true); expect(state.maxHurt).toBeLessThanOrEqual(.301); expect(state.limits).toBe(24);
+      42 |     if (index === 1) expect(state.shots.every((count: number) => count > 0)).toBe(true);
+    > 43 |     await expect(page.locator('.weapon-charge')).toHaveCount(3);
+         |                                                  ^
+      44 |     await page.screenshot({ path: `artifacts/combat-clarity-${index === 0 ? 'volleys' : 'impacts'}.png` });
+      45 |   }
+      46 |   await page.locator('#pause').click();
+        at D:\projects\MonsterBonk-Mobile\tests\combat-clarity-ui.spec.ts:43:50
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\combat-clarity-ui-fully-fu-ae086-s-and-pooled-impact-visuals-webkit\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\combat-clarity-ui-fully-fu-ae086-s-and-pooled-impact-visuals-webkit\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\combat-clarity-ui-fully-fu-ae086-s-and-pooled-impact-visuals-webkit\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\combat-clarity-ui-fully-fu-ae086-s-and-pooled-impact-visuals-webkit\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  18) [webkit] › tests\creature-animation-ui.spec.ts:43:1 › real V5 leader renders all projected directions, mirrors left and retains heading when stopping 
+
+    Error: UNKNOWN: unknown error, open 'D:\projects\MonsterBonk-Mobile\artifacts\yanrong-walk-down-left-844.png'
+
+      54 |       const a=await animation(page);expect(a.facing).toBe(name);expect(a.moving).toBe(true);expect(a.mirror).toBe(x<0);
+      55 |       expect(a.asset).toBe(name.includes('-')?'yanrong-diagonal':'yanrong-walk');expect(a.renderedFrame).toBeGreaterThanOrEqual(0);
+    > 56 |       await page.screenshot({path:'artifacts/yanrong-walk-'+name+'-'+viewport.width+'.png'});
+         |       ^
+      57 |       await drive(page,0,0,60);expect(await animation(page)).toMatchObject({facing:name,moving:false,clip:'idle-'+name});
+      58 |     }
+      59 |   }
+        at D:\projects\MonsterBonk-Mobile\tests\creature-animation-ui.spec.ts:56:7
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\creature-animation-ui-real-3a601-tains-heading-when-stopping-webkit\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\creature-animation-ui-real-3a601-tains-heading-when-stopping-webkit\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\creature-animation-ui-real-3a601-tains-heading-when-stopping-webkit\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\creature-animation-ui-real-3a601-tains-heading-when-stopping-webkit\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  19) [webkit] › tests\creature-animation-ui.spec.ts:63:1 › visible GPU pixels change across real walking/idle frames, with stable foot, size and frame sequence 
+
+    Error: UNKNOWN: unknown error, open 'D:\projects\MonsterBonk-Mobile\artifacts\yanrong-step-4.png'
+
+      67 |     await drive(page,1,0,8);hashes.add(await page.evaluate(()=>(window as any).pixelHash()));frames.add((await animation(page)).renderedFrame);
+      68 |     scales.push(await page.evaluate(()=>{const p=(window as any).game.partyView.pixels[0];return [...p.sprite.scale.toArray(),...p.sprite.center.toArray(),p.sprite.position.y]}));
+    > 69 |     await page.screenshot({path:'artifacts/yanrong-step-'+i+'.png'});
+         |     ^
+      70 |   }
+      71 |   expect(hashes.size).toBe(4);expect(frames.size).toBe(4);for(const scale of scales)expect(scale).toEqual(scales[0]);
+      72 |   await drive(page,0,1,30);await drive(page,0,0,60);const idle=new Set<number>();
+        at D:\projects\MonsterBonk-Mobile\tests\creature-animation-ui.spec.ts:69:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\creature-animation-ui-visi-a9e46-oot-size-and-frame-sequence-webkit\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\creature-animation-ui-visi-a9e46-oot-size-and-frame-sequence-webkit\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\creature-animation-ui-visi-a9e46-oot-size-and-frame-sequence-webkit\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\creature-animation-ui-visi-a9e46-oot-size-and-frame-sequence-webkit\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  20) [webkit] › tests\elemental-fusion-ui.spec.ts:30:11 › paopaoyuan development entry uses one animated creature, real cards, automatic fusions and bounded colored effects 
+
+    Error: page.evaluate: TypeError: undefined is not an object (evaluating 'g.combatView.burstRings.count')
+
+      33 |  for(let i=0;i<cards.length;i++){await learn(page,cards[i]);await expect(page.locator('#fusion-title')).toContainText(titles[i]);}
+      34 |  await page.evaluate(()=>(window as any).impact());
+    > 35 |  const state=await page.evaluate(()=>{const g=(window as any).game;return {c:g.combat.inspect(),rings:g.combatView.burstRings.count+(g.combatView.inspectElemental()?.count??0),fire:g.combatView.firePixels?.mesh.count??0,children:g.combat.projectiles.filter((s:any)=>s.active&&s.generation===1).length}});
+         |                         ^
+      36 |  expect(state.rings).toBeGreaterThan(0);expect(state.fire).toBe(0);expect(state.c.hits).toBeGreaterThan(0);expect(state.c.fusion.recipes).toHaveLength(2);if(dev==='yacishou')expect(state.children).toBe(3);
+      37 |  await page.evaluate(()=>{const w=window as any;w.game.combat.update(.08,w.game.position);w.draw()});
+      38 |  for(const viewport of [{width:844,height:390},{width:568,height:320}]){await page.setViewportSize(viewport);await page.evaluate(()=>(window as any).draw());await page.screenshot({path:'artifacts/elemental-'+dev+'-'+viewport.width+'.png'});}
+        at D:\projects\MonsterBonk-Mobile\tests\elemental-fusion-ui.spec.ts:35:25
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\elemental-fusion-ui-paopao-625ea-and-bounded-colored-effects-webkit\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\elemental-fusion-ui-paopao-625ea-and-bounded-colored-effects-webkit\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\elemental-fusion-ui-paopao-625ea-and-bounded-colored-effects-webkit\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\elemental-fusion-ui-paopao-625ea-and-bounded-colored-effects-webkit\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  21) [webkit] › tests\elemental-fusion-ui.spec.ts:30:11 › yacishou development entry uses one animated creature, real cards, automatic fusions and bounded colored effects 
+
+    Error: page.evaluate: TypeError: undefined is not an object (evaluating 'g.combatView.burstRings.count')
+
+      33 |  for(let i=0;i<cards.length;i++){await learn(page,cards[i]);await expect(page.locator('#fusion-title')).toContainText(titles[i]);}
+      34 |  await page.evaluate(()=>(window as any).impact());
+    > 35 |  const state=await page.evaluate(()=>{const g=(window as any).game;return {c:g.combat.inspect(),rings:g.combatView.burstRings.count+(g.combatView.inspectElemental()?.count??0),fire:g.combatView.firePixels?.mesh.count??0,children:g.combat.projectiles.filter((s:any)=>s.active&&s.generation===1).length}});
+         |                         ^
+      36 |  expect(state.rings).toBeGreaterThan(0);expect(state.fire).toBe(0);expect(state.c.hits).toBeGreaterThan(0);expect(state.c.fusion.recipes).toHaveLength(2);if(dev==='yacishou')expect(state.children).toBe(3);
+      37 |  await page.evaluate(()=>{const w=window as any;w.game.combat.update(.08,w.game.position);w.draw()});
+      38 |  for(const viewport of [{width:844,height:390},{width:568,height:320}]){await page.setViewportSize(viewport);await page.evaluate(()=>(window as any).draw());await page.screenshot({path:'artifacts/elemental-'+dev+'-'+viewport.width+'.png'});}
+        at D:\projects\MonsterBonk-Mobile\tests\elemental-fusion-ui.spec.ts:35:25
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\elemental-fusion-ui-yacish-1fef3-and-bounded-colored-effects-webkit\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\elemental-fusion-ui-yacish-1fef3-and-bounded-colored-effects-webkit\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\elemental-fusion-ui-yacish-1fef3-and-bounded-colored-effects-webkit\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\elemental-fusion-ui-yacish-1fef3-and-bounded-colored-effects-webkit\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  22) [webkit] › tests\elemental-fusion-ui.spec.ts:53:11 › deep-bubble individual skill renders audited pixels, icon and real damage; lifecycle clears batch 
+
+    Error: UNKNOWN: unknown error, open 'D:\projects\MonsterBonk-Mobile\artifacts\fusion-deep-bubble-568.png'
+
+      62 |  const row=['deep-bubble','chain-bubble','thorn-scatter','jump-thorn'].indexOf(id);expect(state.pixels.frames.every((f:number)=>Math.floor(f/8)===row)).toBe(true);
+      63 |  if(id==='jump-thorn')expect(state.pixels.frames.every((f:number)=>f===24||f===25)).toBe(true);
+    > 64 |  for(const viewport of [{width:844,height:390},{width:568,height:320}]){await page.setViewportSize(viewport);await page.evaluate(()=>(window as any).draw());await page.screenshot({path:'artifacts/fusion-'+id+'-'+viewport.width+'.png'});}
+         |                                                                                                                                                              ^
+      65 |  await page.locator('#pause').tap();const before=await page.evaluate(()=>(window as any).freeze());await page.waitForTimeout(100);expect(await page.evaluate(()=>(window as any).freeze())).toBe(before);
+      66 |  await page.locator('#resume').tap();await page.evaluate(()=>{const w=window as any;w.game.sleep();w.game.combat.hp=0;w.game.step(1/60);w.draw()});
+      67 |  expect(await page.evaluate(()=>(window as any).game.combatView.inspectElemental().count)).toBe(0);
+        at D:\projects\MonsterBonk-Mobile\tests\elemental-fusion-ui.spec.ts:64:158
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\elemental-fusion-ui-deep-b-753b2-mage-lifecycle-clears-batch-webkit\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\elemental-fusion-ui-deep-b-753b2-mage-lifecycle-clears-batch-webkit\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\elemental-fusion-ui-deep-b-753b2-mage-lifecycle-clears-batch-webkit\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\elemental-fusion-ui-deep-b-753b2-mage-lifecycle-clears-batch-webkit\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  23) [webkit] › tests\elemental-fusion-ui.spec.ts:53:11 › jump-thorn individual skill renders audited pixels, icon and real damage; lifecycle clears batch 
+
+    Error: UNKNOWN: unknown error, open 'D:\projects\MonsterBonk-Mobile\artifacts\fusion-jump-thorn-568.png'
+
+      62 |  const row=['deep-bubble','chain-bubble','thorn-scatter','jump-thorn'].indexOf(id);expect(state.pixels.frames.every((f:number)=>Math.floor(f/8)===row)).toBe(true);
+      63 |  if(id==='jump-thorn')expect(state.pixels.frames.every((f:number)=>f===24||f===25)).toBe(true);
+    > 64 |  for(const viewport of [{width:844,height:390},{width:568,height:320}]){await page.setViewportSize(viewport);await page.evaluate(()=>(window as any).draw());await page.screenshot({path:'artifacts/fusion-'+id+'-'+viewport.width+'.png'});}
+         |                                                                                                                                                              ^
+      65 |  await page.locator('#pause').tap();const before=await page.evaluate(()=>(window as any).freeze());await page.waitForTimeout(100);expect(await page.evaluate(()=>(window as any).freeze())).toBe(before);
+      66 |  await page.locator('#resume').tap();await page.evaluate(()=>{const w=window as any;w.game.sleep();w.game.combat.hp=0;w.game.step(1/60);w.draw()});
+      67 |  expect(await page.evaluate(()=>(window as any).game.combatView.inspectElemental().count)).toBe(0);
+        at D:\projects\MonsterBonk-Mobile\tests\elemental-fusion-ui.spec.ts:64:158
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\elemental-fusion-ui-jump-t-9bce7-mage-lifecycle-clears-batch-webkit\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\elemental-fusion-ui-jump-t-9bce7-mage-lifecycle-clears-batch-webkit\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\elemental-fusion-ui-jump-t-9bce7-mage-lifecycle-clears-batch-webkit\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\elemental-fusion-ui-jump-t-9bce7-mage-lifecycle-clears-batch-webkit\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  24) [webkit] › tests\elemental-fusion-ui.spec.ts:73:1 › missing elemental textures and icons preserve procedural effects, readable cards and damage 
+
+    Error: page.evaluate: TypeError: undefined is not an object (evaluating 'window.game.combatView.burstRings.count')
+
+      74 |  await page.route('**/assets/pixel/skills/fusions/*.png',r=>r.abort());await open(page,'paopaoyuan');await page.evaluate(()=>(window as any).game.sleep());
+      75 |  await expect.poll(()=>page.evaluate(()=>(window as any).game.combatView.inspectElemental()?.failed)).toBe(true);await learn(page,'area');await page.evaluate(()=>(window as any).impact());
+    > 76 |  expect(await page.evaluate(()=>(window as any).game.combat.hits)).toBeGreaterThan(0);expect(await page.evaluate(()=>(window as any).game.combatView.burstRings.count)).toBeGreaterThan(0);
+         |                                                                                                         ^
+      77 |  expect(await page.evaluate(()=>(window as any).game.combatView.inspectElemental().count)).toBe(0);await expect(page.locator('#fusion-title')).toContainText('深海泡影');
+      78 | });
+      79 |
+        at D:\projects\MonsterBonk-Mobile\tests\elemental-fusion-ui.spec.ts:76:105
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\elemental-fusion-ui-missin-e8229-s-readable-cards-and-damage-webkit\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\elemental-fusion-ui-missin-e8229-s-readable-cards-and-damage-webkit\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\elemental-fusion-ui-missin-e8229-s-readable-cards-and-damage-webkit\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\elemental-fusion-ui-missin-e8229-s-readable-cards-and-damage-webkit\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  25) [webkit] › tests\enemy-motion-ui.spec.ts:55:71 › three species render every direction at 568 without per-enemy textures 
+
+    Error: UNKNOWN: unknown error, open 'D:\projects\MonsterBonk-Mobile\artifacts\enemy-directions-eight-568.png'
+
+      64 |  // Keep presenting this frozen GPU scene during screenshot composition in WebKit.
+      65 |  await page.evaluate(()=>{const w=window as any;const draw=()=>{w.draw();w.captureFrame=requestAnimationFrame(draw)};draw()});
+    > 66 |  await page.screenshot({path:'artifacts/enemy-directions-eight-'+viewport.width+'.png'});
+         |  ^
+      67 |  await page.evaluate(()=>cancelAnimationFrame((window as any).captureFrame));
+      68 | });
+      69 |
+        at D:\projects\MonsterBonk-Mobile\tests\enemy-motion-ui.spec.ts:66:2
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\enemy-motion-ui-three-spec-65b46--without-per-enemy-textures-webkit\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\enemy-motion-ui-three-spec-65b46--without-per-enemy-textures-webkit\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\enemy-motion-ui-three-spec-65b46--without-per-enemy-textures-webkit\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\enemy-motion-ui-three-spec-65b46--without-per-enemy-textures-webkit\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  26) [webkit] › tests\fusion-ui.spec.ts:51:1 › real fusion cards and impacts render child/explosion frames without duplicate hit flashes on both phone layouts 
+
+    Error: expect(locator).toHaveClass(expected) failed
+
+    Locator: locator('[data-skill="split-on-hit"]').locator('.fire-icon')
+    Expected pattern: /ready/
+    Timeout: 8000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toHaveClass" locator('[data-skill="split-on-hit"]').locator('.fire-icon') with timeout 8000ms
+      - waiting for locator('[data-skill="split-on-hit"]').locator('.fire-icon')
+
+
+      53 |   await page.evaluate(() => (window as unknown as Fixture).offer());
+      54 |   const card = page.locator('[data-skill="split-on-hit"]'); await expect(card).toBeEnabled();
+    > 55 |   await expect(card.locator('.fire-icon')).toHaveClass(/ready/);
+         |                                            ^
+      56 |   await page.screenshot({ path: 'artifacts/v5-fusion-card-844.png' });
+      57 |   await page.setViewportSize({ width: 568, height: 320 });
+      58 |   await page.screenshot({ path: 'artifacts/v5-fusion-card-568.png' });
+        at D:\projects\MonsterBonk-Mobile\tests\fusion-ui.spec.ts:55:44
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\fusion-ui-real-fusion-card-e5c41-ashes-on-both-phone-layouts-webkit\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\fusion-ui-real-fusion-card-e5c41-ashes-on-both-phone-layouts-webkit\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\fusion-ui-real-fusion-card-e5c41-ashes-on-both-phone-layouts-webkit\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\fusion-ui-real-fusion-card-e5c41-ashes-on-both-phone-layouts-webkit\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  27) [webkit] › tests\fusion-ui.spec.ts:98:1 › missing atlas and icons keep procedural attack/explosion and readable cards 
+
+    Error: page.evaluate: TypeError: undefined is not an object (evaluating 'v.burstRings.count')
+
+      102 |   await page.evaluate(() => (window as unknown as Fixture).impact());
+      103 |   expect((await state(page)).combat.fusion.bursts).toBe(1); expect((await state(page)).combat.fusion.children).toBe(2);
+    > 104 |   expect(await page.evaluate(() => { const v=(window as any).game.combatView;return {bolts:v.bolts.count,rings:v.burstRings.count}; })).toEqual({bolts:2,rings:1});
+          |                     ^
+      105 |   expect((await state(page)).fusionVisual!.count).toBe(0);
+      106 | });
+      107 |
+        at D:\projects\MonsterBonk-Mobile\tests\fusion-ui.spec.ts:104:21
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\fusion-ui-missing-atlas-an-4f1a2-xplosion-and-readable-cards-webkit\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\fusion-ui-missing-atlas-an-4f1a2-xplosion-and-readable-cards-webkit\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\fusion-ui-missing-atlas-an-4f1a2-xplosion-and-readable-cards-webkit\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\fusion-ui-missing-atlas-an-4f1a2-xplosion-and-readable-cards-webkit\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  28) [webkit] › tests\three-weapon-ui.spec.ts:3:1 › grass creature acquires fire/water through upgrade cards, shows all five fusions and restarts cleanly 
+
+    Error: expect(locator).toContainText(expected) failed
+
+    Locator: locator('#fusion-hint')
+    Expected substring: "融合协同"
+    Received string:    ""
+    Timeout: 8000ms
+
+    Call log:
+      - Expect "toContainText" locator('#fusion-hint') with timeout 8000ms
+      - waiting for locator('#fusion-hint')
+        19 × locator resolved to <small hidden="" id="fusion-hint"></small>
+           - unexpected value ""
+
+
+      49 |   });
+      50 |   expect(fired).toEqual(expect.arrayContaining([{ id: 'leaf', recipes: 2 }, { id: 'spark', recipes: 1 }, { id: 'bubble', recipes: 2 }]));
+    > 51 |   await expect(page.locator('#fusion-hint')).toContainText('融合协同');
+         |                                              ^
+      52 |   await expect(page.locator('#fusion-burst-icon')).toBeVisible();
+      53 |   await page.screenshot({ path: 'artifacts/v5.1-b-three-weapon.png' });
+      54 |   await page.setViewportSize({ width: 568, height: 320 });
+        at D:\projects\MonsterBonk-Mobile\tests\three-weapon-ui.spec.ts:51:46
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\three-weapon-ui-grass-crea-4b618-usions-and-restarts-cleanly-webkit\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\three-weapon-ui-grass-crea-4b618-usions-and-restarts-cleanly-webkit\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\three-weapon-ui-grass-crea-4b618-usions-and-restarts-cleanly-webkit\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\three-weapon-ui-grass-crea-4b618-usions-and-restarts-cleanly-webkit\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  28 failed
+    [chromium] › tests\build-depth-ui.spec.ts:3:1 › rare choices expose costs, and pause shows levels, all six relics and the exclusive route 
+    [chromium] › tests\challenge-ui.spec.ts:72:1 › real movement, auto attacks, dash damage and normal upgrades can complete the encounter without forced kills 
+    [chromium] › tests\combat-clarity-ui.spec.ts:3:1 › fully fused three-weapon build stays readable with CD indicators and pooled impact visuals 
+    [chromium] › tests\creature-selection.spec.ts:21:1 › menu selection overrides development URL and remains selected after returning from compatibility mode 
+    [chromium] › tests\elemental-fusion-ui.spec.ts:30:11 › paopaoyuan development entry uses one animated creature, real cards, automatic fusions and bounded colored effects 
+    [chromium] › tests\elemental-fusion-ui.spec.ts:30:11 › yacishou development entry uses one animated creature, real cards, automatic fusions and bounded colored effects 
+    [chromium] › tests\elemental-fusion-ui.spec.ts:53:11 › jump-thorn individual skill renders audited pixels, icon and real damage; lifecycle clears batch 
+    [chromium] › tests\elemental-fusion-ui.spec.ts:73:1 › missing elemental textures and icons preserve procedural effects, readable cards and damage 
+    [chromium] › tests\fusion-ui.spec.ts:51:1 › real fusion cards and impacts render child/explosion frames without duplicate hit flashes on both phone layouts 
+    [chromium] › tests\fusion-ui.spec.ts:98:1 › missing atlas and icons keep procedural attack/explosion and readable cards 
+    [chromium] › tests\game.spec.ts:157:1 › real multitouch keeps joystick and dash independent on mobile 
+    [chromium] › tests\horn-ui.spec.ts:61:1 › trial entry and instructions fit small phone safe areas without covering joystick 
+    [chromium] › tests\party-ui.spec.ts:77:1 › prototype entry and party HUD fit short phones and safe areas 
+    [chromium] › tests\presentation.spec.ts:59:1 › jump is cosmetic, freezes on pause/upgrade, lands, and restart clears it 
+    [chromium] › tests\three-weapon-ui.spec.ts:3:1 › grass creature acquires fire/water through upgrade cards, shows all five fusions and restarts cleanly 
+    [webkit] › tests\build-depth-ui.spec.ts:3:1 › rare choices expose costs, and pause shows levels, all six relics and the exclusive route 
+    [webkit] › tests\combat-clarity-ui.spec.ts:3:1 › fully fused three-weapon build stays readable with CD indicators and pooled impact visuals 
+    [webkit] › tests\creature-animation-ui.spec.ts:43:1 › real V5 leader renders all projected directions, mirrors left and retains heading when stopping 
+    [webkit] › tests\creature-animation-ui.spec.ts:63:1 › visible GPU pixels change across real walking/idle frames, with stable foot, size and frame sequence 
+    [webkit] › tests\elemental-fusion-ui.spec.ts:30:11 › paopaoyuan development entry uses one animated creature, real cards, automatic fusions and bounded colored effects 
+    [webkit] › tests\elemental-fusion-ui.spec.ts:30:11 › yacishou development entry uses one animated creature, real cards, automatic fusions and bounded colored effects 
+    [webkit] › tests\elemental-fusion-ui.spec.ts:53:11 › deep-bubble individual skill renders audited pixels, icon and real damage; lifecycle clears batch 
+    [webkit] › tests\elemental-fusion-ui.spec.ts:53:11 › jump-thorn individual skill renders audited pixels, icon and real damage; lifecycle clears batch 
+    [webkit] › tests\elemental-fusion-ui.spec.ts:73:1 › missing elemental textures and icons preserve procedural effects, readable cards and damage 
+    [webkit] › tests\enemy-motion-ui.spec.ts:55:71 › three species render every direction at 568 without per-enemy textures 
+    [webkit] › tests\fusion-ui.spec.ts:51:1 › real fusion cards and impacts render child/explosion frames without duplicate hit flashes on both phone layouts 
+    [webkit] › tests\fusion-ui.spec.ts:98:1 › missing atlas and icons keep procedural attack/explosion and readable cards 
+    [webkit] › tests\three-weapon-ui.spec.ts:3:1 › grass creature acquires fire/water through upgrade cards, shows all five fusions and restarts cleanly 
+  4 skipped
+  534 passed (17.5m)
+npm notice
+npm notice New major version of npm available! 10.9.2 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

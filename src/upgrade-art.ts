@@ -17,6 +17,7 @@ export const UPGRADE_ART = {
   'spark-weapon': ['skills/spark-weapon.png'],
   'bubble-weapon': ['skills/bubble-weapon.png'],
   'leaf-weapon': ['skills/leaf-weapon.png'],
+  'flame-sweep-weapon': ['skills/flame-sweep-weapon.png'],
   'overload-core': ['relics/overload-core.png'],
   'hunter-eye': ['relics/hunter-eye.png'],
   'shattered-core': ['relics/shattered-core.png'],
@@ -43,7 +44,7 @@ export function upgradeArt(skill: Pick<SkillDefinition, 'id' | 'category'>, base
       ...(equipped.includes('leaf') ? ['skills/chain-bounce-grass.png'] : []),
     ];
   }
-  const element = skill.id === 'spark-weapon' ? 'fire' : skill.id === 'bubble-weapon' ? 'water' : skill.id === 'leaf-weapon' ? 'grass' : undefined;
+  const element = skill.id === 'spark-weapon' || skill.id === 'flame-sweep-weapon' ? 'fire' : skill.id === 'bubble-weapon' ? 'water' : skill.id === 'leaf-weapon' ? 'grass' : undefined;
   const category = skill.category ?? 'normal';
   // All offers share the same parchment geometry and content safe areas.
   // Category/element are conveyed through dynamic labels, gems and ink colors.

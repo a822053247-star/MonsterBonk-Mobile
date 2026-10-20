@@ -1,13 +1,13 @@
 import type { Combat, EnemyKind } from './combat';
 import { RunShop } from './shop';
 
-export const RUN_WAVES: readonly { seconds: number; reward: number; interval: number; enemies: readonly EnemyKind[] }[] = [
-  { seconds: 65, reward: 35, interval: 1.5, enemies: ['normal', 'normal', 'normal', 'fast'] },
-  { seconds: 70, reward: 40, interval: 1.2, enemies: ['normal', 'fast', 'normal', 'tank'] },
-  { seconds: 75, reward: 45, interval: 1.05, enemies: ['normal', 'fast', 'tank', 'normal', 'fast'] },
-  { seconds: 75, reward: 50, interval: 1, enemies: ['normal', 'fast', 'tank', 'normal', 'fast'] },
-  { seconds: 80, reward: 55, interval: .8, enemies: ['normal', 'tank', 'fast', 'fast'] },
-  { seconds: 90, reward: 0, interval: 3.2, enemies: ['normal', 'fast', 'normal', 'tank'] },
+export const RUN_WAVES: readonly { seconds: number; reward: number; interval: number; groupSize: number; cap: number; enemies: readonly EnemyKind[] }[] = [
+  { seconds: 65, reward: 35, interval: 3.5, groupSize: 4, cap: 24, enemies: ['normal', 'normal', 'normal', 'fast'] },
+  { seconds: 70, reward: 40, interval: 3.3, groupSize: 5, cap: 28, enemies: ['normal', 'fast', 'normal', 'tank'] },
+  { seconds: 75, reward: 45, interval: 3.1, groupSize: 6, cap: 30, enemies: ['normal', 'fast', 'tank', 'normal', 'fast'] },
+  { seconds: 75, reward: 50, interval: 2.9, groupSize: 7, cap: 32, enemies: ['normal', 'fast', 'tank', 'normal', 'fast'] },
+  { seconds: 80, reward: 55, interval: 2.6, groupSize: 8, cap: 36, enemies: ['normal', 'tank', 'fast', 'fast'] },
+  { seconds: 90, reward: 0, interval: 3.2, groupSize: 1, cap: 12, enemies: ['normal', 'fast', 'normal', 'tank'] },
 ];
 
 /** Five survival waves and a final Boss. Timing out never grants a Boss victory. */
@@ -61,10 +61,11 @@ export class RunFlow {
     if (combat.progression.awaitingChoice) return;
     this.spawnClock -= dt;
     if (this.spawnClock <= 0) {
-      const cap = this.wave === 6 ? 12 : 12 + this.wave*4;
+      const { cap, groupSize } = this.definition;
       if (combat.enemies.filter(e=>e.active).length >= cap) { this.spawnClock=.3; return; }
       const kind = this.definition.enemies[this.spawnIndex % this.definition.enemies.length];
-      if (combat.spawnEncounter(kind, player)) { this.spawnIndex++; this.spawnClock = this.definition.interval; }
+      const spawned = this.wave === 6 ? combat.spawnEncounter(kind, player) : combat.spawnSwarm(player, groupSize, cap, kind);
+      if (spawned) { this.spawnIndex++; this.spawnClock = this.definition.interval; }
       else this.spawnClock = .2;
     }
   }

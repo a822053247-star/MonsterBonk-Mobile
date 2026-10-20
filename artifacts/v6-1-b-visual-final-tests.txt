@@ -1,0 +1,90 @@
+
+Running 70 tests using 1 worker
+
+
+
+(node:10164) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:10164) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[1/70] [chromium] › tests\enemy-challenge-ui.spec.ts:18:1 › real Boss shows front combat poses and independent warnings, freezes, dies, wins, and resets to legacy safely
+[2/70] [chromium] › tests\enemy-challenge-ui.spec.ts:47:1 › elite and spread warnings fit short phones; upgrades, settings and background freeze Boss hazards
+[3/70] [chromium] › tests\enemy-challenge-ui.spec.ts:73:1 › final timer cannot grant victory and failed Boss assets stay an honest visible fallback
+[4/70] [chromium] › tests\enemy-challenge.spec.ts:22:1 › formal melee warns before contact, can be walked out of, and legacy contact is unchanged
+[5/70] [chromium] › tests\enemy-challenge.spec.ts:30:1 › formal runners share the trial lock/windup/dash/recover machine and stop at cover
+[6/70] [chromium] › tests\enemy-challenge.spec.ts:40:1 › Boss locks a visible predictive aim, cycles all three attacks, and summons only pooled warned enemies
+[7/70] [chromium] › tests\enemy-challenge.spec.ts:57:1 › hostile projectiles sweep against players and cover with shared invulnerability; full pools stay bounded
+[8/70] [chromium] › tests\enemy-challenge.spec.ts:71:1 › elite has a dodgeable pulse and pays gold and XP exactly once through shared death settlement
+[9/70] [chromium] › tests\enemy-challenge.spec.ts:84:1 › all three real weapons and existing fusions damage the Boss; water cannot immobilize or knock it away
+[10/70] [chromium] › tests\enemy-challenge.spec.ts:97:1 › final wave requires a real Boss death, waits for death animation, and resolves timeout/death correctly
+[11/70] [chromium] › tests\enemy-challenge.spec.ts:111:1 › wave four retries a saturated elite spawn, and wave clears/restarts remove every hostile state
+[12/70] [chromium] › tests\enemy-challenge.spec.ts:121:1 › a locked predictive charge hits an unchanged circle but a warning-time reversal avoids it
+[13/70] [chromium] › tests\flame-sweep-ui.spec.ts:26:1 › selected retimed frames render with a stable low root, no render damage and clean lifecycle
+[14/70] [chromium] › tests\flame-sweep-ui.spec.ts:59:1 › three preset peaks compare the same scene without changing combat and stay readable at phone size
+[15/70] [chromium] › tests\flame-sweep-ui.spec.ts:84:1 › GPU core attenuation reduces actual scene highlights while keeping the attack intact
+[16/70] [chromium] › tests\flame-sweep-ui.spec.ts:112:1 › missing sweep atlas keeps a bounded visible fallback and real melee damage
+[17/70] [chromium] › tests\flame-sweep-ui.spec.ts:117:1 › all eight equal cells decode transparently and retain a luminous base at the shared pixel anchor
+[18/70] [chromium] › tests\flame-sweep-visual.spec.ts:5:1 › visual presets keep bounded scale, use short windup and fast tails, and finish before the unchanged combat clock
+[19/70] [chromium] › tests\flame-sweep-visual.spec.ts:20:1 › preset query falls back safely, and the balanced tail rapidly fades instead of lingering
+[20/70] [chromium] › tests\flame-sweep.spec.ts:20:1 › supplied originals remain byte-identical; eight equal cells have one common root and no black removal
+[21/70] [chromium] › tests\flame-sweep.spec.ts:32:1 › finite 220 degree sector respects back, radial limit and circle edges
+[22/70] [chromium] › tests\flame-sweep.spec.ts:41:1 › sweep really clears a cluster with a full projectile pool and settles kills, coins and XP once
+[23/70] [chromium] › tests\flame-sweep.spec.ts:54:1 › cover, warnings, back-facing targets and targets outside the arc are not damaged
+[24/70] [chromium] › tests\flame-sweep.spec.ts:63:1 › automatic melee waits for a target and repeats on its own cooldown after the animation ends
+[25/70] [chromium] › tests\flame-sweep.spec.ts:76:1 › direction locks per swing; upgrades/death freeze animation and reset or wave boundary clears it
+[26/70] [chromium] › tests\flame-sweep.spec.ts:87:1 › shared three slots, five upgrades, modifier compatibility and legacy card pools remain explicit
+[27/70] [chromium] › tests\flame-sweep.spec.ts:101:1 › melee uses the Boss death gate and cannot override same-frame player death
+[28/70] [chromium] › tests\run-flow-ui.spec.ts:20:1 › complete six-wave UI with shopping, healing, refresh, victory, clean restart, defeat and legacy return
+[29/70] [chromium] › tests\run-flow.spec.ts:14:1 › six waves provide five shops, 455 combat seconds and a 9m15s reference run with 20s rests
+[30/70] [chromium] › tests\run-flow.spec.ts:34:1 › wave boundary claims loose XP once, resolves pending upgrades, and clears combat without resetting build/HP
+[31/70] [chromium] › tests\run-flow.spec.ts:49:1 › real kills award gold once and recycling a living enemy does not count
+[32/70] [chromium] › tests\run-flow.spec.ts:58:1 › buying a weapon is atomic, costs gold rather than XP, and rejects stale/double/poor purchases
+[33/70] [chromium] › tests\run-flow.spec.ts:68:1 › healing preserves max HP; refresh prices increase and stale shop tokens cannot spend
+[34/70] [chromium] › tests\run-flow.spec.ts:80:1 › fixed rewards give a low-kill build real purchasing tradeoffs
+[35/70] [chromium] › tests\run-flow.spec.ts:88:1 › death at the last boundary defeats rather than wins and leaves historical modes unchanged
+
+(node:41244) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+(node:41244) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[36/70] [webkit] › tests\enemy-challenge-ui.spec.ts:18:1 › real Boss shows front combat poses and independent warnings, freezes, dies, wins, and resets to legacy safely
+[37/70] [webkit] › tests\enemy-challenge-ui.spec.ts:47:1 › elite and spread warnings fit short phones; upgrades, settings and background freeze Boss hazards
+[38/70] [webkit] › tests\enemy-challenge-ui.spec.ts:73:1 › final timer cannot grant victory and failed Boss assets stay an honest visible fallback
+[39/70] [webkit] › tests\enemy-challenge.spec.ts:22:1 › formal melee warns before contact, can be walked out of, and legacy contact is unchanged
+[40/70] [webkit] › tests\enemy-challenge.spec.ts:30:1 › formal runners share the trial lock/windup/dash/recover machine and stop at cover
+[41/70] [webkit] › tests\enemy-challenge.spec.ts:40:1 › Boss locks a visible predictive aim, cycles all three attacks, and summons only pooled warned enemies
+[42/70] [webkit] › tests\enemy-challenge.spec.ts:57:1 › hostile projectiles sweep against players and cover with shared invulnerability; full pools stay bounded
+[43/70] [webkit] › tests\enemy-challenge.spec.ts:71:1 › elite has a dodgeable pulse and pays gold and XP exactly once through shared death settlement
+[44/70] [webkit] › tests\enemy-challenge.spec.ts:84:1 › all three real weapons and existing fusions damage the Boss; water cannot immobilize or knock it away
+[45/70] [webkit] › tests\enemy-challenge.spec.ts:97:1 › final wave requires a real Boss death, waits for death animation, and resolves timeout/death correctly
+[46/70] [webkit] › tests\enemy-challenge.spec.ts:111:1 › wave four retries a saturated elite spawn, and wave clears/restarts remove every hostile state
+[47/70] [webkit] › tests\enemy-challenge.spec.ts:121:1 › a locked predictive charge hits an unchanged circle but a warning-time reversal avoids it
+[48/70] [webkit] › tests\flame-sweep-ui.spec.ts:26:1 › selected retimed frames render with a stable low root, no render damage and clean lifecycle
+[49/70] [webkit] › tests\flame-sweep-ui.spec.ts:59:1 › three preset peaks compare the same scene without changing combat and stay readable at phone size
+[50/70] [webkit] › tests\flame-sweep-ui.spec.ts:84:1 › GPU core attenuation reduces actual scene highlights while keeping the attack intact
+[51/70] [webkit] › tests\flame-sweep-ui.spec.ts:112:1 › missing sweep atlas keeps a bounded visible fallback and real melee damage
+[52/70] [webkit] › tests\flame-sweep-ui.spec.ts:117:1 › all eight equal cells decode transparently and retain a luminous base at the shared pixel anchor
+[53/70] [webkit] › tests\flame-sweep-visual.spec.ts:5:1 › visual presets keep bounded scale, use short windup and fast tails, and finish before the unchanged combat clock
+[54/70] [webkit] › tests\flame-sweep-visual.spec.ts:20:1 › preset query falls back safely, and the balanced tail rapidly fades instead of lingering
+[55/70] [webkit] › tests\flame-sweep.spec.ts:20:1 › supplied originals remain byte-identical; eight equal cells have one common root and no black removal
+[56/70] [webkit] › tests\flame-sweep.spec.ts:32:1 › finite 220 degree sector respects back, radial limit and circle edges
+[57/70] [webkit] › tests\flame-sweep.spec.ts:41:1 › sweep really clears a cluster with a full projectile pool and settles kills, coins and XP once
+[58/70] [webkit] › tests\flame-sweep.spec.ts:54:1 › cover, warnings, back-facing targets and targets outside the arc are not damaged
+[59/70] [webkit] › tests\flame-sweep.spec.ts:63:1 › automatic melee waits for a target and repeats on its own cooldown after the animation ends
+[60/70] [webkit] › tests\flame-sweep.spec.ts:76:1 › direction locks per swing; upgrades/death freeze animation and reset or wave boundary clears it
+[61/70] [webkit] › tests\flame-sweep.spec.ts:87:1 › shared three slots, five upgrades, modifier compatibility and legacy card pools remain explicit
+[62/70] [webkit] › tests\flame-sweep.spec.ts:101:1 › melee uses the Boss death gate and cannot override same-frame player death
+[63/70] [webkit] › tests\run-flow-ui.spec.ts:20:1 › complete six-wave UI with shopping, healing, refresh, victory, clean restart, defeat and legacy return
+[64/70] [webkit] › tests\run-flow.spec.ts:14:1 › six waves provide five shops, 455 combat seconds and a 9m15s reference run with 20s rests
+[65/70] [webkit] › tests\run-flow.spec.ts:34:1 › wave boundary claims loose XP once, resolves pending upgrades, and clears combat without resetting build/HP
+[66/70] [webkit] › tests\run-flow.spec.ts:49:1 › real kills award gold once and recycling a living enemy does not count
+[67/70] [webkit] › tests\run-flow.spec.ts:58:1 › buying a weapon is atomic, costs gold rather than XP, and rejects stale/double/poor purchases
+[68/70] [webkit] › tests\run-flow.spec.ts:68:1 › healing preserves max HP; refresh prices increase and stale shop tokens cannot spend
+[69/70] [webkit] › tests\run-flow.spec.ts:80:1 › fixed rewards give a low-kill build real purchasing tradeoffs
+[70/70] [webkit] › tests\run-flow.spec.ts:88:1 › death at the last boundary defeats rather than wins and leaves historical modes unchanged
+  70 passed (42.2s)

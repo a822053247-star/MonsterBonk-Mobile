@@ -1,0 +1,217 @@
+
+Running 192 tests using 1 worker
+
+
+
+(node:46468) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+(node:46468) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[1/192] [chromium] › tests\build-depth.spec.ts:37:1 › weapon upgrades use real cards, cap at five and do not duplicate slots
+[2/192] [chromium] › tests\build-depth.spec.ts:48:1 › single-weapon specialization loses its bonus when a side weapon is equipped
+[3/192] [chromium] › tests\build-depth.spec.ts:57:1 › overload and berserk expand real splash while slowing fire, and evolution is exclusive
+[4/192] [chromium] › tests\build-depth.spec.ts:70:1 › hunter and shattered core change child motion/count with real damage costs and bounded generation
+[5/192] [chromium] › tests\build-depth.spec.ts:83:1 › pursuit route creates homing fire children at the cost of explosion radius
+[6/192] [chromium] › tests\build-depth.spec.ts:91:1 › tidal pearl extends water control and reduces direct hits without reducing splash
+[7/192] [chromium] › tests\build-depth.spec.ts:99:1 › echo extends leaf chain reach and increases damage decay at each extra hop
+[8/192] [chromium] › tests\build-depth.spec.ts:110:1 › reset clears levels/relics/evolution; legacy card pools never receive build rewards
+[9/192] [chromium] › tests\build-depth.spec.ts:120:1 › large experience queues keep rare offers bounded and finish without an empty upgrade trap
+[10/192] [chromium] › tests\challenge-model.spec.ts:11:1 › finite waves spawn exactly their configured enemies and victory never requires optional techniques
+[11/192] [chromium] › tests\challenge-model.spec.ts:21:1 › remaining queued enemies prevent early clears, rest lasts three simulation seconds, and running away respawns targets
+[12/192] [chromium] › tests\challenge-model.spec.ts:35:1 › upgrades/death freeze wave timers, and final kills win before an unused upgrade
+[13/192] [chromium] › tests\challenge-model.spec.ts:49:1 › bonuses add stars only after winning and fresh directors carry no previous progress
+[14/192] [chromium] › tests\challenge-model.spec.ts:57:1 › encounter retries respect cover, boundaries and pool capacity without losing the wave queue
+[15/192] [chromium] › tests\challenge-model.spec.ts:66:1 › 30/60/120 Hz render schedules produce the same fixed-step wave progression
+[16/192] [chromium] › tests\combat-model.spec.ts:13:1 › three enemies have distinct pursuit speeds and durability
+[17/192] [chromium] › tests\combat-model.spec.ts:28:1 › targeting excludes blocked, distant, spawning and dead enemies
+[18/192] [chromium] › tests\combat-model.spec.ts:40:1 › magic bolts damage, flash, kill and drop XP which nearby players collect once
+[19/192] [chromium] › tests\combat-model.spec.ts:61:1 › contact damage has a shared invulnerability window and death freezes combat
+[20/192] [chromium] › tests\combat-model.spec.ts:81:1 › swept collision catches tunneling and only the first enemy is hit
+[21/192] [chromium] › tests\combat-model.spec.ts:91:1 › spawn positions stay near the player, inside the map and outside obstacles
+[22/192] [chromium] › tests\combat-model.spec.ts:108:1 › 30, 60 and 120 Hz frame schedules give identical fixed-step combat results
+[23/192] [chromium] › tests\combat-model.spec.ts:129:1 › all pools are bounded, full XP pool merges drops, and reset removes old entities
+[24/192] [chromium] › tests\elemental-fusion-model.spec.ts:19:1 › only four new recipes exist, modifiers form independent water/grass fusions and do not leak to legacy pools
+[25/192] [chromium] › tests\elemental-fusion-model.spec.ts:28:1 › base water slow expires, refreshes without stacking, and legacy bubbles do not acquire it
+[26/192] [chromium] › tests\elemental-fusion-model.spec.ts:35:1 › water impact visuals move into the victim and follow it without moving the damaging contact point
+[27/192] [chromium] › tests\elemental-fusion-model.spec.ts:56:1 › deep bubble damages and slows neighbors once per impact, excludes the direct victim and spawned enemies
+[28/192] [chromium] › tests\elemental-fusion-model.spec.ts:63:1 › leaf sweep pierces one additional enemy in the same tick, never hits the same victim twice
+[29/192] [chromium] › tests\elemental-fusion-model.spec.ts:70:66 › bubblesalamander chain flies to two fresh targets, respects cap and uses fixed subsequent damage
+[30/192] [chromium] › tests\elemental-fusion-model.spec.ts:70:66 › sproutspike chain flies to two fresh targets, respects cap and uses fixed subsequent damage
+[31/192] [chromium] › tests\elemental-fusion-model.spec.ts:83:1 › scatter spawns three weaker children next tick, ignores original and never recursively splits
+[32/192] [chromium] › tests\elemental-fusion-model.spec.ts:91:66 › bubblesalamander simultaneous recipes coexist in every volley and reset deterministically
+[33/192] [chromium] › tests\elemental-fusion-model.spec.ts:91:66 › sproutspike simultaneous recipes coexist in every volley and reset deterministically
+[34/192] [chromium] › tests\elemental-fusion-model.spec.ts:105:1 › cover blocks elemental impacts and chain targets; full pools degrade safely without dropping direct damage
+[35/192] [chromium] › tests\elemental-fusion-model.spec.ts:111:1 › death, choice and zero time freeze elemental clocks; reset clears slow, recipes, hits and projectiles
+[36/192] [chromium] › tests\elemental-fusion-model.spec.ts:120:1 › elemental deaths use the shared kill and XP path exactly once and snapshots do not change in flight
+[37/192] [chromium] › tests\elemental-fusion-model.spec.ts:126:1 › water chain ledger includes splash victims, excludes them from future primary hits and repeat splashes
+[38/192] [chromium] › tests\elemental-fusion-model.spec.ts:135:65 › bubblesalamander reselects a dead hop target and terminates if none remain
+[39/192] [chromium] › tests\elemental-fusion-model.spec.ts:135:65 › sproutspike reselects a dead hop target and terminates if none remain
+[40/192] [chromium] › tests\elemental-fusion-model.spec.ts:142:1 › deep AoE respects cover and scatter angles, range and single-hit children are independent of animations
+[41/192] [chromium] › tests\elemental-fusion-model.spec.ts:151:1 › staggered multi-shot keeps compatible recipes on every shot in its volley
+[42/192] [chromium] › tests\enemy-challenge.spec.ts:22:1 › formal melee warns before contact, can be walked out of, and legacy contact is unchanged
+[43/192] [chromium] › tests\enemy-challenge.spec.ts:30:1 › formal runners share the trial lock/windup/dash/recover machine and stop at cover
+[44/192] [chromium] › tests\enemy-challenge.spec.ts:40:1 › Boss locks a visible predictive aim, cycles all three attacks, and summons only pooled warned enemies
+[45/192] [chromium] › tests\enemy-challenge.spec.ts:57:1 › hostile projectiles sweep against players and cover with shared invulnerability; full pools stay bounded
+[46/192] [chromium] › tests\enemy-challenge.spec.ts:71:1 › elite has a dodgeable pulse and pays gold and XP exactly once through shared death settlement
+[47/192] [chromium] › tests\enemy-challenge.spec.ts:84:1 › all three real weapons and existing fusions damage the Boss; water cannot immobilize or knock it away
+[48/192] [chromium] › tests\enemy-challenge.spec.ts:97:1 › final wave requires a real Boss death, waits for death animation, and resolves timeout/death correctly
+[49/192] [chromium] › tests\enemy-challenge.spec.ts:111:1 › wave four retries a saturated elite spawn, and wave clears/restarts remove every hostile state
+[50/192] [chromium] › tests\enemy-challenge.spec.ts:121:1 › a locked predictive charge hits an unchanged circle but a warning-time reversal avoids it
+[51/192] [chromium] › tests\fusion-model.spec.ts:28:1 › ordinary spark uses existing automatic attacks and never splits without its card
+[52/192] [chromium] › tests\fusion-model.spec.ts:34:1 › real split card resolves the matching spark and leaf recipes; historical card pools stay unchanged
+[53/192] [chromium] › tests\fusion-model.spec.ts:42:1 › one main hit damages its target once, explodes once over multiple other targets, and defers two children
+[54/192] [chromium] › tests\fusion-model.spec.ts:54:1 › children can damage other enemies, never hit the original and never generate another explosion or generation
+[55/192] [chromium] › tests\fusion-model.spec.ts:67:1 › multishot and hit splitting coexist without replacing each other
+[56/192] [chromium] › tests\fusion-model.spec.ts:77:1 › full projectile and effect pools preserve direct/AoE damage and degrade to available child slots
+[57/192] [chromium] › tests\fusion-model.spec.ts:87:1 › kill credit and experience use the shared damage path exactly once for blast victims
+[58/192] [chromium] › tests\fusion-model.spec.ts:95:1 › choice and death freeze all damage, children and effect ages; restart clears the run
+[59/192] [chromium] › tests\fusion-model.spec.ts:109:1 › hundreds of fused hits stay inside original pools with generation capped at one
+[60/192] [chromium] › tests\horn-model.spec.ts:14:1 › horn sweep hits crossed targets once per dash, knocks survivors, and preserves classic damage
+[61/192] [chromium] › tests\horn-model.spec.ts:30:1 › horn kills use the existing XP drop and pickup path; rear, spawning and covered targets are excluded
+[62/192] [chromium] › tests\horn-model.spec.ts:46:1 › pounce telegraph locks direction, cannot deal windup damage, sweeps its hit, then recovers
+[63/192] [chromium] › tests\horn-model.spec.ts:63:1 › a horn strike interrupts a committed pounce, protects its hit target, and allows a later pounce
+[64/192] [chromium] › tests\horn-model.spec.ts:73:1 › upgrade/death freeze intents and horn hits; reset clears the trial and reused slots
+[65/192] [chromium] › tests\horn-model.spec.ts:85:1 › the same fixed steps give identical trial outcomes under 30, 60 and 120 Hz frame schedules
+[66/192] [chromium] › tests\progression.spec.ts:24:1 › exact XP boundaries and overflow preserve every earned level and choice
+[67/192] [chromium] › tests\progression.spec.ts:42:1 › all cards are unique, below their cap and selectable; max level never deadlocks
+[68/192] [chromium] › tests\progression.spec.ts:69:1 › invalid XP, stale choices and unoffered skills do not change progression
+[69/192] [chromium] › tests\progression.spec.ts:86:1 › data-driven stacks use additive base bonuses and independent spell ranks
+[70/192] [chromium] › tests\progression.spec.ts:100:1 › damage, multishot and range upgrades affect real projectiles and pool limits
+[71/192] [chromium] › tests\progression.spec.ts:119:1 › haste increases actual volleys per second; vitality increases max HP and heals
+[72/192] [chromium] › tests\progression.spec.ts:136:1 › orbit damages enemies, uses seconds-based hit immunity and resets cleanly
+[73/192] [chromium] › tests\progression.spec.ts:151:1 › shockwave expands, hits each enemy once, repeats and freezes throughout upgrade choice
+[74/192] [chromium] › tests\progression.spec.ts:177:1 › reset clears level, accumulated XP, choices, stats and both learned skills
+[75/192] [chromium] › tests\run-flow.spec.ts:14:1 › six waves provide five shops, 455 combat seconds and a 9m15s reference run with 20s rests
+[76/192] [chromium] › tests\run-flow.spec.ts:34:1 › wave boundary claims loose XP once, resolves pending upgrades, and clears combat without resetting build/HP
+[77/192] [chromium] › tests\run-flow.spec.ts:49:1 › real kills award gold once and recycling a living enemy does not count
+[78/192] [chromium] › tests\run-flow.spec.ts:58:1 › buying a weapon is atomic, costs gold rather than XP, and rejects stale/double/poor purchases
+[79/192] [chromium] › tests\run-flow.spec.ts:68:1 › healing preserves max HP; refresh prices increase and stale shop tokens cannot spend
+[80/192] [chromium] › tests\run-flow.spec.ts:80:1 › fixed rewards give a low-kill build real purchasing tradeoffs
+[81/192] [chromium] › tests\run-flow.spec.ts:88:1 › death at the last boundary defeats rather than wins and leaves historical modes unchanged
+[82/192] [chromium] › tests\swarm.spec.ts:20:1 › first batch is a real group; later waves grow to 24–36 active enemies with wave five the densest
+[83/192] [chromium] › tests\swarm.spec.ts:36:1 › placement is seeded, stays in one incoming sector, and does not overlap player, enemies, cover or bounds
+[84/192] [chromium] › tests\swarm.spec.ts:62:1 › unreachable terrain skips the batch within bounded attempts, without unsafe fallback or queued burst
+[85/192] [chromium] › tests\swarm.spec.ts:71:1 › full pool and partial capacity degrade safely without replacing live objects or overfilling
+[86/192] [chromium] › tests\swarm.spec.ts:83:1 › swarm rewards are integer XP and one coin per three real kills; carry survives waves and resets with run
+[87/192] [chromium] › tests\swarm.spec.ts:104:1 › escorts preserve formal health and warning rules; wave six keeps its original sparse support
+[88/192] [chromium] › tests\swarm.spec.ts:115:1 › high-throughput clearing has bounded economy, pooled XP merge and exactly-once boundary settlement
+[89/192] [chromium] › tests\swarm.spec.ts:138:1 › legacy automatic spawning and health are untouched and cannot opt into swarms accidentally
+[90/192] [chromium] › tests\swarm.spec.ts:147:1 › a real area attack clears multiple low-health swarm members in one burst
+[91/192] [chromium] › tests\swarm.spec.ts:160:1 › 24/36/48 pooled enemies with all fusions terminate ticks and keep child generations and resources bounded
+[92/192] [chromium] › tests\three-weapon.spec.ts:34:1 › all three creatures acquire all weapons and five fusions through real upgrades
+[93/192] [chromium] › tests\three-weapon.spec.ts:50:1 › upgrade pool filters irrelevant modifiers and acquisition keeps side cooldowns staggered
+[94/192] [chromium] › tests\three-weapon.spec.ts:72:1 › water expansion and two chain hops coexist with one damage ledger
+[95/192] [chromium] › tests\three-weapon.spec.ts:88:1 › leaf scatters only once while its main shot chains, never recursively deriving children
+[96/192] [chromium] › tests\three-weapon.spec.ts:100:1 › 24-slot saturation preserves direct damage and main priority; death/restart clear all weapons and effects
+(node:47012) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+
+(node:47012) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[97/192] [webkit] › tests\build-depth.spec.ts:37:1 › weapon upgrades use real cards, cap at five and do not duplicate slots
+[98/192] [webkit] › tests\build-depth.spec.ts:48:1 › single-weapon specialization loses its bonus when a side weapon is equipped
+[99/192] [webkit] › tests\build-depth.spec.ts:57:1 › overload and berserk expand real splash while slowing fire, and evolution is exclusive
+[100/192] [webkit] › tests\build-depth.spec.ts:70:1 › hunter and shattered core change child motion/count with real damage costs and bounded generation
+[101/192] [webkit] › tests\build-depth.spec.ts:83:1 › pursuit route creates homing fire children at the cost of explosion radius
+[102/192] [webkit] › tests\build-depth.spec.ts:91:1 › tidal pearl extends water control and reduces direct hits without reducing splash
+[103/192] [webkit] › tests\build-depth.spec.ts:99:1 › echo extends leaf chain reach and increases damage decay at each extra hop
+[104/192] [webkit] › tests\build-depth.spec.ts:110:1 › reset clears levels/relics/evolution; legacy card pools never receive build rewards
+[105/192] [webkit] › tests\build-depth.spec.ts:120:1 › large experience queues keep rare offers bounded and finish without an empty upgrade trap
+[106/192] [webkit] › tests\challenge-model.spec.ts:11:1 › finite waves spawn exactly their configured enemies and victory never requires optional techniques
+[107/192] [webkit] › tests\challenge-model.spec.ts:21:1 › remaining queued enemies prevent early clears, rest lasts three simulation seconds, and running away respawns targets
+[108/192] [webkit] › tests\challenge-model.spec.ts:35:1 › upgrades/death freeze wave timers, and final kills win before an unused upgrade
+[109/192] [webkit] › tests\challenge-model.spec.ts:49:1 › bonuses add stars only after winning and fresh directors carry no previous progress
+[110/192] [webkit] › tests\challenge-model.spec.ts:57:1 › encounter retries respect cover, boundaries and pool capacity without losing the wave queue
+[111/192] [webkit] › tests\challenge-model.spec.ts:66:1 › 30/60/120 Hz render schedules produce the same fixed-step wave progression
+[112/192] [webkit] › tests\combat-model.spec.ts:13:1 › three enemies have distinct pursuit speeds and durability
+[113/192] [webkit] › tests\combat-model.spec.ts:28:1 › targeting excludes blocked, distant, spawning and dead enemies
+[114/192] [webkit] › tests\combat-model.spec.ts:40:1 › magic bolts damage, flash, kill and drop XP which nearby players collect once
+[115/192] [webkit] › tests\combat-model.spec.ts:61:1 › contact damage has a shared invulnerability window and death freezes combat
+[116/192] [webkit] › tests\combat-model.spec.ts:81:1 › swept collision catches tunneling and only the first enemy is hit
+[117/192] [webkit] › tests\combat-model.spec.ts:91:1 › spawn positions stay near the player, inside the map and outside obstacles
+[118/192] [webkit] › tests\combat-model.spec.ts:108:1 › 30, 60 and 120 Hz frame schedules give identical fixed-step combat results
+[119/192] [webkit] › tests\combat-model.spec.ts:129:1 › all pools are bounded, full XP pool merges drops, and reset removes old entities
+[120/192] [webkit] › tests\elemental-fusion-model.spec.ts:19:1 › only four new recipes exist, modifiers form independent water/grass fusions and do not leak to legacy pools
+[121/192] [webkit] › tests\elemental-fusion-model.spec.ts:28:1 › base water slow expires, refreshes without stacking, and legacy bubbles do not acquire it
+[122/192] [webkit] › tests\elemental-fusion-model.spec.ts:35:1 › water impact visuals move into the victim and follow it without moving the damaging contact point
+[123/192] [webkit] › tests\elemental-fusion-model.spec.ts:56:1 › deep bubble damages and slows neighbors once per impact, excludes the direct victim and spawned enemies
+[124/192] [webkit] › tests\elemental-fusion-model.spec.ts:63:1 › leaf sweep pierces one additional enemy in the same tick, never hits the same victim twice
+[125/192] [webkit] › tests\elemental-fusion-model.spec.ts:70:66 › bubblesalamander chain flies to two fresh targets, respects cap and uses fixed subsequent damage
+[126/192] [webkit] › tests\elemental-fusion-model.spec.ts:70:66 › sproutspike chain flies to two fresh targets, respects cap and uses fixed subsequent damage
+[127/192] [webkit] › tests\elemental-fusion-model.spec.ts:83:1 › scatter spawns three weaker children next tick, ignores original and never recursively splits
+[128/192] [webkit] › tests\elemental-fusion-model.spec.ts:91:66 › bubblesalamander simultaneous recipes coexist in every volley and reset deterministically
+[129/192] [webkit] › tests\elemental-fusion-model.spec.ts:91:66 › sproutspike simultaneous recipes coexist in every volley and reset deterministically
+[130/192] [webkit] › tests\elemental-fusion-model.spec.ts:105:1 › cover blocks elemental impacts and chain targets; full pools degrade safely without dropping direct damage
+[131/192] [webkit] › tests\elemental-fusion-model.spec.ts:111:1 › death, choice and zero time freeze elemental clocks; reset clears slow, recipes, hits and projectiles
+[132/192] [webkit] › tests\elemental-fusion-model.spec.ts:120:1 › elemental deaths use the shared kill and XP path exactly once and snapshots do not change in flight
+[133/192] [webkit] › tests\elemental-fusion-model.spec.ts:126:1 › water chain ledger includes splash victims, excludes them from future primary hits and repeat splashes
+[134/192] [webkit] › tests\elemental-fusion-model.spec.ts:135:65 › bubblesalamander reselects a dead hop target and terminates if none remain
+[135/192] [webkit] › tests\elemental-fusion-model.spec.ts:135:65 › sproutspike reselects a dead hop target and terminates if none remain
+[136/192] [webkit] › tests\elemental-fusion-model.spec.ts:142:1 › deep AoE respects cover and scatter angles, range and single-hit children are independent of animations
+[137/192] [webkit] › tests\elemental-fusion-model.spec.ts:151:1 › staggered multi-shot keeps compatible recipes on every shot in its volley
+[138/192] [webkit] › tests\enemy-challenge.spec.ts:22:1 › formal melee warns before contact, can be walked out of, and legacy contact is unchanged
+[139/192] [webkit] › tests\enemy-challenge.spec.ts:30:1 › formal runners share the trial lock/windup/dash/recover machine and stop at cover
+[140/192] [webkit] › tests\enemy-challenge.spec.ts:40:1 › Boss locks a visible predictive aim, cycles all three attacks, and summons only pooled warned enemies
+[141/192] [webkit] › tests\enemy-challenge.spec.ts:57:1 › hostile projectiles sweep against players and cover with shared invulnerability; full pools stay bounded
+[142/192] [webkit] › tests\enemy-challenge.spec.ts:71:1 › elite has a dodgeable pulse and pays gold and XP exactly once through shared death settlement
+[143/192] [webkit] › tests\enemy-challenge.spec.ts:84:1 › all three real weapons and existing fusions damage the Boss; water cannot immobilize or knock it away
+[144/192] [webkit] › tests\enemy-challenge.spec.ts:97:1 › final wave requires a real Boss death, waits for death animation, and resolves timeout/death correctly
+[145/192] [webkit] › tests\enemy-challenge.spec.ts:111:1 › wave four retries a saturated elite spawn, and wave clears/restarts remove every hostile state
+[146/192] [webkit] › tests\enemy-challenge.spec.ts:121:1 › a locked predictive charge hits an unchanged circle but a warning-time reversal avoids it
+[147/192] [webkit] › tests\fusion-model.spec.ts:28:1 › ordinary spark uses existing automatic attacks and never splits without its card
+[148/192] [webkit] › tests\fusion-model.spec.ts:34:1 › real split card resolves the matching spark and leaf recipes; historical card pools stay unchanged
+[149/192] [webkit] › tests\fusion-model.spec.ts:42:1 › one main hit damages its target once, explodes once over multiple other targets, and defers two children
+[150/192] [webkit] › tests\fusion-model.spec.ts:54:1 › children can damage other enemies, never hit the original and never generate another explosion or generation
+[151/192] [webkit] › tests\fusion-model.spec.ts:67:1 › multishot and hit splitting coexist without replacing each other
+[152/192] [webkit] › tests\fusion-model.spec.ts:77:1 › full projectile and effect pools preserve direct/AoE damage and degrade to available child slots
+[153/192] [webkit] › tests\fusion-model.spec.ts:87:1 › kill credit and experience use the shared damage path exactly once for blast victims
+[154/192] [webkit] › tests\fusion-model.spec.ts:95:1 › choice and death freeze all damage, children and effect ages; restart clears the run
+[155/192] [webkit] › tests\fusion-model.spec.ts:109:1 › hundreds of fused hits stay inside original pools with generation capped at one
+[156/192] [webkit] › tests\horn-model.spec.ts:14:1 › horn sweep hits crossed targets once per dash, knocks survivors, and preserves classic damage
+[157/192] [webkit] › tests\horn-model.spec.ts:30:1 › horn kills use the existing XP drop and pickup path; rear, spawning and covered targets are excluded
+[158/192] [webkit] › tests\horn-model.spec.ts:46:1 › pounce telegraph locks direction, cannot deal windup damage, sweeps its hit, then recovers
+[159/192] [webkit] › tests\horn-model.spec.ts:63:1 › a horn strike interrupts a committed pounce, protects its hit target, and allows a later pounce
+[160/192] [webkit] › tests\horn-model.spec.ts:73:1 › upgrade/death freeze intents and horn hits; reset clears the trial and reused slots
+[161/192] [webkit] › tests\horn-model.spec.ts:85:1 › the same fixed steps give identical trial outcomes under 30, 60 and 120 Hz frame schedules
+[162/192] [webkit] › tests\progression.spec.ts:24:1 › exact XP boundaries and overflow preserve every earned level and choice
+[163/192] [webkit] › tests\progression.spec.ts:42:1 › all cards are unique, below their cap and selectable; max level never deadlocks
+[164/192] [webkit] › tests\progression.spec.ts:69:1 › invalid XP, stale choices and unoffered skills do not change progression
+[165/192] [webkit] › tests\progression.spec.ts:86:1 › data-driven stacks use additive base bonuses and independent spell ranks
+[166/192] [webkit] › tests\progression.spec.ts:100:1 › damage, multishot and range upgrades affect real projectiles and pool limits
+[167/192] [webkit] › tests\progression.spec.ts:119:1 › haste increases actual volleys per second; vitality increases max HP and heals
+[168/192] [webkit] › tests\progression.spec.ts:136:1 › orbit damages enemies, uses seconds-based hit immunity and resets cleanly
+[169/192] [webkit] › tests\progression.spec.ts:151:1 › shockwave expands, hits each enemy once, repeats and freezes throughout upgrade choice
+[170/192] [webkit] › tests\progression.spec.ts:177:1 › reset clears level, accumulated XP, choices, stats and both learned skills
+[171/192] [webkit] › tests\run-flow.spec.ts:14:1 › six waves provide five shops, 455 combat seconds and a 9m15s reference run with 20s rests
+[172/192] [webkit] › tests\run-flow.spec.ts:34:1 › wave boundary claims loose XP once, resolves pending upgrades, and clears combat without resetting build/HP
+[173/192] [webkit] › tests\run-flow.spec.ts:49:1 › real kills award gold once and recycling a living enemy does not count
+[174/192] [webkit] › tests\run-flow.spec.ts:58:1 › buying a weapon is atomic, costs gold rather than XP, and rejects stale/double/poor purchases
+[175/192] [webkit] › tests\run-flow.spec.ts:68:1 › healing preserves max HP; refresh prices increase and stale shop tokens cannot spend
+[176/192] [webkit] › tests\run-flow.spec.ts:80:1 › fixed rewards give a low-kill build real purchasing tradeoffs
+[177/192] [webkit] › tests\run-flow.spec.ts:88:1 › death at the last boundary defeats rather than wins and leaves historical modes unchanged
+[178/192] [webkit] › tests\swarm.spec.ts:20:1 › first batch is a real group; later waves grow to 24–36 active enemies with wave five the densest
+[179/192] [webkit] › tests\swarm.spec.ts:36:1 › placement is seeded, stays in one incoming sector, and does not overlap player, enemies, cover or bounds
+[180/192] [webkit] › tests\swarm.spec.ts:62:1 › unreachable terrain skips the batch within bounded attempts, without unsafe fallback or queued burst
+[181/192] [webkit] › tests\swarm.spec.ts:71:1 › full pool and partial capacity degrade safely without replacing live objects or overfilling
+[182/192] [webkit] › tests\swarm.spec.ts:83:1 › swarm rewards are integer XP and one coin per three real kills; carry survives waves and resets with run
+[183/192] [webkit] › tests\swarm.spec.ts:104:1 › escorts preserve formal health and warning rules; wave six keeps its original sparse support
+[184/192] [webkit] › tests\swarm.spec.ts:115:1 › high-throughput clearing has bounded economy, pooled XP merge and exactly-once boundary settlement
+[185/192] [webkit] › tests\swarm.spec.ts:138:1 › legacy automatic spawning and health are untouched and cannot opt into swarms accidentally
+[186/192] [webkit] › tests\swarm.spec.ts:147:1 › a real area attack clears multiple low-health swarm members in one burst
+[187/192] [webkit] › tests\swarm.spec.ts:160:1 › 24/36/48 pooled enemies with all fusions terminate ticks and keep child generations and resources bounded
+[188/192] [webkit] › tests\three-weapon.spec.ts:34:1 › all three creatures acquire all weapons and five fusions through real upgrades
+[189/192] [webkit] › tests\three-weapon.spec.ts:50:1 › upgrade pool filters irrelevant modifiers and acquisition keeps side cooldowns staggered
+[190/192] [webkit] › tests\three-weapon.spec.ts:72:1 › water expansion and two chain hops coexist with one damage ledger
+[191/192] [webkit] › tests\three-weapon.spec.ts:88:1 › leaf scatters only once while its main shot chains, never recursively deriving children
+[192/192] [webkit] › tests\three-weapon.spec.ts:100:1 › 24-slot saturation preserves direct damage and main priority; death/restart clear all weapons and effects
+  192 passed (32.1s)
+npm notice
+npm notice New major version of npm available! 10.9.2 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

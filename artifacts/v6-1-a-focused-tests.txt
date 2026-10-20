@@ -1,0 +1,73 @@
+
+Running 48 tests using 1 worker
+
+
+
+(node:16296) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+(node:16296) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[1/48] [chromium] › tests\enemy-challenge.spec.ts:22:1 › formal melee warns before contact, can be walked out of, and legacy contact is unchanged
+[2/48] [chromium] › tests\enemy-challenge.spec.ts:30:1 › formal runners share the trial lock/windup/dash/recover machine and stop at cover
+[3/48] [chromium] › tests\enemy-challenge.spec.ts:40:1 › Boss locks a visible predictive aim, cycles all three attacks, and summons only pooled warned enemies
+[4/48] [chromium] › tests\enemy-challenge.spec.ts:57:1 › hostile projectiles sweep against players and cover with shared invulnerability; full pools stay bounded
+[5/48] [chromium] › tests\enemy-challenge.spec.ts:71:1 › elite has a dodgeable pulse and pays gold and XP exactly once through shared death settlement
+[6/48] [chromium] › tests\enemy-challenge.spec.ts:84:1 › all three real weapons and existing fusions damage the Boss; water cannot immobilize or knock it away
+[7/48] [chromium] › tests\enemy-challenge.spec.ts:97:1 › final wave requires a real Boss death, waits for death animation, and resolves timeout/death correctly
+[8/48] [chromium] › tests\enemy-challenge.spec.ts:111:1 › wave four retries a saturated elite spawn, and wave clears/restarts remove every hostile state
+[9/48] [chromium] › tests\enemy-challenge.spec.ts:121:1 › a locked predictive charge hits an unchanged circle but a warning-time reversal avoids it
+[10/48] [chromium] › tests\run-flow.spec.ts:14:1 › six waves provide five shops, 455 combat seconds and a 9m15s reference run with 20s rests
+[11/48] [chromium] › tests\run-flow.spec.ts:34:1 › wave boundary claims loose XP once, resolves pending upgrades, and clears combat without resetting build/HP
+[12/48] [chromium] › tests\run-flow.spec.ts:49:1 › real kills award gold once and recycling a living enemy does not count
+[13/48] [chromium] › tests\run-flow.spec.ts:58:1 › buying a weapon is atomic, costs gold rather than XP, and rejects stale/double/poor purchases
+[14/48] [chromium] › tests\run-flow.spec.ts:68:1 › healing preserves max HP; refresh prices increase and stale shop tokens cannot spend
+[15/48] [chromium] › tests\run-flow.spec.ts:80:1 › fixed rewards give a low-kill build real purchasing tradeoffs
+[16/48] [chromium] › tests\run-flow.spec.ts:88:1 › death at the last boundary defeats rather than wins and leaves historical modes unchanged
+[17/48] [chromium] › tests\swarm.spec.ts:20:1 › first batch is a real group; later waves grow to 24–36 active enemies with wave five the densest
+[18/48] [chromium] › tests\swarm.spec.ts:36:1 › placement is seeded, stays in one incoming sector, and does not overlap player, enemies, cover or bounds
+[19/48] [chromium] › tests\swarm.spec.ts:62:1 › unreachable terrain skips the batch within bounded attempts, without unsafe fallback or queued burst
+[20/48] [chromium] › tests\swarm.spec.ts:71:1 › full pool and partial capacity degrade safely without replacing live objects or overfilling
+[21/48] [chromium] › tests\swarm.spec.ts:83:1 › swarm rewards are integer XP and one coin per three real kills; carry survives waves and resets with run
+[22/48] [chromium] › tests\swarm.spec.ts:104:1 › escorts preserve formal health and warning rules; wave six keeps its original sparse support
+[23/48] [chromium] › tests\swarm.spec.ts:115:1 › high-throughput clearing has bounded economy, pooled XP merge and exactly-once boundary settlement
+[24/48] [chromium] › tests\swarm.spec.ts:138:1 › legacy automatic spawning and health are untouched and cannot opt into swarms accidentally
+(node:45588) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+(node:45588) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[25/48] [webkit] › tests\enemy-challenge.spec.ts:22:1 › formal melee warns before contact, can be walked out of, and legacy contact is unchanged
+[26/48] [webkit] › tests\enemy-challenge.spec.ts:30:1 › formal runners share the trial lock/windup/dash/recover machine and stop at cover
+[27/48] [webkit] › tests\enemy-challenge.spec.ts:40:1 › Boss locks a visible predictive aim, cycles all three attacks, and summons only pooled warned enemies
+[28/48] [webkit] › tests\enemy-challenge.spec.ts:57:1 › hostile projectiles sweep against players and cover with shared invulnerability; full pools stay bounded
+[29/48] [webkit] › tests\enemy-challenge.spec.ts:71:1 › elite has a dodgeable pulse and pays gold and XP exactly once through shared death settlement
+[30/48] [webkit] › tests\enemy-challenge.spec.ts:84:1 › all three real weapons and existing fusions damage the Boss; water cannot immobilize or knock it away
+[31/48] [webkit] › tests\enemy-challenge.spec.ts:97:1 › final wave requires a real Boss death, waits for death animation, and resolves timeout/death correctly
+[32/48] [webkit] › tests\enemy-challenge.spec.ts:111:1 › wave four retries a saturated elite spawn, and wave clears/restarts remove every hostile state
+[33/48] [webkit] › tests\enemy-challenge.spec.ts:121:1 › a locked predictive charge hits an unchanged circle but a warning-time reversal avoids it
+[34/48] [webkit] › tests\run-flow.spec.ts:14:1 › six waves provide five shops, 455 combat seconds and a 9m15s reference run with 20s rests
+[35/48] [webkit] › tests\run-flow.spec.ts:34:1 › wave boundary claims loose XP once, resolves pending upgrades, and clears combat without resetting build/HP
+[36/48] [webkit] › tests\run-flow.spec.ts:49:1 › real kills award gold once and recycling a living enemy does not count
+[37/48] [webkit] › tests\run-flow.spec.ts:58:1 › buying a weapon is atomic, costs gold rather than XP, and rejects stale/double/poor purchases
+[38/48] [webkit] › tests\run-flow.spec.ts:68:1 › healing preserves max HP; refresh prices increase and stale shop tokens cannot spend
+[39/48] [webkit] › tests\run-flow.spec.ts:80:1 › fixed rewards give a low-kill build real purchasing tradeoffs
+[40/48] [webkit] › tests\run-flow.spec.ts:88:1 › death at the last boundary defeats rather than wins and leaves historical modes unchanged
+[41/48] [webkit] › tests\swarm.spec.ts:20:1 › first batch is a real group; later waves grow to 24–36 active enemies with wave five the densest
+[42/48] [webkit] › tests\swarm.spec.ts:36:1 › placement is seeded, stays in one incoming sector, and does not overlap player, enemies, cover or bounds
+[43/48] [webkit] › tests\swarm.spec.ts:62:1 › unreachable terrain skips the batch within bounded attempts, without unsafe fallback or queued burst
+[44/48] [webkit] › tests\swarm.spec.ts:71:1 › full pool and partial capacity degrade safely without replacing live objects or overfilling
+[45/48] [webkit] › tests\swarm.spec.ts:83:1 › swarm rewards are integer XP and one coin per three real kills; carry survives waves and resets with run
+[46/48] [webkit] › tests\swarm.spec.ts:104:1 › escorts preserve formal health and warning rules; wave six keeps its original sparse support
+[47/48] [webkit] › tests\swarm.spec.ts:115:1 › high-throughput clearing has bounded economy, pooled XP merge and exactly-once boundary settlement
+[48/48] [webkit] › tests\swarm.spec.ts:138:1 › legacy automatic spawning and health are untouched and cannot opt into swarms accidentally
+  48 passed (4.6s)
+npm notice
+npm notice New major version of npm available! 10.9.2 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

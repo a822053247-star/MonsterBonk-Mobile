@@ -1,0 +1,62 @@
+[
+  {
+    "File": "build-depth-ui.spec.ts",
+    "Title": "rare choices expose costs, and pause shows levels, all six relics and the exclusive route"
+  },
+  {
+    "File": "challenge-ui.spec.ts",
+    "Title": "real movement, auto attacks, dash damage and normal upgrades can complete the encounter without forced kills"
+  },
+  {
+    "File": "combat-clarity-ui.spec.ts",
+    "Title": "fully fused three-weapon build stays readable with CD indicators and pooled impact visuals"
+  },
+  {
+    "File": "creature-selection.spec.ts",
+    "Title": "menu selection overrides development URL and remains selected after returning from compatibility mode"
+  },
+  {
+    "File": "elemental-fusion-ui.spec.ts",
+    "Title": "paopaoyuan development entry uses one animated creature, real cards, automatic fusions and bounded colored effects"
+  },
+  {
+    "File": "elemental-fusion-ui.spec.ts",
+    "Title": "yacishou development entry uses one animated creature, real cards, automatic fusions and bounded colored effects"
+  },
+  {
+    "File": "elemental-fusion-ui.spec.ts",
+    "Title": "jump-thorn individual skill renders audited pixels, icon and real damage; lifecycle clears batch"
+  },
+  {
+    "File": "elemental-fusion-ui.spec.ts",
+    "Title": "missing elemental textures and icons preserve procedural effects, readable cards and damage"
+  },
+  {
+    "File": "fusion-ui.spec.ts",
+    "Title": "real fusion cards and impacts render child/explosion frames without duplicate hit flashes on both phone layouts"
+  },
+  {
+    "File": "fusion-ui.spec.ts",
+    "Title": "missing atlas and icons keep procedural attack/explosion and readable cards"
+  },
+  {
+    "File": "game.spec.ts",
+    "Title": "real multitouch keeps joystick and dash independent on mobile"
+  },
+  {
+    "File": "horn-ui.spec.ts",
+    "Title": "trial entry and instructions fit small phone safe areas without covering joystick"
+  },
+  {
+    "File": "party-ui.spec.ts",
+    "Title": "prototype entry and party HUD fit short phones and safe areas"
+  },
+  {
+    "File": "presentation.spec.ts",
+    "Title": "jump is cosmetic, freezes on pause/upgrade, lands, and restart clears it"
+  },
+  {
+    "File": "three-weapon-ui.spec.ts",
+    "Title": "grass creature acquires fire/water through upgrade cards, shows all five fusions and restarts cleanly"
+  }
+]

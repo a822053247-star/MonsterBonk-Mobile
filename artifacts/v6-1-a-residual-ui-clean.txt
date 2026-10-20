@@ -1,0 +1,16 @@
+
+Running 4 tests using 1 worker
+
+
+
+(node:7360) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:7360) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[1/4] [webkit] › ..\..\tests\creature-animation-ui.spec.ts:43:1 › real V5 leader renders all projected directions, mirrors left and retains heading when stopping
+[2/4] [webkit] › ..\..\tests\creature-animation-ui.spec.ts:63:1 › visible GPU pixels change across real walking/idle frames, with stable foot, size and frame sequence
+[3/4] [webkit] › ..\..\tests\elemental-fusion-ui.spec.ts:53:11 › deep-bubble individual skill renders audited pixels, icon and real damage; lifecycle clears batch
+[4/4] [webkit] › ..\..\tests\enemy-motion-ui.spec.ts:55:71 › three species render every direction at 568 without per-enemy textures
+  4 passed (11.6s)

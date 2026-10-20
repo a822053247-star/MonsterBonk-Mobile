@@ -1,0 +1,29 @@
+
+> monsterbonk-mobile@0.4.0 build
+> tsc --noEmit && vite build
+
+vite v8.3.4 building client environment for production...
+transforming...
+✓ 59 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/crownthorn-preview.html               0.57 kB │ gzip:   0.36 kB
+dist/index.html                            0.95 kB │ gzip:   0.57 kB
+dist/assets/crownthorn-UgYPArZY.css        1.27 kB │ gzip:   0.68 kB
+dist/assets/main-DV1P2Z42.css             92.16 kB │ gzip:  18.56 kB
+dist/assets/crownthorn-Chd7ntdE.js         4.20 kB │ gzip:   2.38 kB
+dist/assets/crownthorn-view-zLq-0dr6.js   14.54 kB │ gzip:   5.01 kB
+dist/assets/main-DRSCniYn.js             219.75 kB │ gzip:  68.52 kB
+dist/assets/three-Cb-5jHcb.js            640.45 kB │ gzip: 161.40 kB
+
+✓ built in 514ms
+[plugin builtin:vite-reporter] 
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+npm notice
+npm notice New major version of npm available! 10.9.2 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

@@ -1,0 +1,718 @@
+
+Running 30 tests using 1 worker
+
+
+
+(node:24832) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:24832) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[1/30] [chromium] › ..\..\tests\build-depth-ui.spec.ts:3:1 › rare choices expose costs, and pause shows levels, all six relics and the exclusive route
+  1) [chromium] › ..\..\tests\build-depth-ui.spec.ts:3:1 › rare choices expose costs, and pause shows levels, all six relics and the exclusive route 
+
+    Error: expect(locator).toContainText(expected) failed
+
+    Locator: locator('#fusion-title')
+    Expected substring: "火花弹 Lv.2"
+    Received string:    "火花弹 2级 + 水泡弹 + 叶刃 · 5 融合"
+    Timeout: 8000ms
+
+    Call log:
+      - Expect "toContainText" locator('#fusion-title') with timeout 8000ms
+      - waiting for locator('#fusion-title')
+        20 × locator resolved to <strong id="fusion-title">火花弹 2级 + 水泡弹 + 叶刃 · 5 融合</strong>
+           - unexpected value "火花弹 2级 + 水泡弹 + 叶刃 · 5 融合"
+
+
+      28 |     await card.click();
+      29 |   }
+    > 30 |   await expect(page.locator('#fusion-title')).toContainText('火花弹 Lv.2');
+         |                                               ^
+      31 |   await expect(page.locator('#build-status')).toHaveText('6 件稀有道具 · 追猎火种 · 暂停查看构筑');
+      32 |   await page.locator('#pause').click();
+      33 |   await expect(page.locator('#build-weapons')).toContainText('主武器：火花弹 Lv.2 / 5');
+        at D:\projects\MonsterBonk-Mobile\tests\build-depth-ui.spec.ts:30:47
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    current-test-results\build-depth-ui-rare-choice-6b012-ics-and-the-exclusive-route-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: current-test-results\build-depth-ui-rare-choice-6b012-ics-and-the-exclusive-route-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    current-test-results\build-depth-ui-rare-choice-6b012-ics-and-the-exclusive-route-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace current-test-results\build-depth-ui-rare-choice-6b012-ics-and-the-exclusive-route-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+(node:9112) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+(node:9112) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[2/30] [chromium] › ..\..\tests\challenge-ui.spec.ts:72:1 › real movement, auto attacks, dash damage and normal upgrades can complete the encounter without forced kills
+[chromium] › ..\..\tests\challenge-ui.spec.ts:72:1 › real movement, auto attacks, dash damage and normal upgrades can complete the encounter without forced kills
+challenge simulated playthrough: {"outcome":"victory","time":26.21666666666646,"hp":80,"kills":15,"horns":7,"interrupts":1,"level":4}
+
+[3/30] [chromium] › ..\..\tests\combat-clarity-ui.spec.ts:3:1 › fully fused three-weapon build stays readable with CD indicators and pooled impact visuals
+  2) [chromium] › ..\..\tests\combat-clarity-ui.spec.ts:3:1 › fully fused three-weapon build stays readable with CD indicators and pooled impact visuals 
+
+    Error: expect(locator).toHaveCount(expected) failed
+
+    Locator:  locator('.weapon-charge')
+    Expected: 3
+    Received: 0
+    Timeout:  8000ms
+
+    Call log:
+      - Expect "toHaveCount" locator('.weapon-charge') with timeout 8000ms
+      - waiting for locator('.weapon-charge')
+        20 × locator resolved to 0 elements
+           - unexpected value "0"
+
+
+      41 |     expect(state.largest).toBeLessThanOrEqual(1.551); expect(state.noDepthWrite).toBe(true); expect(state.maxHurt).toBeLessThanOrEqual(.301); expect(state.limits).toBe(24);
+      42 |     if (index === 1) expect(state.shots.every((count: number) => count > 0)).toBe(true);
+    > 43 |     await expect(page.locator('.weapon-charge')).toHaveCount(3);
+         |                                                  ^
+      44 |     await page.screenshot({ path: `artifacts/combat-clarity-${index === 0 ? 'volleys' : 'impacts'}.png` });
+      45 |   }
+      46 |   await page.locator('#pause').click();
+        at D:\projects\MonsterBonk-Mobile\tests\combat-clarity-ui.spec.ts:43:50
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    current-test-results\combat-clarity-ui-fully-fu-ae086-s-and-pooled-impact-visuals-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: current-test-results\combat-clarity-ui-fully-fu-ae086-s-and-pooled-impact-visuals-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    current-test-results\combat-clarity-ui-fully-fu-ae086-s-and-pooled-impact-visuals-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace current-test-results\combat-clarity-ui-fully-fu-ae086-s-and-pooled-impact-visuals-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+(node:33020) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+(node:33020) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[4/30] [chromium] › ..\..\tests\creature-selection.spec.ts:21:1 › menu selection overrides development URL and remains selected after returning from compatibility mode
+[5/30] [chromium] › ..\..\tests\elemental-fusion-ui.spec.ts:30:11 › paopaoyuan development entry uses one animated creature, real cards, automatic fusions and bounded colored effects
+  3) [chromium] › ..\..\tests\elemental-fusion-ui.spec.ts:30:11 › paopaoyuan development entry uses one animated creature, real cards, automatic fusions and bounded colored effects 
+
+    Error: page.evaluate: TypeError: Cannot read properties of undefined (reading 'count')
+        at eval (eval at evaluate (:370:30), <anonymous>:6:38)
+        at UtilityScript.evaluate (<anonymous>:372:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at eval (eval at evaluate (:370:30), <anonymous>:6:38)
+        at UtilityScript.evaluate (<anonymous>:372:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at D:\projects\MonsterBonk-Mobile\tests\elemental-fusion-ui.spec.ts:35:25
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    current-test-results\elemental-fusion-ui-paopao-625ea-and-bounded-colored-effects-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: current-test-results\elemental-fusion-ui-paopao-625ea-and-bounded-colored-effects-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    current-test-results\elemental-fusion-ui-paopao-625ea-and-bounded-colored-effects-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace current-test-results\elemental-fusion-ui-paopao-625ea-and-bounded-colored-effects-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+
+(node:21112) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+(node:21112) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[6/30] [chromium] › ..\..\tests\elemental-fusion-ui.spec.ts:30:11 › yacishou development entry uses one animated creature, real cards, automatic fusions and bounded colored effects
+  4) [chromium] › ..\..\tests\elemental-fusion-ui.spec.ts:30:11 › yacishou development entry uses one animated creature, real cards, automatic fusions and bounded colored effects 
+
+    Error: page.evaluate: TypeError: Cannot read properties of undefined (reading 'count')
+        at eval (eval at evaluate (:370:30), <anonymous>:6:38)
+        at UtilityScript.evaluate (<anonymous>:372:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at eval (eval at evaluate (:370:30), <anonymous>:6:38)
+        at UtilityScript.evaluate (<anonymous>:372:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at D:\projects\MonsterBonk-Mobile\tests\elemental-fusion-ui.spec.ts:35:25
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    current-test-results\elemental-fusion-ui-yacish-1fef3-and-bounded-colored-effects-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: current-test-results\elemental-fusion-ui-yacish-1fef3-and-bounded-colored-effects-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    current-test-results\elemental-fusion-ui-yacish-1fef3-and-bounded-colored-effects-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace current-test-results\elemental-fusion-ui-yacish-1fef3-and-bounded-colored-effects-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+(node:43228) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+
+(node:43228) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[7/30] [chromium] › ..\..\tests\elemental-fusion-ui.spec.ts:53:11 › jump-thorn individual skill renders audited pixels, icon and real damage; lifecycle clears batch
+[8/30] [chromium] › ..\..\tests\elemental-fusion-ui.spec.ts:73:1 › missing elemental textures and icons preserve procedural effects, readable cards and damage
+  5) [chromium] › ..\..\tests\elemental-fusion-ui.spec.ts:73:1 › missing elemental textures and icons preserve procedural effects, readable cards and damage 
+
+    Error: page.evaluate: TypeError: Cannot read properties of undefined (reading 'count')
+        at eval (eval at evaluate (:370:30), <anonymous>:1:41)
+        at UtilityScript.evaluate (<anonymous>:372:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at eval (eval at evaluate (:370:30), <anonymous>:1:41)
+        at UtilityScript.evaluate (<anonymous>:372:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at D:\projects\MonsterBonk-Mobile\tests\elemental-fusion-ui.spec.ts:76:105
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    current-test-results\elemental-fusion-ui-missin-e8229-s-readable-cards-and-damage-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: current-test-results\elemental-fusion-ui-missin-e8229-s-readable-cards-and-damage-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    current-test-results\elemental-fusion-ui-missin-e8229-s-readable-cards-and-damage-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace current-test-results\elemental-fusion-ui-missin-e8229-s-readable-cards-and-damage-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+
+(node:46712) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+(node:46712) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[9/30] [chromium] › ..\..\tests\fusion-ui.spec.ts:51:1 › real fusion cards and impacts render child/explosion frames without duplicate hit flashes on both phone layouts
+  6) [chromium] › ..\..\tests\fusion-ui.spec.ts:51:1 › real fusion cards and impacts render child/explosion frames without duplicate hit flashes on both phone layouts 
+
+    Error: expect(locator).toHaveClass(expected) failed
+
+    Locator: locator('[data-skill="split-on-hit"]').locator('.fire-icon')
+    Expected pattern: /ready/
+    Timeout: 8000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toHaveClass" locator('[data-skill="split-on-hit"]').locator('.fire-icon') with timeout 8000ms
+      - waiting for locator('[data-skill="split-on-hit"]').locator('.fire-icon')
+
+
+      53 |   await page.evaluate(() => (window as unknown as Fixture).offer());
+      54 |   const card = page.locator('[data-skill="split-on-hit"]'); await expect(card).toBeEnabled();
+    > 55 |   await expect(card.locator('.fire-icon')).toHaveClass(/ready/);
+         |                                            ^
+      56 |   await page.screenshot({ path: 'artifacts/v5-fusion-card-844.png' });
+      57 |   await page.setViewportSize({ width: 568, height: 320 });
+      58 |   await page.screenshot({ path: 'artifacts/v5-fusion-card-568.png' });
+        at D:\projects\MonsterBonk-Mobile\tests\fusion-ui.spec.ts:55:44
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    current-test-results\fusion-ui-real-fusion-card-e5c41-ashes-on-both-phone-layouts-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: current-test-results\fusion-ui-real-fusion-card-e5c41-ashes-on-both-phone-layouts-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    current-test-results\fusion-ui-real-fusion-card-e5c41-ashes-on-both-phone-layouts-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace current-test-results\fusion-ui-real-fusion-card-e5c41-ashes-on-both-phone-layouts-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+
+(node:4936) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+(node:4936) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[10/30] [chromium] › ..\..\tests\fusion-ui.spec.ts:98:1 › missing atlas and icons keep procedural attack/explosion and readable cards
+  7) [chromium] › ..\..\tests\fusion-ui.spec.ts:98:1 › missing atlas and icons keep procedural attack/explosion and readable cards 
+
+    Error: page.evaluate: TypeError: Cannot read properties of undefined (reading 'count')
+        at eval (eval at evaluate (:370:30), <anonymous>:5:27)
+        at UtilityScript.evaluate (<anonymous>:372:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at eval (eval at evaluate (:370:30), <anonymous>:5:27)
+        at UtilityScript.evaluate (<anonymous>:372:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at D:\projects\MonsterBonk-Mobile\tests\fusion-ui.spec.ts:104:21
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    current-test-results\fusion-ui-missing-atlas-an-4f1a2-xplosion-and-readable-cards-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: current-test-results\fusion-ui-missing-atlas-an-4f1a2-xplosion-and-readable-cards-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    current-test-results\fusion-ui-missing-atlas-an-4f1a2-xplosion-and-readable-cards-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace current-test-results\fusion-ui-missing-atlas-an-4f1a2-xplosion-and-readable-cards-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+
+(node:38108) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+(node:38108) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[11/30] [chromium] › ..\..\tests\game.spec.ts:157:1 › real multitouch keeps joystick and dash independent on mobile
+[12/30] [chromium] › ..\..\tests\horn-ui.spec.ts:61:1 › trial entry and instructions fit small phone safe areas without covering joystick
+[13/30] [chromium] › ..\..\tests\party-ui.spec.ts:77:1 › prototype entry and party HUD fit short phones and safe areas
+[14/30] [chromium] › ..\..\tests\presentation.spec.ts:59:1 › jump is cosmetic, freezes on pause/upgrade, lands, and restart clears it
+[15/30] [chromium] › ..\..\tests\three-weapon-ui.spec.ts:3:1 › grass creature acquires fire/water through upgrade cards, shows all five fusions and restarts cleanly
+  8) [chromium] › ..\..\tests\three-weapon-ui.spec.ts:3:1 › grass creature acquires fire/water through upgrade cards, shows all five fusions and restarts cleanly 
+
+    Error: expect(locator).toContainText(expected) failed
+
+    Locator: locator('#fusion-hint')
+    Expected substring: "融合协同"
+    Received string:    ""
+    Timeout: 8000ms
+
+    Call log:
+      - Expect "toContainText" locator('#fusion-hint') with timeout 8000ms
+      - waiting for locator('#fusion-hint')
+        19 × locator resolved to <small hidden="" id="fusion-hint"></small>
+           - unexpected value ""
+
+
+      49 |   });
+      50 |   expect(fired).toEqual(expect.arrayContaining([{ id: 'leaf', recipes: 2 }, { id: 'spark', recipes: 1 }, { id: 'bubble', recipes: 2 }]));
+    > 51 |   await expect(page.locator('#fusion-hint')).toContainText('融合协同');
+         |                                              ^
+      52 |   await expect(page.locator('#fusion-burst-icon')).toBeVisible();
+      53 |   await page.screenshot({ path: 'artifacts/v5.1-b-three-weapon.png' });
+      54 |   await page.setViewportSize({ width: 568, height: 320 });
+        at D:\projects\MonsterBonk-Mobile\tests\three-weapon-ui.spec.ts:51:46
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    current-test-results\three-weapon-ui-grass-crea-4b618-usions-and-restarts-cleanly-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: current-test-results\three-weapon-ui-grass-crea-4b618-usions-and-restarts-cleanly-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    current-test-results\three-weapon-ui-grass-crea-4b618-usions-and-restarts-cleanly-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace current-test-results\three-weapon-ui-grass-crea-4b618-usions-and-restarts-cleanly-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+(node:26320) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+(node:26320) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[16/30] [webkit] › ..\..\tests\build-depth-ui.spec.ts:3:1 › rare choices expose costs, and pause shows levels, all six relics and the exclusive route
+  9) [webkit] › ..\..\tests\build-depth-ui.spec.ts:3:1 › rare choices expose costs, and pause shows levels, all six relics and the exclusive route 
+
+    Error: expect(locator).toContainText(expected) failed
+
+    Locator: locator('#fusion-title')
+    Expected substring: "火花弹 Lv.2"
+    Received string:    "火花弹 2级 + 水泡弹 + 叶刃 · 5 融合"
+    Timeout: 8000ms
+
+    Call log:
+      - Expect "toContainText" locator('#fusion-title') with timeout 8000ms
+      - waiting for locator('#fusion-title')
+        19 × locator resolved to <strong id="fusion-title">火花弹 2级 + 水泡弹 + 叶刃 · 5 融合</strong>
+           - unexpected value "火花弹 2级 + 水泡弹 + 叶刃 · 5 融合"
+
+
+      28 |     await card.click();
+      29 |   }
+    > 30 |   await expect(page.locator('#fusion-title')).toContainText('火花弹 Lv.2');
+         |                                               ^
+      31 |   await expect(page.locator('#build-status')).toHaveText('6 件稀有道具 · 追猎火种 · 暂停查看构筑');
+      32 |   await page.locator('#pause').click();
+      33 |   await expect(page.locator('#build-weapons')).toContainText('主武器：火花弹 Lv.2 / 5');
+        at D:\projects\MonsterBonk-Mobile\tests\build-depth-ui.spec.ts:30:47
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    current-test-results\build-depth-ui-rare-choice-6b012-ics-and-the-exclusive-route-webkit\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: current-test-results\build-depth-ui-rare-choice-6b012-ics-and-the-exclusive-route-webkit\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    current-test-results\build-depth-ui-rare-choice-6b012-ics-and-the-exclusive-route-webkit\trace.zip
+    Usage:
+
+        npx playwright show-trace current-test-results\build-depth-ui-rare-choice-6b012-ics-and-the-exclusive-route-webkit\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+(node:41520) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+(node:41520) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[17/30] [webkit] › ..\..\tests\challenge-ui.spec.ts:72:1 › real movement, auto attacks, dash damage and normal upgrades can complete the encounter without forced kills
+[webkit] › ..\..\tests\challenge-ui.spec.ts:72:1 › real movement, auto attacks, dash damage and normal upgrades can complete the encounter without forced kills
+challenge simulated playthrough: {"outcome":"victory","time":26.21666666666646,"hp":80,"kills":15,"horns":7,"interrupts":1,"level":4}
+
+[18/30] [webkit] › ..\..\tests\combat-clarity-ui.spec.ts:3:1 › fully fused three-weapon build stays readable with CD indicators and pooled impact visuals
+  10) [webkit] › ..\..\tests\combat-clarity-ui.spec.ts:3:1 › fully fused three-weapon build stays readable with CD indicators and pooled impact visuals 
+
+    Error: expect(locator).toHaveCount(expected) failed
+
+    Locator:  locator('.weapon-charge')
+    Expected: 3
+    Received: 0
+    Timeout:  8000ms
+
+    Call log:
+      - Expect "toHaveCount" locator('.weapon-charge') with timeout 8000ms
+      - waiting for locator('.weapon-charge')
+        20 × locator resolved to 0 elements
+           - unexpected value "0"
+
+
+      41 |     expect(state.largest).toBeLessThanOrEqual(1.551); expect(state.noDepthWrite).toBe(true); expect(state.maxHurt).toBeLessThanOrEqual(.301); expect(state.limits).toBe(24);
+      42 |     if (index === 1) expect(state.shots.every((count: number) => count > 0)).toBe(true);
+    > 43 |     await expect(page.locator('.weapon-charge')).toHaveCount(3);
+         |                                                  ^
+      44 |     await page.screenshot({ path: `artifacts/combat-clarity-${index === 0 ? 'volleys' : 'impacts'}.png` });
+      45 |   }
+      46 |   await page.locator('#pause').click();
+        at D:\projects\MonsterBonk-Mobile\tests\combat-clarity-ui.spec.ts:43:50
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    current-test-results\combat-clarity-ui-fully-fu-ae086-s-and-pooled-impact-visuals-webkit\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: current-test-results\combat-clarity-ui-fully-fu-ae086-s-and-pooled-impact-visuals-webkit\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    current-test-results\combat-clarity-ui-fully-fu-ae086-s-and-pooled-impact-visuals-webkit\trace.zip
+    Usage:
+
+        npx playwright show-trace current-test-results\combat-clarity-ui-fully-fu-ae086-s-and-pooled-impact-visuals-webkit\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+
+(node:35180) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+(node:35180) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[19/30] [webkit] › ..\..\tests\creature-selection.spec.ts:21:1 › menu selection overrides development URL and remains selected after returning from compatibility mode
+[20/30] [webkit] › ..\..\tests\elemental-fusion-ui.spec.ts:30:11 › paopaoyuan development entry uses one animated creature, real cards, automatic fusions and bounded colored effects
+  11) [webkit] › ..\..\tests\elemental-fusion-ui.spec.ts:30:11 › paopaoyuan development entry uses one animated creature, real cards, automatic fusions and bounded colored effects 
+
+    Error: page.evaluate: TypeError: undefined is not an object (evaluating 'g.combatView.burstRings.count')
+
+      33 |  for(let i=0;i<cards.length;i++){await learn(page,cards[i]);await expect(page.locator('#fusion-title')).toContainText(titles[i]);}
+      34 |  await page.evaluate(()=>(window as any).impact());
+    > 35 |  const state=await page.evaluate(()=>{const g=(window as any).game;return {c:g.combat.inspect(),rings:g.combatView.burstRings.count+(g.combatView.inspectElemental()?.count??0),fire:g.combatView.firePixels?.mesh.count??0,children:g.combat.projectiles.filter((s:any)=>s.active&&s.generation===1).length}});
+         |                         ^
+      36 |  expect(state.rings).toBeGreaterThan(0);expect(state.fire).toBe(0);expect(state.c.hits).toBeGreaterThan(0);expect(state.c.fusion.recipes).toHaveLength(2);if(dev==='yacishou')expect(state.children).toBe(3);
+      37 |  await page.evaluate(()=>{const w=window as any;w.game.combat.update(.08,w.game.position);w.draw()});
+      38 |  for(const viewport of [{width:844,height:390},{width:568,height:320}]){await page.setViewportSize(viewport);await page.evaluate(()=>(window as any).draw());await page.screenshot({path:'artifacts/elemental-'+dev+'-'+viewport.width+'.png'});}
+        at D:\projects\MonsterBonk-Mobile\tests\elemental-fusion-ui.spec.ts:35:25
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    current-test-results\elemental-fusion-ui-paopao-625ea-and-bounded-colored-effects-webkit\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: current-test-results\elemental-fusion-ui-paopao-625ea-and-bounded-colored-effects-webkit\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    current-test-results\elemental-fusion-ui-paopao-625ea-and-bounded-colored-effects-webkit\trace.zip
+    Usage:
+
+        npx playwright show-trace current-test-results\elemental-fusion-ui-paopao-625ea-and-bounded-colored-effects-webkit\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+
+(node:18108) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+(node:18108) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[21/30] [webkit] › ..\..\tests\elemental-fusion-ui.spec.ts:30:11 › yacishou development entry uses one animated creature, real cards, automatic fusions and bounded colored effects
+  12) [webkit] › ..\..\tests\elemental-fusion-ui.spec.ts:30:11 › yacishou development entry uses one animated creature, real cards, automatic fusions and bounded colored effects 
+
+    Error: page.evaluate: TypeError: undefined is not an object (evaluating 'g.combatView.burstRings.count')
+
+      33 |  for(let i=0;i<cards.length;i++){await learn(page,cards[i]);await expect(page.locator('#fusion-title')).toContainText(titles[i]);}
+      34 |  await page.evaluate(()=>(window as any).impact());
+    > 35 |  const state=await page.evaluate(()=>{const g=(window as any).game;return {c:g.combat.inspect(),rings:g.combatView.burstRings.count+(g.combatView.inspectElemental()?.count??0),fire:g.combatView.firePixels?.mesh.count??0,children:g.combat.projectiles.filter((s:any)=>s.active&&s.generation===1).length}});
+         |                         ^
+      36 |  expect(state.rings).toBeGreaterThan(0);expect(state.fire).toBe(0);expect(state.c.hits).toBeGreaterThan(0);expect(state.c.fusion.recipes).toHaveLength(2);if(dev==='yacishou')expect(state.children).toBe(3);
+      37 |  await page.evaluate(()=>{const w=window as any;w.game.combat.update(.08,w.game.position);w.draw()});
+      38 |  for(const viewport of [{width:844,height:390},{width:568,height:320}]){await page.setViewportSize(viewport);await page.evaluate(()=>(window as any).draw());await page.screenshot({path:'artifacts/elemental-'+dev+'-'+viewport.width+'.png'});}
+        at D:\projects\MonsterBonk-Mobile\tests\elemental-fusion-ui.spec.ts:35:25
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    current-test-results\elemental-fusion-ui-yacish-1fef3-and-bounded-colored-effects-webkit\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: current-test-results\elemental-fusion-ui-yacish-1fef3-and-bounded-colored-effects-webkit\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    current-test-results\elemental-fusion-ui-yacish-1fef3-and-bounded-colored-effects-webkit\trace.zip
+    Usage:
+
+        npx playwright show-trace current-test-results\elemental-fusion-ui-yacish-1fef3-and-bounded-colored-effects-webkit\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+(node:41580) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+(node:41580) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[22/30] [webkit] › ..\..\tests\elemental-fusion-ui.spec.ts:53:11 › jump-thorn individual skill renders audited pixels, icon and real damage; lifecycle clears batch
+[23/30] [webkit] › ..\..\tests\elemental-fusion-ui.spec.ts:73:1 › missing elemental textures and icons preserve procedural effects, readable cards and damage
+  13) [webkit] › ..\..\tests\elemental-fusion-ui.spec.ts:73:1 › missing elemental textures and icons preserve procedural effects, readable cards and damage 
+
+    Error: page.evaluate: TypeError: undefined is not an object (evaluating 'window.game.combatView.burstRings.count')
+
+      74 |  await page.route('**/assets/pixel/skills/fusions/*.png',r=>r.abort());await open(page,'paopaoyuan');await page.evaluate(()=>(window as any).game.sleep());
+      75 |  await expect.poll(()=>page.evaluate(()=>(window as any).game.combatView.inspectElemental()?.failed)).toBe(true);await learn(page,'area');await page.evaluate(()=>(window as any).impact());
+    > 76 |  expect(await page.evaluate(()=>(window as any).game.combat.hits)).toBeGreaterThan(0);expect(await page.evaluate(()=>(window as any).game.combatView.burstRings.count)).toBeGreaterThan(0);
+         |                                                                                                         ^
+      77 |  expect(await page.evaluate(()=>(window as any).game.combatView.inspectElemental().count)).toBe(0);await expect(page.locator('#fusion-title')).toContainText('深海泡影');
+      78 | });
+      79 |
+        at D:\projects\MonsterBonk-Mobile\tests\elemental-fusion-ui.spec.ts:76:105
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    current-test-results\elemental-fusion-ui-missin-e8229-s-readable-cards-and-damage-webkit\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: current-test-results\elemental-fusion-ui-missin-e8229-s-readable-cards-and-damage-webkit\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    current-test-results\elemental-fusion-ui-missin-e8229-s-readable-cards-and-damage-webkit\trace.zip
+    Usage:
+
+        npx playwright show-trace current-test-results\elemental-fusion-ui-missin-e8229-s-readable-cards-and-damage-webkit\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+(node:26172) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+(node:26172) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[24/30] [webkit] › ..\..\tests\fusion-ui.spec.ts:51:1 › real fusion cards and impacts render child/explosion frames without duplicate hit flashes on both phone layouts
+  14) [webkit] › ..\..\tests\fusion-ui.spec.ts:51:1 › real fusion cards and impacts render child/explosion frames without duplicate hit flashes on both phone layouts 
+
+    Error: expect(locator).toHaveClass(expected) failed
+
+    Locator: locator('[data-skill="split-on-hit"]').locator('.fire-icon')
+    Expected pattern: /ready/
+    Timeout: 8000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toHaveClass" locator('[data-skill="split-on-hit"]').locator('.fire-icon') with timeout 8000ms
+      - waiting for locator('[data-skill="split-on-hit"]').locator('.fire-icon')
+
+
+      53 |   await page.evaluate(() => (window as unknown as Fixture).offer());
+      54 |   const card = page.locator('[data-skill="split-on-hit"]'); await expect(card).toBeEnabled();
+    > 55 |   await expect(card.locator('.fire-icon')).toHaveClass(/ready/);
+         |                                            ^
+      56 |   await page.screenshot({ path: 'artifacts/v5-fusion-card-844.png' });
+      57 |   await page.setViewportSize({ width: 568, height: 320 });
+      58 |   await page.screenshot({ path: 'artifacts/v5-fusion-card-568.png' });
+        at D:\projects\MonsterBonk-Mobile\tests\fusion-ui.spec.ts:55:44
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    current-test-results\fusion-ui-real-fusion-card-e5c41-ashes-on-both-phone-layouts-webkit\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: current-test-results\fusion-ui-real-fusion-card-e5c41-ashes-on-both-phone-layouts-webkit\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    current-test-results\fusion-ui-real-fusion-card-e5c41-ashes-on-both-phone-layouts-webkit\trace.zip
+    Usage:
+
+        npx playwright show-trace current-test-results\fusion-ui-real-fusion-card-e5c41-ashes-on-both-phone-layouts-webkit\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+
+(node:13536) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+(node:13536) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[25/30] [webkit] › ..\..\tests\fusion-ui.spec.ts:98:1 › missing atlas and icons keep procedural attack/explosion and readable cards
+  15) [webkit] › ..\..\tests\fusion-ui.spec.ts:98:1 › missing atlas and icons keep procedural attack/explosion and readable cards 
+
+    Error: page.evaluate: TypeError: undefined is not an object (evaluating 'v.burstRings.count')
+
+      102 |   await page.evaluate(() => (window as unknown as Fixture).impact());
+      103 |   expect((await state(page)).combat.fusion.bursts).toBe(1); expect((await state(page)).combat.fusion.children).toBe(2);
+    > 104 |   expect(await page.evaluate(() => { const v=(window as any).game.combatView;return {bolts:v.bolts.count,rings:v.burstRings.count}; })).toEqual({bolts:2,rings:1});
+          |                     ^
+      105 |   expect((await state(page)).fusionVisual!.count).toBe(0);
+      106 | });
+      107 |
+        at D:\projects\MonsterBonk-Mobile\tests\fusion-ui.spec.ts:104:21
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    current-test-results\fusion-ui-missing-atlas-an-4f1a2-xplosion-and-readable-cards-webkit\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: current-test-results\fusion-ui-missing-atlas-an-4f1a2-xplosion-and-readable-cards-webkit\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    current-test-results\fusion-ui-missing-atlas-an-4f1a2-xplosion-and-readable-cards-webkit\trace.zip
+    Usage:
+
+        npx playwright show-trace current-test-results\fusion-ui-missing-atlas-an-4f1a2-xplosion-and-readable-cards-webkit\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+(node:29804) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+(node:29804) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[26/30] [webkit] › ..\..\tests\game.spec.ts:157:1 › real multitouch keeps joystick and dash independent on mobile
+[27/30] [webkit] › ..\..\tests\horn-ui.spec.ts:61:1 › trial entry and instructions fit small phone safe areas without covering joystick
+[28/30] [webkit] › ..\..\tests\party-ui.spec.ts:77:1 › prototype entry and party HUD fit short phones and safe areas
+[29/30] [webkit] › ..\..\tests\presentation.spec.ts:59:1 › jump is cosmetic, freezes on pause/upgrade, lands, and restart clears it
+[30/30] [webkit] › ..\..\tests\three-weapon-ui.spec.ts:3:1 › grass creature acquires fire/water through upgrade cards, shows all five fusions and restarts cleanly
+  16) [webkit] › ..\..\tests\three-weapon-ui.spec.ts:3:1 › grass creature acquires fire/water through upgrade cards, shows all five fusions and restarts cleanly 
+
+    Error: expect(locator).toContainText(expected) failed
+
+    Locator: locator('#fusion-hint')
+    Expected substring: "融合协同"
+    Received string:    ""
+    Timeout: 8000ms
+
+    Call log:
+      - Expect "toContainText" locator('#fusion-hint') with timeout 8000ms
+      - waiting for locator('#fusion-hint')
+        20 × locator resolved to <small hidden="" id="fusion-hint"></small>
+           - unexpected value ""
+
+
+      49 |   });
+      50 |   expect(fired).toEqual(expect.arrayContaining([{ id: 'leaf', recipes: 2 }, { id: 'spark', recipes: 1 }, { id: 'bubble', recipes: 2 }]));
+    > 51 |   await expect(page.locator('#fusion-hint')).toContainText('融合协同');
+         |                                              ^
+      52 |   await expect(page.locator('#fusion-burst-icon')).toBeVisible();
+      53 |   await page.screenshot({ path: 'artifacts/v5.1-b-three-weapon.png' });
+      54 |   await page.setViewportSize({ width: 568, height: 320 });
+        at D:\projects\MonsterBonk-Mobile\tests\three-weapon-ui.spec.ts:51:46
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    current-test-results\three-weapon-ui-grass-crea-4b618-usions-and-restarts-cleanly-webkit\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: current-test-results\three-weapon-ui-grass-crea-4b618-usions-and-restarts-cleanly-webkit\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    current-test-results\three-weapon-ui-grass-crea-4b618-usions-and-restarts-cleanly-webkit\trace.zip
+    Usage:
+
+        npx playwright show-trace current-test-results\three-weapon-ui-grass-crea-4b618-usions-and-restarts-cleanly-webkit\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+  16 failed
+    [chromium] › ..\..\tests\build-depth-ui.spec.ts:3:1 › rare choices expose costs, and pause shows levels, all six relics and the exclusive route 
+    [chromium] › ..\..\tests\combat-clarity-ui.spec.ts:3:1 › fully fused three-weapon build stays readable with CD indicators and pooled impact visuals 
+    [chromium] › ..\..\tests\elemental-fusion-ui.spec.ts:30:11 › paopaoyuan development entry uses one animated creature, real cards, automatic fusions and bounded colored effects 
+    [chromium] › ..\..\tests\elemental-fusion-ui.spec.ts:30:11 › yacishou development entry uses one animated creature, real cards, automatic fusions and bounded colored effects 
+    [chromium] › ..\..\tests\elemental-fusion-ui.spec.ts:73:1 › missing elemental textures and icons preserve procedural effects, readable cards and damage 
+    [chromium] › ..\..\tests\fusion-ui.spec.ts:51:1 › real fusion cards and impacts render child/explosion frames without duplicate hit flashes on both phone layouts 
+    [chromium] › ..\..\tests\fusion-ui.spec.ts:98:1 › missing atlas and icons keep procedural attack/explosion and readable cards 
+    [chromium] › ..\..\tests\three-weapon-ui.spec.ts:3:1 › grass creature acquires fire/water through upgrade cards, shows all five fusions and restarts cleanly 
+    [webkit] › ..\..\tests\build-depth-ui.spec.ts:3:1 › rare choices expose costs, and pause shows levels, all six relics and the exclusive route 
+    [webkit] › ..\..\tests\combat-clarity-ui.spec.ts:3:1 › fully fused three-weapon build stays readable with CD indicators and pooled impact visuals 
+    [webkit] › ..\..\tests\elemental-fusion-ui.spec.ts:30:11 › paopaoyuan development entry uses one animated creature, real cards, automatic fusions and bounded colored effects 
+    [webkit] › ..\..\tests\elemental-fusion-ui.spec.ts:30:11 › yacishou development entry uses one animated creature, real cards, automatic fusions and bounded colored effects 
+    [webkit] › ..\..\tests\elemental-fusion-ui.spec.ts:73:1 › missing elemental textures and icons preserve procedural effects, readable cards and damage 
+    [webkit] › ..\..\tests\fusion-ui.spec.ts:51:1 › real fusion cards and impacts render child/explosion frames without duplicate hit flashes on both phone layouts 
+    [webkit] › ..\..\tests\fusion-ui.spec.ts:98:1 › missing atlas and icons keep procedural attack/explosion and readable cards 
+    [webkit] › ..\..\tests\three-weapon-ui.spec.ts:3:1 › grass creature acquires fire/water through upgrade cards, shows all five fusions and restarts cleanly 
+  1 skipped
+  13 passed (3.7m)

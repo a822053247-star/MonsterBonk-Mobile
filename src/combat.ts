@@ -1,4 +1,5 @@
 import { COMBAT_CLARITY } from './combat-clarity';
+import { FLAME_SWEEP, insideSweep } from './flame-sweep';
 import { EnemyChallenge, ENCOUNTER_RULES, predictPosition } from './enemy-challenge';
 import { resolveAttackRules, type AttackRules } from './relics';
 import { ATTACKS, RunBuild } from './run-build';
@@ -20,10 +21,11 @@ export const ENEMY_TYPES = {
 } as const;
 export const WEAPON = { range: 10.5, interval: 0.44, speed: 18, damage: 18, lifetime: 0.8, radius: 0.2 } as const;
 export const FORMAL_POUNCE = { ...POUNCE, range: 6, windup: .85, speed: 13, duration: .5, recovery: 1.1, cooldown: 2 } as const;
+export const SWARM_RULES = { health: [12, 14, 16, 18, 20], minDistance: 8, maxDistance: 12, halfAngle: .42, xp: 1, killsPerCoin: 3 } as const;
 type Point = { x: number; z: number };
 type Obstacle = Point & { radius: number };
 type Moving = Point & { previousX: number; previousZ: number; active: boolean };
-export interface Enemy extends Moving { rank?: 'elite' | 'boss'; maxHp?: number; radius?: number; id: number; kind: EnemyKind; hp: number; age: number; spawnTime: number; flash: number; knockX: number; knockZ: number; facing: number; orbitCooldown: number; intent: EnemyIntent; intentTime: number; intentCooldown: number; aimX: number; aimZ: number; stagger: number; hornDash: number; slowTime?: number; walkPhase?: number; walkAmount?: number; steerX?: number; steerZ?: number; walkX?: number; walkZ?: number }
+export interface Enemy extends Moving { swarm?: boolean; rank?: 'elite' | 'boss'; maxHp?: number; radius?: number; id: number; kind: EnemyKind; hp: number; age: number; spawnTime: number; flash: number; knockX: number; knockZ: number; facing: number; orbitCooldown: number; intent: EnemyIntent; intentTime: number; intentCooldown: number; aimX: number; aimZ: number; stagger: number; hornDash: number; slowTime?: number; walkPhase?: number; walkAmount?: number; steerX?: number; steerZ?: number; walkX?: number; walkZ?: number }
 export interface Projectile extends Moving { vx: number; vz: number; life: number; damage: number; distance: number; sourceId?: number; species?: SpeciesId; attackId?: BaseAttackId; attackRules?: AttackRules; homing?: boolean; generation?: number; bornTick?: number; ignoreEnemyId?: number; burst?: boolean; age?: number; elemental?: boolean; fusionIds?: FusionId[]; hitIds?: number[]; pierces?: number; bounces?: number; scatter?: boolean; baseDamage?: number; damageIds?: number[]; hopTargetId?: number; hopDelay?: number; hopElapsed?: number; hopDuration?: number; hopFromX?: number; hopFromZ?: number }
 export interface Shockwave { active: boolean; x: number; z: number; age: number; radius: number; previousRadius: number; maxRadius: number; damage: number; hitIds: Int32Array }
 export interface ExperienceOrb extends Moving { value: number; magnetized: boolean }
@@ -44,11 +46,13 @@ export function segmentHit(ax: number, az: number, bx: number, bz: number, x: nu
 
 export class Combat {
   readonly encounters = new EnemyChallenge();
+  readonly melee = { active: false, attackInstanceId: 0, x: 0, z: 0, aimX: 0, aimZ: 1, age: 0, radius: 0, hitIds: new Int32Array(COMBAT_LIMITS.enemies) };
   /** Enabled by the map prototype; preserved legacy modes keep their steering. */
   useNavigation = false;
   fusionEnabled = false;
   automaticSpawning = true;
   goldEarned = 0;
+  private swarmCoinRemainder = 0;
   readonly runBuild = new RunBuild();
   get usesRunBuild() { return this.fusionEnabled && !!this.party; }
   private tick = 0;
@@ -144,6 +148,8 @@ export class Combat {
     this.clearTransientEffects();
     this.navigation.invalidate();
     this.tick = this.bursts = this.childShots = this.goldEarned = 0;
+    this.swarmCoinRemainder = 0;
+    this.melee.attackInstanceId = 0; this.melee.age = 0; this.melee.hitIds.fill(0);
     this.nextWeapon = this.launchClock = this.childrenThisTick = this.childWindow = this.childrenInWindow = 0;
     this.salvo = undefined;
     if (this.party) this.party.reset(this.party.members.map(member => member.species));
@@ -174,7 +180,7 @@ export class Combat {
     const enemy = this.enemies.find((candidate) => !candidate.active && candidate !== this.encounters.boss && candidate !== this.encounters.elite);
     if (!enemy) return;
     Object.assign(enemy, { active: true, id: this.nextId++, kind, x, z, previousX: x, previousZ: z, hp: this.enemyMaxHp(kind), age: 0, spawnTime, flash: 0, knockX: 0, knockZ: 0, facing: 0, orbitCooldown: 0, intent: 'chase', intentTime: 0, intentCooldown: 0, aimX: 0, aimZ: 1, stagger: 0, hornDash: 0, slowTime: 0, walkPhase: (this.nextId * 2.399963) % (Math.PI * 2), walkAmount: 0, walkX: 0, walkZ: 0, steerX: undefined, steerZ: undefined });
-    enemy.rank = undefined; enemy.maxHp = enemy.radius = undefined;
+    enemy.rank = undefined; enemy.maxHp = enemy.radius = undefined; enemy.swarm = false;
     if (this.encounters.enabled) enemy.hp = enemy.maxHp = (kind==='fast'?40:ENEMY_TYPES[kind].hp)*(ENCOUNTER_RULES.waveHealth[this.encounters.wave-1]??1);
     this.spawned++;
     return enemy;
@@ -229,7 +235,32 @@ export class Combat {
     return enemy;
   }
 
-  private spawnPosition(player: Point, min: number, max: number, radius: number): Point | undefined {
+  /** One incoming sector per batch leaves the opposite side open at birth.
+   * Finite placement attempts skip blocked members, never queue a catch-up burst. */
+  spawnSwarm(player: Point, count: number, cap: number, escort: EnemyKind = 'normal') {
+    if (!this.encounters.enabled || !Number.isFinite(count) || !Number.isFinite(cap)) return 0;
+    const available = Math.min(Math.floor(count), Math.floor(cap) - this.enemies.filter(e => e.active).length, COMBAT_LIMITS.enemies);
+    if (available <= 0 || this.enemies.every(e => e.active)) return 0;
+    const anchor = this.spawnPosition(player, SWARM_RULES.minDistance, SWARM_RULES.maxDistance, ENEMY_TYPES.tank.radius);
+    if (!anchor) return 0;
+    const heading = Math.atan2(anchor.x-player.x, anchor.z-player.z);
+    let spawned = 0;
+    for (let i = 0; i < available; i++) {
+      const kind = i === available-1 ? escort : 'normal';
+      const point = i === 0 ? anchor : this.spawnPosition(player, SWARM_RULES.minDistance, SWARM_RULES.maxDistance, ENEMY_TYPES[kind].radius, heading);
+      if (!point) continue;
+      const enemy = this.spawn(kind, point.x, point.z);
+      if (!enemy) break;
+      if (kind === 'normal') {
+        enemy.swarm = true;
+        enemy.hp = enemy.maxHp = SWARM_RULES.health[this.encounters.wave-1] ?? 18;
+      }
+      spawned++;
+    }
+    return spawned;
+  }
+
+  private spawnPosition(player: Point, min: number, max: number, radius: number, heading?: number): Point | undefined {
     const candidate = (angle: number, distance: number) => {
       const x = player.x + Math.sin(angle) * distance, z = player.z + Math.cos(angle) * distance;
       if (Math.hypot(x, z) > this.boundary - radius - .2) return;
@@ -239,12 +270,14 @@ export class Combat {
       return this.navigation.reachable(point, player) ? point : undefined;
     };
     for (let attempt = 0; attempt < 24; attempt++) {
-      const point = candidate(this.random() * Math.PI * 2, min + this.random() * (max - min));
+      const angle = heading === undefined ? this.random() * Math.PI * 2 : heading + (this.random()*2-1)*SWARM_RULES.halfAngle;
+      const point = candidate(angle, min + this.random() * (max - min));
       if (point) return point;
     }
     // Bounded deterministic fallback avoids losing a wave beside water or edges.
     for (const distance of [(min + max) / 2, min, max]) for (let i = 0; i < 24; i++) {
-      const point = candidate(i * Math.PI / 12 + this.spawned * 2.399963, distance);
+      const angle = heading === undefined ? i * Math.PI / 12 + this.spawned * 2.399963 : heading + (i/23*2-1)*SWARM_RULES.halfAngle;
+      const point = candidate(angle, distance);
       if (point) return point;
     }
     return undefined;
@@ -286,6 +319,7 @@ export class Combat {
     this.playerVelocityX=vx; this.playerVelocityZ=vz;
     this.anchorInitialized = true;
     this.elapsed += dt;
+    if (this.melee.active) { this.melee.age += dt; if (this.melee.age >= FLAME_SWEEP.duration) this.melee.active = false; }
     this.invulnerability = Math.max(0, this.invulnerability - dt);
     this.hurtFlash = Math.max(0, this.hurtFlash - dt);
     if (this.automaticSpawning && !this.isChallenge) this.spawnClock -= dt;
@@ -386,6 +420,31 @@ export class Combat {
     if (this.usesRunBuild && this.party) {
       const member = this.party.leader, attacks = this.runBuild.attacks;
       for (const attack of attacks) attack.cooldown = Math.max(0, attack.cooldown - dt);
+      // Independent melee cooldown: a full bolt pool or an ongoing salvo cannot suppress a sweep.
+      for (const attack of attacks) {
+        if (ATTACKS[attack.attackId].kind !== 'melee_arc' || attack.cooldown > 1e-8) continue;
+        const rules = this.runBuild.rules(attack.attackId);
+        const radius = FLAME_SWEEP.radius*this.stats.rangeMultiplier*rules.areaMultiplier;
+        const target = this.findTarget(member, radius+FLAME_SWEEP.bodyOffset);
+        if (!target) continue;
+        const dx = target.x-member.x, dz = target.z-member.z, length = Math.max(.001, Math.hypot(dx,dz));
+        const aimX = length > .001 ? dx/length : 0, aimZ = length > .001 ? dz/length : 1;
+        Object.assign(this.melee, { active: true, attackInstanceId: this.melee.attackInstanceId+1,
+          x: member.x+aimX*FLAME_SWEEP.bodyOffset, z: member.z+aimZ*FLAME_SWEEP.bodyOffset, aimX, aimZ, age: 0, radius });
+        this.melee.hitIds.fill(0);
+        for (let i = 0; i < this.enemies.length; i++) {
+          const enemy = this.enemies[i];
+          if (!enemy.active || enemy.spawnTime > 0 || enemy.hp <= 0 || this.melee.hitIds[i] === enemy.id
+            || !insideSweep(enemy.x-this.melee.x, enemy.z-this.melee.z, aimX, aimZ, radius, this.enemyRadius(enemy))
+            || this.covered(this.melee.x,this.melee.z,enemy.x,enemy.z) || this.covered(member.x,member.z,enemy.x,enemy.z)) continue;
+          this.melee.hitIds[i] = enemy.id;
+          this.damageEnemy(enemy, FLAME_SWEEP.damage*this.stats.damageMultiplier*rules.damageMultiplier*rules.directMultiplier, aimX, aimZ);
+          this.effect(enemy.x,enemy.z,'hit',enemy.kind);
+          if (this.encounters.dying) { this.melee.active = false; break; }
+        }
+        attack.cooldown = FLAME_SWEEP.interval*rules.intervalMultiplier/this.stats.attackRateMultiplier;
+        attack.cooldownTotal = attack.cooldown; attack.shotsFired++;
+      }
       member.targetId = this.findTarget(member, ATTACKS[attacks[0].attackId].range * this.stats.rangeMultiplier)?.id ?? 0;
       this.targetId = member.targetId;
       this.launchClock = Math.max(0, this.launchClock - dt);
@@ -394,6 +453,7 @@ export class Combat {
           for (let offset = 0; offset < attacks.length; offset++) {
             const index = (this.nextWeapon + offset) % attacks.length, attack = attacks[index];
             const weapon = ATTACKS[attack.attackId], rules = this.runBuild.rules(attack.attackId);
+            if (weapon.kind !== 'projectile') continue;
             const range = weapon.range * this.stats.rangeMultiplier;
             if (attack.cooldown > 1e-8 || !this.findTarget(member, range)) continue;
             const free = this.projectiles.filter(s => !s.active).length;
@@ -523,6 +583,7 @@ export class Combat {
 
   /** Shared pool + swept collision + damageEnemy for every controlled/partner bolt. */
   private fireBolts(origin: Point, target: Enemy, damage: number, count: number, range: number, sourceId = 0, species?: SpeciesId, attackId: BaseAttackId = CREATURES[species ?? 'yanrong'].skill, salvo?: { index: number; rules: AttackRules; fusions: FusionId[] }) {
+    if (ATTACKS[attackId].kind !== 'projectile') return false;
     let available = 0;
     for (const shot of this.projectiles) if (!shot.active) available++;
     if (available < count) return false;
@@ -630,6 +691,7 @@ export class Combat {
   }
 
   clearTransientEffects() {
+    this.melee.active = false;
     this.encounters.clearShots();
     this.salvo = undefined; this.launchClock = 0;
     for (const shot of this.projectiles) { shot.active = false; shot.hitIds = []; shot.damageIds = []; shot.hopTargetId = 0; shot.hopDelay = shot.hopElapsed = 0; shot.fusionIds = []; }
@@ -816,10 +878,15 @@ export class Combat {
     if (enemy.hp === 0) {
       enemy.active = false;
       this.kills++;
-      if (this.usesRunBuild) this.goldEarned += enemy.rank === 'boss' ? 0 : enemy.rank === 'elite' ? 18 : enemy.kind === 'tank' ? 2 : 1;
+      if (this.usesRunBuild) {
+        if (enemy.swarm) {
+          this.swarmCoinRemainder++;
+          if (this.swarmCoinRemainder === SWARM_RULES.killsPerCoin) { this.goldEarned++; this.swarmCoinRemainder = 0; }
+        } else this.goldEarned += enemy.rank === 'boss' ? 0 : enemy.rank === 'elite' ? 18 : enemy.kind === 'tank' ? 2 : 1;
+      }
       if (enemy.rank === 'boss') this.encounters.killedBoss(this);
       else {
-        this.dropExperience(enemy.x, enemy.z, enemy.rank === 'elite' ? 24 : ENEMY_TYPES[enemy.kind].xp);
+        this.dropExperience(enemy.x, enemy.z, enemy.rank === 'elite' ? 24 : enemy.swarm ? SWARM_RULES.xp : ENEMY_TYPES[enemy.kind].xp);
         this.effect(enemy.x, enemy.z, 'death', enemy.kind, 0, undefined, enemy);
       }
     }
@@ -895,6 +962,7 @@ export class Combat {
   inspect() {
     return {
       build: { enabled: this.usesRunBuild, species: this.runBuild.species, relics: [...this.runBuild.relics], evolution: this.runBuild.evolution ?? null, attacks: this.runBuild.attacks.map(attack => ({ ...attack })) },
+      melee: { ...this.melee, hitIds: Array.from(this.melee.hitIds).filter(Boolean) },
       firing: { weapon: this.salvo?.attackId ?? null, remaining: this.salvo ? this.salvo.total - this.salvo.index : 0, gap: this.launchClock },
       hp: this.hp, kills: this.kills, goldEarned: this.goldEarned, xp: this.xp, shotsFired: this.shotsFired, hits: this.hits,
       fusion: { enabled: this.fusionEnabled, active: this.fusion?.id ?? null, recipes: this.fusions.map(f => f.id), bursts: this.bursts, childShots: this.childShots, children: this.projectiles.filter(shot => shot.active && shot.generation === 1).length },

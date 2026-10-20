@@ -1,5 +1,9 @@
 # 幻兽幸存者（原 MonsterBonk Mobile）
 
+V6.1-B：火焰横扫近战原型已接入用户提供的八帧贴图，与远程武器共用三槽，可从升级/商店获得。快速体验：打开 `/?world=fixed&meleeDev=flame-sweep` 后点击「开始挑战」，会额外装备横扫；靠近敌人自动触发，无需攻击按钮。参数、帧尺寸和实际截图见 [V6.1-B 接入报告](docs/V6.1-B-REPORT.md)。
+
+火焰横扫视觉已调优，默认 B 组（70% 尺寸、贴地压缩、暖色低亮核心、6 帧 / 230ms）。在上述网址追加 `&sweepVisual=compact` / `balanced` / `punchy` 可对比 A/B/C，详见 [视觉参数与截图](docs/V6.1-B-VISUAL-TUNING.md)。近战伤害、范围和冷却不变。
+
 V5.3-E：正式六波挑战已接入奔跑虫锁向冲刺、普通怪攻击预警、第 4 波精英岩甲与第 6 波荆冠兽王。最终必须在 90 秒内击败 Boss，播放死亡动画后通关。规则、测试与平衡探针见 [阶段 E 记录](docs/V5.3-E-REPORT.md)。
 
 荆冠兽王独立素材预览：运行开发服务器后打开 `/crownthorn-preview.html`。支持八方向和七种完整正面动作；素材处理详情见 [接入记录](docs/CROWNTHORN-ANIMATION-REPORT.md)。正式 Boss 战斗从主菜单六波挑战进入。

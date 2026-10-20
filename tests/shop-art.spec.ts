@@ -70,6 +70,25 @@ test('cards reflect real offers, show weapons, relics and healing art, and fit s
   }
 });
 
+test('desktop shop scales merchandise and text to the browser viewport', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await open(page);
+  for (const viewport of [{ width: 1280, height: 720 }, { width: 1920, height: 1080 }]) {
+    await page.setViewportSize(viewport);
+    const panel = (await page.locator('.shop-panel').boundingBox())!;
+    expect(panel.width).toBeGreaterThan(viewport.width * .9);
+    for (const card of await page.locator('.shop-item').all()) {
+      await expect(card).toBeInViewport({ ratio: 1 });
+      const box = (await card.boundingBox())!;
+      expect(box.height).toBeGreaterThan(viewport.height * .65);
+      expect(await card.locator('.shop-benefit').evaluate(el => parseFloat(getComputedStyle(el).fontSize))).toBeGreaterThanOrEqual(14);
+      expect(await card.locator('.shop-illustration').evaluate(el => el.getBoundingClientRect().height)).toBeGreaterThan(110);
+    }
+    await expect(page.locator('#shop-next')).toBeInViewport({ ratio: 1 });
+    await page.screenshot({ path: `artifacts/forest-shop-desktop-${viewport.width}.png` });
+  }
+});
+
 test('purchases replace invalid offers, reject stale tokens, heal correctly and retain sold prices', async ({ page }) => {
   await open(page);
   const token = await page.locator('[data-buy="0"]').getAttribute('data-shop-token');
