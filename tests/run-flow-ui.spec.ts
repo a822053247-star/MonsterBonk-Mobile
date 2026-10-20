@@ -68,7 +68,13 @@ test('complete six-wave UI with shopping, healing, refresh, victory, clean resta
   await expect(page.locator('#result-heading')).toHaveText('六波挑战，通关！');
   await expect(page.locator('#result-run')).toContainText('完成 6 波');
   await expect(page.locator('#result-weapons')).toContainText('火花弹');
-  await expect(page.locator('#result-time')).toHaveText('07:52');
+  // Shop deliberation time is real elapsed time, so display must reflect the model
+  // instead of a hard-coded timestamp that changes with WebKit timing.
+  const modelTime = await page.evaluate(() => {
+    const seconds = (window as any).game.run.totalElapsed;
+    return `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(Math.floor(seconds % 60)).padStart(2, '0')}`;
+  });
+  await expect(page.locator('#result-time')).toHaveText(modelTime);
   await page.screenshot({ path: 'artifacts/v5.2-d-victory.png' });
   await page.locator('#gameover-restart').click();
   expect(await page.evaluate(() => {
