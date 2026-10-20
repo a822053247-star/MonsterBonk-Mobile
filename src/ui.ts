@@ -165,7 +165,7 @@ export function setFusionIcons(root: HTMLElement, ids: ElementalFusionId[]) {
 }
 
 /** Long build details live in the existing pause menu, never over the joystick. */
-export function renderBuildSummary(build: RunBuild | undefined, fusions: readonly { title: string }[]) {
+export function renderBuildSummary(build: RunBuild | undefined, fusions: readonly { title: string }[], resonances: readonly string[] = []) {
   const panel = document.getElementById('build-summary')!;
   panel.hidden = !build;
   panel.closest('.pause-card')!.classList.toggle('has-build', !!build);
@@ -173,7 +173,7 @@ export function renderBuildSummary(build: RunBuild | undefined, fusions: readonl
   status.hidden = true;
   if (!build) return;
   const evolution = build.evolution ? EVOLUTIONS[build.evolution].title : '未选择进化';
-  const key = JSON.stringify([build.attacks.map(a => [a.attackId, a.level]), build.relics, evolution, fusions.map(f => f.title)]);
+  const key = JSON.stringify([build.attacks.map(a => [a.attackId, a.level]), build.relics, evolution, fusions.map(f => f.title), resonances]);
   status.textContent = `${build.relics.length} 件稀有道具 · ${evolution} · 暂停查看构筑`;
   if (panel.dataset.snapshot === key) return;
   panel.dataset.snapshot = key;
@@ -183,7 +183,7 @@ export function renderBuildSummary(build: RunBuild | undefined, fusions: readonl
     const growth = flameSweepStats(a.level);
     return label + ` · ${growth.radius} 范围 / ${growth.degrees}° 火浪`;
   }).join('\n');
-  document.getElementById('build-fusions')!.textContent = fusions.length ? fusions.map(f => f.title).join(' / ') : '尚未形成融合，升级选择通用改造。';
+  document.getElementById('build-fusions')!.textContent = (fusions.length ? fusions.map(f => f.title).join(' / ') : '尚未形成融合，升级选择通用改造。') + (resonances.length ? '\n已激活：' + resonances.join(' / ') : '');
   document.getElementById('build-relics')!.textContent = build.relics.length ? build.relics.map(id => {
     const relic = RELICS[id];
     const inactive = id === 'specialist-badge' && build.attacks.length > 1 ? '（副武器已装备，加成失效）' : '';
@@ -238,10 +238,10 @@ export function renderRunResult(run: RunFlow | undefined, combat: Combat) {
   document.getElementById('result-weapons')!.textContent = build ? build.attacks.map(a => `${ATTACKS[a.attackId].title} ${a.level}级`).join(' / ') : `基础攻击：${ATTACKS[combat.baseAttack].title}`;
   const learned = combat.progression.skills.filter(skill => !skill.category && !skill.id.endsWith('-weapon') && combat.progression.ranks[skill.id] > 0);
   document.getElementById('result-skills')!.textContent = learned.length ? learned.map(skill => `${skill.title} ${combat.progression.ranks[skill.id]}级`).join(' / ') : '强化：无';
-  document.getElementById('result-fusions')!.textContent = '融合：' + (combat.fusions.map(f => f.title).join(' / ') || '无');
+  document.getElementById('result-fusions')!.textContent = '融合：' + (combat.fusions.map(f => f.title).join(' / ') || '无') + (combat.resonances.length ? '\n共鸣：' + combat.resonances.join(' / ') : '') + `\n连锁击杀 ${combat.relicTelemetry.chainKills} · 蒸爆 ${combat.relicTelemetry.steamBursts} 次`;
   document.getElementById('result-relics')!.textContent = '道具：' + (build?.relics.map(id => RELICS[id].title).join(' / ') || '无') + '\n进化：' + (build?.evolution ? EVOLUTIONS[build.evolution].title : '无');
   document.getElementById('result-skills')!.hidden = !learned.length;
-  document.getElementById('result-fusions')!.hidden = !combat.fusions.length;
+  document.getElementById('result-fusions')!.hidden = !combat.fusions.length && !combat.resonances.length;
   document.getElementById('result-relics')!.hidden = !build?.relics.length && !build?.evolution;
 }
 
