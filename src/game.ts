@@ -605,7 +605,7 @@ export class Game {
       this.updateHUD();
       return true;
     }
-    if (this.run.phase === 'fighting' && !this.input.enabled) this.input.setEnabled(true);
+    if (this.run.phase === 'fighting' && this.run.waveElapsed === 0) this.input.setEnabled(true);
     if (this.run.phase === 'shop') {
       this.mode = 'shop'; this.input.setEnabled(false); this.velocity.set(0, 0);
       this.previousPosition.copy(this.position); this.partyView.stopAnimation(); this.sleep();
