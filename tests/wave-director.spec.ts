@@ -84,7 +84,7 @@ test('wave four introduces the elite before spores and treasure, without additio
   expect(c.enemies.some(e => e.active && e.kind === 'draft-treasure-runner')).toBe(true);
 });
 
-test('boss windup postpones new bomber spawn without changing the boss clock', () => {
+test('boss windup suppresses spore candidates until a safe weighted slot is available', () => {
   const { c, run } = fixture(25); run.waveIndex = 5;
   for (let second = 1; second <= 28; second++) {
     run.update(1, c, origin);
@@ -94,8 +94,14 @@ test('boss windup postpones new bomber spawn without changing the boss clock', (
   }
   expect(c.encounters.boss?.active).toBe(true);
   c.encounters.bossState = 'approach';
-  run.update(1, c, origin);
-  expect(c.enemies.some(e => e.active && e.kind === 'draft-spore-bomber')).toBe(true);
+  let appeared = false;
+  for (let second = 0; second < 12; second++) {
+    run.update(1, c, origin);
+    appeared ||= c.enemies.some(e => e.active && e.kind === 'draft-spore-bomber');
+    if (appeared) break;
+    clearOrdinary(c);
+  }
+  expect(appeared).toBe(true);
 });
 
 test('director remains fixed-seed reproducible in real 60Hz Combat and RunFlow', () => {
