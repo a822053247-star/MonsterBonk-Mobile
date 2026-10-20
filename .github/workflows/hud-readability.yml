@@ -1,0 +1,41 @@
+name: HUD readability and health warning
+on:
+  pull_request:
+    paths:
+      - src/ui.ts
+      - src/game.ts
+      - src/style.css
+      - tests/hud-readability-ui.spec.ts
+      - tests/hud-art.spec.ts
+      - .github/workflows/hud-readability.yml
+  push:
+    branches: [main]
+    paths:
+      - src/ui.ts
+      - src/game.ts
+      - src/style.css
+      - tests/hud-readability-ui.spec.ts
+jobs:
+  hud-browser-regressions:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - run: npx playwright test tests/hud-readability-ui.spec.ts tests/hud-art.spec.ts tests/run-flow-ui.spec.ts tests/player-hurt-ui.spec.ts --project=chromium
+      - name: Upload real HUD screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hud-readability-screenshots
+          path: |
+            artifacts/hud-readable-normal-desktop.png
+            artifacts/hud-readable-danger-desktop.png
+          if-no-files-found: ignore
+          retention-days: 30

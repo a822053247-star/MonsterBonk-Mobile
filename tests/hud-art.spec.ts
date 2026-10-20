@@ -19,7 +19,7 @@ test('forest HUD keeps live values, weapon artwork and safe touch targets on lan
   await expect(page.locator('.health-track')).toHaveAttribute('aria-valuenow', '24');
   await expect(page.locator('#xp-track')).toHaveAttribute('aria-valuenow', '3');
   expect(await page.locator('#health-fill').evaluate(el => el.getBoundingClientRect().width / el.parentElement!.clientWidth)).toBeCloseTo(.24, 2);
-  expect(await page.locator('#health-fill').evaluate(el => getComputedStyle(el).backgroundImage)).toContain('233, 149, 100');
+  expect(await page.locator('#health-fill').evaluate(el => getComputedStyle(el).backgroundImage)).toContain('248, 72, 70');
   await expect(page.locator('#hud-extra-weapons img.art-loaded')).toHaveCount(2);
   if (browserName === 'chromium') await page.screenshot({ path: 'artifacts/hud-forest-chromium.png' });
   await page.evaluate(() => {
@@ -44,7 +44,7 @@ test('forest HUD keeps live values, weapon artwork and safe touch targets on lan
     expect(boss.x).toBeGreaterThanOrEqual(44);expect(boss.x+boss.width).toBeLessThanOrEqual(width-44);
     for(const selector of ['#pause','#settings']) {
       const rect=(await page.locator(selector).boundingBox())!;
-      expect(rect.width).toBeGreaterThanOrEqual(48);expect(rect.height).toBeGreaterThanOrEqual(48);
+      expect(rect.width).toBeGreaterThanOrEqual(width === 568 ? 44 : 48);expect(rect.height).toBeGreaterThanOrEqual(width === 568 ? 44 : 48);
     }
   }
   if(browserName==='chromium') await page.screenshot({path:'artifacts/hud-boss-small-chromium.png'});

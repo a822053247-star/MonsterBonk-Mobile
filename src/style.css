@@ -856,3 +856,328 @@ h1>em{font-size:12px;line-height:1;letter-spacing:4px;display:inline-block;backg
 /* Three prototype entries stay touchable on narrow landscape phones. */
 .prototype-entries{flex-wrap:wrap;column-gap:14px;row-gap:0}
 .prototype-entries #start-infinite{color:#f1d8a4;font-weight:700}
+
+
+
+/* Reference-led HUD V2: portrait medallion, horizontal ornamented HP, XP below. */
+.hud{
+  --hud-card-width:clamp(440px,30.5vw,625px);
+  --hud-card-height:clamp(145px,9.3vw,186px);
+  padding:calc(14px + var(--safe-top)) calc(14px + var(--safe-right)) calc(14px + var(--safe-bottom)) calc(14px + var(--safe-left));
+}
+.hud .hud-top{position:relative;z-index:3;gap:10px;align-items:flex-start}
+.hud .health-block{width:var(--hud-card-width);min-width:0;flex-shrink:0;gap:0}
+.hud .health-panel{
+  position:relative;isolation:isolate;width:100%;height:var(--hud-card-height);
+  border:0;border-radius:10px;padding:0;background:#f3e6c9;box-shadow:none;
+}
+.hud .health-panel:has(>.health-frame-art.art-loaded){border:0;background:transparent;box-shadow:none}
+.hud .health-frame-art{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;pointer-events:none;z-index:-1;image-rendering:pixelated}
+.hud .health-panel .portrait{
+  position:absolute;left:3%;top:11%;width:29%;height:78%;
+  border:0;border-radius:50%;background:#f0ddb5;
+  box-shadow:inset 0 0 0 3px #744b28,0 0 0 2px #e2b15b99;
+  object-fit:contain;pointer-events:none;
+}
+.hud #creature-portrait{padding:2px}
+.hud .health-copy{position:absolute;inset:0;min-width:0}
+.hud .health-title{
+  position:absolute;left:6.8%;right:auto;top:78%;display:block;margin:0;
+  z-index:6;line-height:1;pointer-events:none;
+}
+.hud .health-title>span{
+  display:block;width:max-content;max-width:120px;padding:2px 7px;
+  font-size:clamp(17px,1.35vw,27px);font-weight:950;letter-spacing:-.4px;
+  color:#fff7d4;background:#1b2a1dc9;border-radius:7px;
+  text-shadow:-2px -2px #15201a,2px -2px #15201a,-2px 2px #15201a,2px 2px #15201a,0 3px 4px #102119;
+}
+.hud .health-track{
+  position:absolute;left:34%;right:4.5%;top:43%;height:32%;z-index:2;
+  border:3px solid #e1aa5a;border-radius:16px;
+  background:linear-gradient(180deg,#132a2a,#243638 55%,#0d2024);
+  box-shadow:0 0 0 2px #49301e,0 3px 0 #2b1b13,inset 0 2px 4px #08191e;
+  overflow:hidden;
+}
+.hud #health-fill{
+  height:100%;border:0;
+  background:linear-gradient(180deg,#a6f59c,#40aa62 42%,#257e46);
+  box-shadow:inset 0 2px #d5ffca91,inset 0 -2px #16432b66;
+}
+.hud .health-values{
+  position:absolute;left:34%;right:4.5%;top:43%;height:32%;z-index:3;
+  display:flex;align-items:center;justify-content:center;white-space:nowrap;
+  pointer-events:none;margin:0;
+}
+.hud #health-value{
+  display:block;font-size:clamp(22px,1.8vw,37px);line-height:1;font-weight:950;
+  letter-spacing:.3px;color:#fff9ed;font-variant-numeric:tabular-nums;
+  text-shadow:-2px -2px #20211d,2px -2px #20211d,-2px 2px #20211d,2px 2px #20211d,0 2px 4px #081714;
+}
+.hud .combat-stats{display:none}
+.hud .xp-row{
+  position:relative;z-index:6;margin-top:-19px;margin-left:34%;width:62%;
+  padding:0 7px 0 0;gap:11px;height:32px;
+  display:flex;align-items:center;
+  background:#122725bb;border:1px solid #658c6b66;border-radius:18px;
+  font-weight:850;color:#f6fff0;font-size:15px;letter-spacing:0;
+  text-shadow:-1px -1px #14251e,1px 1px #14251e,0 1px 3px #10281a;
+}
+.hud .xp-label{display:none}
+.hud .xp-track{
+  height:23px;min-width:40px;flex:1;border:2px solid #214a48;
+  background:#192a2d;border-radius:13px;overflow:hidden;
+}
+.hud #xp-fill{height:100%;background:linear-gradient(180deg,#85f3ff,#31b9e8 60%,#1980ad);box-shadow:inset 0 1px #d7ffff75}
+.hud .xp-row>span:last-child{min-width:73px;text-align:center;white-space:nowrap;font-size:14px}
+
+/* The wave/timer is a single dark rounded plaque, centered independently of other controls. */
+.hud .run-status{
+  position:absolute;left:50%;top:0;transform:translateX(-50%);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  min-width:clamp(220px,16vw,335px);min-height:clamp(94px,6.35vw,132px);
+  padding:11px 23px 13px;border:1px solid #5e784e29;border-radius:55px;
+  background:linear-gradient(180deg,#133e2ad9,#0a2c21dd);
+  box-shadow:0 4px 15px #0b301c40,inset 0 1px 0 #a5d09a20;
+  gap:2px;text-align:center;white-space:nowrap;
+  text-shadow:-2px -2px #09261e,2px 2px #09261e,0 2px 5px #09241f;
+  pointer-events:none;
+}
+.hud .run-status::before,.hud .run-status::after{
+  content:'';position:absolute;top:49%;width:12px;height:12px;
+  background:#f3c565;transform:translateY(-50%) rotate(45deg);
+  border:2px solid #fff0ba;box-shadow:0 0 0 2px #3d4027;
+}
+.hud .run-status::before{left:-27px}.hud .run-status::after{right:-27px}
+.hud #run-wave{
+  order:0;display:block;font-size:clamp(25px,2.05vw,43px);
+  font-weight:950;line-height:1.18;letter-spacing:.5px;color:#fff8e9;
+}
+.hud #timer{
+  order:1;font-size:clamp(37px,2.9vw,60px);font-weight:950;line-height:1.12;
+  margin:0;letter-spacing:1px;color:#fffdf1;
+}
+.hud #run-gold{display:none!important}
+.hud.encounter-active .run-status{visibility:visible}
+
+/* Big, square, gold-rimmed top-right actions, matching the reference. */
+.hud .hud-actions{gap:clamp(7px,.55vw,13px);margin-left:auto;flex-shrink:0}
+.hud .hud-actions .icon-button{
+  width:clamp(65px,5.25vw,108px);height:clamp(65px,5.25vw,108px);
+  min-width:clamp(65px,5.25vw,108px);min-height:clamp(65px,5.25vw,108px);
+  border:2px solid #c5a168;border-radius:12px;
+  background:linear-gradient(145deg,#23483dde,#102c29ef);color:#fff8e6;
+  box-shadow:inset 0 0 0 2px #d8bb7430,0 2px 8px #071f1c66;
+  font-size:clamp(21px,1.4vw,30px);font-weight:950;
+}
+.hud .hud-actions .speed-button.accelerated{background:linear-gradient(145deg,#6f512c,#4e371f);color:#fff6df}
+.hud .hud-actions .icon{width:clamp(30px,2vw,44px);height:clamp(30px,2vw,44px)}
+
+/* Non-verbal critical-health feedback: blood-red meter and gentle embers around the medallion. */
+.hud .health-track.low-health{border-color:#e8a065;box-shadow:0 0 0 2px #613626,0 0 14px #f23537b6,inset 0 2px 4px #141919}
+.hud .health-track.low-health #health-fill{
+  background:linear-gradient(180deg,#ff9c6b,#f84846 37%,#bd142d);
+  box-shadow:inset 0 2px #ffe6a47a,inset 0 -2px #67071b65;
+}
+.hud.critical-health #health-value{color:#ff8b7b;text-shadow:-2px -2px #251313,2px -2px #251313,-2px 2px #251313,2px 2px #251313,0 0 8px #ff5959a0}
+.hud.critical-health .health-panel{filter:drop-shadow(0 0 12px #ff442c90)}
+.hud .health-panel::after{
+  content:'';position:absolute;left:-13px;top:-15px;width:38%;height:117%;
+  z-index:7;pointer-events:none;opacity:0;
+  background:
+    radial-gradient(circle at 10% 18%,#fff2ab 0 2px,#fa4035 3px 6px,transparent 12px),
+    radial-gradient(circle at 95% 16%,#ffe18a 0 3px,#f23428 4px 8px,transparent 16px),
+    radial-gradient(circle at 9% 81%,#ff8f4b 0 4px,#da1b26 5px 9px,transparent 16px),
+    radial-gradient(circle at 76% 94%,#ffe28d 0 2px,#ef3439 3px 7px,transparent 14px),
+    radial-gradient(circle at 87% 67%,#ffa750 0 2px,#e3202d 4px,transparent 12px);
+  filter:drop-shadow(0 0 7px #ff3b27);
+}
+.hud.critical-health .health-panel::after{opacity:.9;animation:health-embers 2.2s ease-in-out infinite}
+.low-health-effect{
+  position:absolute;inset:0;z-index:1;pointer-events:none;
+  opacity:0;visibility:hidden;
+  background:radial-gradient(ellipse at center,transparent 43%,#ce17301d 75%,#a8002b4b 100%);
+  box-shadow:inset 0 0 80px 4px #ae122c40;
+}
+.hud.critical-health .low-health-effect{opacity:.7;visibility:visible;animation:hud-danger-pulse 2.4s ease-in-out infinite}
+@keyframes hud-danger-pulse{0%,100%{opacity:.3}50%{opacity:.76}}
+@keyframes health-embers{0%,100%{opacity:.45;transform:scale(.98)}50%{opacity:1;transform:scale(1.03)}}
+@media(prefers-reduced-motion:reduce){
+  .hud.critical-health .low-health-effect,.hud.critical-health .health-panel::after{animation:none;opacity:.6}
+}
+
+/* Boss info does not hide the center wave/timer. */
+.hud .encounter-status{top:calc(150px + var(--safe-top))}
+
+/* Landscape tablet and phone: proportionally downscale and avoid blocking play. */
+@media(max-width:1250px) and (orientation:landscape){
+  .hud{--hud-card-width:clamp(280px,31vw,390px);--hud-card-height:clamp(100px,10vw,130px)}
+  .hud .health-title>span{font-size:17px}
+  .hud .health-track{border-width:2px;border-radius:10px}
+  .hud #health-value{font-size:23px}
+  .hud .xp-row{margin-top:-13px;height:23px;font-size:11px;gap:5px}
+  .hud .xp-track{height:17px;border-width:1px}
+  .hud .xp-row>span:last-child{min-width:50px;font-size:10px}
+  .hud .run-status{min-width:176px;min-height:80px;padding:7px 15px}
+  .hud #run-wave{font-size:21px}
+  .hud #timer{font-size:32px}
+  .hud .hud-actions .icon-button{width:56px;height:56px;min-width:56px;min-height:56px;font-size:17px;border-radius:8px}
+  .hud .hud-actions .icon{width:23px;height:23px}
+  .hud .encounter-status{top:calc(124px + var(--safe-top))}
+}
+@media(max-width:900px) and (orientation:landscape){
+  .hud{--hud-card-width:250px;--hud-card-height:98px}
+  .hud .health-title{top:77%}.hud .health-title>span{font-size:14px}
+  .hud #health-value{font-size:19px}
+  .hud .health-track{top:42%;height:34%;border-width:2px}
+  .hud .health-values{top:42%;height:34%}
+  .hud .xp-row{margin-top:-12px;height:19px;gap:3px;padding-right:3px}
+  .hud .xp-track{height:14px}
+  .hud .xp-row>span:last-child{font-size:9px;min-width:42px}
+  .hud .run-status{min-width:141px;min-height:68px;gap:1px;padding:6px 10px}
+  .hud .run-status::before,.hud .run-status::after{width:7px;height:7px}
+  .hud .run-status::before{left:-13px}.hud .run-status::after{right:-13px}
+  .hud #run-wave{font-size:16px}
+  .hud #timer{font-size:25px}
+  .hud .hud-actions{gap:5px}
+  .hud .hud-actions .icon-button{width:48px;height:48px;min-width:48px;min-height:48px;font-size:14px}
+  .hud .hud-actions .icon{width:20px;height:20px}
+  .hud .encounter-status{top:calc(130px + var(--safe-top))}
+}
+@media(max-width:700px) and (orientation:landscape){
+  .hud{--hud-card-width:183px;--hud-card-height:79px}
+  .hud .health-panel .portrait{left:3%;width:29%;height:78%}
+  .hud .health-title{left:5%;top:80%}
+  .hud .health-title>span{font-size:10px;padding:2px 3px}
+  .hud .health-track{left:33%;right:4%;top:43%;height:30%}
+  .hud .health-values{left:33%;right:4%;top:43%;height:30%}
+  .hud #health-value{font-size:14px}
+  .hud .xp-row{margin-left:33%;width:64%;margin-top:-8px;height:15px}
+  .hud .xp-track{height:11px}
+  .hud .xp-row>span:last-child{font-size:8px;min-width:35px}
+  .hud .run-status{top:118px;left:50%;min-height:57px;min-width:118px;padding:5px 9px}
+  .hud #run-wave{font-size:13px}
+  .hud #timer{font-size:22px}
+  .hud .hud-actions{gap:4px}
+  .hud .hud-actions .icon-button{width:44px;height:44px;min-width:44px;min-height:44px;font-size:12px}
+  .hud .hud-actions .icon{width:19px;height:19px}
+  .hud .encounter-status{left:auto;right:calc(12px + var(--safe-right));top:calc(186px + var(--safe-top));transform:none}
+}
+
+
+/* Gold belongs to the upper-left player cluster, not the centered wave plaque.
+   Use the existing coin artwork and the same dark-green / gold trim. */
+.hud .hud-gold{
+  display:inline-flex;align-items:center;align-self:flex-start;justify-content:center;
+  gap:9px;min-height:38px;max-width:calc(100% - 12px);
+  margin:7px 0 0 13px;padding:5px 16px 5px 9px;
+  color:#ffe9a6;font-size:19px;line-height:1.1;font-weight:950;
+  border:2px solid #c4a36c;border-radius:22px;
+  background:linear-gradient(145deg,#284739e8,#132d29ef);
+  box-shadow:inset 0 0 0 1px #f8dea121,0 3px 8px #081c1e70;
+  text-shadow:0 2px 3px #0a201a;pointer-events:none;
+  white-space:nowrap;font-variant-numeric:tabular-nums;
+}
+.hud .hud-gold img{
+  display:block;width:25px;height:25px;object-fit:contain;image-rendering:pixelated;flex-shrink:0;
+}
+.hud #hud-coins{display:block;min-width:16px;text-align:right}
+@media(max-width:1250px) and (orientation:landscape){
+  .hud .hud-gold{min-height:30px;margin:5px 0 0 7px;padding:3px 12px 3px 6px;gap:6px;font-size:14px;border-width:1px}
+  .hud .hud-gold img{width:20px;height:20px}
+}
+@media(max-width:900px) and (orientation:landscape){
+  .hud .hud-gold{min-height:25px;margin:4px 0 0 5px;padding:2px 9px 2px 5px;font-size:12px;gap:4px}
+  .hud .hud-gold img{width:17px;height:17px}
+}
+@media(max-width:700px) and (orientation:landscape){
+  .hud .hud-gold{min-height:23px;margin:3px 0 0 2px;padding:2px 7px 2px 4px;font-size:11px;gap:3px}
+  .hud .hud-gold img{width:15px;height:15px}
+}
+
+
+/* The wallet increases the left stack's height: keep the boss banner to its
+   right on tablet landscape, instead of grazing the new gold badge. */
+@media(min-width:701px) and (max-width:1100px) and (orientation:landscape){
+  .hud .encounter-status{
+    left:calc(50% + 84px + (var(--safe-left) - var(--safe-right)) / 2);
+  }
+}
+
+
+/* Reference HUD refinement: gold beneath the portrait and left of XP + Lv. */
+.hud .health-panel .portrait{
+  left:5%;top:16%;width:24%;height:69%;
+}
+.hud #creature-portrait{padding:2px}
+.hud .hud-bottom-row{
+  position:relative;z-index:8;display:grid;grid-template-columns:32% minmax(0,1fr);
+  align-items:center;column-gap:1%;
+  width:98%;margin:-18px 0 0 1%;height:39px;
+  min-width:0;pointer-events:none;
+}
+.hud .hud-bottom-row .xp-row{
+  display:flex;align-items:center;min-width:0;width:100%;
+  height:31px;margin:0;padding:0 6px 0 2px;gap:7px;
+  background:#122725d8;border:1px solid #658c6b7d;border-radius:18px;
+}
+.hud .hud-bottom-row .xp-track{
+  flex:1 1 0;min-width:15px;height:23px;overflow:hidden;
+}
+.hud .hud-bottom-row #level-value{
+  position:static;display:block;flex:none;padding:0 2px 0 0;
+  color:#fff7d4;background:transparent;border:0;
+  font-size:clamp(14px,.92vw,19px);font-weight:950;letter-spacing:-.3px;
+  white-space:nowrap;line-height:1;text-shadow:0 2px 3px #081b1b;
+}
+.hud .hud-bottom-row .hud-gold{
+  display:inline-flex;align-items:center;justify-content:flex-end;align-self:center;
+  height:37px;min-height:37px;width:100%;max-width:none;
+  gap:6px;margin:0;padding:3px 8px 3px 6px;
+  font-size:17px;border-width:1px;border-radius:19px;
+}
+.hud .hud-bottom-row .hud-gold img{width:27px;height:27px}
+.hud .hud-bottom-row #hud-coins{font-size:inherit}
+
+/* Slightly reduce the wave plaque and clock; retain the visual hierarchy. */
+.hud .run-status{
+  min-width:clamp(190px,13.5vw,280px);
+  min-height:clamp(78px,5.3vw,110px);
+  padding:8px 18px 10px;
+}
+.hud #run-wave{font-size:clamp(21px,1.75vw,35px)}
+.hud #timer{font-size:clamp(31px,2.4vw,49px)}
+@media(max-width:1250px) and (orientation:landscape){
+  .hud .health-panel .portrait{left:5%;top:17%;width:24%;height:68%}
+  .hud .hud-bottom-row{width:98%;margin:-12px 0 0 1%;height:28px;column-gap:1%}
+  .hud .hud-bottom-row .xp-row{height:23px;padding:0 3px 0 1px;gap:3px}
+  .hud .hud-bottom-row .xp-track{height:17px}
+  .hud .hud-bottom-row #level-value{font-size:12px;padding:0}
+  .hud .hud-bottom-row .hud-gold{height:28px;min-height:28px;padding:1px 6px 1px 4px;gap:4px;font-size:12px}
+  .hud .hud-bottom-row .hud-gold img{width:21px;height:21px}
+  .hud .run-status{min-width:163px;min-height:71px;padding:6px 12px}
+  .hud #run-wave{font-size:19px}
+  .hud #timer{font-size:28px}
+}
+@media(max-width:900px) and (orientation:landscape){
+  .hud .hud-bottom-row{width:98%;margin:-11px 0 0 1%;height:24px;column-gap:1%}
+  .hud .hud-bottom-row .xp-row{height:20px;gap:2px;padding-right:2px}
+  .hud .hud-bottom-row .xp-track{height:14px}
+  .hud .hud-bottom-row #level-value{font-size:10px}
+  .hud .hud-bottom-row .hud-gold{height:24px;min-height:24px;padding:1px 4px 1px 3px;font-size:10px;gap:3px}
+  .hud .hud-bottom-row .hud-gold img{width:17px;height:17px}
+  .hud .run-status{min-width:131px;min-height:61px;padding:5px 9px}
+  .hud #run-wave{font-size:15px}
+  .hud #timer{font-size:23px}
+}
+@media(max-width:700px) and (orientation:landscape){
+  .hud .health-panel .portrait{left:5%;top:18%;width:24%;height:66%}
+  .hud .hud-bottom-row{width:98%;margin:-8px 0 0 1%;height:20px;column-gap:1%}
+  .hud .hud-bottom-row .xp-row{height:17px;padding:0 1px;gap:2px}
+  .hud .hud-bottom-row .xp-track{height:11px;min-width:10px}
+  .hud .hud-bottom-row #level-value{font-size:9px}
+  .hud .hud-bottom-row .hud-gold{height:20px;min-height:20px;padding:0 3px 0 2px;font-size:9px;gap:2px}
+  .hud .hud-bottom-row .hud-gold img{width:15px;height:15px}
+  .hud .run-status{min-width:110px;min-height:52px;padding:4px 7px}
+  .hud #run-wave{font-size:12px}
+  .hud #timer{font-size:20px}
+}
