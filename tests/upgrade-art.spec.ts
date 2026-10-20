@@ -31,6 +31,32 @@ async function show(page: import('@playwright/test').Page, ids: string[], base =
   await page.evaluate(({ ids, base, weapons }) => (window as any).showCards(ids, base, weapons), { ids, base, weapons });
 }
 
+test('three supplied trigger-relic icons and their limits remain readable on mobile', async ({ page }, info) => {
+  await show(page, ['draft-martyr-core', 'draft-kindling-flask', 'draft-thorn-testament']);
+  for (const id of ['draft-martyr-core', 'draft-kindling-flask', 'draft-thorn-testament']) {
+    const card = page.locator(`[data-skill="${id}"]`);
+    await expect(card).toHaveAttribute('data-category', 'relic');
+    await expect(card.locator('.skill-illustration')).toHaveClass(/art-loaded/);
+    await expect(card.locator('.skill-illustration')).toHaveAttribute('src',new RegExp(`${id}.png$`));
+    await expect(card.locator('.skill-tradeoff')).toBeVisible();
+  }
+  await page.emulateMedia({reducedMotion:'reduce'});
+  await page.screenshot({path:`artifacts/trigger-relics-cards-${info.project.name}.png`});
+});
+
+test('remaining three supplied relic icons and their limits remain readable on mobile', async ({ page }, info) => {
+  await show(page, ['draft-bubble-spore', 'draft-echo-bone-dice', 'draft-slaughter-hourglass']);
+  for (const id of ['draft-bubble-spore', 'draft-echo-bone-dice', 'draft-slaughter-hourglass']) {
+    const card = page.locator(`[data-skill="${id}"]`);
+    await expect(card).toHaveAttribute('data-category', 'relic');
+    await expect(card.locator('.skill-illustration')).toHaveClass(/art-loaded/);
+    await expect(card.locator('.skill-illustration')).toHaveAttribute('src',new RegExp(`${id}.png$`));
+    await expect(card.locator('.skill-tradeoff')).toBeVisible();
+  }
+  await page.emulateMedia({reducedMotion:'reduce'});
+  await page.screenshot({path:`artifacts/remaining-relics-cards-${info.project.name}.png`});
+});
+
 test('card motion follows rarity, preserves pointer feedback and respects reduced motion', async ({ page }, info) => {
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await show(page, ['damage', 'overload-core', 'berserk-route']);
@@ -64,9 +90,9 @@ test('card motion follows rarity, preserves pointer feedback and respects reduce
   }
 });
 
-test('all 23 real IDs are covered, element variants follow equipped weapons, categories stay data-driven', async ({ page }) => {
+test('all 29 real IDs are covered, element variants follow equipped weapons, categories stay data-driven', async ({ page }) => {
   const catalog = await page.evaluate(() => (window as any).artCatalog);
-  expect(catalog.ids).toHaveLength(23);
+  expect(catalog.ids).toHaveLength(29);
   expect([...catalog.artIds].sort()).toEqual([...catalog.ids].sort());
   for (let index = 0; index < catalog.ids.length; index += 3) {
     await show(page, catalog.ids.slice(index, index + 3));

@@ -20,6 +20,58 @@ async function open(page: import('@playwright/test').Page) {
   await expect(page.locator('#shop-screen')).toBeVisible();
 }
 
+test('new relics show supplied icons and can be bought from the actual shop', async ({ page }, info) => {
+  await open(page);
+  await page.evaluate(() => {
+    const g = (window as any).game, c = g.combat;
+    c.grantUpgrade('leaf-weapon');
+    g.run.shop.offers = ['draft-martyr-core','draft-kindling-flask','draft-thorn-testament'].map(id => {
+      const skill = c.progression.skills.find((s: any) => s.id === id);
+      return { kind:'reward', skill:id, title:skill.title, benefit:skill.benefit, tradeoff:skill.tradeoff, price:70, sold:false };
+    });
+    (window as any).redrawShop();
+  });
+  for(const id of ['draft-martyr-core','draft-kindling-flask','draft-thorn-testament']) {
+    await expect(page.locator(`[data-skill="${id}"] .shop-illustration img`)).toHaveClass(/art-loaded/);
+  }
+  for(const size of [{width:844,height:390},{width:568,height:320},{width:1280,height:720}]) {
+    await page.setViewportSize(size);
+    for(const body of await page.locator('.shop-item-body').all()) {
+      expect(await body.evaluate(el => el.scrollHeight <= el.clientHeight+1 && el.scrollWidth <= el.clientWidth+1)).toBe(true);
+    }
+    await page.screenshot({path:`artifacts/trigger-relics-shop-${size.width}-${info.project.name}.png`});
+  }
+  await page.locator('[data-buy="0"]').click();
+  await expect(page.locator('#shop-coins')).toHaveText('130 金币');
+  expect(await page.evaluate(() => (window as any).game.combat.runBuild.relics)).toContain('draft-martyr-core');
+});
+
+test('remaining relics show supplied icons and can be bought from the actual shop', async ({ page }, info) => {
+  await open(page);
+  await page.evaluate(() => {
+    const g = (window as any).game, c = g.combat;
+    c.grantUpgrade('bubble-weapon');
+    g.run.shop.offers = ['draft-bubble-spore','draft-echo-bone-dice','draft-slaughter-hourglass'].map(id => {
+      const skill = c.progression.skills.find((s: any) => s.id === id);
+      return { kind:'reward', skill:id, title:skill.title, benefit:skill.benefit, tradeoff:skill.tradeoff, price:70, sold:false };
+    });
+    (window as any).redrawShop();
+  });
+  for(const id of ['draft-bubble-spore','draft-echo-bone-dice','draft-slaughter-hourglass']) {
+    await expect(page.locator(`[data-skill="${id}"] .shop-illustration img`)).toHaveClass(/art-loaded/);
+  }
+  for(const size of [{width:844,height:390},{width:568,height:320},{width:1280,height:720}]) {
+    await page.setViewportSize(size);
+    for(const body of await page.locator('.shop-item-body').all()) {
+      expect(await body.evaluate(el => el.scrollHeight <= el.clientHeight+1 && el.scrollWidth <= el.clientWidth+1)).toBe(true);
+    }
+    await page.screenshot({path:`artifacts/remaining-relics-shop-${size.width}-${info.project.name}.png`});
+  }
+  await page.locator('[data-buy="0"]').click();
+  await expect(page.locator('#shop-coins')).toHaveText('130 金币');
+  expect(await page.evaluate(() => (window as any).game.combat.runBuild.relics)).toContain('draft-bubble-spore');
+});
+
 test('cards reflect real offers, show weapons, relics and healing art, and fit safe-area phones', async ({ page }, info) => {
   await open(page);
   const offers = await page.evaluate(() => (window as any).game.run.shop.items);

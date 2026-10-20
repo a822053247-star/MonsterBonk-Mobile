@@ -1,0 +1,43 @@
+{
+  "source": "public/assets/ui/raw/六件奇幻魔法道具图标.png",
+  "sha256": "aa5dcb775da3e1647dca6f9ce6a8c1f6133b0ee27d984255ded313efebc9bfa8",
+  "preservedAlpha": true,
+  "icons": {
+    "draft-martyr-core": [
+      0,
+      175,
+      320,
+      550
+    ],
+    "draft-kindling-flask": [
+      320,
+      175,
+      660,
+      550
+    ],
+    "draft-thorn-testament": [
+      660,
+      175,
+      975,
+      550
+    ],
+    "draft-bubble-spore": [
+      995,
+      175,
+      1300,
+      560
+    ],
+    "draft-echo-bone-dice": [
+      1300,
+      175,
+      1648,
+      560
+    ],
+    "draft-slaughter-hourglass": [
+      1648,
+      175,
+      1950,
+      560
+    ]
+  }
+}

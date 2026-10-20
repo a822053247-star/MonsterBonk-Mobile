@@ -129,10 +129,13 @@ export class Progression {
       if (weapon && !this.build!.has(weapon) && this.build!.attacks.length >= 3) return false;
       if (skill.category === 'evolution') return this.build!.has('spark') && this.ranks['split-on-hit'] > 0 && !this.build!.evolution;
       if (skill.id === 'overload-core') return this.build!.has('flame-sweep') || (this.build!.has('spark') && this.ranks['split-on-hit'] > 0) || (this.build!.has('bubble') && this.ranks.area > 0);
-      if (skill.id === 'hunter-eye' || skill.id === 'shattered-core') return this.ranks['split-on-hit'] > 0 && (this.build!.has('spark') || this.build!.has('leaf'));
+      if (skill.id === 'hunter-eye' || skill.id === 'shattered-core') return (this.ranks['split-on-hit'] > 0 && (this.build!.has('spark') || this.build!.has('leaf'))) || this.build!.relics.includes('draft-thorn-testament');
+      if (skill.id === 'draft-martyr-core' || skill.id === 'draft-kindling-flask') return this.build!.has('spark') || this.build!.has('flame-sweep');
+      if (skill.id === 'draft-thorn-testament') return this.build!.has('leaf');
+      if (skill.id === 'draft-bubble-spore') return this.build!.has('bubble');
       if (skill.id === 'tidal-pearl') return this.build!.has('bubble');
       if (skill.id === 'specialist-badge') return this.build!.attacks.length === 1;
-      if (skill.id === 'echo-rune') return this.ranks.chain > 0 && (this.build!.has('bubble') || this.build!.has('leaf'));
+      if (skill.id === 'echo-rune') return (this.ranks.chain > 0 && (this.build!.has('bubble') || this.build!.has('leaf'))) || this.build!.relics.includes('draft-bubble-spore');
       if (skill.id === 'area') return this.build!.has('bubble');
       if (skill.id === 'chain') return this.build!.has('bubble') || this.build!.has('leaf');
       if (skill.id === 'split-on-hit') return this.build!.has('spark') || this.build!.has('leaf');

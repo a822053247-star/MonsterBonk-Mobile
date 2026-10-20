@@ -40,16 +40,16 @@ test('weapon upgrades use real cards, cap at five and do not duplicate slots', (
   expect(f.c.runBuild.attacks.map(a => a.level)).toEqual([5]);
   expect(f.c.progression.ranks['spark-weapon']).toBe(5);
   expect(f.c.progression.skills.filter(s => f.c.progression.ranks[s.id] < s.maxRank).some(s => s.id === 'spark-weapon')).toBe(false);
-  const { shot } = f.fire(); expect(shot.damage).toBeCloseTo(18 * 1.8);
+  const { shot } = f.fire(); expect(shot.damage).toBeCloseTo(18 * 1.64);
   f.learn('bubble-weapon'); f.learn('bubble-weapon');
   expect(f.c.runBuild.attacks.map(a => a.level)).toEqual([5, 2]);
 });
 
 test('single-weapon specialization loses its bonus when a side weapon is equipped', () => {
   const f = fixture(); f.learn('specialist-badge');
-  const solo = f.fire(); expect(solo.shot.damage).toBeCloseTo(28.8);
+  const solo = f.fire(); expect(solo.shot.damage).toBeCloseTo(26.1);
   f.learn('bubble-weapon');
-  expect(solo.shot.damage).toBeCloseTo(28.8); // In-flight volleys retain their snapshot.
+  expect(solo.shot.damage).toBeCloseTo(26.1); // In-flight volleys retain their snapshot.
   expect(f.fire().shot.damage).toBe(18);
   expect(f.c.runBuild.relics).toEqual(['specialist-badge']);
 });

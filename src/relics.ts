@@ -7,8 +7,33 @@ export const RELICS = {
   'tidal-pearl': { title: '潮汐遗珠', benefit: '水泡减速时长 +60%', tradeoff: '所有武器直接命中伤害 -15%', icon: 'wave', color: '#8fe8ff' },
   'specialist-badge': { title: '专精徽记', benefit: '仅装备一种武器时伤害 +45%', tradeoff: '装备副武器后加成失效', icon: 'spark', color: '#f3de9a' },
   'echo-rune': { title: '回声符石', benefit: '连锁距离 +40%', tradeoff: '每次额外跳跃伤害再乘 70%', icon: 'orbit', color: '#a5edbe' },
+  'draft-martyr-core': { title: '殉爆晶核', benefit: '火系击杀爆炸 · 半径 1.35 · 50% 伤害', tradeoff: '最多 2 代；同源去重，燃烧击杀不触发', icon: 'spark', color: '#ff9849' },
+  'draft-kindling-flask': { title: '引火油壶', benefit: '燃烧 2 秒，每 0.5 秒造成命中伤害的 10%', tradeoff: '重复火系命中叠层，上限 3；下次爆炸消耗，每层范围 +15%', icon: 'spark', color: '#ffc16b' },
+  'draft-thorn-testament': { title: '荆棘遗嘱', benefit: '草系击杀发射 3 枚 35% 伤害荆棘', tradeoff: '荆棘不再触发遗嘱；共享派生弹预算', icon: 'leaf', color: '#a5ec69' },
+  'draft-bubble-spore': { title: '泡泡孢子', benefit: '水系击杀生成 35% 伤害小泡，额外弹射 2 次', tradeoff: '触发间隔 0.35 秒；小泡不再派生孢子，共享弹池', icon: 'wave', color: '#70dcff' },
+  'draft-echo-bone-dice': { title: '回声骨骰', benefit: '每第 5 次施放，复制前次攻击的 50% 伤害', tradeoff: '复制一枚弹或一次横扫；不计次数，受派生预算限制', icon: 'orbit', color: '#a7edf0' },
+  'draft-slaughter-hourglass': { title: '屠戮沙漏', benefit: '4 秒内击杀 8 敌，攻速 +30% 持续 3 秒', tradeoff: '触发后冷却 8 秒，期间不累积；增益不叠加', icon: 'dash', color: '#ffb45f' },
 } as const;
 export type RelicId = keyof typeof RELICS;
+export const TRIGGER_RELIC_RULES = {
+  martyr: { radius: 1.35, damage: .5, maxGeneration: 2, eventsPerTick: 32 },
+  kindling: { duration: 2, interval: .5, damage: .1, maxStacks: 3, radiusPerStack: .15 },
+  testament: { count: 3, damage: .35, range: 6, lifetime: .45 },
+  bubble: { damage: .35, range: 6, lifetime: .65, cooldown: .35, hops: 2 },
+  echo: { every: 5, damage: .5, delay: .12, expiry: .75 },
+  hourglass: { window: 4, kills: 8, duration: 3, cooldown: 8, haste: .3 },
+} as const;
+
+/** Unique attack lineage, separate from the caster ID and fusion-child generation. */
+export interface RelicDamageSource {
+  rootId: number;
+  attackId: BaseAttackId;
+  kind: 'hit' | 'explosion' | 'burn' | 'testament' | 'bubble-spore';
+  copied?: boolean;
+  generation: number;
+  rules: AttackRules;
+  martyrHits: Set<number>;
+}
 export const EVOLUTIONS = {
   'berserk-route': { title: '狂暴火种', benefit: '火种爆炸半径 +35%', tradeoff: '火花弹攻击间隔 +25%，放弃追猎路线', icon: 'spark', color: '#ff9849' },
   'pursuit-route': { title: '追猎火种', benefit: '派生火种追踪敌人', tradeoff: '火种爆炸半径 -25%，放弃狂暴路线', icon: 'compass', color: '#f3de9a' },
