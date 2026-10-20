@@ -42,7 +42,7 @@ export function createUI(root: HTMLElement) {
         <h1>幻兽<br/><span>幸存者</span></h1>
         <p class="menu-description">一只焰绒，从火花到爆裂火种。<br/>自动迎战，升级组合你的魔法。</p>
         <div class="menu-actions"><button id="start-fusion" class="primary">开始挑战 ${icon('arrow')}</button><button id="choose-creature" class="secondary creature-select-entry" aria-label="选择出战幻兽">选择幻兽</button><button id="help" class="secondary" aria-label="操作指南">${icon('help')}<span>操作指南</span></button><button id="menu-settings" class="secondary settings-entry" aria-label="画质与声音设置">${icon('settings')}</button></div>
-        <div class="prototype-entries"><button id="start-party" class="text-button">随机草场冒险</button><button id="start-legacy-party" class="text-button">三兽编队原型 <small>兼容</small></button></div>
+        <div class="prototype-entries"><button id="start-infinite" class="text-button">无尽草场 · 无限探索</button><button id="start-party" class="text-button">随机草场冒险</button><button id="start-legacy-party" class="text-button">三兽编队原型 <small>兼容</small></button></div>
         <div class="menu-hint"><span>摇杆或方向键移动 · 自动攻击</span></div>
       </div>
       <div class="character-tag"><span class="tag-line"></span><div><small>出战幻兽</small><strong>焰绒 <span></span></strong><p>火花弹</p></div><span class="tag-star">✧</span></div>

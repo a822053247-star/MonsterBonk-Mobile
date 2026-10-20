@@ -2,15 +2,19 @@ import * as THREE from 'three';
 import { createSampleWorld } from './world-sample';
 import { fixedWorldLayout } from './world-layout';
 import { generateWorld } from './world-generator';
+import { createInfiniteWorld } from './infinite-world';
 
 export const WORLD_RADIUS = 33;
 export interface Obstacle { x: number; z: number; radius: number }
 export interface World {
   group: THREE.Group; obstacles: Obstacle[];
   readonly sampleActive: boolean;
+  readonly infiniteActive: boolean;
+  readonly revision: number;
   setSample(enabled: boolean, newMap?: boolean): void;
+  setInfinite(enabled: boolean, newMap?: boolean): void;
   update(x: number, z: number): void;
-  inspect(): { layout: string; status: string; obstacles: number; seed: string | null;
+  inspect(): { layout: string; status: string; obstacles: number; seed: string | null; chunks?: number;
     generation: { version: number; attempt: number; fallback: boolean; valid: boolean; walkable: number; reachable: number } | null };
   dispose(): void;
 }
@@ -25,16 +29,22 @@ export function createWorld(): World {
   const freshSeed = () => crypto.getRandomValues(new Uint32Array(1))[0].toString(36) + '-' + sequence++;
   let generated = fixed ? null : generateWorld(pinnedSeed ?? freshSeed());
   const sample = createSampleWorld(generated?.layout ?? fixedWorldLayout());
+  const infinite = createInfiniteWorld(pinnedSeed ?? freshSeed());
   const group = new THREE.Group();
-  group.add(legacy.group, sample.group);
+  group.add(legacy.group, sample.group, infinite.group);
   // Combat and party systems hold this array by reference.
   const obstacles = [...legacy.obstacles];
-  let requested = false, ready = false, failed = false, disposed = false, hasRun = false;
+  let requested = false, requestedInfinite = false;
+  let ready = false, infiniteReady = false, failed = false, infiniteFailed = false, disposed = false;
+  let hasRun = false, infiniteRun = false, revision = 0;
   const apply = () => {
-    const active = requested && ready;
-    legacy.group.visible = !active;
-    sample.group.visible = active;
-    obstacles.splice(0, obstacles.length, ...(active ? sample.obstacles : legacy.obstacles));
+    const activeInfinite = requestedInfinite && infiniteReady;
+    const activeSample = requested && ready && !activeInfinite;
+    legacy.group.visible = !activeSample && !activeInfinite;
+    sample.group.visible = activeSample;
+    infinite.group.visible = activeInfinite;
+    obstacles.splice(0, obstacles.length, ...(activeInfinite ? infinite.obstacles : activeSample ? sample.obstacles : legacy.obstacles));
+    revision++;
   };
   apply();
   void sample.ready.then(() => { if (!disposed) { ready = true; apply(); } }).catch(error => {
@@ -43,9 +53,17 @@ export function createWorld(): World {
     console.warn('Pixel world unavailable; using original map.', error);
     apply();
   });
+  void infinite.ready.then(() => { if (!disposed) { infiniteReady = true; apply(); } }).catch(error => {
+    if (disposed) return;
+    infiniteFailed = true;
+    console.warn('Infinite meadow unavailable; using original map.', error);
+    apply();
+  });
   return {
     group, obstacles,
     get sampleActive() { return sample.group.visible; },
+    get infiniteActive() { return infinite.group.visible; },
+    get revision() { return revision; },
     setSample(enabled, newMap = false) {
       if (disposed) return;
       if (enabled) {
@@ -55,15 +73,29 @@ export function createWorld(): World {
         }
         hasRun = true;
       }
-      requested = enabled; apply();
+      requested = enabled; requestedInfinite = false; apply();
     },
-    update(x, z) { if (sample.group.visible) sample.update(x, z); },
-    inspect: () => ({ layout: sample.group.visible ? generated ? 'random-pixel-meadow' : 'fixed-pixel-meadow' : 'legacy',
-      status: failed ? 'fallback' : ready ? 'ready' : 'loading', obstacles: obstacles.length,
-      seed: sample.group.visible ? generated?.seed ?? null : null,
+    setInfinite(enabled, newMap = false) {
+      if (disposed) return;
+      if (enabled && newMap && infiniteRun && !pinnedSeed) infinite.setSeed(freshSeed());
+      if (enabled) { infiniteRun = true; infinite.update(0, 0); }
+      requestedInfinite = enabled;
+      if (enabled) requested = false;
+      apply();
+    },
+    update(x, z) {
+      if (infinite.group.visible && infinite.update(x, z)) {
+        obstacles.splice(0, obstacles.length, ...infinite.obstacles);
+        revision++;
+      } else if (sample.group.visible) sample.update(x, z);
+    },
+    inspect: () => ({ layout: infinite.group.visible ? 'infinite-pixel-meadow' : sample.group.visible ? generated ? 'random-pixel-meadow' : 'fixed-pixel-meadow' : 'legacy',
+      status: requestedInfinite ? infiniteFailed ? 'fallback' : infiniteReady ? 'ready' : 'loading' : failed ? 'fallback' : ready ? 'ready' : 'loading',
+      obstacles: obstacles.length, chunks: infinite.group.visible ? infinite.chunkCount : 0,
+      seed: infinite.group.visible ? infinite.seed : sample.group.visible ? generated?.seed ?? null : null,
       generation: sample.group.visible && generated ? { version: generated.version, attempt: generated.attempt, fallback: generated.fallback,
         valid: generated.validation.valid, walkable: generated.validation.walkable, reachable: generated.validation.reachable } : null }),
-    dispose() { disposed = true; sample.dispose(); },
+    dispose() { disposed = true; sample.dispose(); infinite.dispose(); },
   };
 }
 
