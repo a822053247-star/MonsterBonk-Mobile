@@ -45,9 +45,9 @@ test('spore death warns for .7 seconds then hurts both monsters and player exact
   const c=fixture(), bomber=still(c.spawn('draft-spore-bomber',0,1,0)!), victim=still(c.spawn('tank',1,1,0)!);
   kill(c,bomber); kill(c,bomber);
   expect(c.sporeExplosions.filter(e=>e.active)).toHaveLength(1);
-  c.update(.69,origin); expect(c.hp).toBe(100); expect(victim.hp).toBe(100);
-  c.update(.01,origin); expect(c.hp).toBe(88); expect(victim.hp).toBe(55);
-  c.update(.1,origin); expect(c.hp).toBe(88); expect(victim.hp).toBe(55);
+  c.update(.69,origin); expect(c.hp).toBe(100); expect(victim.hp).toBe(125);
+  c.update(.01,origin); expect(c.hp).toBe(88); expect(victim.hp).toBe(80);
+  c.update(.1,origin); expect(c.hp).toBe(88); expect(victim.hp).toBe(80);
   c.update(.3,origin); expect(c.sporeExplosions.some(e=>e.active)).toBe(false);
 });
 
@@ -74,7 +74,7 @@ test('explosion snapshots survive enemy-slot reuse, and every bomber reserves a 
 test('cover and spawn protection block spore damage', () => {
   const c=fixture([{x:0,z:0,radius:.35}]), bomber=c.spawn('draft-spore-bomber',-1,0,0)!, victim=still(c.spawn('tank',1,0,0)!);
   const spawning=c.spawn('normal',-1,1,2)!; kill(c,bomber); c.update(.7,{x:1,z:0});
-  expect(c.hp).toBe(100); expect(victim.hp).toBe(100); expect(spawning.hp).toBe(30);
+  expect(c.hp).toBe(100); expect(victim.hp).toBe(125); expect(spawning.hp).toBe(30);
 });
 
 test('runner lingers, flees away, never bites, and escapes without rewards', () => {
