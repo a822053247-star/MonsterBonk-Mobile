@@ -67,7 +67,8 @@ test('main HUD only shows wave and elapsed timer; levels and XP progress stay sy
     const rect=(selector:string)=>{const box=document.querySelector(selector)!.getBoundingClientRect();return {x:box.x,y:box.y,width:box.width,height:box.height}};
     return {health:rect('.health-panel'),portrait:rect('#creature-portrait'),bar:rect('.health-track'),
       xp:rect('.xp-row'),level:rect('#level-value'),gold:rect('.hud-gold'),
-      coin:rect('.hud-gold img'),wave:rect('.run-status'),button:rect('#pause'),
+      coin:rect('.hud-gold img'),amount:rect('#hud-coins'),
+      wave:rect('.run-status'),button:rect('#pause'),
       statsVisible:getComputedStyle(document.querySelector('.combat-stats')!).display};
   });
   expect(layout.health.width).toBeGreaterThanOrEqual(510);
@@ -80,6 +81,10 @@ test('main HUD only shows wave and elapsed timer; levels and XP progress stay sy
   expect(layout.gold.x+layout.gold.width).toBeLessThanOrEqual(layout.xp.x+1);
   expect(layout.gold.x+layout.gold.width/2).toBeLessThan(layout.bar.x);
   expect(layout.coin.width).toBeGreaterThanOrEqual(27);
+  // Both coin and number sit against the right-hand padding of their own pill.
+  expect(layout.gold.x+layout.gold.width-(layout.amount.x+layout.amount.width)).toBeGreaterThanOrEqual(0);
+  expect(layout.gold.x+layout.gold.width-(layout.amount.x+layout.amount.width)).toBeLessThan(13);
+  expect(layout.coin.x+layout.coin.width).toBeLessThan(layout.amount.x);
   expect(layout.xp.y).toBeGreaterThan(layout.bar.y);
   expect(layout.wave.height).toBeGreaterThan(75);
   expect(layout.wave.height).toBeLessThan(115);
@@ -103,6 +108,11 @@ test('landscape phone HUD scales safely, buttons remain usable and wave stays cl
     expect(wallet.x+wallet.width).toBeLessThanOrEqual(xp.x+1);
     const coin=(await page.locator('.hud-gold img').boundingBox())!;
     expect(coin.width).toBeGreaterThanOrEqual(width === 568 ? 15 : 17);
+    const amount=(await page.locator('#hud-coins').boundingBox())!;
+    const rightInset=wallet.x+wallet.width-(amount.x+amount.width);
+    expect(rightInset).toBeGreaterThanOrEqual(0);
+    expect(rightInset).toBeLessThan(9);
+    expect(coin.x+coin.width).toBeLessThan(amount.x);
     expect(wallet.x).toBeGreaterThanOrEqual(44);
     expect(wallet.x+wallet.width).toBeLessThanOrEqual(health.x+health.width+1);
     const walletOverlapsTimer=wallet.x<timer.x+timer.width && wallet.x+wallet.width>timer.x &&

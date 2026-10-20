@@ -1130,7 +1130,7 @@ h1>em{font-size:12px;line-height:1;letter-spacing:4px;display:inline-block;backg
   white-space:nowrap;line-height:1;text-shadow:0 2px 3px #081b1b;
 }
 .hud .hud-bottom-row .hud-gold{
-  display:inline-flex;align-items:center;justify-content:flex-start;align-self:center;
+  display:inline-flex;align-items:center;justify-content:flex-end;align-self:center;
   height:37px;min-height:37px;width:100%;max-width:none;
   gap:6px;margin:0;padding:3px 8px 3px 6px;
   font-size:17px;border-width:1px;border-radius:19px;
