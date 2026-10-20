@@ -930,7 +930,7 @@ h1>em{font-size:12px;line-height:1;letter-spacing:4px;display:inline-block;backg
   .hud .xp-row>span:last-child{min-width:33px;font-size:8px}
   .hud .combat-stats{font-size:9px}
   .hud .combat-stats strong{font-size:10px}
-  .hud .run-status{top:70px;left:50%;transform:translateX(-50%);min-width:116px}
+  .hud .run-status{top:120px;left:50%;transform:translateX(-50%);min-width:116px}
   .hud #run-wave{font-size:13px}
   .hud #timer{font-size:22px}
   .hud .hud-actions{gap:4px}
@@ -946,5 +946,5 @@ h1>em{font-size:12px;line-height:1;letter-spacing:4px;display:inline-block;backg
   .hud .encounter-status{top:calc(114px + var(--safe-top));left:calc(50% + 55px + (var(--safe-left) - var(--safe-right)) / 2)}
 }
 @media(max-width:700px) and (orientation:landscape){
-  .hud .encounter-status{left:auto;right:calc(12px + var(--safe-right));top:calc(130px + var(--safe-top));transform:none}
+  .hud .encounter-status{left:auto;right:calc(12px + var(--safe-right));top:calc(175px + var(--safe-top));transform:none}
 }
