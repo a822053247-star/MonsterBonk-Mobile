@@ -51,7 +51,7 @@ test('Boss locks a visible predictive aim, cycles all three attacks, and summons
     expect(c.encounters.shots.filter(s=>s.active).length).toBeLessThanOrEqual(ENCOUNTER_RULES.hostileShots);
   }
   expect(states.has('dash-windup')).toBe(true); expect(states.has('dash')).toBe(true); expect(states.has('summon')).toBe(true);
-  expect(summons).toBeGreaterThanOrEqual(3); expect(c.enemies).toHaveLength(48); expect(c.projectiles).toHaveLength(24);
+  expect(summons).toBeGreaterThanOrEqual(3); expect(c.enemies).toHaveLength(COMBAT_LIMITS.enemies); expect(c.projectiles).toHaveLength(COMBAT_LIMITS.projectiles);
 });
 
 test('hostile projectiles sweep against players and cover with shared invulnerability; full pools stay bounded',()=>{
@@ -110,7 +110,7 @@ test('final wave requires a real Boss death, waits for death animation, and reso
 
 test('wave four retries a saturated elite spawn, and wave clears/restarts remove every hostile state',()=>{
   const c=fixture(),run=new RunFlow(); run.waveIndex=3; run.waveElapsed=12;
-  for(let i=0;i<48;i++) c.spawn('normal',10+i*.1,5,0);
+  for(let i=0;i<COMBAT_LIMITS.enemies;i++) c.spawn('normal',10+i*.1,5,0);
   run.prepare(c,origin); expect(c.encounters.elite).toBeUndefined();
   c.enemies[0].active=false; run.prepare(c,origin); expect(c.encounters.elite?.rank).toBe('elite');
   c.encounters.shots[0].active=true; c.clearWave(); expect(c.encounters.inspect()).toMatchObject({enabled:false,boss:null,elite:null,shots:[]});
