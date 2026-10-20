@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { RED_BLOB_BASH } from '../src/combat';
 
-test('mobile combat renders stationary red circle and a separate directional sprinter lane',async({page})=>{
+test('mobile combat renders only red stationary ring and fast directional lane, never a rock warning',async({page})=>{
   await page.setViewportSize({width:568,height:320});
   await page.route('**/red-slam-harness*',r=>r.fulfill({
     contentType:'text/html; charset=utf-8',
@@ -18,8 +18,10 @@ test('mobile combat renders stationary red circle and a separate directional spr
     g.combat.clearWave();g.combat.encounters.beginWave(2);
     const red=g.combat.spawn('normal',g.position.x+1.2,g.position.z,0);
     const fast=g.combat.spawn('fast',g.position.x+5,g.position.z,0);
+    const rock=g.combat.spawn('tank',g.position.x-5,g.position.z,0);
     red.intent='windup';red.intentTime=.4;
     fast.intent='windup';fast.intentTime=.4;fast.aimX=-1;fast.aimZ=0;
+    rock.intent='chase';rock.intentTime=0;
     g.placeCamera(true);g.combatView.render(1,g.visualTime,g.position);
     const v=g.combatView;
     return {

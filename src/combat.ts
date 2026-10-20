@@ -26,6 +26,8 @@ export const ENEMY_TYPES = {
 export const WEAPON = { range: 10.5, interval: 0.44, speed: 18, damage: 18, lifetime: 0.8, radius: 0.2 } as const;
 /** Rock tanks are tougher only in the formal six-wave run, not legacy modes. */
 export const FORMAL_ROCK_HP = 125;
+/** Rock armor inexorably marches and hurts only on actual close contact. It never performs a red slam. */
+export const ROCK_MARCH = { turnResponse: 3.2, contactPadding: .17 } as const;
 export const FORMAL_SPORE_HP = 140;
 /** Red blobs hold ground for a short area slam; only sprinters can lunge.
  * The hit radius matches the ground warning, and recovery is punishable. */
@@ -484,7 +486,12 @@ export class Combat {
         }
       }
       const steeringLength = Math.max(1, Math.hypot(steerX, steerZ));
-      const desiredX = steerX / steeringLength, desiredZ = steerZ / steeringLength, smoothing = 1 - Math.exp(-14 * dt);
+      const desiredX = steerX / steeringLength, desiredZ = steerZ / steeringLength;
+      // The ordinary rock troop has weight: it turns in a wide arc rather than
+      // snapping toward the player like a red blob. Ranked elite/Boss unchanged.
+      const steeringResponse = this.encounters.enabled && enemy.kind === 'tank' && !enemy.rank
+        ? ROCK_MARCH.turnResponse : 14;
+      const smoothing = 1 - Math.exp(-steeringResponse * dt);
       enemy.steerX = (enemy.steerX ?? desiredX) + (desiredX - (enemy.steerX ?? desiredX)) * smoothing;
       enemy.steerZ = (enemy.steerZ ?? desiredZ) + (desiredZ - (enemy.steerZ ?? desiredZ)) * smoothing;
       const smoothLength = Math.max(1, Math.hypot(enemy.steerX, enemy.steerZ));
@@ -512,6 +519,11 @@ export class Combat {
           // Stand-and-slam is a positional threat, not a second sprinter charge.
           this.updateRedBash(enemy,dt,dx,dz,length);
           if (enemy.intent !== 'chase') moveX = moveZ = 0;
+        } else if (this.encounters.enabled && enemy.kind === 'tank') {
+          // No windup/pounce/recover: a heavy, continuously moving body-blocker,
+          // distinct from red's stationary circle and sprinter's directional dash.
+          enemy.intent = 'chase';
+          enemy.intentTime = enemy.intentCooldown = 0;
         } else if (this.encounters.enabled) {
           this.updateMelee(enemy,dt,dx,dz,length);
           if (enemy.intent !== 'chase') moveX = moveZ = 0;
@@ -679,14 +691,18 @@ export class Combat {
       for (const enemy of this.enemies) {
         if (!enemy.active || enemy.spawnTime > 0) continue;
         if (this.hasAttackIntents && (enemy.stagger > 0 || enemy.intent === 'windup' || enemy.intent === 'recover')) continue;
-        if (this.encounters.enabled && (enemy.rank === 'elite' || enemy.rank === 'boss' && this.encounters.bossState !== 'dash' || !enemy.rank && enemy.intent !== 'pounce')) continue;
+        if (this.encounters.enabled && (enemy.rank === 'elite' || enemy.rank === 'boss' && this.encounters.bossState !== 'dash'
+          || !enemy.rank && enemy.kind !== 'tank' && enemy.intent !== 'pounce')) continue;
         const type = ENEMY_TYPES[enemy.kind];
         // Relative sweep catches a fast pounce crossing the player between ticks.
         const pounceHit = this.hasAttackIntents && (enemy.intent === 'pounce' || enemy.rank === 'boss') && segmentHit(enemy.previousX - this.previousAnchorX, enemy.previousZ - this.previousAnchorZ, enemy.x - player.x, enemy.z - player.z, 0, 0, this.enemyRadius(enemy) + 0.62) !== Infinity;
-        const radius = this.encounters.enabled && enemy.kind === 'normal' && !enemy.rank
-          ? RED_BLOB_BASH.radius : this.enemyRadius(enemy) + 0.62;
-        // Red blobs hit inside a clearly marked stationary ring. Sprinters and
-        // the Boss retain swept movement-based hit detection.
+        const radius = this.encounters.enabled && !enemy.rank && enemy.kind === 'normal'
+          ? RED_BLOB_BASH.radius
+          : this.encounters.enabled && !enemy.rank && enemy.kind === 'tank'
+            ? this.enemyRadius(enemy) + ROCK_MARCH.contactPadding
+            : this.enemyRadius(enemy) + 0.62;
+        // Red blobs hit inside a stationary warning ring. Rocks require actual
+        // close body contact; sprinters/Boss retain swept movement-based hits.
         const slamHit = enemy.kind === 'normal' && this.encounters.enabled
           ? Math.hypot(enemy.x-player.x,enemy.z-player.z) < radius : pounceHit;
         if ((slamHit || Math.hypot(enemy.x - player.x, enemy.z - player.z) < radius) && (!this.encounters.enabled || !this.covered(enemy.x,enemy.z,player.x,player.z))) damage = Math.max(damage, enemy.rank === 'boss' ? 24 : enemy.swarm ? SWARM_RULES.contactDamage : type.damage);
