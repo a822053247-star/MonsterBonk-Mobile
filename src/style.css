@@ -852,3 +852,7 @@ h1>em{font-size:12px;line-height:1;letter-spacing:4px;display:inline-block;backg
   .graphics-setting .speed-label{margin-top:6px}
   #quality,#game-speed-setting{min-height:44px;padding:6px 8px}
 }
+
+/* Three prototype entries stay touchable on narrow landscape phones. */
+.prototype-entries{flex-wrap:wrap;column-gap:14px;row-gap:0}
+.prototype-entries #start-infinite{color:#f1d8a4;font-weight:700}
