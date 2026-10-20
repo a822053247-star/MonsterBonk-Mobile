@@ -250,6 +250,6 @@ export class RunFlow {
       combatElapsed: this.combatElapsed, restElapsed: this.restElapsed, totalElapsed: this.totalElapsed, coins: this.coins, earned: this.earned,
       bossDefeated:this.bossDefeated,failure:this.failure, growth: { ...this.lastWaveGrowth },
       director: { beat: directorStage(this.wave, this.waveElapsed).beat, stage: directorStage(this.wave, this.waveElapsed) },
-      shop: this.shop ? { token: this.shop.token, refreshCost: this.shop.refreshCost, items: this.shop.items.map(s => ({ ...s })) } : null };
+      shop: this.shop ? { token: this.shop.token, refreshCost: this.shop.refreshCost, treasureRefreshes: this.shop.treasureRefreshes, items: this.shop.items.map(s => ({ ...s })) } : null };
   }
 }
