@@ -19,7 +19,7 @@ test('forest HUD keeps live values, weapon artwork and safe touch targets on lan
   await expect(page.locator('.health-track')).toHaveAttribute('aria-valuenow', '24');
   await expect(page.locator('#xp-track')).toHaveAttribute('aria-valuenow', '3');
   expect(await page.locator('#health-fill').evaluate(el => el.getBoundingClientRect().width / el.parentElement!.clientWidth)).toBeCloseTo(.24, 2);
-  expect(await page.locator('#health-fill').evaluate(el => getComputedStyle(el).backgroundImage)).toContain('233, 149, 100');
+  expect(await page.locator('#health-fill').evaluate(el => getComputedStyle(el).backgroundImage)).toContain('255, 100, 104');
   await expect(page.locator('#hud-extra-weapons img.art-loaded')).toHaveCount(2);
   if (browserName === 'chromium') await page.screenshot({ path: 'artifacts/hud-forest-chromium.png' });
   await page.evaluate(() => {

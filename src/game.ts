@@ -771,12 +771,9 @@ export class Game {
     renderWeaponCooldowns(this.combat);
     renderHudWeaponIcons(this.combat);
     const wave = document.getElementById('run-wave')!, gold = document.getElementById('run-gold')!;
-    wave.hidden = gold.hidden = !this.run;
-    const exploreLabel = document.querySelector<HTMLElement>('.run-status .explore-label')!;
-    exploreLabel.hidden = !!this.run;
-    if (this.combat.infiniteWorld) exploreLabel.textContent = '无尽探索 · ' + Math.floor(this.distance) + ' 步';
-    else if (exploreLabel.textContent?.startsWith('无尽')) exploreLabel.textContent = '草原遭遇';
-    if (this.run) { wave.textContent = `第 ${this.run.wave} / 6 波 · ${this.run.wave===6?'兽王挑战 · ':''}剩余 ${Math.ceil(this.run.remaining)} 秒`; gold.textContent = `金币 ${this.run.coins}`; }
+    wave.hidden = !this.run;
+    gold.hidden = true; // Top center deliberately contains only wave and elapsed time.
+    if (this.run) { wave.textContent = `第 ${this.run.wave} / 6 波`; gold.textContent = `金币 ${this.run.coins}`; }
     renderBuildSummary(this.combat.usesRunBuild ? this.combat.runBuild : undefined, this.combat.fusions);
     const fusionStatus = document.getElementById('fusion-status')!;
     fusionStatus.hidden = !this.combat.fusionEnabled;
@@ -789,8 +786,6 @@ export class Game {
     hint.hidden = true;
     fusionStatus.title = this.combat.fusions.map(f => f.title).join(' / ');
     const species = this.party.leader.species;
-    document.getElementById('creature-name')!.textContent = CREATURES[species].name;
-    document.getElementById('creature-code')!.textContent = '';
     const portrait = document.getElementById('creature-portrait') as HTMLImageElement;
     portrait.hidden = false;
     if (portrait.dataset.species !== species) { portrait.src = `${import.meta.env.BASE_URL}assets/pixel/${PIXEL_CREATURE_ASSETS[species]}`; portrait.dataset.species = species; }
@@ -867,11 +862,15 @@ export class Game {
     this.healthFill.style.width = `${hp / maxHp * 100}%`;
     this.healthBar.setAttribute('aria-valuemax', String(maxHp));
     this.healthBar.setAttribute('aria-valuenow', String(hp));
-    this.healthBar.classList.toggle('low-health', hp / maxHp <= 0.3);
+    // A persistent, non-verbal danger cue complements (and never replaces) hit flashes.
+    const critical = maxHp > 0 && hp > 0 && hp / maxHp < 0.5;
+    this.healthBar.classList.toggle('low-health', critical);
+    document.getElementById('hud')!.classList.toggle('critical-health', critical);
+    this.healthBar.setAttribute('aria-valuetext', `${hp} / ${maxHp}${critical ? '，生命值不足一半' : ''}`);
     this.killValue.textContent = String(this.combat.kills);
     this.xpValue.textContent = String(this.combat.xp);
     const progression = this.combat.progression, maxed = !Number.isFinite(progression.threshold);
-    document.getElementById('level-value')!.textContent = `${progression.level}级${maxed ? ' · 满级' : ''}`;
+    document.getElementById('level-value')!.textContent = `等级 ${progression.level}${maxed ? ' · 满级' : ''}`;
     document.getElementById('xp-progress')!.textContent = maxed ? '满级' : `${progression.experience} / ${progression.threshold}`;
     document.getElementById('xp-fill')!.style.width = `${maxed ? 100 : progression.experience / progression.threshold * 100}%`;
     const xpTrack = document.getElementById('xp-track')!;

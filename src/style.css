@@ -856,3 +856,84 @@ h1>em{font-size:12px;line-height:1;letter-spacing:4px;display:inline-block;backg
 /* Three prototype entries stay touchable on narrow landscape phones. */
 .prototype-entries{flex-wrap:wrap;column-gap:14px;row-gap:0}
 .prototype-entries #start-infinite{color:#f1d8a4;font-weight:700}
+
+
+/*
+ * Readable combat HUD — deliberately override the earlier compact HUD rules.
+ * All widths scale down for narrow landscape phones; controls keep ≥44px targets.
+ */
+.hud{--hud-card-width:340px;--hud-card-height:112px}
+.hud .hud-top{position:relative;z-index:3}
+.hud .health-block{width:var(--hud-card-width);gap:6px;min-width:0}
+.hud .health-panel{height:var(--hud-card-height);border-radius:9px}
+.hud .health-panel .portrait{left:6%;top:17%;width:29%;height:67%}
+.hud .health-title{left:39%;right:5%;top:21%;display:block;margin:0}
+.hud .health-title>span{font-size:16px;line-height:1.25;font-weight:900;color:#314a34;text-shadow:0 1px #fff4bf66}
+.hud .health-values{left:39%;right:5%;top:42%;height:27px;display:flex;align-items:baseline;justify-content:flex-start;gap:9px;white-space:nowrap;text-shadow:0 1px 2px #132e27}
+.hud .health-values .hp-label{font-size:17px;font-weight:950;letter-spacing:1px;color:#344c34;text-shadow:0 1px #fff3b878}
+.hud #health-value{font-size:22px;line-height:1.1;font-weight:950;letter-spacing:.25px;color:#133e2a;font-variant-numeric:tabular-nums;text-shadow:0 1px 1px #fff4d5c7}
+.hud .health-track{left:39%;right:7%;top:77%;height:15px;border:2px solid #7b7045;border-radius:6px;background:#1c352d}
+.hud #health-fill{height:100%;border:0;background:linear-gradient(180deg,#a9e27b,#3b9950);box-shadow:inset 0 2px #dff5ae77}
+.hud .xp-row{padding:0 7px;gap:8px;font-size:12px;font-weight:750;color:#f3f8db;text-shadow:0 1px 3px #123b2d}
+.hud .xp-label{white-space:nowrap}
+.hud .xp-track{height:12px;min-width:40px;border:1px solid #a3dace;border-radius:4px}
+.hud .xp-row>span:last-child{min-width:47px;text-align:right;font-size:11px}
+.hud .combat-stats{padding:0 7px;gap:14px;font-size:12px}
+.hud .combat-stats>div{gap:6px}
+.hud .combat-stats strong{font-size:13px}
+.hud .combat-stats .icon{width:14px;height:14px}
+.hud .run-status{top:3px;left:50%;gap:3px;min-width:175px;text-align:center;text-shadow:0 2px 8px #102f25,0 0 5px #122e25}
+.hud #run-wave{order:0;font-size:19px;line-height:1.25;font-weight:900;letter-spacing:1px;color:#f9e6ad}
+.hud #timer{order:1;margin:0;font-size:34px;line-height:1.15;font-weight:950;letter-spacing:1.7px;color:#fff5d4}
+.hud .hud-actions{gap:9px}
+.hud .hud-actions .icon-button{width:56px;height:56px;min-width:56px;min-height:56px;font-size:16px;font-weight:900;border-radius:9px}
+.hud .hud-actions .icon{width:24px;height:24px}
+.hud.critical-health #health-value,.hud.critical-health .health-values .hp-label{color:#cf1d31;text-shadow:0 1px #fff6d0,0 0 7px #ef404a75}
+.hud .health-track.low-health{border-color:#b73641;box-shadow:0 0 12px #e9414d85}
+.hud .health-track.low-health #health-fill{background:linear-gradient(180deg,#ff6468,#bd142c);box-shadow:inset 0 2px #ffd4c87d}
+.low-health-effect{position:absolute;inset:0;z-index:1;pointer-events:none;opacity:0;visibility:hidden;background:radial-gradient(ellipse at 50% 50%,transparent 45%,#e01a3840 76%,#b900315c 100%);box-shadow:inset 0 0 80px 10px #a8093245}
+.hud.critical-health .low-health-effect{visibility:visible;opacity:.8;animation:hud-danger-pulse 2.4s ease-in-out infinite}
+.hud.critical-health .health-panel{filter:drop-shadow(0 0 10px #ca244766)}
+@keyframes hud-danger-pulse{0%,100%{opacity:.38}50%{opacity:.9}}
+/* Do not obscure the arena or cause flashing for motion-sensitive players. */
+@media(prefers-reduced-motion:reduce){.hud.critical-health .low-health-effect{animation:none;opacity:.55}}
+@media(max-width:1100px) and (orientation:landscape){
+  .hud{--hud-card-width:260px;--hud-card-height:91px}
+  .hud .health-title{top:18%}
+  .hud .health-title>span{font-size:13px}
+  .hud .health-values{top:40%;gap:6px;height:24px}
+  .hud .health-values .hp-label{font-size:13px}
+  .hud #health-value{font-size:17px}
+  .hud .health-track{top:76%;height:12px}
+  .hud .xp-row{font-size:10px;gap:5px}
+  .hud .xp-track{height:9px}
+  .hud .xp-row>span:last-child{font-size:9px}
+  .hud .combat-stats{font-size:10px}
+  .hud .combat-stats strong{font-size:11px}
+  .hud #run-wave{font-size:16px}
+  .hud #timer{font-size:29px}
+  .hud .hud-actions{gap:6px}
+  .hud .hud-actions .icon-button{width:48px;height:48px;min-width:48px;min-height:48px;font-size:14px}
+  .hud .hud-actions .icon{width:21px;height:21px}
+}
+@media(max-width:700px) and (orientation:landscape){
+  .hud{--hud-card-width:192px;--hud-card-height:74px}
+  .hud .health-panel .portrait{left:4%;top:14%;width:30%;height:70%}
+  .hud .health-title{left:37%;top:16%}
+  .hud .health-title>span{font-size:10px}
+  .hud .health-values{left:37%;right:2%;top:41%;gap:4px;height:18px}
+  .hud .health-values .hp-label{font-size:10px}
+  .hud #health-value{font-size:13px}
+  .hud .health-track{left:37%;right:5%;top:77%;height:10px}
+  .hud .xp-row{font-size:9px;padding:0 3px}
+  .hud .xp-track{height:8px}
+  .hud .xp-row>span:last-child{min-width:33px;font-size:8px}
+  .hud .combat-stats{font-size:9px}
+  .hud .combat-stats strong{font-size:10px}
+  .hud .run-status{top:70px;left:50%;transform:translateX(-50%);min-width:116px}
+  .hud #run-wave{font-size:13px}
+  .hud #timer{font-size:22px}
+  .hud .hud-actions{gap:4px}
+  .hud .hud-actions .icon-button{width:44px;height:44px;min-width:44px;min-height:44px}
+  .hud .hud-actions .icon{width:20px;height:20px}
+}
