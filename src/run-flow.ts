@@ -2,12 +2,12 @@ import type { Combat, EnemyKind } from './combat';
 import { RunShop } from './shop';
 
 export const RUN_WAVES: readonly { seconds: number; reward: number; interval: number; groupSize: number; cap: number; enemies: readonly EnemyKind[] }[] = [
-  { seconds: 65, reward: 35, interval: 3.5, groupSize: 4, cap: 24, enemies: ['normal', 'normal', 'normal', 'fast'] },
-  { seconds: 70, reward: 40, interval: 3.3, groupSize: 5, cap: 28, enemies: ['normal', 'fast', 'normal', 'tank'] },
-  { seconds: 75, reward: 45, interval: 3.1, groupSize: 6, cap: 30, enemies: ['normal', 'fast', 'tank', 'normal', 'fast'] },
-  { seconds: 75, reward: 50, interval: 2.9, groupSize: 7, cap: 32, enemies: ['normal', 'fast', 'tank', 'normal', 'fast'] },
-  { seconds: 80, reward: 55, interval: 2.6, groupSize: 8, cap: 36, enemies: ['normal', 'tank', 'fast', 'fast'] },
-  { seconds: 90, reward: 0, interval: 3.2, groupSize: 1, cap: 12, enemies: ['normal', 'fast', 'normal', 'tank'] },
+  { seconds: 65, reward: 35, interval: 1.4, groupSize: 12, cap: 60, enemies: ['normal', 'normal', 'normal', 'fast'] },
+  { seconds: 70, reward: 40, interval: 1.2, groupSize: 18, cap: 90, enemies: ['normal', 'fast', 'normal', 'tank'] },
+  { seconds: 75, reward: 45, interval: 1.0, groupSize: 24, cap: 120, enemies: ['normal', 'fast', 'tank', 'normal', 'fast'] },
+  { seconds: 75, reward: 50, interval: 0.9, groupSize: 32, cap: 160, enemies: ['normal', 'fast', 'tank', 'normal', 'fast'] },
+  { seconds: 80, reward: 55, interval: 0.8, groupSize: 40, cap: 200, enemies: ['normal', 'tank', 'fast', 'fast'] },
+  { seconds: 90, reward: 0, interval: 1.0, groupSize: 16, cap: 120, enemies: ['normal', 'fast', 'normal', 'tank'] },
 ];
 
 /** Five survival waves and a final Boss. Timing out never grants a Boss victory. */
@@ -26,6 +26,9 @@ export class RunFlow {
   private collectedGold = 0;
   private spawnClock = 1.2;
   private spawnIndex = 0;
+  private pendingSwarm = 0;
+  private pendingClock = 0;
+  private pendingEscort: EnemyKind = 'normal';
   private claimedExperience = false;
   get wave() { return this.waveIndex + 1; }
   get definition() { return RUN_WAVES[this.waveIndex]; }
@@ -59,14 +62,36 @@ export class RunFlow {
     if (this.remaining <= 1e-8 || this.wave === 6 && combat.encounters.defeated) { this.resolveBoundary(combat); return; }
     if (combat.encounters.dying) return;
     if (combat.progression.awaitingChoice) return;
+    const { cap: waveCap, groupSize, interval } = this.definition;
+    // The fourth-wave elite needs a free pool slot even at the swarm limit.
+    const cap = this.wave === 4 && !combat.encounters.elite ? waveCap - 1 : waveCap;
+    // Half the incoming group arrives 0.35s later; never queue multiple late batches.
+    if (this.pendingSwarm > 0) {
+      this.pendingClock -= dt;
+      if (this.pendingClock <= 0) {
+        combat.spawnSwarm(player, this.pendingSwarm, cap, this.pendingEscort);
+        this.pendingSwarm = 0;
+        this.pendingClock = 0;
+      }
+    }
     this.spawnClock -= dt;
+    const active = combat.enemies.filter(e => e.active).length;
+    // A rapidly cleared map refills sooner without an unbounded catch-up loop.
+    if (this.spawnIndex > 0 && active < Math.floor(cap * .45)) {
+      this.spawnClock = Math.min(this.spawnClock, interval * .6);
+    }
     if (this.spawnClock <= 0) {
-      const { cap, groupSize } = this.definition;
-      if (combat.enemies.filter(e=>e.active).length >= cap) { this.spawnClock=.3; return; }
+      if (active >= cap) { this.spawnClock = .2; return; }
       const kind = this.definition.enemies[this.spawnIndex % this.definition.enemies.length];
-      const spawned = this.wave === 6 ? combat.spawnEncounter(kind, player) : combat.spawnSwarm(player, groupSize, cap, kind);
-      if (spawned) { this.spawnIndex++; this.spawnClock = this.definition.interval; }
-      else this.spawnClock = .2;
+      const firstHalf = Math.ceil(groupSize / 2);
+      const spawned = combat.spawnSwarm(player, firstHalf, cap);
+      if (spawned) {
+        this.pendingSwarm = groupSize - firstHalf;
+        this.pendingEscort = kind;
+        this.pendingClock = .35;
+        this.spawnIndex++;
+        this.spawnClock = interval;
+      } else this.spawnClock = .2;
     }
   }
 
@@ -87,6 +112,7 @@ export class RunFlow {
     }
     if (combat.progression.awaitingChoice && this.wave < RUN_WAVES.length) return;
     combat.clearWave();
+    this.pendingSwarm = this.pendingClock = 0;
     this.completedWaves++;
     this.coins += this.definition.reward; this.earned += this.definition.reward;
     this.phase = this.wave === RUN_WAVES.length ? 'won' : 'shop';
@@ -113,6 +139,7 @@ export class RunFlow {
     if (this.phase !== 'shop' || token !== this.shop?.token || combat.hp <= 0 || combat.progression.awaitingChoice) return false;
     this.waveIndex++; this.waveElapsed = 0;
     this.spawnClock = 1.2; this.spawnIndex = 0; this.claimedExperience = false;
+    this.pendingSwarm = this.pendingClock = 0; this.pendingEscort = 'normal';
     this.shop = undefined; this.phase = 'fighting'; return true;
   }
 
