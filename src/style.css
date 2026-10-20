@@ -1039,7 +1039,7 @@ h1>em{font-size:12px;line-height:1;letter-spacing:4px;display:inline-block;backg
   .hud #run-wave{font-size:16px}
   .hud #timer{font-size:25px}
   .hud .hud-actions{gap:5px}
-  .hud .hud-actions .icon-button{width:47px;height:47px;min-width:47px;min-height:47px;font-size:14px}
+  .hud .hud-actions .icon-button{width:48px;height:48px;min-width:48px;min-height:48px;font-size:14px}
   .hud .hud-actions .icon{width:20px;height:20px}
   .hud .encounter-status{top:calc(130px + var(--safe-top))}
 }
