@@ -56,7 +56,7 @@ test('three fixed-capacity pixel batches preserve proportions, anchors and all e
     expect(visual.cache).toEqual({ textures: 3, references: 3 });
     expect(visual.batches!.map(b => b.count)).toEqual([1, 1, 1]);
     for (const b of visual.batches!) {
-      expect(b.capacity).toBe(48); expect(b.nearest).toBe(true); expect(b.mipmaps).toBe(false);
+      expect(b.capacity).toBe(256); expect(b.nearest).toBe(true); expect(b.mipmaps).toBe(false);
       expect(b.depthTest && b.depthWrite).toBe(true); expect(b.alphaTest).toBeGreaterThan(0);
       expect(b.aspect).toBeCloseTo(b.crop[2] / b.crop[3], 8);
       expect(shapes.find(s => s.kind === b.kind)!.ratio).toBeCloseTo(b.aspect, 6);
@@ -93,11 +93,11 @@ test('real depth buffer handles transparent cutouts, foreground cover and visibl
   expect(p.otherAfter).toEqual(p.otherBefore);
 });
 
-test('48 enemies reuse the same batches and textures, clear on reset and release on disposal', async ({ page }) => {
+test('100 enemies reuse the same batches and textures, clear on reset and release on disposal', async ({ page }) => {
   await open(page); await ready(page);
   await expect.poll(async () => (await state(page)).partyVisual.members.filter(m => m?.loaded).length).toBe(1);
   const p = await page.evaluate(() => (window as unknown as Fixture).pool());
-  expect(p.counts).toEqual([48, 0, 0]); expect(p.calls[1]).toBe(p.calls[0]); expect(p.stable).toBe(true);
+  expect(p.counts).toEqual([100, 0, 0]); expect(p.calls[1]).toBe(p.calls[0]); expect(p.stable).toBe(true);
   expect(p.cleared).toBe(0); expect(p.cache).toEqual({ textures: 3, references: 3 });
   expect(await page.evaluate(() => (window as unknown as Fixture).destroy())).toEqual({ cache: { textures: 0, references: 0 }, directionStates: 0, batches: [], children: 0 });
 });
