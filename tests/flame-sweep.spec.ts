@@ -56,20 +56,22 @@ test('cover, warnings, back-facing targets and targets outside the arc are not d
   const front=c.spawn('tank',2,0,0)!, back=c.spawn('tank',-2.8,0,0)!;
   const covered=c.spawn('tank',2.6,2.6,0)!, warned=c.spawn('tank',1,1,.75)!, far=c.spawn('tank',5,0,0)!;
   tick(c);
-  expect(front.hp).toBe(64); for(const e of [back,covered,warned,far]) expect(e.hp).toBe(100);
+  expect(front.hp).toBe(89); for(const e of [back,covered,warned,far]) expect(e.hp).toBe(125);
   expect(c.melee.aimX).toBeCloseTo(1);
 });
 
 test('automatic melee waits for a target and repeats on its own cooldown after the animation ends', () => {
   const c=fixture(); tick(c); expect(c.melee.attackInstanceId).toBe(0);
   const enemy=c.spawn('tank',2,0,0)!; tick(c);
-  expect(enemy.hp).toBe(64); expect(c.melee.attackInstanceId).toBe(1);
+  expect(enemy.hp).toBe(89); expect(c.melee.attackInstanceId).toBe(1);
   for(let i=0;i<41;i++)tick(c);
-  expect(enemy.hp).toBe(64); expect(c.melee.active).toBe(false);
+  expect(enemy.hp).toBe(89); expect(c.melee.active).toBe(false);
   for(let i=0;i<3;i++)tick(c);
-  expect(enemy.hp).toBe(28); expect(c.melee.attackInstanceId).toBe(2);
+  expect(enemy.hp).toBe(53); expect(c.melee.attackInstanceId).toBe(2);
   for(let i=0;i<44;i++)tick(c);
-  expect(c.kills).toBe(1); expect(c.melee.attackInstanceId).toBe(3);
+  expect(enemy.hp).toBe(17); expect(c.melee.attackInstanceId).toBe(3);
+  for(let i=0;i<44;i++)tick(c);
+  expect(c.kills).toBe(1); expect(c.melee.attackInstanceId).toBe(4);
   expect(c.shotsFired).toBe(0);
 });
 

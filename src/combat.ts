@@ -24,6 +24,8 @@ export const ENEMY_TYPES = {
   'draft-treasure-runner': { name: '携宝兽', hp: 65, speed: 3.5, radius: .48, damage: 0, xp: TREASURE_RUNNER.xp, color: '#f1cd68' },
 } as const;
 export const WEAPON = { range: 10.5, interval: 0.44, speed: 18, damage: 18, lifetime: 0.8, radius: 0.2 } as const;
+/** Rock tanks are tougher only in the formal six-wave run, not legacy modes. */
+export const FORMAL_ROCK_HP = 125;
 export const FORMAL_POUNCE = { ...POUNCE, range: 6, windup: .85, speed: 13, duration: .5, recovery: 1.1, cooldown: 2 } as const;
 export const SWARM_RULES = { health: [12, 14, 16, 18, 20, 22], minDistance: 7.5, maxDistance: 14, halfAngle: .42, laneAngle: .78, xp: 1, killsPerXp: 3, killsPerCoin: 9, contactDamage: 3 } as const;
 type Point = { x: number; z: number };
@@ -208,7 +210,7 @@ export class Combat {
     Object.assign(enemy, { active: true, id: this.nextId++, kind, x, z, previousX: x, previousZ: z, hp: this.enemyMaxHp(kind), age: 0, spawnTime, flash: 0, knockX: 0, knockZ: 0, facing: 0, orbitCooldown: 0, intent: 'chase', intentTime: 0, intentCooldown: 0, aimX: 0, aimZ: 1, stagger: 0, hornDash: 0, slowTime: 0, walkPhase: (this.nextId * 2.399963) % (Math.PI * 2), walkAmount: 0, walkX: 0, walkZ: 0, steerX: undefined, steerZ: undefined });
     enemy.rank = undefined; enemy.maxHp = enemy.radius = undefined; enemy.swarm = false;
     enemy.specialTime = 0;
-    if (this.encounters.enabled) enemy.hp = enemy.maxHp = (kind==='fast'?40:ENEMY_TYPES[kind].hp)*(ENCOUNTER_RULES.waveHealth[this.encounters.wave-1]??1);
+    if (this.encounters.enabled) enemy.hp = enemy.maxHp = (kind==='fast'?40:kind==='tank'?FORMAL_ROCK_HP:ENEMY_TYPES[kind].hp)*(ENCOUNTER_RULES.waveHealth[this.encounters.wave-1]??1);
     this.spawned++;
     return enemy;
   }
@@ -265,7 +267,8 @@ export class Combat {
 
   /** One incoming sector per batch leaves the opposite side open at birth.
    * Finite placement attempts skip blocked members, never queue a catch-up burst. */
-  spawnSwarm(player: Point, count: number, cap: number, escort: EnemyKind = 'normal') {
+  spawnSwarm(player: Point, count: number, cap: number, escort: EnemyKind = 'normal',
+    mix?: { fastCap: number; tankCap: number }) {
     if (!this.encounters.enabled || !Number.isFinite(count) || !Number.isFinite(cap)) return 0;
     const available = Math.min(Math.floor(count), Math.floor(cap) - this.enemies.filter(e => e.active).length, COMBAT_LIMITS.enemies);
     if (available <= 0 || this.enemies.every(e => e.active)) return 0;
@@ -273,8 +276,16 @@ export class Combat {
     if (!anchor) return 0;
     const heading = Math.atan2(anchor.x-player.x, anchor.z-player.z);
     let spawned = 0;
+    let fast = mix ? this.enemies.filter(e => e.active && !e.rank && e.kind === 'fast').length : 0;
+    let tank = mix ? this.enemies.filter(e => e.active && !e.rank && e.kind === 'tank').length : 0;
     for (let i = 0; i < available; i++) {
-      const kind = i === available-1 ? escort : 'normal';
+      // A reproducible 3:1:1 target mix, with live quotas: fodder never disappears,
+      // and specialist-heavy swarms cannot grow unbounded in the 200-enemy pool.
+      const slot = (this.spawned + i) % 5;
+      const candidate: EnemyKind = !mix ? i === available-1 ? escort : 'normal'
+        : slot === 1 ? 'fast' : slot === 3 ? 'tank' : 'normal';
+      const kind = mix && candidate === 'fast' && fast >= mix.fastCap ? 'normal'
+        : mix && candidate === 'tank' && tank >= mix.tankCap ? 'normal' : candidate;
       const lane = i % 3 === 1 ? -SWARM_RULES.laneAngle : i % 3 === 2 ? SWARM_RULES.laneAngle : 0;
       const point = i === 0 ? anchor : this.spawnPosition(player, SWARM_RULES.minDistance, SWARM_RULES.maxDistance, ENEMY_TYPES[kind].radius, heading + lane);
       if (!point) continue;
@@ -283,7 +294,8 @@ export class Combat {
       if (kind === 'normal') {
         enemy.swarm = true;
         enemy.hp = enemy.maxHp = SWARM_RULES.health[this.encounters.wave-1] ?? 18;
-      }
+      } else if (mix && kind === 'fast') fast++;
+      else if (mix && kind === 'tank') tank++;
       spawned++;
     }
     return spawned;
@@ -472,7 +484,16 @@ export class Combat {
           const rule = this.encounters.enabled ? FORMAL_POUNCE : POUNCE;
           if (!this.encounters.enabled || enemy.intent !== 'chase' || !this.covered(enemy.x,enemy.z,player.x,player.z)) this.updatePounce(enemy, dt, dx, dz, length, rule);
           if (enemy.intent === 'pounce') { moveX = enemy.aimX * rule.speed; moveZ = enemy.aimZ * rule.speed; }
-          else if (enemy.intent !== 'chase') { moveX = moveZ = 0; }
+          else if (this.encounters.enabled && enemy.intent === 'recover') {
+            // Disengage after a missed leap; players can punish the recovery.
+            moveX = -dx / length * type.speed * .55; moveZ = -dz / length * type.speed * .55;
+          } else if (enemy.intent !== 'chase') { moveX = moveZ = 0; }
+          else if (this.encounters.enabled && length > 2.2 && length < 8 && enemy.intentCooldown > 0) {
+            // Alternate flanking sides per enemy; lock-on/charge remains fully telegraphed.
+            const side = enemy.id % 2 ? 1 : -1;
+            moveX = (moveX - steerZ * type.speed * .72 * side) * .8;
+            moveZ = (moveZ + steerX * type.speed * .72 * side) * .8;
+          }
         }
         else if (this.encounters.enabled) {
           this.updateMelee(enemy,dt,dx,dz,length);
