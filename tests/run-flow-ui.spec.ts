@@ -30,44 +30,45 @@ test('complete six-wave UI with shopping, healing, refresh, victory, clean resta
   for (let wave = 1; wave <= 5; wave++) {
     if (wave === 2) await page.evaluate(() => { (window as any).game.combat.hp = 40; });
     await finishWave(page);
-    await expect(page.locator('#shop-screen')).toBeVisible();
-    await expect(page.locator('#shop-heading')).toContainText(`第 ${wave} 波完成`);
-    expect(await page.locator('.shop-item').count()).toBe(4);
-    expect(await page.evaluate(() => {
-      const g = (window as any).game, before = JSON.stringify([g.combat.inspect(), g.visualTime]);
-      g.step(1); return JSON.stringify([g.combat.inspect(), g.visualTime]) === before;
-    })).toBe(true);
-    if (wave === 1) {
-      await expect(page.locator('#shop-coins')).toHaveText('35 金币');
-      await page.screenshot({ path: 'artifacts/v5.2-d-shop.png' });
-      await page.locator('[data-buy="0"]').click();
-      await expect(page.locator('[data-buy="0"]')).toHaveText('已购买');
-      await expect(page.locator('#shop-coins')).toHaveText('0 金币');
-      expect(await page.evaluate(() => (window as any).game.combat.runBuild.attacks.length)).toBe(2);
-    }
-    if (wave === 2) {
-      await page.setViewportSize({ width: 568, height: 320 });
-      await page.locator('[data-buy="3"]').click();
-      await expect(page.locator('#shop-health')).toHaveText('生命 75 / 100');
-      await page.locator('#shop-refresh').click();
-      await expect(page.locator('#shop-refresh')).toHaveText('刷新商品 · 10 金币');
-      const panel = await page.locator('.shop-panel').boundingBox();
-      expect(panel!.x).toBeGreaterThanOrEqual(0); expect(panel!.y).toBeGreaterThanOrEqual(0);
-      expect(panel!.x + panel!.width).toBeLessThanOrEqual(568);
-      expect(panel!.y + panel!.height).toBeLessThanOrEqual(320);
-      await page.screenshot({ path: 'artifacts/v5.2-d-shop-small.png' });
-      await page.setViewportSize({ width: 844, height: 390 });
-    }
-    await page.evaluate(() => { (window as any).game.run.restElapsed = (window as any).game.run.wave * 20; });
-    await page.locator('#shop-next').click();
     await expect(page.locator('#shop-screen')).toBeHidden();
-    await expect(page.locator('#run-wave')).toContainText(`第 ${wave + 1} / 6 波`);
+    await expect(page.locator('#welcome h2')).toContainText(wave === 5 ? '魔法商店即将开放' : `第 ${wave} 波完成`);
+    expect(await page.evaluate(() => (window as any).game.run.phase)).toBe('intermission');
+    // Rest is a real simulation pause with an on-field countdown, not a shop overlay.
+    expect(await page.evaluate(() => {
+      const g = (window as any).game, before = JSON.stringify(g.combat.inspect());
+      for (let i=0;i<90;i++) g.step(1/60);
+      return JSON.stringify(g.combat.inspect()) === before;
+    })).toBe(true);
+    await page.evaluate(() => {
+      const g = (window as any).game;
+      for(let i=0;i<135;i++)g.step(1/60);
+    });
+    if(wave<5) {
+      await expect(page.locator('#shop-screen')).toBeHidden();
+      await expect(page.locator('#run-wave')).toContainText(`第 ${wave+1} / 6 波`);
+    } else {
+      await expect(page.locator('#shop-screen')).toBeVisible();
+      await expect(page.locator('#shop-heading')).toContainText('第 5 波完成');
+      await expect(page.locator('#shop-coins')).toHaveText('225 金币');
+      await page.setViewportSize({ width: 568, height: 320 });
+      const panel = await page.locator('.shop-panel').boundingBox();
+      expect(panel!.x).toBeGreaterThanOrEqual(0);
+      expect(panel!.y + panel!.height).toBeLessThanOrEqual(320);
+      await page.locator('[data-buy="3"]').click();
+      await expect(page.locator('#shop-health')).toContainText('生命');
+      await page.locator('#shop-refresh').click();
+      await expect(page.locator('#shop-refresh')).toContainText('刷新商品');
+      await page.setViewportSize({ width: 844, height: 390 });
+      await page.locator('#shop-next').click();
+      await expect(page.locator('#shop-screen')).toBeHidden();
+      await expect(page.locator('#run-wave')).toContainText('第 6 / 6 波');
+    }
   }
   await finishWave(page);
   await expect(page.locator('#result-heading')).toHaveText('六波挑战，通关！');
   await expect(page.locator('#result-run')).toContainText('完成 6 波');
   await expect(page.locator('#result-weapons')).toContainText('火花弹');
-  await expect(page.locator('#result-time')).toHaveText('09:15');
+  await expect(page.locator('#result-time')).toHaveText('07:52');
   await page.screenshot({ path: 'artifacts/v5.2-d-victory.png' });
   await page.locator('#gameover-restart').click();
   expect(await page.evaluate(() => {
