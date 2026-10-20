@@ -56,7 +56,7 @@ export class RunFlow {
   private escortFor(combat: Combat, stage: DirectorStage, pulse: 0 | 1): EnemyKind {
     if (pulse >= stage.escortPulses || this.spawnIndex % stage.escortEvery !== 0 || !stage.escorts.length) return 'normal';
     const kind = stage.escorts[(this.spawnIndex * 2 + pulse) % stage.escorts.length];
-    const alive = combat.enemies.filter(e => e.active && e.kind === kind).length;
+    const alive = combat.enemies.filter(e => e.active && !e.rank && e.kind === kind).length;
     return alive < (kind === 'fast' ? stage.fastCap : stage.tankCap) ? kind : 'normal';
   }
 
@@ -107,9 +107,9 @@ export class RunFlow {
       this.pendingClock -= dt;
       if (this.pendingClock <= 0) {
         const allowed = this.pendingEscort === 'fast'
-          ? combat.enemies.filter(e => e.active && e.kind === 'fast').length < stage.fastCap
+          ? combat.enemies.filter(e => e.active && !e.rank && e.kind === 'fast').length < stage.fastCap
           : this.pendingEscort === 'tank'
-            ? combat.enemies.filter(e => e.active && e.kind === 'tank').length < stage.tankCap : true;
+            ? combat.enemies.filter(e => e.active && !e.rank && e.kind === 'tank').length < stage.tankCap : true;
         combat.spawnSwarm(player, this.pendingSwarm, swarmCap, allowed ? this.pendingEscort : 'normal');
         this.pendingSwarm = 0;
         this.pendingClock = 0;
