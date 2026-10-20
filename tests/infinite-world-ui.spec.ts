@@ -129,6 +129,35 @@ test('teleporting across many chunks does not accumulate chunk groups or materia
   expect(result.scene.chunks).toBe(9);
 });
 
+
+test('crossing many chunk boundaries reuses the same nine GPU chunk slots', async ({ page }) => {
+  await start(page);
+  const result = await page.evaluate(() => {
+    const game = (window as any).game;
+    game.sleep();
+    const terrain = game.world.group.getObjectByName('无尽草场') as any;
+    const original = [...terrain.children] as any[];
+    const textures = new Set(original.map(chunk =>
+      chunk.children.find((child: any) => child.name === '像素草地与泥路').material.map));
+    const sprites = new Set(original.flatMap(chunk => chunk.children.filter((child: any) => child.isInstancedMesh)));
+    let stable = true;
+    const positions = [[64, 0], [128, 0], [128, 64], [128, 128],
+      [0, 128], [-128, 64], [-128, -64], [0, 0]];
+    for (const [x, z] of positions) {
+      game.position.set(x, 0, z);
+      game.previousPosition.copy(game.position);
+      game.step(1 / 60);
+      stable &&= terrain.children.length === 9 && terrain.children.every((chunk: any) => {
+        const ground = chunk.children.find((child: any) => child.name === '像素草地与泥路');
+        return original.includes(chunk) && textures.has(ground.material.map) &&
+          chunk.children.filter((child: any) => child.isInstancedMesh).every((mesh: any) => sprites.has(mesh));
+      });
+    }
+    return { stable, chunks: terrain.children.length, textures: textures.size, sprites: sprites.size };
+  });
+  expect(result).toEqual({ stable: true, chunks: 9, textures: 9, sprites: 36 });
+});
+
 test('menu keeps finite random meadow and original boundary', async ({ page }) => {
   await start(page);
   await page.locator('#pause').click();
