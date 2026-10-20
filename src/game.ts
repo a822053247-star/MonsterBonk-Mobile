@@ -385,7 +385,7 @@ export class Game {
     (document.activeElement as HTMLElement | null)?.blur();
     this.welcome.classList.remove('faded');
     this.welcome.querySelector('h2')!.textContent = this.combat.fusionEnabled && species !== 'yanrong' ? `${CREATURES[species].name}，准备出发。` : this.combat.fusionEnabled ? '一簇火花，生长成烈焰。' : partyPrototype ? '草场已就绪，出发吧。' : this.challenge ? '三波迎战，冲出一条路。' : this.combat.isTrial ? '犄角已就绪，冲出一条路。' : '小小魔法，准备就绪。';
-    this.welcome.querySelector('p')!.textContent = this.combat.fusionEnabled && species !== 'yanrong' ? `${CREATURES[species].name}出战 · 摇杆移动 · 自动攻击 · 升级三选一` : this.combat.fusionEnabled ? '六波自动战斗 · 升级形成融合 · 波次间购物与恢复' : partyPrototype && variant === 'legacy-party' ? '三兽兼容模式 · 主控移动，伙伴跟随并自动攻击' : partyPrototype ? '摇杆操控焰绒 · 自动攻击 · 沿泥路绕过林地与水岸' : this.challenge ? '击败三波即可通关 · 冲锋命中 6 次、打断 2 次各加一星' : this.combat.isTrial ? '冲刺命中可击退和打断 · 留意黄色扑击预警线' : '移动躲避敌人，焰绒会自动施法 · 靠近拾取经验';
+    this.welcome.querySelector('p')!.textContent = this.combat.fusionEnabled && species !== 'yanrong' ? `${CREATURES[species].name}出战 · 摇杆移动 · 自动攻击 · 升级三选一` : this.combat.fusionEnabled ? '六波自动战斗 · 升级形成融合 · 前四波连续迎战，第五波后才可购物' : partyPrototype && variant === 'legacy-party' ? '三兽兼容模式 · 主控移动，伙伴跟随并自动攻击' : partyPrototype ? '摇杆操控焰绒 · 自动攻击 · 沿泥路绕过林地与水岸' : this.challenge ? '击败三波即可通关 · 冲锋命中 6 次、打断 2 次各加一星' : this.combat.isTrial ? '冲刺命中可击退和打断 · 留意黄色扑击预警线' : '移动躲避敌人，焰绒会自动施法 · 靠近拾取经验';
     this.accumulator = 0;
     this.placeCamera(true);
     this.updateHUD();
@@ -481,6 +481,12 @@ export class Game {
 
   private step(dt: number) {
     if (this.mode !== 'playing') return;
+    if (this.run?.phase === 'intermission') {
+      this.run.updateRest(dt, this.combat);
+      this.syncRunPhase();
+      this.updateHUD();
+      return;
+    }
     this.combat.useNavigation = this.partyPrototype && this.world.sampleActive;
     if (this.combat.progression.awaitingChoice && !this.combat.encounters.dying) { this.openUpgrade(); return; }
     if (this.run && this.run.remaining <= 1e-8) { this.run.resolveBoundary(this.combat); if (this.syncRunPhase()) return; }
@@ -591,6 +597,15 @@ export class Game {
   private syncRunPhase() {
     if (!this.run) return false;
     if (this.run.phase === 'won' || this.run.phase === 'lost') { this.endRun(this.run.phase === 'won' ? 'victory' : 'defeat'); return true; }
+    if (this.run.phase === 'intermission') {
+      // Stay on the battlefield for a real visual rest: no combat/AI advances.
+      this.input.setEnabled(false); this.velocity.set(0, 0);
+      this.previousPosition.copy(this.position);
+      document.getElementById('hud')!.inert = false;
+      this.updateHUD();
+      return true;
+    }
+    if (this.run.phase === 'fighting' && !this.input.enabled) this.input.setEnabled(true);
     if (this.run.phase === 'shop') {
       this.mode = 'shop'; this.input.setEnabled(false); this.velocity.set(0, 0);
       this.previousPosition.copy(this.position); this.partyView.stopAnimation(); this.sleep();
@@ -783,6 +798,17 @@ export class Game {
         this.welcome.querySelector('p')!.textContent = this.challenge.definition.hint;
       }
       this.welcome.classList.toggle('faded', !resting && this.challenge.waveTime > (this.challenge.wave === 0 ? 5 : 2));
+    } else if (this.run?.phase === 'intermission') {
+      const shopping = this.run.wave === 5;
+      this.welcome.querySelector('h2')!.textContent = shopping ? '第五波完成 · 魔法商店即将开放' : `第 ${this.run.wave} 波完成！`;
+      this.welcome.querySelector('p')!.textContent = shopping
+        ? `${Math.ceil(this.run.intermissionRemaining)} 秒后进入商店 · 准备最终 Boss 战`
+        : `${Math.ceil(this.run.intermissionRemaining)} 秒后进入第 ${this.run.wave + 1} 波 · 已回收经验`;
+      this.welcome.classList.remove('faded');
+    } else if (this.run && this.run.waveElapsed < 3 && this.run.wave > 1) {
+      this.welcome.querySelector('h2')!.textContent = `第 ${this.run.wave} 波 · ${this.run.wave === 6 ? '最终决战' : '怪潮来袭'}`;
+      this.welcome.querySelector('p')!.textContent = this.run.wave === 6 ? '荆冠兽王登场 · 留意攻击预警' : '开始新一波战斗';
+      this.welcome.classList.remove('faded');
     } else this.welcome.classList.toggle('faded', this.elapsed > 5 || this.distance > 8);
     this.boundaryHint.hidden = Math.hypot(this.position.x, this.position.z) < WORLD_RADIUS - 1.2;
     const hp = this.combat.hp, maxHp = this.combat.maxHp;
