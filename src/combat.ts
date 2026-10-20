@@ -12,7 +12,7 @@ import { GroundNavigation } from './navigation';
 import { BURST_SEED, resolveFusions, DEEP_BUBBLE, CHAIN_BUBBLE, THORN_SCATTER, JUMP_THORN, ELEMENTAL_RULES, type FusionId } from './fusion';
 
 /** Combat owns no DOM/GPU state. Every clock and movement is measured in seconds. */
-export const COMBAT_LIMITS = { enemies: 48, projectiles: 24, orbs: 96, effects: 48, shockwaves: 2 } as const;
+export const COMBAT_LIMITS = { enemies: 256, projectiles: 24, orbs: 96, effects: 48, shockwaves: 2 } as const;
 export type EnemyKind = 'normal' | 'fast' | 'tank';
 export const ENEMY_TYPES = {
   normal: { name: '赤团', hp: 30, speed: 1.25, radius: 0.55, damage: 8, xp: 3, color: '#e59472' },
@@ -21,7 +21,7 @@ export const ENEMY_TYPES = {
 } as const;
 export const WEAPON = { range: 10.5, interval: 0.44, speed: 18, damage: 18, lifetime: 0.8, radius: 0.2 } as const;
 export const FORMAL_POUNCE = { ...POUNCE, range: 6, windup: .85, speed: 13, duration: .5, recovery: 1.1, cooldown: 2 } as const;
-export const SWARM_RULES = { health: [12, 14, 16, 18, 20], minDistance: 8, maxDistance: 12, halfAngle: .42, xp: 1, killsPerCoin: 3 } as const;
+export const SWARM_RULES = { health: [12, 14, 16, 18, 20, 22], minDistance: 7.5, maxDistance: 14, halfAngle: .42, laneAngle: .78, xp: 1, killsPerXp: 3, killsPerCoin: 9, contactDamage: 3 } as const;
 type Point = { x: number; z: number };
 type Obstacle = Point & { radius: number };
 type Moving = Point & { previousX: number; previousZ: number; active: boolean };
@@ -53,6 +53,7 @@ export class Combat {
   automaticSpawning = true;
   goldEarned = 0;
   private swarmCoinRemainder = 0;
+  private swarmExperienceRemainder = 0;
   readonly runBuild = new RunBuild();
   get usesRunBuild() { return this.fusionEnabled && !!this.party; }
   private tick = 0;
@@ -149,6 +150,7 @@ export class Combat {
     this.navigation.invalidate();
     this.tick = this.bursts = this.childShots = this.goldEarned = 0;
     this.swarmCoinRemainder = 0;
+    this.swarmExperienceRemainder = 0;
     this.melee.attackInstanceId = 0; this.melee.age = 0; this.melee.hitIds.fill(0);
     this.nextWeapon = this.launchClock = this.childrenThisTick = this.childWindow = this.childrenInWindow = 0;
     this.salvo = undefined;
@@ -187,7 +189,8 @@ export class Combat {
   }
 
   private spawnNear(player: Point) {
-    if (this.enemies.every(enemy => enemy.active)) return;
+    // Legacy auto-spawn modes preserve their prior 48-enemy ceiling.
+    if (this.enemies.filter(enemy => enemy.active).length >= 48) return;
     if (this.useNavigation) {
       const point = this.spawnPosition(player, 8, 12, ENEMY_TYPES.tank.radius);
       if (!point) return;
@@ -247,7 +250,8 @@ export class Combat {
     let spawned = 0;
     for (let i = 0; i < available; i++) {
       const kind = i === available-1 ? escort : 'normal';
-      const point = i === 0 ? anchor : this.spawnPosition(player, SWARM_RULES.minDistance, SWARM_RULES.maxDistance, ENEMY_TYPES[kind].radius, heading);
+      const lane = i % 3 === 1 ? -SWARM_RULES.laneAngle : i % 3 === 2 ? SWARM_RULES.laneAngle : 0;
+      const point = i === 0 ? anchor : this.spawnPosition(player, SWARM_RULES.minDistance, SWARM_RULES.maxDistance, ENEMY_TYPES[kind].radius, heading + lane);
       if (!point) continue;
       const enemy = this.spawn(kind, point.x, point.z);
       if (!enemy) break;
@@ -545,7 +549,7 @@ export class Combat {
         const type = ENEMY_TYPES[enemy.kind];
         // Relative sweep catches a fast pounce crossing the player between ticks.
         const pounceHit = this.hasAttackIntents && (enemy.intent === 'pounce' || enemy.rank === 'boss') && segmentHit(enemy.previousX - this.previousAnchorX, enemy.previousZ - this.previousAnchorZ, enemy.x - player.x, enemy.z - player.z, 0, 0, this.enemyRadius(enemy) + 0.62) !== Infinity;
-        if ((pounceHit || Math.hypot(enemy.x - player.x, enemy.z - player.z) < this.enemyRadius(enemy) + 0.62) && (!this.encounters.enabled || !this.covered(enemy.x,enemy.z,player.x,player.z))) damage = Math.max(damage, enemy.rank === 'boss' ? 24 : type.damage);
+        if ((pounceHit || Math.hypot(enemy.x - player.x, enemy.z - player.z) < this.enemyRadius(enemy) + 0.62) && (!this.encounters.enabled || !this.covered(enemy.x,enemy.z,player.x,player.z))) damage = Math.max(damage, enemy.rank === 'boss' ? 24 : enemy.swarm ? SWARM_RULES.contactDamage : type.damage);
       }
       if (damage > 0) {
         this.hitPlayer(damage);
@@ -886,7 +890,13 @@ export class Combat {
       }
       if (enemy.rank === 'boss') this.encounters.killedBoss(this);
       else {
-        this.dropExperience(enemy.x, enemy.z, enemy.rank === 'elite' ? 24 : enemy.swarm ? SWARM_RULES.xp : ENEMY_TYPES[enemy.kind].xp);
+        let experience = enemy.rank === 'elite' ? 24 : ENEMY_TYPES[enemy.kind].xp;
+        if (enemy.swarm) {
+          this.swarmExperienceRemainder++;
+          experience = this.swarmExperienceRemainder === SWARM_RULES.killsPerXp ? SWARM_RULES.xp : 0;
+          if (experience) this.swarmExperienceRemainder = 0;
+        }
+        if (experience) this.dropExperience(enemy.x, enemy.z, experience);
         this.effect(enemy.x, enemy.z, 'death', enemy.kind, 0, undefined, enemy);
       }
     }
