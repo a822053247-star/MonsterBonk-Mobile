@@ -11,18 +11,43 @@ export class RunShop {
   private offers: ShopItem[] = [];
   private revision = 1;
   refreshes = 0;
+  private paidRefreshes = 0;
+  private freeRefreshes: number;
+  get treasureRefreshes() { return this.freeRefreshes; }
   get items(): readonly ShopItem[] { return this.offers; }
   get token() { return `${this.session}:${this.revision}`; }
-  get refreshCost() { return 5 + this.refreshes * 5; }
+  get refreshCost() { return this.freeRefreshes ? 0 : 5 + this.paidRefreshes * 5; }
   get canRefresh() { return this.candidates.length > 0; }
 
-  constructor(private combat: Combat, private session: number, private random: () => number = Math.random) { this.roll(); }
+  constructor(private combat: Combat, private session: number, private random: () => number = Math.random, treasureRefreshes = 0) {
+    this.freeRefreshes = Math.min(1, Math.max(0, Math.floor(treasureRefreshes) || 0));
+    this.roll();
+  }
 
   private get candidates() { return this.combat.progression.skills.filter(s => this.combat.progression.canGrant(s.id)); }
   private choose(list: readonly SkillDefinition[], used: Set<SkillId>) {
     const candidates = list.filter(s => !used.has(s.id));
     return candidates[Math.min(candidates.length - 1, Math.floor(this.random() * candidates.length))];
   }
+  /** One shop slot always advances something already present in the player's build.
+   * It offers options, not a free skill: all ordinary costs and prerequisites apply. */
+  private buildRelevant(normal: readonly SkillDefinition[], used: Set<SkillId>) {
+    const built = this.combat.runBuild;
+    const ranks = this.combat.progression.ranks;
+    const order: SkillId[] = [];
+    if (built.has('spark') && !ranks['split-on-hit']) order.push('split-on-hit');
+    if (built.has('bubble') && !ranks.area) order.push('area');
+    if ((built.has('bubble') || built.has('leaf')) && !ranks.chain) order.push('chain');
+    if (built.has('leaf') && !ranks['split-on-hit']) order.push('split-on-hit');
+    for (const attack of built.attacks) order.push(`${attack.attackId}-weapon` as SkillId);
+    order.push('haste', 'damage', 'orbit', 'shockwave', 'vitality', 'range', 'movement');
+    for (const id of order) {
+      const skill = normal.find(s => s.id === id && !used.has(id));
+      if (skill) return skill;
+    }
+    return this.choose(normal, used);
+  }
+
   private reward(skill: SkillDefinition | undefined, used: Set<SkillId>): ShopItem {
     if (!skill) return { kind: 'empty', title: '构筑已完善', benefit: '当前没有适用商品，可直接进入下一波。', price: 0, sold: false };
     used.add(skill.id);
@@ -35,7 +60,7 @@ export class RunShop {
     const normal = all.filter(s => !s.category), rare = all.filter(s => s.category);
     this.offers = [
       this.reward(this.choose(normal.filter(s => WEAPON_CARDS[s.id] && !this.combat.runBuild.has(WEAPON_CARDS[s.id]!)), used) ?? this.choose(normal.filter(s => WEAPON_CARDS[s.id]), used) ?? this.choose(normal, used), used),
-      this.reward(this.choose(normal.filter(s => ['split-on-hit', 'area', 'chain'].includes(s.id)), used) ?? this.choose(normal, used), used),
+      this.reward(this.buildRelevant(normal, used), used),
       this.reward(this.choose(rare, used) ?? this.choose(normal, used), used),
     ];
     this.offers.push(this.combat.hp < this.combat.maxHp
@@ -64,7 +89,10 @@ export class RunShop {
 
   refresh(token: string, coins: number): number | undefined {
     if (token !== this.token || !Number.isSafeInteger(coins) || coins < this.refreshCost || this.combat.hp <= 0 || !this.candidates.length) return;
-    const balance = coins - this.refreshCost;
+    const cost = this.refreshCost;
+    const balance = coins - cost;
+    if (this.freeRefreshes) this.freeRefreshes--;
+    else this.paidRefreshes++;
     this.refreshes++; this.revision++; this.roll(); return balance;
   }
 }

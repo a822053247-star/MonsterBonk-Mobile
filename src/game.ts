@@ -181,8 +181,9 @@ export class Game {
     click('shop-refresh', () => {
       if (!this.canShop() || !this.run) return;
       const token = document.getElementById('shop-refresh')!.dataset.shopToken!;
+      const free = this.run.shop?.treasureRefreshes ? true : false;
       const refreshed = this.run.refresh(token);
-      document.getElementById('shop-message')!.textContent = refreshed ? '商品已刷新。' : '暂时无法刷新。';
+      document.getElementById('shop-message')!.textContent = refreshed ? free ? '携宝兽奖励：免费刷新成功。' : '商品已刷新。' : '暂时无法刷新。';
       renderRunShop(this.run, this.combat); this.updateHUD();
     });
     click('shop-next', () => {
@@ -596,7 +597,8 @@ export class Game {
       this.combatView.clear(); this.renderer.render(this.scene, this.camera);
       document.getElementById('hud')!.inert = true;
       document.getElementById('shop-screen')!.hidden = false;
-      document.getElementById('shop-message')!.textContent = `本波奖励 +${this.run.definition.reward} 金币`;
+      const growth = this.run.lastWaveGrowth;
+      document.getElementById('shop-message')!.textContent = `本波奖励 +${this.run.definition.reward} 金币${growth.sporeBonus ? ` · 爆孢连锁 +${growth.sporeBonus} 金币` : ''}${growth.treasureCaught ? ' · 携宝兽奖励免费刷新' : ''}`;
       renderRunShop(this.run, this.combat); this.updateHUD();
       document.getElementById('shop-next')!.focus({ preventScroll: true }); this.wake(); return true;
     }

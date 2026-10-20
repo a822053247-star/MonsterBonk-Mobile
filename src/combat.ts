@@ -62,6 +62,8 @@ export class Combat {
   private crystalExperienceRemainder = 0;
   sporeKills = 0;
   treasureEscapes = 0;
+  /** Genuine treasure-runner kills in formal mode, shared only as shop entitlement data. */
+  treasureCaught = 0;
   /** Passive diagnostic counters; never influence combat decisions or the RNG. */
   readonly balanceTelemetry = { damageEvents: 0, projectileBlockedAttempts: 0, sporeChainKills: 0 };
   readonly sporeExplosions: SporeExplosion[] = Array.from({ length: SPORE_BOMBER.capacity }, () => ({ active: false, x: 0, z: 0, createdAt: 0, age: 0, detonated: false, sourceEnemyId: 0, origin: 'player' }));
@@ -169,7 +171,7 @@ export class Combat {
     this.tick = this.bursts = this.childShots = this.goldEarned = 0;
     this.swarmCoinRemainder = 0;
     this.swarmExperienceRemainder = 0;
-    this.crystalCoinRemainder = this.crystalExperienceRemainder = this.sporeKills = this.treasureEscapes = 0;
+    this.crystalCoinRemainder = this.crystalExperienceRemainder = this.sporeKills = this.treasureEscapes = this.treasureCaught = 0;
     this.balanceTelemetry.damageEvents = this.balanceTelemetry.projectileBlockedAttempts = this.balanceTelemetry.sporeChainKills = 0;
     this.melee.attackInstanceId = 0; this.melee.age = 0; this.melee.hitIds.fill(0);
     this.nextWeapon = this.launchClock = this.childrenThisTick = this.childWindow = this.childrenInWindow = 0;
@@ -1013,6 +1015,7 @@ export class Combat {
           if (this.swarmCoinRemainder === SWARM_RULES.killsPerCoin) { this.goldEarned++; this.swarmCoinRemainder = 0; }
         } else this.goldEarned += treasure ? TREASURE_RUNNER.coins : enemy.rank === 'boss' ? 0 : enemy.rank === 'elite' ? 18 : enemy.kind === 'tank' ? 2 : 1;
         if (treasure) {
+          this.treasureCaught++;
           const reward = this.treasureRewards.find(e => !e.active) ?? this.treasureRewards.reduce((oldest,e) => e.age > oldest.age ? e : oldest);
           Object.assign(reward, { active: true, x: enemy.x, z: enemy.z, age: 0, coins: TREASURE_RUNNER.coins });
         }
@@ -1104,7 +1107,7 @@ export class Combat {
   inspect() {
     return {
       balanceTelemetry: { ...this.balanceTelemetry },
-      specialEnemies: { sporeKills: this.sporeKills, treasureEscapes: this.treasureEscapes, explosions: this.sporeExplosions.filter(e => e.active).map(e => ({...e})), rewards: this.treasureRewards.filter(e => e.active).map(e => ({...e})) },
+      specialEnemies: { sporeKills: this.sporeKills, treasureEscapes: this.treasureEscapes, treasureCaught: this.treasureCaught, explosions: this.sporeExplosions.filter(e => e.active).map(e => ({...e})), rewards: this.treasureRewards.filter(e => e.active).map(e => ({...e})) },
       build: { enabled: this.usesRunBuild, species: this.runBuild.species, relics: [...this.runBuild.relics], evolution: this.runBuild.evolution ?? null, attacks: this.runBuild.attacks.map(attack => ({ ...attack })) },
       melee: { ...this.melee, hitIds: Array.from(this.melee.hitIds).filter(Boolean) },
       firing: { weapon: this.salvo?.attackId ?? null, remaining: this.salvo ? this.salvo.total - this.salvo.index : 0, gap: this.launchClock },

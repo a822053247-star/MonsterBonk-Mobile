@@ -26,6 +26,10 @@ export class RunFlow {
   failure: 'health' | 'boss-timeout' | null = null;
   shop?: RunShop;
   private collectedGold = 0;
+  private settledTreasureCaught = 0;
+  private settledSporeChains = 0;
+  /** Per-wave reward summary, useful for the existing shop status text. */
+  lastWaveGrowth = { treasureCaught: 0, sporeBonus: 0 };
   private spawnClock = 1.2;
   private spawnIndex = 0;
   private pendingSwarm = 0;
@@ -192,12 +196,20 @@ export class RunFlow {
       this.claimedExperience = true;
     }
     if (combat.progression.awaitingChoice && this.wave < RUN_WAVES.length) return;
+    // One-time boundary settlement: deferred upgrade choices cannot duplicate rewards.
+    const treasureCaught = Math.max(0, combat.treasureCaught - this.settledTreasureCaught);
+    const sporeChains = Math.max(0, combat.balanceTelemetry.sporeChainKills - this.settledSporeChains);
+    this.settledTreasureCaught = combat.treasureCaught;
+    this.settledSporeChains = combat.balanceTelemetry.sporeChainKills;
+    const sporeBonus = Math.min(sporeChains, 3) * 3;
+    this.lastWaveGrowth = { treasureCaught, sporeBonus };
+    this.coins += sporeBonus; this.earned += sporeBonus;
     combat.clearWave();
     this.pendingSwarm = this.pendingClock = 0;
     this.completedWaves++;
     this.coins += this.definition.reward; this.earned += this.definition.reward;
     this.phase = this.wave === RUN_WAVES.length ? 'won' : 'shop';
-    if (this.phase === 'shop') this.shop = new RunShop(combat, this.wave, this.random);
+    if (this.phase === 'shop') this.shop = new RunShop(combat, this.wave, this.random, treasureCaught);
   }
 
   updateRest(dt: number) { if (this.phase === 'shop' && Number.isFinite(dt) && dt > 0) this.restElapsed += dt; }
@@ -236,8 +248,8 @@ export class RunFlow {
   inspect() {
     return { phase: this.phase, wave: this.wave, waves: RUN_WAVES.length, completedWaves: this.completedWaves, remaining: this.remaining,
       combatElapsed: this.combatElapsed, restElapsed: this.restElapsed, totalElapsed: this.totalElapsed, coins: this.coins, earned: this.earned,
-      bossDefeated:this.bossDefeated,failure:this.failure,
+      bossDefeated:this.bossDefeated,failure:this.failure, growth: { ...this.lastWaveGrowth },
       director: { beat: directorStage(this.wave, this.waveElapsed).beat, stage: directorStage(this.wave, this.waveElapsed) },
-      shop: this.shop ? { token: this.shop.token, refreshCost: this.shop.refreshCost, items: this.shop.items.map(s => ({ ...s })) } : null };
+      shop: this.shop ? { token: this.shop.token, refreshCost: this.shop.refreshCost, treasureRefreshes: this.shop.treasureRefreshes, items: this.shop.items.map(s => ({ ...s })) } : null };
   }
 }
