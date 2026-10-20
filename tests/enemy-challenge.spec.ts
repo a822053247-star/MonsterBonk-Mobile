@@ -72,7 +72,7 @@ test('elite has a dodgeable pulse and pays gold and XP exactly once through shar
   const c=fixture(); c.encounters.beginWave(4);
   const elite=c.encounters.spawnElite(c,origin)!; Object.assign(elite,{x:2,z:0,spawnTime:0}); c.encounters.eliteCooldown=0;
   advance(c,.8); expect(c.encounters.elitePulsing).toBe(true); expect(c.hp).toBe(100);
-  advance(c,.4); expect(c.hp).toBe(82);
+  advance(c,.6); expect(c.hp).toBe(100-ENCOUNTER_RULES.elitePulseDamage);
   (c as any).damageEnemy(elite,1000,0,0); (c as any).damageEnemy(elite,1000,0,0);
   expect(c.goldEarned).toBe(18); expect(c.kills).toBe(1); expect(c.orbs.filter(o=>o.active).reduce((s,o)=>s+o.value,0)).toBe(24);
   const reused=c.spawn('normal',8,0,0);expect(reused).not.toBe(elite);expect(elite.active).toBe(false);
