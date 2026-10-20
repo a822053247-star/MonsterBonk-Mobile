@@ -100,11 +100,15 @@ type Chunk = { group: THREE.Group; layout: InfiniteChunkLayout; instances: THREE
  * Each 64x64 chunk is 1024x1024 texture pixels, not a stretched 4x grass tile.
  * Edge roads meet at (0, 32)/(64, 32) and (32, 0)/(32, 64) in every chunk.
  */
-function bakeChunkGround(images: readonly HTMLImageElement[], layout: InfiniteChunkLayout) {
-  const canvas = document.createElement('canvas');
+function bakeChunkGround(images: readonly HTMLImageElement[], layout: InfiniteChunkLayout, reused?: THREE.Texture) {
+  // Keep the canvas and WebGL texture when moving a chunk slot. Reset the 2D
+  // transform so reusing a canvas never compounds its 16px/unit scale.
+  const canvas = (reused?.image as HTMLCanvasElement | undefined) ?? document.createElement('canvas');
   const size = CHUNK_SIZE * PIXELS_PER_UNIT;
-  canvas.width = canvas.height = size;
+  if (!reused) canvas.width = canvas.height = size;
   const ctx = canvas.getContext('2d')!;
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.clearRect(0, 0, size, size);
   ctx.imageSmoothingEnabled = false;
   ctx.scale(PIXELS_PER_UNIT, PIXELS_PER_UNIT);
   const pattern = (image: HTMLImageElement) => {
@@ -150,6 +154,10 @@ function bakeChunkGround(images: readonly HTMLImageElement[], layout: InfiniteCh
   for (const p of layout.water) disk(p, p.radius + .14, '#588779');
   for (const p of layout.water) disk(p, p.radius, pattern(images[3]));
   for (const p of layout.water) disk(p, p.radius, 'rgba(67, 130, 151, .42)');
+  if (reused) {
+    reused.needsUpdate = true;
+    return reused;
+  }
   return pixelTexture(canvas);
 }
 
@@ -159,6 +167,8 @@ export function createInfiniteWorld(initialSeed: string) {
   group.visible = false;
   const obstacles: Obstacle[] = [];
   const chunks = new Map<string, Chunk>();
+  // At most nine persistent GPU slots. Detached slots are repainted and moved.
+  const recycled: Chunk[] = [];
   const ownedTextures: THREE.Texture[] = [];
   const materials: THREE.Material[] = [];
   const groundGeometry = new THREE.PlaneGeometry(CHUNK_SIZE, CHUNK_SIZE);
@@ -181,17 +191,50 @@ export function createInfiniteWorld(initialSeed: string) {
     (chunk.group.userData.groundMaterial as THREE.Material).dispose();
   };
 
+  /** Retain detached GPU slots on reseed; actual disposal occurs on shutdown. */
   const release = () => {
-    for (const chunk of chunks.values()) disposeChunk(chunk);
+    for (const chunk of chunks.values()) {
+      group.remove(chunk.group);
+      recycled.push(chunk);
+    }
     chunks.clear();
     obstacles.length = 0;
+  };
+
+  const writeInstances = (
+    mesh: THREE.InstancedMesh,
+    points: readonly (readonly number[])[],
+    height: number,
+    aspect: number,
+  ) => {
+    // A chunk contains at most 17 trees total or 10 rocks.
+    if (points.length > mesh.instanceMatrix.count) throw new Error('Infinite chunk instance capacity exceeded');
+    mesh.count = points.length;
+    for (let i = 0; i < points.length; i++) {
+      dummy.position.set(points[i][0], .025, points[i][1]);
+      dummy.rotation.set(-Math.PI / 4, 0, 0);
+      dummy.scale.set(height * aspect, height, 1);
+      dummy.updateMatrix();
+      mesh.setMatrixAt(i, dummy.matrix);
+    }
+    mesh.instanceMatrix.needsUpdate = true;
+    mesh.computeBoundingSphere();
+  };
+
+  const placeChunk = (chunk: Chunk, layout: InfiniteChunkLayout) => {
+    chunk.layout = layout;
+    chunk.group.name = 'chunk:' + layout.cx + ':' + layout.cz;
+    chunk.group.position.set(layout.cx * CHUNK_SIZE - HALF, 0, layout.cz * CHUNK_SIZE - HALF);
+    for (let variant = 0; variant < 3; variant++) {
+      const trees = layout.trees.filter(tree => tree[2] === variant);
+      writeInstances(chunk.instances[variant], trees, variant === 2 ? 4.6 : 4.2, art[variant].aspect);
+    }
+    writeInstances(chunk.instances[3], layout.rocks, 1.25, art[3].aspect);
   };
 
   const build = (cx: number, cz: number): Chunk => {
     const layout = generateInfiniteChunk(seed, cx, cz);
     const tile = new THREE.Group();
-    tile.name = 'chunk:' + cx + ':' + cz;
-    tile.position.set(cx * CHUNK_SIZE - HALF, 0, cz * CHUNK_SIZE - HALF);
     const groundTexture = bakeChunkGround(images, layout);
     const groundMaterial = new THREE.MeshBasicMaterial({ map: groundTexture, color: '#ffffff', toneMapped: false });
     tile.userData.groundMaterial = groundMaterial;
@@ -201,25 +244,25 @@ export function createInfiniteWorld(initialSeed: string) {
     ground.position.set(HALF, 0, HALF);
     tile.add(ground);
 
-    const instances: THREE.InstancedMesh[] = [];
-    const addInstances = (points: readonly (readonly number[])[], material: THREE.MeshBasicMaterial, height: number, aspect: number) => {
-      if (!points.length) return;
-      const mesh = new THREE.InstancedMesh(spriteGeometry, material, points.length);
-      for (let i = 0; i < points.length; i++) {
-        dummy.position.set(points[i][0], .025, points[i][1]);
-        dummy.rotation.set(-Math.PI / 4, 0, 0);
-        dummy.scale.set(height * aspect, height, 1);
-        dummy.updateMatrix();
-        mesh.setMatrixAt(i, dummy.matrix);
-      }
-      mesh.instanceMatrix.needsUpdate = true;
-      mesh.computeBoundingSphere();
+    const instances: THREE.InstancedMesh[] = [
+      ...treeMaterials.map(mat => new THREE.InstancedMesh(spriteGeometry, mat, 17)),
+      new THREE.InstancedMesh(spriteGeometry, rockMaterial, 10),
+    ];
+    for (const mesh of instances) {
+      mesh.count = 0;
+      mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
       tile.add(mesh);
-      instances.push(mesh);
-    };
-    treeMaterials.forEach((mat, variant) => addInstances(layout.trees.filter(tree => tree[2] === variant), mat, variant === 2 ? 4.6 : 4.2, art[variant].aspect));
-    addInstances(layout.rocks, rockMaterial, 1.25, art[3].aspect);
-    return { group: tile, layout, instances, groundTexture };
+    }
+    const chunk: Chunk = { group: tile, layout, instances, groundTexture };
+    placeChunk(chunk, layout);
+    return chunk;
+  };
+
+  const reuse = (chunk: Chunk, cx: number, cz: number) => {
+    const layout = generateInfiniteChunk(seed, cx, cz);
+    bakeChunkGround(images, layout, chunk.groundTexture);
+    placeChunk(chunk, layout);
+    return chunk;
   };
 
   const update = (x: number, z: number) => {
@@ -232,14 +275,16 @@ export function createInfiniteWorld(initialSeed: string) {
       for (let dx = -ACTIVE_RADIUS; dx <= ACTIVE_RADIUS; dx++)
         wanted.add((centerX + dx) + ':' + (centerZ + dz));
     for (const [key, chunk] of chunks) if (!wanted.has(key)) {
-      disposeChunk(chunk);
       chunks.delete(key);
+      group.remove(chunk.group);
+      recycled.push(chunk);
     }
     for (let dz = -ACTIVE_RADIUS; dz <= ACTIVE_RADIUS; dz++)
       for (let dx = -ACTIVE_RADIUS; dx <= ACTIVE_RADIUS; dx++) {
         const cx = centerX + dx, cz = centerZ + dz, key = cx + ':' + cz;
         if (!chunks.has(key)) {
-          const chunk = build(cx, cz);
+          const slot = recycled.pop();
+          const chunk = slot ? reuse(slot, cx, cz) : build(cx, cz);
           chunks.set(key, chunk);
           group.add(chunk.group);
         }
@@ -284,6 +329,8 @@ export function createInfiniteWorld(initialSeed: string) {
     dispose() {
       disposed = true;
       release();
+      for (const chunk of recycled) disposeChunk(chunk);
+      recycled.length = 0;
       materials.forEach(material => material.dispose());
       ownedTextures.forEach(texture => texture.dispose());
       groundGeometry.dispose();
