@@ -62,6 +62,8 @@ export class Combat {
   private crystalExperienceRemainder = 0;
   sporeKills = 0;
   treasureEscapes = 0;
+  /** Passive diagnostic counters; never influence combat decisions or the RNG. */
+  readonly balanceTelemetry = { damageEvents: 0, projectileBlockedAttempts: 0, sporeChainKills: 0 };
   readonly sporeExplosions: SporeExplosion[] = Array.from({ length: SPORE_BOMBER.capacity }, () => ({ active: false, x: 0, z: 0, createdAt: 0, age: 0, detonated: false, sourceEnemyId: 0, origin: 'player' }));
   readonly treasureRewards: TreasureReward[] = Array.from({ length: TREASURE_RUNNER.rewardCapacity }, () => ({ active: false, x: 0, z: 0, age: 0, coins: 0 }));
   private fleeGoal = { x: 0, z: 0 };
@@ -168,6 +170,7 @@ export class Combat {
     this.swarmCoinRemainder = 0;
     this.swarmExperienceRemainder = 0;
     this.crystalCoinRemainder = this.crystalExperienceRemainder = this.sporeKills = this.treasureEscapes = 0;
+    this.balanceTelemetry.damageEvents = this.balanceTelemetry.projectileBlockedAttempts = this.balanceTelemetry.sporeChainKills = 0;
     this.melee.attackInstanceId = 0; this.melee.age = 0; this.melee.hitIds.fill(0);
     this.nextWeapon = this.launchClock = this.childrenThisTick = this.childWindow = this.childrenInWindow = 0;
     this.salvo = undefined;
@@ -541,7 +544,10 @@ export class Combat {
             const range = weapon.range * this.stats.rangeMultiplier;
             if (attack.cooldown > 1e-8 || !this.findTarget(member, range)) continue;
             const free = this.projectiles.filter(s => !s.active).length;
-            if (free < this.stats.projectileCount + (attack.slot ? this.stats.projectileCount : 0)) continue;
+            if (free < this.stats.projectileCount + (attack.slot ? this.stats.projectileCount : 0)) {
+              this.balanceTelemetry.projectileBlockedAttempts++;
+              continue;
+            }
             this.salvo = { attackId: attack.attackId, sourceId: member.id, species: member.species,
               damage: weapon.damage * this.stats.damageMultiplier * rules.damageMultiplier, range,
               total: Math.min(4, this.stats.projectileCount), index: 0, rules,
@@ -659,6 +665,7 @@ export class Combat {
   hitPlayer(damage: number) {
     if (this.hp <= 0 || this.invulnerability > 0) return;
     this.hp = Math.max(0,this.hp-damage); this.invulnerability=.85; this.hurtFlash=.25;
+    this.balanceTelemetry.damageEvents++;
     this.effect(this.anchorX,this.anchorZ,'hurt');
   }
   hostileWallHit(ax: number, az: number, bx: number, bz: number, radius: number) {
@@ -989,7 +996,10 @@ export class Combat {
     if (enemy.hp === 0) {
       enemy.active = false;
       this.kills++;
-      if (origin === 'spore') this.sporeKills++;
+      if (origin === 'spore') {
+        this.sporeKills++;
+        if (enemy.kind === 'draft-spore-bomber') this.balanceTelemetry.sporeChainKills++;
+      }
       if (enemy.kind === 'draft-spore-bomber') {
         const explosion = this.sporeExplosions.find(e => !e.active);
         if (explosion) Object.assign(explosion, { active: true, x: enemy.x, z: enemy.z, createdAt: this.elapsed, age: 0, detonated: false, sourceEnemyId: enemy.id, origin });
@@ -1093,6 +1103,7 @@ export class Combat {
 
   inspect() {
     return {
+      balanceTelemetry: { ...this.balanceTelemetry },
       specialEnemies: { sporeKills: this.sporeKills, treasureEscapes: this.treasureEscapes, explosions: this.sporeExplosions.filter(e => e.active).map(e => ({...e})), rewards: this.treasureRewards.filter(e => e.active).map(e => ({...e})) },
       build: { enabled: this.usesRunBuild, species: this.runBuild.species, relics: [...this.runBuild.relics], evolution: this.runBuild.evolution ?? null, attacks: this.runBuild.attacks.map(attack => ({ ...attack })) },
       melee: { ...this.melee, hitIds: Array.from(this.melee.hitIds).filter(Boolean) },
