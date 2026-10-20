@@ -67,7 +67,7 @@ test('water, grass, neutral skills and spore damage do not start martyr explosio
   const c = fixture(); c.grantUpgrade('draft-martyr-core');
   c.encounters.beginWave(2);
   const bomber = c.spawn('draft-spore-bomber',6,0,0)!, neighbor = c.spawn('normal',7.5,0,0)!;
-  hit(c,bomber,'bubble',100); tick(c,.71); tick(c);
+  hit(c,bomber,'bubble',bomber.hp); tick(c,.71); tick(c);
   expect(neighbor.active).toBe(false); expect(c.relicTelemetry.explosions).toBe(0);
 });
 

@@ -19,7 +19,7 @@ function fifthShop(f: ReturnType<typeof fixture>) {
   return f.run.shop!;
 }
 
-test('six waves have only one shop after wave five, plus distinct visible intermissions', () => {
+test('first wave connects seamlessly, later boundaries rest and only wave five has a shop', () => {
   const { c, run } = fixture();
   expect(SHOP_AFTER_WAVE).toBe(5);
   for(let wave=1; wave<=6; wave++) {
@@ -30,7 +30,10 @@ test('six waves have only one shop after wave five, plus distinct visible interm
     }
     expect(run.wave).toBe(wave);
     run.update(run.definition.seconds,c,origin);
-    if(wave<6) {
+    if(wave===1) {
+      expect(run.phase).toBe('fighting');expect(run.wave).toBe(2);
+      expect(run.intermissionRemaining).toBe(0);
+    } else if(wave<6) {
       expect(run.phase).toBe('intermission');
       expect(run.shop).toBeUndefined();
       run.updateRest(WAVE_INTERMISSION_SECONDS/2,c);
@@ -53,28 +56,37 @@ test('six waves have only one shop after wave five, plus distinct visible interm
   expect(run.phase).toBe('won');
   expect(run.completedWaves).toBe(6);
   expect(run.combatElapsed).toBe(455);
-  expect(run.totalElapsed).toBeCloseTo(455+5*WAVE_INTERMISSION_SECONDS+20);
+  expect(run.totalElapsed).toBeCloseTo(455+4*WAVE_INTERMISSION_SECONDS+20);
   expect(run.coins).toBe(225);
   expect(RUN_WAVES).toHaveLength(6);
 });
 
-test('wave boundary claims loose XP once and restores automatic progression after upgrade selection',()=>{
+test('first wave continues immediately with living enemies, loose XP and active combat state intact',()=>{
   const {c,run}=fixture();c.hp=73;
   Object.assign(c.orbs[0],{active:true,value:8});
-  c.spawn('tank',6,0,0);
+  run.prepare(c,origin);
+  const enemy=c.spawn('tank',6,0,0)!;
+  enemy.hp=37; enemy.burnTime=1.2; enemy.burnStacks=2;
+  c.invulnerability=.3; c.hurtFlash=.1;
+  Object.assign(c.projectiles[0],{active:true,life:1.5});
+  Object.assign(c.effects[0],{active:true,life:.3});
+  const previous=JSON.stringify({enemy,orb:c.orbs[0],shot:c.projectiles[0],effect:c.effects[0]});
   run.update(65,c,origin);
-  expect(run.phase).toBe('fighting');expect(c.progression.awaitingChoice).toBe(true);
-  expect(c.progression.totalExperience).toBe(8);
-  run.resolveBoundary(c);expect(c.progression.totalExperience).toBe(8);
-  expect(c.chooseUpgrade(c.progression.offers[0])).toBe(true);
-  run.resolveBoundary(c);
-  expect(run.phase).toBe('intermission');
-  expect(run.coins).toBe(35);expect(c.hp).toBe(73);
-  expect(c.enemies.some(e=>e.active)).toBe(false);
-  const before=run.coins;
-  run.resolveBoundary(c);expect(run.coins).toBe(before);
-  run.updateRest(WAVE_INTERMISSION_SECONDS,c);
   expect(run.phase).toBe('fighting');expect(run.wave).toBe(2);
+  expect(run.intermissionRemaining).toBe(0);expect(run.restElapsed).toBe(0);
+  expect(c.progression.awaitingChoice).toBe(false);expect(c.progression.totalExperience).toBe(0);
+  run.prepare(c,origin);
+  expect(JSON.stringify({enemy,orb:c.orbs[0],shot:c.projectiles[0],effect:c.effects[0]})).toBe(previous);
+  expect(c.invulnerability).toBe(.3);expect(c.hurtFlash).toBe(.1);
+  expect(c.kills).toBe(0);expect(run.completedWaves).toBe(1);
+  run.resolveBoundary(c);
+  expect(run.coins).toBe(35);expect(c.hp).toBe(73);
+  (c as any).damageEnemy(enemy,enemy.hp,0,0);
+  run.update(.01,c,origin);
+  expect(c.kills).toBe(1);expect(run.coins).toBe(37);
+  (c as any).damageEnemy(enemy,1000,0,0);
+  run.update(.01,c,origin);
+  expect(c.kills).toBe(1);expect(run.coins).toBe(37);
 });
 
 test('real kills earn gold once and cannot be recycled into duplicates',()=>{

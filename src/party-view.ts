@@ -69,7 +69,7 @@ export class PartyView {
     this.height = THREE.MathUtils.clamp(56 * frustumHeight / Math.max(1, viewportHeight), 2.65, 3.2);
   }
 
-  render(alpha: number, time: number, hurt = 0) {
+  render(alpha: number, time: number, hurt = 0, protection = 0) {
     for (let i = 0; i < this.party.capacity; i++) {
       const member = this.party.members[i];
       let pixel = this.pixels[i];
@@ -83,7 +83,7 @@ export class PartyView {
       pixel.group.position.set(THREE.MathUtils.lerp(member.previousX, member.x, alpha), 0, THREE.MathUtils.lerp(member.previousZ, member.z, alpha));
       const moving = Math.hypot(member.x - member.previousX, member.z - member.previousZ) > 0.001;
       const scale = i === 0 ? (this.animatedLeader ? ANIMATION_RULES.displayScale : 1) : 0.82;
-      pixel.render(this.height * scale, moving, time, i === 0 ? hurt : 0);
+      pixel.render(this.height * scale, moving, time, i === 0 ? hurt : 0, i === 0 ? protection : 0);
     }
     const leader = this.party.leader;
     const x = THREE.MathUtils.lerp(leader.previousX, leader.x, alpha), z = THREE.MathUtils.lerp(leader.previousZ, leader.z, alpha);

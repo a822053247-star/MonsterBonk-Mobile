@@ -9,7 +9,7 @@ import { elementalClip, type ElementalFusionId } from './fusion-pixels';
 import type { SkillId } from './progression';
 import { RunFlow } from './run-flow';
 import { ATTACKS } from './run-build';
-import { AdaptiveQuality, loadPreferences, savePreferences, type QualityMode } from './quality';
+import { AdaptiveQuality, loadPreferences, savePreferences, normalizeGameSpeed, type QualityMode } from './quality';
 import { GameAudio } from './audio';
 import { resize25DCamera, screenToGround, VIEW_25D } from './camera-25d';
 import { HORN, type DashStep, type Ruleset } from './trial';
@@ -68,6 +68,7 @@ export class Game {
   private dashRemaining = 0;
   private distance = 0;
   private accumulator = 0;
+  private intermissionHudSecond = -1;
   private lastTime = 0;
   private frameId = 0;
   private disposed = false;
@@ -133,6 +134,17 @@ export class Game {
     const click = (id: string, callback: () => void) => document.getElementById(id)!.addEventListener('click', callback, options);
     for (const id of ['settings', 'menu-settings', 'pause-settings']) click(id, () => this.openSettings());
     for (const id of ['close-settings', 'save-settings']) click(id, () => this.closeSettings());
+    click('game-speed', () => {
+      if (this.mode !== 'playing') return;
+      const steps = [1, 2, 3, 5, 10];
+      this.preferences.gameSpeed = steps.find(speed => speed > this.preferences.gameSpeed) ?? 1;
+      this.saveSettings();
+      document.getElementById('game-speed')!.blur();
+    });
+    document.getElementById('game-speed-setting')!.addEventListener('change', () => {
+      this.preferences.gameSpeed = normalizeGameSpeed(Number((document.getElementById('game-speed-setting') as HTMLSelectElement).value));
+      this.saveSettings();
+    }, options);
     document.getElementById('quality')!.addEventListener('change', () => {
       this.preferences.quality = (document.getElementById('quality') as HTMLSelectElement).value as QualityMode;
       this.quality.setMode(this.preferences.quality); this.applyGraphics(); this.saveSettings();
@@ -266,6 +278,12 @@ export class Game {
   }
 
   private syncSettings() {
+    const speed = this.preferences.gameSpeed;
+    (document.getElementById('game-speed-setting') as HTMLSelectElement).value = String(speed);
+    const speedButton = document.getElementById('game-speed')!;
+    speedButton.textContent = `${speed}×`;
+    speedButton.setAttribute('aria-label', `游戏速度：${speed}倍，点击切换`);
+    speedButton.classList.toggle('accelerated', speed > 1);
     (document.getElementById('quality') as HTMLSelectElement).value = this.preferences.quality;
     (document.getElementById('music-toggle') as HTMLInputElement).checked = this.preferences.music;
     (document.getElementById('sound-toggle') as HTMLInputElement).checked = this.preferences.sound;
@@ -346,6 +364,7 @@ export class Game {
     this.combatView.setPixelEnemies(partyPrototype && new URLSearchParams(window.location.search).get('enemyVisual') !== 'legacy');
     this.challenge = ruleset === 'horn-challenge' ? new Challenge() : undefined;
     this.outcome = null;
+    this.audio.setWave();
     this.audio.setActive(true); this.audio.unlock();
     this.position.set(0, 0, 0);
     this.previousPosition.copy(this.position);
@@ -354,6 +373,7 @@ export class Game {
     this.facing = 0;
     this.jumpHeight = this.previousJump = this.jumpVelocity = 0;
     this.elapsed = this.cooldown = this.dashRemaining = this.distance = 0;
+    this.intermissionHudSecond = -1;
     this.combat.reset(ruleset);
     this.run = this.combat.usesRunBuild ? new RunFlow() : undefined;
     if (this.run && new URLSearchParams(window.location.search).get('meleeDev') === 'flame-sweep') this.combat.grantUpgrade('flame-sweep-weapon');
@@ -417,6 +437,7 @@ export class Game {
   }
 
   private showMenu() {
+    this.audio.setWave();
     this.run = undefined; this.combat.automaticSpawning = true;
     document.getElementById('shop-screen')!.hidden = true;
     this.world.setSample(false);
@@ -484,7 +505,6 @@ export class Game {
     if (this.run?.phase === 'intermission') {
       this.run.updateRest(dt, this.combat);
       this.syncRunPhase();
-      this.updateHUD();
       return;
     }
     this.combat.useNavigation = this.partyPrototype && this.world.sampleActive;
@@ -572,8 +592,9 @@ export class Game {
     }
     this.combat.update(dt, this.position, this.dashAttack);
     if (this.partyPrototype && this.combat.hp > 0) this.partyView.stepAnimation(dt, (this.position.x - this.previousPosition.x) / dt, (this.position.z - this.previousPosition.z) / dt);
-    if (this.combat.shotsFired > shots) this.audio.play('cast');
+    this.audio.playSkills(this.combat.soundEvents);
     if (this.combat.hits > hits) this.audio.play('hit');
+    if (this.combat.shotsFired > shots) this.audio.play('cast');
     if (this.combat.collected > collected) this.audio.play('collect');
     if (this.combat.hp < hp) this.audio.play('hurt');
     if (this.combat.hp === 0) this.endRun();
@@ -595,17 +616,33 @@ export class Game {
   private canShop() { return this.mode === 'shop' && !document.hidden && !this.portrait && !this.contextLost; }
 
   private syncRunPhase() {
+    this.audio.setWave(this.run?.wave);
     if (!this.run) return false;
     if (this.run.phase === 'won' || this.run.phase === 'lost') { this.endRun(this.run.phase === 'won' ? 'victory' : 'defeat'); return true; }
     if (this.run.phase === 'intermission') {
       // Stay on the battlefield for a real visual rest: no combat/AI advances.
-      this.input.setEnabled(false); this.velocity.set(0, 0);
-      this.previousPosition.copy(this.position);
-      document.getElementById('hud')!.inert = false;
-      this.updateHUD();
+      if (this.intermissionHudSecond < 0) {
+        this.input.setEnabled(false); this.velocity.set(0, 0);
+        this.previousPosition.copy(this.position);
+        this.party.syncLeader(this.position, this.facing);
+        this.partyView.stopAnimation();
+        this.combatView.clear();
+        document.getElementById('hud')!.inert = false;
+      }
+      // Fixed-step catch-up must not rebuild the same DOM repeatedly. Combat is
+      // settled; only the displayed countdown changes during this phase.
+      const second = Math.ceil(this.run.intermissionRemaining);
+      if (second !== this.intermissionHudSecond) {
+        this.intermissionHudSecond = second;
+        this.updateHUD();
+      }
       return true;
     }
-    if (this.run.phase === 'fighting' && this.run.waveElapsed === 0) this.input.setEnabled(true);
+    if (this.intermissionHudSecond >= 0) {
+      this.intermissionHudSecond = -1;
+      if (this.run.phase === 'fighting') this.input.setEnabled(true);
+      this.updateHUD();
+    } else if (this.run.phase === 'fighting' && this.run.waveElapsed === 0) this.updateHUD();
     if (this.run.phase === 'shop') {
       this.mode = 'shop'; this.input.setEnabled(false); this.velocity.set(0, 0);
       this.previousPosition.copy(this.position); this.partyView.stopAnimation(); this.sleep();
@@ -859,9 +896,12 @@ export class Game {
     this.lastTime = time;
     if (this.mode === 'shop') { this.run?.updateRest(dt); this.frameId = window.requestAnimationFrame(this.frame); return; }
     if (this.quality.sample(rawDt)) this.applyGraphics();
-    this.visualTime += dt;
+    const speed = this.mode === 'playing' ? this.preferences.gameSpeed : 1;
+    this.visualTime += dt * speed;
     if (this.mode === 'playing') {
-      this.accumulator += dt;
+      // Retain 1/60-second collision/AI steps at every speed. A delayed frame
+      // stays bounded at 5 * 10 ticks; render cadence and audio use real time.
+      this.accumulator += dt * speed;
       while (this.mode === 'playing' && this.accumulator >= STEP) {
         this.accumulator -= STEP; this.step(STEP);
       }
@@ -872,13 +912,15 @@ export class Game {
       this.renderTime = time;
       if (this.mode !== 'menu') {
         this.monster.root.position.lerpVectors(this.previousPosition, this.position, this.accumulator / STEP);
-        this.updateHUD();
-        this.combatView.render(this.accumulator / STEP, this.visualTime, this.monster.root.position);
-        if (this.partyPrototype) this.partyView.render(this.accumulator / STEP, this.visualTime, this.combat.hurtFlash / 0.25);
+        if (this.run?.phase !== 'intermission') {
+          this.updateHUD();
+          this.combatView.render(this.accumulator / STEP, this.visualTime, this.monster.root.position);
+        }
+        if (this.partyPrototype) this.partyView.render(this.accumulator / STEP, this.visualTime, this.combat.hurtFlash / 0.25, this.combat.invulnerability);
         this.monster.body.visible = true;
       }
-    this.monster.animate(renderDt, Math.min(1, this.velocity.length() / 4.6), this.dashRemaining > 0, this.visualTime, THREE.MathUtils.lerp(this.previousJump, this.jumpHeight, this.accumulator / STEP), this.combat.hurtFlash / 0.25);
-      this.placeCamera(false, renderDt);
+    this.monster.animate(renderDt * speed, Math.min(1, this.velocity.length() / 4.6), this.dashRemaining > 0, this.visualTime, THREE.MathUtils.lerp(this.previousJump, this.jumpHeight, this.accumulator / STEP), this.combat.hurtFlash / 0.25);
+      this.placeCamera(false, renderDt * speed);
       this.world.update(this.position.x, this.position.z);
       this.monster.root.visible = !this.partyPrototype || !this.partyView.hasPixelLeader;
       this.renderer.render(this.scene, this.camera);
@@ -935,6 +977,7 @@ export class Game {
       position: { x: this.position.x, z: this.position.z },
       movement: { ...this.input.movement },
       elapsed: this.elapsed, cooldown: this.cooldown, distance: this.distance,
+      gameSpeed: this.preferences.gameSpeed,
       jumpHeight: this.jumpHeight,
       graphics: { mode: this.quality.mode, scale: this.quality.scale, targetFps: this.quality.targetFps, pixelRatio: this.renderer.getPixelRatio(), particles: this.combatView.detail },
       audio: this.audio.inspect(),

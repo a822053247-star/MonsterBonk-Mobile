@@ -1,10 +1,20 @@
-type Sound = 'cast' | 'hit' | 'hurt' | 'collect' | 'dash' | 'jump' | 'level';
-/** Original synthesized loop and effects; no downloads or third-party recordings. */
+import { SKILL_SOUNDS, SKILL_SOUND_PRIORITY, SOUND_RULES, synthesizeSound, type Sound } from './sound-design';
+type MusicTrack = 'original' | 'grassland' | 'boss';
+const MUSIC_FILES = { grassland: 'bgm-grassland.ogg', boss: 'BossBattle.ogg' } as const;
+/** Wave music and synthesized effects share the existing volume/lifecycle controls. */
 export class GameAudio {
   private context?: AudioContext;
   private musicGain?: GainNode;
   private effectsGain?: GainNode;
   private loop?: AudioBufferSourceNode;
+  private originalLoop?: AudioBuffer;
+  private track: MusicTrack = 'original';
+  private playingTrack?: MusicTrack;
+  private musicStarts = 0;
+  private musicBuffers = new Map<MusicTrack, AudioBuffer>();
+  private musicLoads = new Map<MusicTrack, Promise<AudioBuffer | undefined>>();
+  private failedTracks = new Set<MusicTrack>();
+  private requests = new AbortController();
   private buffers = new Map<Sound, AudioBuffer>();
   private voices = new Set<AudioBufferSourceNode>();
   private running = false;
@@ -12,6 +22,9 @@ export class GameAudio {
   private unavailable = false;
   private played = 0;
   private lastSound = new Map<Sound, number>();
+  private lastSkill = -Infinity;
+  private quietUntil = 0;
+  private playedSounds = new Map<Sound, number>();
   constructor(public music: boolean, public sound: boolean) {}
   unlock() {
     if (this.disposed || this.unavailable || (!this.music && !this.sound)) return;
@@ -21,11 +34,16 @@ export class GameAudio {
         if (!Audio) { this.unavailable = true; return; }
         this.context = new Audio({ latencyHint: 'interactive' });
         this.musicGain = this.context.createGain(); this.musicGain.connect(this.context.destination);
-        this.effectsGain = this.context.createGain(); this.effectsGain.gain.value = 0.22; this.effectsGain.connect(this.context.destination);
+        this.effectsGain = this.context.createGain(); this.effectsGain.gain.value = 0.22;
+        const limiter = this.context.createDynamicsCompressor();
+        limiter.threshold.value = -18; limiter.knee.value = 12; limiter.ratio.value = 4;
+        limiter.attack.value = .003; limiter.release.value = .12;
+        this.effectsGain.connect(limiter); limiter.connect(this.context.destination);
         this.createLoop();
       }
       if (this.running && (this.music || this.sound)) void this.context.resume().catch(() => {});
       this.updateGain();
+      void this.syncMusic();
     } catch { this.unavailable = true; if (this.context) void this.context.close().catch(() => {}); this.context = undefined; }
   }
   private createLoop() {
@@ -40,12 +58,58 @@ export class GameAudio {
         data[start + i] += (Math.sin(2 * Math.PI * frequency * t) + Math.sin(4 * Math.PI * frequency * t) * 0.18) * envelope * 0.22 + bass;
       }
     }
-    this.loop = ctx.createBufferSource(); this.loop.buffer = buffer; this.loop.loop = true; this.loop.connect(this.musicGain!); this.loop.start();
+    this.originalLoop = buffer;
+    this.startLoop(buffer, 'original');
+  }
+  private startLoop(buffer: AudioBuffer, track: MusicTrack) {
+    this.loop?.stop(); this.loop?.disconnect();
+    this.loop = this.context!.createBufferSource();
+    this.loop.buffer = buffer; this.loop.loop = true;
+    this.loop.connect(this.musicGain!); this.loop.start();
+    this.playingTrack = track; this.musicStarts++;
+  }
+  setWave(wave?: number) {
+    const track: MusicTrack = wave === 6 ? 'boss' : wave && wave >= 3 && wave <= 5 ? 'grassland' : 'original';
+    if (track === this.track) return;
+    this.track = track;
+    this.failedTracks.delete(track);
+    void this.syncMusic();
+  }
+  private loadMusic(track: 'grassland' | 'boss', context: AudioContext) {
+    const cached = this.musicBuffers.get(track);
+    if (cached) return Promise.resolve(cached);
+    const pending = this.musicLoads.get(track);
+    if (pending) return pending;
+    if (this.failedTracks.has(track)) return Promise.resolve(undefined);
+    const pendingLoad = (async () => {
+      try {
+        const response = await fetch(`${import.meta.env.BASE_URL}assets/music/${MUSIC_FILES[track]}`, { signal: this.requests.signal });
+        if (!response.ok) throw new Error(`Music request failed: ${response.status}`);
+        const buffer = await context.decodeAudioData(await response.arrayBuffer());
+        if (this.disposed || context !== this.context) return;
+        this.musicBuffers.set(track, buffer);
+        return buffer;
+      } catch {
+        // Keep the previous loop available if a file or codec is unavailable.
+        if (!this.disposed) this.failedTracks.add(track);
+      } finally { this.musicLoads.delete(track); }
+    })();
+    this.musicLoads.set(track, pendingLoad);
+    return pendingLoad;
+  }
+  private async syncMusic() {
+    const context = this.context, track = this.track;
+    if (!context || this.disposed || !this.running || !this.music || this.playingTrack === track) return;
+    const buffer = track === 'original' ? this.originalLoop : await this.loadMusic(track, context);
+    // Loading must not override a newer wave, restart, mute, pause or disposal.
+    if (!buffer || this.disposed || context !== this.context || track !== this.track || !this.running || !this.music || this.playingTrack === track) return;
+    this.startLoop(buffer, track);
   }
   setActive(active: boolean) {
     this.running = active;
     this.updateGain();
     if (active && (this.music || this.sound) && this.context) void this.context.resume().catch(() => {});
+    if (active) void this.syncMusic();
     if (!active || (!this.music && !this.sound)) {
       for (const voice of this.voices) voice.stop();
       this.voices.clear();
@@ -60,27 +124,39 @@ export class GameAudio {
     if (this.context && this.musicGain) this.musicGain.gain.setTargetAtTime(this.running && this.music ? 0.24 : 0, this.context.currentTime, 0.05);
     if (this.effectsGain) this.effectsGain.gain.value = this.sound ? 0.22 : 0;
   }
-  play(kind: Sound) {
+  playSkills(events: number) {
+    const now = this.context?.currentTime ?? 0;
+    for (const kind of SKILL_SOUND_PRIORITY) {
+      if (now - this.lastSkill < .18 && kind !== 'hourglass' && kind !== 'echo') continue;
+      if ((events & SKILL_SOUNDS[kind]) && this.play(kind)) {
+        this.lastSkill = now; this.quietUntil = now + .09; return;
+      }
+    }
+  }
+  play(kind: Sound): boolean {
     const ctx = this.context;
-    if (!ctx || ctx.state !== 'running' || !this.running || !this.sound || this.voices.size >= 8) return;
-    if (ctx.currentTime - (this.lastSound.get(kind) ?? -1) < 0.065) return;
+    const background = kind === 'cast' || kind === 'hit' || kind === 'collect';
+    const limit = background ? 4 : kind === 'hurt' || kind === 'level' ? 8 : 7;
+    if (!ctx || ctx.state !== 'running' || !this.running || !this.sound || this.voices.size >= limit) return false;
+    if (background && ctx.currentTime < this.quietUntil) return false;
+    if (ctx.currentTime - (this.lastSound.get(kind) ?? -Infinity) < SOUND_RULES[kind].interval) return false;
     this.lastSound.set(kind, ctx.currentTime);
     let buffer = this.buffers.get(kind);
     if (!buffer) {
-      const settings: Record<Sound, [number, number, number]> = { cast: [700, 360, 0.1], hit: [220, 90, 0.09], hurt: [160, 60, 0.18], collect: [880, 1450, 0.12], dash: [160, 650, 0.14], jump: [320, 760, 0.17], level: [660, 1320, 0.4] };
-      const [start, end, duration] = settings[kind];
-      buffer = ctx.createBuffer(1, Math.ceil(ctx.sampleRate * duration), ctx.sampleRate);
-      const data = buffer.getChannelData(0); let phase = 0;
-      for (let i = 0; i < data.length; i++) {
-        const t = i / data.length;
-        phase += 2 * Math.PI * (start + (end - start) * t) / ctx.sampleRate;
-        data[i] = Math.sin(phase) * Math.min(1, t * 25) * (1 - t) ** 2 * 0.45;
-      }
+      const samples = synthesizeSound(kind, ctx.sampleRate);
+      buffer = ctx.createBuffer(1, samples.length, ctx.sampleRate);
+      buffer.copyToChannel(samples, 0);
       this.buffers.set(kind, buffer);
     }
     const source = ctx.createBufferSource(); source.buffer = buffer; source.connect(this.effectsGain!);
+    const count = this.playedSounds.get(kind) ?? 0;
+    if (kind === 'cast' || kind === 'hit') source.playbackRate.value = [.97, 1.02, 1, .99][count % 4];
+    this.playedSounds.set(kind, count + 1);
     this.voices.add(source); source.onended = () => { this.voices.delete(source); source.disconnect(); }; source.start(); this.played++;
+    return true;
   }
-  inspect() { return { music: this.music, sound: this.sound, active: this.running, state: this.unavailable ? 'unavailable' : this.context?.state ?? 'locked', supported: !!(window.AudioContext || (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext), voices: this.voices.size, played: this.played }; }
-  dispose() { this.disposed = true; this.setActive(false); this.loop?.stop(); this.loop?.disconnect(); this.buffers.clear(); if (this.context) void this.context.close().catch(() => {}); }
+  inspect() { return { music: this.music, sound: this.sound, active: this.running, state: this.unavailable ? 'unavailable' : this.context?.state ?? 'locked', supported: !!(window.AudioContext || (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext), voices: this.voices.size, played: this.played,
+    track: this.track, playingTrack: this.playingTrack ?? null, looping: this.loop?.loop ?? false, musicStarts: this.musicStarts,
+    loadedTracks: [...this.musicBuffers.keys()], failedTracks: [...this.failedTracks], playedSounds: Object.fromEntries(this.playedSounds) }; }
+  dispose() { this.disposed = true; this.requests.abort(); this.setActive(false); this.loop?.stop(); this.loop?.disconnect(); this.buffers.clear(); this.musicBuffers.clear(); this.originalLoop = undefined; if (this.context) void this.context.close().catch(() => {}); }
 }

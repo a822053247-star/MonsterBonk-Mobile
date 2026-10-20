@@ -25,10 +25,10 @@ test('mobile combat renders only red stationary ring and fast directional lane, 
     g.placeCamera(true);g.combatView.render(1,g.visualTime,g.position);
     const v=g.combatView;
     return {
-      circles:v.warnings.count,
+      circles:v.grassBlobs.inspect().warnings,
       lanes:v.pounceLanes.count,
       arrows:v.pounceArrows.count,
-      circleXScale:v.warnings.instanceMatrix.array[0],
+      circleXScale:v.grassBlobs.inspect().radius,
     };
   });
   expect(data.circles).toBe(1);

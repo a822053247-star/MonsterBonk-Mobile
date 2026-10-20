@@ -22,8 +22,8 @@ function boss(c:Combat) {
 test('formal melee warns before contact, can be walked out of, and legacy contact is unchanged',()=>{
   const c=fixture(), e=c.spawn('normal',.9,0,0)!;
   advance(c,.5); expect(e.intent).toBe('windup'); expect(c.hp).toBe(100);
-  expect(RED_BLOB_BASH.windup).toBe(.7);
-  advance(c,.25); expect(c.hp).toBe(92); expect(e.intent).toBe('pounce');
+  expect(RED_BLOB_BASH.windup).toBe(.75);
+  advance(c,.3); expect(c.hp).toBe(92); expect(e.intent).toBe('pounce');
   const evade=fixture(); evade.spawn('normal',.9,0,0); advance(evade,.4); advance(evade,.5,{x:0,z:4}); expect(evade.hp).toBe(100);
   c.encounters.reset(); c.invulnerability=0; c.hp=100; Object.assign(e,{x:.9,z:0,spawnTime:0}); c.update(1/60,origin); expect(c.hp).toBe(92);
 });

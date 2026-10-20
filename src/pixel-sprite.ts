@@ -218,12 +218,19 @@ export class PixelSpriteRenderer {
     this.group.visible = this.ready;
   }
 
-  render(height: number, moving: boolean, time: number, hurt = 0) {
+  render(height: number, moving: boolean, time: number, hurt = 0, protection = 0) {
     this.height = height;
     // Uniform scale retains the source silhouette at rest and while moving.
     this.sync();
     this.sprite.position.y = 0.035 + (!this.animated && moving ? Math.abs(Math.sin(time * 11)) * 0.025 : 0);
-    this.material.color.set(hurt > 0 ? '#ffd8c4' : '#ffffff');
+    const strength=Math.max(0,Math.min(1,hurt)),progress=1-strength;
+    const impact=strength>0?Math.exp(-progress*6):0;
+    this.sprite.scale.x*=1+.16*impact;this.sprite.scale.y*=1-.18*impact;
+    this.sprite.position.x=Math.sin(progress*Math.PI*5)*.06*strength;
+    this.sprite.position.y+=Math.sin(progress*Math.PI)*.06*strength;
+    this.material.rotation=Math.sin(progress*Math.PI*3)*.14*strength;
+    this.material.color.set(strength>.65?'#fff2e8':strength>0?'#ffb9a5':'#ffffff');
+    this.material.opacity=protection>0 && strength===0 && Math.floor(time*18)%2===0?.5:1;
     this.group.visible = this.ready;
   }
 
@@ -231,6 +238,7 @@ export class PixelSpriteRenderer {
     const entry = this.lease.entry;
     return { species: this.species, loaded: entry.ready, failed: entry.failed, aspect: entry.aspect, height: this.height,
       width: this.sprite.scale.x, sourceSize: [...entry.sourceSize], crop: [...entry.crop], center: this.sprite.center.toArray(),
+      hurtPose: { rotation:this.material.rotation, opacity:this.material.opacity, scale:this.sprite.scale.toArray(), offsetX:this.sprite.position.x, tint:this.material.color.getHexString() },
       footOffset: this.sprite.position.y, nearest: entry.texture.magFilter === THREE.NearestFilter && entry.texture.minFilter === THREE.NearestFilter,
       animation: { enabled: this.animated, ...this.animator.inspect(), renderedFrame: this.selectedFrame, asset: this.selectedAsset, uv: this.frameUv.toArray(),
         atlases: [...this.animations].map(([asset, lease]) => ({ asset, loaded: lease.entry.ready, failed: lease.entry.failed, nearest: lease.entry.texture.magFilter === THREE.NearestFilter, mipmaps: lease.entry.texture.generateMipmaps })) },

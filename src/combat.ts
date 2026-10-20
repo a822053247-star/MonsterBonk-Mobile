@@ -1,10 +1,13 @@
 import { COMBAT_CLARITY } from './combat-clarity';
+import { SKILL_SOUNDS } from './sound-design';
 import { FLAME_SWEEP, flameSweepStats, insideSweep } from './flame-sweep';
 import { EnemyChallenge, ENCOUNTER_RULES, predictPosition } from './enemy-challenge';
 import { TRIGGER_RELIC_RULES, resolveAttackRules, type RelicDamageSource, type AttackRules } from './relics';
 import { ATTACKS, RunBuild } from './run-build';
 import type { BaseAttackId } from './fusion';
 import { ENEMY_MOTION } from './enemy-motion';
+import { GRASS_BLOB, stepGrassRoll } from './grass-blob';
+import { PLAYER_FEEDBACK } from './player-feedback';
 import { CRYSTAL_SWARM, SPORE_BOMBER, TREASURE_RUNNER, type SporeExplosion, type TreasureReward } from './special-enemies';
 import { Progression, SKILL_RULES, type SkillId } from './progression';
 import { HORN, POUNCE, type DashStep, type EnemyIntent, type Ruleset } from './trial';
@@ -31,9 +34,9 @@ export const ROCK_MARCH = { turnResponse: 3.2, contactPadding: .17 } as const;
 export const FORMAL_SPORE_HP = 140;
 /** Red blobs hold ground for a short area slam; only sprinters can lunge.
  * The hit radius matches the ground warning, and recovery is punishable. */
-export const RED_BLOB_BASH = { range: 1.65, radius: 1.35, windup: .7, active: .2, recovery: 1.1, cooldown: 1.35, nearbyWarningCap: 2 } as const;
+export const RED_BLOB_BASH = GRASS_BLOB;
 /** Five enemy silhouettes share normal group slots; spores remain live-capped. */
-export const FORMAL_MIX: readonly EnemyKind[] = ['normal','fast','normal','tank','draft-crystal-swarm','normal','fast','normal','tank','draft-crystal-swarm','normal','draft-spore-bomber'] as const;
+export const FORMAL_MIX: readonly EnemyKind[] = ['normal','fast','draft-crystal-swarm','tank','draft-crystal-swarm','normal','fast','draft-crystal-swarm','tank','draft-crystal-swarm','normal','draft-spore-bomber'] as const;
 export const FORMAL_POUNCE = { ...POUNCE, range: 6, windup: .85, speed: 13, duration: .5, recovery: 1.1, cooldown: 2 } as const;
 export const SWARM_RULES = { health: [12, 14, 16, 18, 20, 22], minDistance: 7.5, maxDistance: 14, halfAngle: .42, laneAngle: .78, xp: 1, killsPerXp: 3, killsPerCoin: 9, contactDamage: 3 } as const;
 type Point = { x: number; z: number };
@@ -43,7 +46,7 @@ interface WeaponSnapshot {
   sweep?: ReturnType<typeof flameSweepStats>;
 }
 type Moving = Point & { previousX: number; previousZ: number; active: boolean };
-export interface Enemy extends Moving { burnTime?: number; burnClock?: number; burnDamage?: number; burnStacks?: number; burnSource?: RelicDamageSource; specialTime?: number; swarm?: boolean; rank?: 'elite' | 'boss'; maxHp?: number; radius?: number; id: number; kind: EnemyKind; hp: number; age: number; spawnTime: number; flash: number; knockX: number; knockZ: number; facing: number; orbitCooldown: number; intent: EnemyIntent; intentTime: number; intentCooldown: number; aimX: number; aimZ: number; stagger: number; hornDash: number; slowTime?: number; walkPhase?: number; walkAmount?: number; steerX?: number; steerZ?: number; walkX?: number; walkZ?: number }
+export interface Enemy extends Moving { grassRollDistance?: number; grassCycle?: number; grassRollX?: number; grassRollZ?: number; grassAttackX?: number; grassAttackZ?: number; grassHit?: boolean; burnTime?: number; burnClock?: number; burnDamage?: number; burnStacks?: number; burnSource?: RelicDamageSource; specialTime?: number; swarm?: boolean; rank?: 'elite' | 'boss'; maxHp?: number; radius?: number; id: number; kind: EnemyKind; hp: number; age: number; spawnTime: number; flash: number; knockX: number; knockZ: number; facing: number; orbitCooldown: number; intent: EnemyIntent; intentTime: number; intentCooldown: number; aimX: number; aimZ: number; stagger: number; hornDash: number; slowTime?: number; walkPhase?: number; walkAmount?: number; steerX?: number; steerZ?: number; walkX?: number; walkZ?: number }
 export interface Projectile extends Moving { relicSource?: RelicDamageSource; vx: number; vz: number; life: number; damage: number; distance: number; sourceId?: number; species?: SpeciesId; attackId?: BaseAttackId; attackRules?: AttackRules; homing?: boolean; generation?: number; bornTick?: number; ignoreEnemyId?: number; burst?: boolean; age?: number; elemental?: boolean; fusionIds?: FusionId[]; hitIds?: number[]; pierces?: number; bounces?: number; scatter?: boolean; baseDamage?: number; damageIds?: number[]; hopTargetId?: number; hopDelay?: number; hopElapsed?: number; hopDuration?: number; hopFromX?: number; hopFromZ?: number }
 export interface Shockwave { active: boolean; x: number; z: number; age: number; radius: number; previousRadius: number; maxRadius: number; damage: number; hitIds: Int32Array }
 export interface ExperienceOrb extends Moving { value: number; magnetized: boolean }
@@ -63,6 +66,8 @@ export function segmentHit(ax: number, az: number, bx: number, bz: number, x: nu
 }
 
 export class Combat {
+  /** Tick-local feedback flags; no queue, no effect-pool dependency, no gameplay RNG. */
+  soundEvents = 0;
   readonly encounters = new EnemyChallenge();
   readonly melee = { active: false, attackInstanceId: 0, x: 0, z: 0, aimX: 0, aimZ: 1, age: 0, radius: 0, angle: FLAME_SWEEP.angle as number, hitIds: new Int32Array(COMBAT_LIMITS.enemies) };
   /** Enabled by the map prototype; preserved legacy modes keep their steering. */
@@ -83,6 +88,7 @@ export class Combat {
   readonly sporeExplosions: SporeExplosion[] = Array.from({ length: SPORE_BOMBER.capacity }, () => ({ active: false, x: 0, z: 0, createdAt: 0, age: 0, detonated: false, sourceEnemyId: 0, origin: 'player' }));
   readonly treasureRewards: TreasureReward[] = Array.from({ length: TREASURE_RUNNER.rewardCapacity }, () => ({ active: false, x: 0, z: 0, age: 0, coins: 0 }));
   private fleeGoal = { x: 0, z: 0 };
+  private grassMotion = { x: 0, z: 0 };
   readonly runBuild = new RunBuild();
   get usesRunBuild() { return this.fusionEnabled && !!this.party; }
   private tick = 0;
@@ -189,6 +195,7 @@ export class Combat {
   }
 
   reset(ruleset: Ruleset = this.ruleset) {
+    this.soundEvents = 0;
     this.encounters.reset();
     this.clearTransientEffects();
     this.navigation.invalidate();
@@ -234,6 +241,7 @@ export class Combat {
     Object.assign(enemy, { active: true, id: this.nextId++, kind, x, z, previousX: x, previousZ: z, hp: this.enemyMaxHp(kind), age: 0, spawnTime, flash: 0, knockX: 0, knockZ: 0, facing: 0, orbitCooldown: 0, intent: 'chase', intentTime: 0, intentCooldown: 0, aimX: 0, aimZ: 1, stagger: 0, hornDash: 0, slowTime: 0, walkPhase: (this.nextId * 2.399963) % (Math.PI * 2), walkAmount: 0, walkX: 0, walkZ: 0, steerX: undefined, steerZ: undefined });
     enemy.rank = undefined; enemy.maxHp = enemy.radius = undefined; enemy.swarm = false;
     enemy.specialTime = 0;
+    enemy.grassRollDistance = 0; enemy.grassCycle = 0; enemy.grassRollX = enemy.grassRollZ = enemy.grassAttackX = enemy.grassAttackZ = undefined; enemy.grassHit = false;
     enemy.burnTime = enemy.burnClock = enemy.burnDamage = enemy.burnStacks = 0; enemy.burnSource = undefined;
     if (this.encounters.enabled) enemy.hp = enemy.maxHp = (kind==='fast'?40:kind==='tank'?FORMAL_ROCK_HP:kind==='draft-spore-bomber'?FORMAL_SPORE_HP:ENEMY_TYPES[kind].hp)*(ENCOUNTER_RULES.waveHealth[this.encounters.wave-1]??1);
     this.spawned++;
@@ -306,7 +314,7 @@ export class Combat {
       alive[enemy.kind] = (alive[enemy.kind] ?? 0) + 1;
     for (let i = 0; i < available; i++) {
       // Every ordinary wave slot participates in one deterministic five-kind cycle.
-      // Cap- or telegraph-blocked candidates fall back to cheap red fodder.
+      // Blocked threats use light crystal fodder first, rather than flooding the same normal silhouette.
       const candidate: EnemyKind = mix ? FORMAL_MIX[this.spawned % FORMAL_MIX.length]
         : i === available - 1 ? escort : 'normal';
       const quota = candidate === 'fast' ? mix?.fastCap
@@ -317,7 +325,9 @@ export class Combat {
       const occupied = (alive[candidate] ?? 0);
       const eventFull = candidate === 'draft-spore-bomber' &&
         this.sporeExplosions.filter(e => e.active).length + occupied >= SPORE_BOMBER.capacity;
-      const kind: EnemyKind = mix && (occupied >= (quota ?? 0) || eventFull) ? 'normal' : candidate;
+      const crystalRoom = mix?.crystalAllowed && (alive['draft-crystal-swarm'] ?? 0) < (mix.crystalCap ?? 0);
+      const kind: EnemyKind = mix && (occupied >= (quota ?? 0) || eventFull)
+        ? crystalRoom ? 'draft-crystal-swarm' : 'normal' : candidate;
       const lane = i % 3 === 1 ? -SWARM_RULES.laneAngle : i % 3 === 2 ? SWARM_RULES.laneAngle : 0;
       const point = i === 0 ? anchor : this.spawnPosition(player, SWARM_RULES.minDistance, SWARM_RULES.maxDistance, ENEMY_TYPES[kind].radius, heading + lane);
       if (!point) continue;
@@ -404,6 +414,7 @@ export class Combat {
   }
 
   update(dt: number, player: Point, dash?: DashStep) {
+    this.soundEvents = 0;
     if (this.hp <= 0 || dt <= 0) return;
     // A final kill wins before an unused upgrade. Only the death presentation
     // clock advances; queued XP is settled by RunFlow at the victory boundary.
@@ -535,9 +546,12 @@ export class Combat {
           }
         }
         else if (this.encounters.enabled && enemy.kind === 'normal') {
-          // Stand-and-slam is a positional threat, not a second sprinter charge.
           this.updateRedBash(enemy,dt,dx,dz,length);
           if (enemy.intent !== 'chase') moveX = moveZ = 0;
+          else {
+            stepGrassRoll(enemy,dt,enemy.steerX,enemy.steerZ,type.speed,this.grassMotion);
+            moveX=this.grassMotion.x; moveZ=this.grassMotion.z;
+          }
         } else if (this.encounters.enabled && enemy.kind === 'tank') {
           // No windup/pounce/recover: a heavy, continuously moving body-blocker,
           // distinct from red's stationary circle and sprinter's directional dash.
@@ -572,6 +586,8 @@ export class Combat {
       const boundaryDistance = Math.hypot(enemy.x, enemy.z), limit = this.boundary - radius;
       if (boundaryDistance > limit) { enemy.x *= limit / boundaryDistance; enemy.z *= limit / boundaryDistance; }
       const travelled = Math.hypot(enemy.walkX, enemy.walkZ);
+      if(this.encounters.enabled && enemy.kind==='normal' && !enemy.rank && enemy.intent==='chase')
+        enemy.grassRollDistance=(enemy.grassRollDistance ?? 0)+travelled;
       const moving = Math.min(1, travelled / Math.max(.001, type.speed * dt));
       enemy.walkAmount = (enemy.walkAmount ?? 0) + (moving - (enemy.walkAmount ?? 0)) * (1 - Math.exp(-12 * dt));
       enemy.walkPhase = ((enemy.walkPhase ?? 0) + travelled * ENEMY_MOTION[enemy.kind].cadence) % (Math.PI * 2);
@@ -696,8 +712,18 @@ export class Combat {
     // Resolve hits after magic: an enemy killed on this tick cannot bite.
     if (this.invulnerability === 0) {
       let damage = 0;
+      let contactDamage = 0;
       for (const enemy of this.enemies) {
         if (!enemy.active || enemy.spawnTime > 0) continue;
+        // Body contact is independent of special attack state, with relative
+        // sweeps to catch player dashes/crossings between sampled positions.
+        if (this.encounters.enabled && enemy.kind !== 'draft-treasure-runner') {
+          const bodyRadius = this.enemyRadius(enemy)+(enemy.kind==='tank' && !enemy.rank ? ROCK_MARCH.contactPadding : PLAYER_FEEDBACK.bodyPadding);
+          const contact = segmentHit(enemy.previousX-this.previousAnchorX,enemy.previousZ-this.previousAnchorZ,
+            enemy.x-player.x,enemy.z-player.z,0,0,bodyRadius);
+          if(contact!==Infinity && !this.covered(enemy.x,enemy.z,player.x,player.z))
+            contactDamage=Math.max(contactDamage,enemy.rank==='boss'?24:enemy.swarm?SWARM_RULES.contactDamage:ENEMY_TYPES[enemy.kind].damage);
+        }
         if (this.hasAttackIntents && (enemy.stagger > 0 || enemy.intent === 'windup' || enemy.intent === 'recover')) continue;
         if (this.encounters.enabled && (enemy.rank === 'elite' || enemy.rank === 'boss' && this.encounters.bossState !== 'dash'
           || !enemy.rank && enemy.kind !== 'tank' && enemy.intent !== 'pounce')) continue;
@@ -711,12 +737,17 @@ export class Combat {
             : this.enemyRadius(enemy) + 0.62;
         // Red blobs hit inside a stationary warning ring. Rocks require actual
         // close body contact; sprinters/Boss retain swept movement-based hits.
-        const slamHit = enemy.kind === 'normal' && this.encounters.enabled
-          ? Math.hypot(enemy.x-player.x,enemy.z-player.z) < radius : pounceHit;
-        if ((slamHit || Math.hypot(enemy.x - player.x, enemy.z - player.z) < radius) && (!this.encounters.enabled || !this.covered(enemy.x,enemy.z,player.x,player.z))) damage = Math.max(damage, enemy.rank === 'boss' ? 24 : enemy.swarm ? SWARM_RULES.contactDamage : type.damage);
+        const grass = enemy.kind === 'normal' && this.encounters.enabled && !enemy.rank;
+        const ax = grass ? enemy.grassAttackX ?? enemy.x : enemy.x, az = grass ? enemy.grassAttackZ ?? enemy.z : enemy.z;
+        const hit = grass ? !enemy.grassHit && Math.hypot(ax-player.x,az-player.z) < radius
+          : pounceHit || Math.hypot(enemy.x-player.x,enemy.z-player.z) < radius;
+        if (hit && (!this.encounters.enabled || !this.covered(ax,az,player.x,player.z))) {
+          if (grass) enemy.grassHit = true;
+          damage = Math.max(damage, enemy.rank === 'boss' ? 24 : enemy.swarm ? SWARM_RULES.contactDamage : type.damage);
+        }
       }
-      if (damage > 0) {
-        this.hitPlayer(damage);
+      if (Math.max(damage,contactDamage) > 0) {
+        this.hitPlayer(Math.max(damage,contactDamage),damage>=contactDamage ? PLAYER_FEEDBACK.attackProtection : PLAYER_FEEDBACK.contactProtection);
       }
     }
     if (this.hp <= 0) return;
@@ -739,9 +770,9 @@ export class Combat {
     }
   }
 
-  hitPlayer(damage: number) {
+  hitPlayer(damage: number, protection: number = PLAYER_FEEDBACK.attackProtection) {
     if (this.hp <= 0 || this.invulnerability > 0) return;
-    this.hp = Math.max(0,this.hp-damage); this.invulnerability=.85; this.hurtFlash=.25;
+    this.hp = Math.max(0,this.hp-damage); this.invulnerability=protection; this.hurtFlash=PLAYER_FEEDBACK.hurtDuration;
     this.balanceTelemetry.damageEvents++;
     this.effect(this.anchorX,this.anchorZ,'hurt');
   }
@@ -861,6 +892,7 @@ export class Combat {
   }
 
   clearTransientEffects() {
+    this.soundEvents = 0;
     this.clearSpecialEvents();
     this.relicEvents = [];
     this.pendingEchoes = []; this.previousWeapon = undefined; this.weaponCastCount = 0;
@@ -885,6 +917,7 @@ export class Combat {
       explosion.age = this.elapsed - explosion.createdAt;
       if (explosion.age + 1e-8 >= SPORE_BOMBER.warning && !explosion.detonated) {
         explosion.detonated = true; // Mark before damage can schedule another death.
+        this.soundEvents |= SKILL_SOUNDS.burst;
         const {x,z} = explosion;
         if (Math.hypot(player.x-x,player.z-z) <= SPORE_BOMBER.radius+.62 && !this.covered(x,z,player.x,player.z)) this.hitPlayer(SPORE_BOMBER.playerDamage);
         for (const enemy of this.enemies) {
@@ -1042,6 +1075,7 @@ export class Combat {
           if (warningCount >= RED_BLOB_BASH.nearbyWarningCap) return;
         }
         enemy.intent = 'windup'; enemy.intentTime = RED_BLOB_BASH.windup;
+        enemy.grassAttackX=enemy.x; enemy.grassAttackZ=enemy.z; enemy.grassHit=false;
         enemy.aimX = dx/distance; enemy.aimZ = dz/distance;
       }
       return;
@@ -1050,7 +1084,7 @@ export class Combat {
     if (enemy.intentTime > 1e-8) return;
     if (enemy.intent === 'windup') { enemy.intent='pounce'; enemy.intentTime=RED_BLOB_BASH.active; }
     else if (enemy.intent === 'pounce') { enemy.intent='recover'; enemy.intentTime=RED_BLOB_BASH.recovery; }
-    else { enemy.intent='chase'; enemy.intentCooldown=RED_BLOB_BASH.cooldown; }
+    else { enemy.intent='chase'; enemy.intentCooldown=RED_BLOB_BASH.cooldown; enemy.grassCycle=GRASS_BLOB.roll; }
   }
 
   private updateMelee(enemy: Enemy, dt: number, dx: number, dz: number, distance: number) {
@@ -1105,6 +1139,7 @@ export class Combat {
     Object.assign(this.melee, { active: true, attackInstanceId: this.melee.attackInstanceId+1,
       x: member.x+aimX*offset, z: member.z+aimZ*offset, aimX, aimZ, age: 0, radius: growth.radius, angle: growth.angle });
     this.melee.hitIds.fill(0);
+    this.soundEvents |= SKILL_SOUNDS.sweep;
     const source = { ...this.newRelicSource('flame-sweep',attack.rules), copied };
     for (let i=0;i<this.enemies.length;i++) {
       const enemy = this.enemies[i];
@@ -1146,6 +1181,7 @@ export class Combat {
       else this.fireBolts(member,target,attack.damage,1,attack.range,member.id,member.species,attack.attackId,
         { index: 0, rules: attack.rules, fusions: attack.fusions, copied: true });
       this.relicTelemetry.echoes++;
+      this.soundEvents |= SKILL_SOUNDS.echo;
       if (this.encounters.dying) break;
     }
   }
@@ -1159,6 +1195,7 @@ export class Combat {
     this.recentRelicKills = [];
     this.hourglassUntil = this.elapsed+rule.duration; this.hourglassReadyAt = this.elapsed+rule.cooldown;
     this.relicTelemetry.hourglassProcs++;
+    this.soundEvents |= SKILL_SOUNDS.hourglass;
     this.effect(this.anchorX,this.anchorZ,'burst','normal',.6);
   }
 
@@ -1281,6 +1318,12 @@ export class Combat {
     const strength = enemy.rank === 'boss' ? 0 : enemy.kind === 'tank' ? 1.2 : 3;
     enemy.knockX = dx * strength;
     enemy.knockZ = dz * strength;
+    if (this.encounters.enabled && enemy.kind === 'normal' && !enemy.rank && enemy.intent === 'windup'
+      && Math.hypot(enemy.knockX,enemy.knockZ) >= GRASS_BLOB.interruptKnockback) {
+      enemy.intent='recover'; enemy.intentTime=GRASS_BLOB.interruptedRecovery;
+      enemy.grassAttackX=enemy.grassAttackZ=undefined; enemy.grassHit=true;
+      this.interrupts++;
+    }
     if (enemy.hp === 0) {
       enemy.active = false;
       this.kills++;
@@ -1352,6 +1395,7 @@ export class Combat {
         if (wave) {
           Object.assign(wave, { active: true, x: player.x, z: player.z, age: 0, radius: 0, previousRadius: 0, maxRadius: stats.shockRadius, damage: stats.shockDamage });
           wave.hitIds.fill(0);
+          this.soundEvents |= SKILL_SOUNDS.shockwave;
           this.shockClock += stats.shockInterval;
         }
       }
@@ -1386,6 +1430,8 @@ export class Combat {
   }
 
   private effect(x: number, z: number, kind: CombatEffect['kind'], enemyKind: EnemyKind = 'normal', radius = 0, fusionId?: FusionId, enemy?: Enemy) {
+    if (kind === 'burst' && radius >= .6) this.soundEvents |= SKILL_SOUNDS.burst;
+    if ((kind === 'water' || kind === 'thorn') && fusionId) this.soundEvents |= SKILL_SOUNDS[kind];
     const effect = this.effects.find((candidate) => !candidate.active);
     const duration = kind === 'burst' ? BURST_SEED.explosionDuration : fusionId === 'deep-bubble' ? DEEP_BUBBLE.duration : fusionId === 'thorn-scatter' ? .375 : kind === 'death' ? 0.55 : 0.32;
     if (effect) Object.assign(effect, { active: true, x, z, kind, enemyKind, radius, duration, time: duration, fusionId, enemyId: enemy?.id,

@@ -11,6 +11,7 @@ type Batch = {
   hurt: THREE.InstancedBufferAttribute;
   fade: THREE.InstancedBufferAttribute;
   facing: THREE.InstancedBufferAttribute;
+  rolls: Float32Array;
   lease: ReturnType<PixelTextureCache['acquire']>;
 };
 
@@ -25,6 +26,7 @@ export class EnemyPixelView {
   private up = new THREE.Vector3(0, Math.SQRT1_2, -Math.SQRT1_2);
   private right = new THREE.Vector3(1, 0, 0);
   private top = new THREE.Vector3();
+  private rotatedUp = new THREE.Vector3();
   private roll = new THREE.Quaternion();
   private forward = new THREE.Vector3(0, 0, 1);
   private displayScale = 1;
@@ -90,7 +92,7 @@ export class EnemyPixelView {
         directionAtlas.value = lease.entry.directional ? 1 : 0;
         material.map = lease.entry.texture; material.needsUpdate = true;
       }, kind === 'tank');
-      this.batches.set(kind, { mesh, hurt, fade, facing, lease });
+      this.batches.set(kind, { mesh, hurt, fade, facing, lease, rolls: new Float32Array(COMBAT_LIMITS.enemies) });
       this.group.add(mesh);
     }
   }
@@ -111,7 +113,7 @@ export class EnemyPixelView {
   begin() { this.renderSerial++; for (const { mesh } of this.batches.values()) mesh.count = 0; }
   resetDirections() { this.directions.clear(); }
 
-  put(kind: PixelEnemyKind, x: number, z: number, bob: number, hurt: boolean | number, tint: string, lean = 0, squash = 0, scale = 1, opacity = 1, movement?: { id: number; dx: number; dz: number }) {
+  put(kind: PixelEnemyKind, x: number, z: number, bob: number, hurt: boolean | number, tint: string, lean = 0, squash = 0, scale = 1, opacity = 1, movement?: { id: number; dx: number; dz: number }, bodyRoll = 0) {
     const batch = this.batches.get(kind)!;
     if (batch.mesh.count >= COMBAT_LIMITS.enemies) return;
     const index = batch.mesh.count++, height = this.height(kind);
@@ -125,9 +127,17 @@ export class EnemyPixelView {
     const [frame, mirror] = ENEMY_DIRECTION_FRAMES[heading];
     batch.facing.setXY(index, frame, mirror);
     this.pose.position.set(x, 0.035 + bob * 0.35, z);
-    this.pose.quaternion.copy(this.orientation).multiply(this.roll.setFromAxisAngle(this.forward, lean));
+    this.pose.quaternion.copy(this.orientation).multiply(this.roll.setFromAxisAngle(this.forward, lean+bodyRoll));
     const fullHeight = height * (batch.lease.entry.directional ? ENEMY_DIRECTION_LAYOUT.cell / ENEMY_DIRECTION_LAYOUT.bodyHeight : 1);
     this.pose.scale.set(fullHeight * batch.lease.entry.aspect * (1 - squash * .6) * scale, fullHeight * (1 + squash) * scale, 1);
+    if(bodyRoll) {
+      // The atlas is foot-anchored. Translate the rotating foot back around the
+      // visual body center, so a full turn rolls in place instead of orbiting it.
+      const center = (batch.lease.entry.directional ? ENEMY_DIRECTION_LAYOUT.bodyHeight/ENEMY_DIRECTION_LAYOUT.cell/2 : .5)*this.pose.scale.y;
+      this.rotatedUp.set(0,1,0).applyQuaternion(this.pose.quaternion);
+      this.pose.position.addScaledVector(this.up,center).addScaledVector(this.rotatedUp,-center);
+    }
+    batch.rolls[index] = bodyRoll;
     this.pose.updateMatrix();
     batch.mesh.setMatrixAt(index, this.pose.matrix);
     batch.mesh.setColorAt(index, this.color.set(tint));
@@ -152,6 +162,7 @@ export class EnemyPixelView {
     return { cache: this.cache.inspect(), directionStates: this.directions.size, batches: [...this.batches].map(([kind, batch]) => ({ kind, loaded: batch.lease.entry.ready, failed: batch.lease.entry.failed,
       directional: batch.lease.entry.directional, directionFailed: batch.lease.entry.directionFailed,
       frames: Array.from({ length: batch.mesh.count }, (_,i) => ({ frame: batch.facing.getX(i), mirror: !!batch.facing.getY(i) })),
+      rolls: Array.from(batch.rolls.slice(0,batch.mesh.count)),
       count: batch.mesh.count, capacity: COMBAT_LIMITS.enemies, aspect: batch.lease.entry.aspect, height: this.height(kind),
       crop: [...batch.lease.entry.crop], sourceSize: [...batch.lease.entry.sourceSize],
       nearest: batch.lease.entry.texture.magFilter === THREE.NearestFilter && batch.lease.entry.texture.minFilter === THREE.NearestFilter,

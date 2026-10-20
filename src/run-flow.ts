@@ -70,7 +70,7 @@ export class RunFlow {
     return {
       fastCap: major ? 0 : stage.fastCap,
       tankCap: major ? 0 : stage.tankCap,
-      crystalCap: Math.max(CRYSTAL_SWARM.maxGroup, Math.floor(waveCap / 6)),
+      crystalCap: Math.max(CRYSTAL_SWARM.maxGroup, Math.floor(waveCap * .4)),
       sporeCap: Math.min(stage.sporeCap, SPORE_BOMBER.maxAlive),
       crystalAllowed: this.waveElapsed >= plan.crystalFirst,
       sporeAllowed: plan.sporeFirst !== null && this.waveElapsed >= plan.sporeFirst
@@ -168,13 +168,16 @@ export class RunFlow {
       if (!combat.encounters.defeated) { this.phase='lost'; this.failure='boss-timeout'; combat.clearTransientEffects(); return; }
       this.bossDefeated=true;
     }
-    if (!this.claimedExperience) {
+    // The opening wave changes spawn rules without interrupting the battle.
+    // Leave living enemies, loose XP and ongoing attacks in their current state.
+    const seamless = this.wave === 1;
+    if (!seamless && !this.claimedExperience) {
       let experience = 0;
       for (const orb of combat.orbs) if (orb.active) { experience += orb.value; orb.active = false; }
       combat.progression.gainExperience(experience);
       this.claimedExperience = true;
     }
-    if (combat.progression.awaitingChoice && this.wave < RUN_WAVES.length) return;
+    if (!seamless && combat.progression.awaitingChoice && this.wave < RUN_WAVES.length) return;
     // One-time boundary settlement: deferred upgrade choices cannot duplicate rewards.
     const treasureCaught = Math.max(0, combat.treasureCaught - this.settledTreasureCaught);
     const sporeChains = Math.max(0, combat.balanceTelemetry.sporeChainKills - this.settledSporeChains);
@@ -183,10 +186,11 @@ export class RunFlow {
     const sporeBonus = Math.min(sporeChains, 3) * 3;
     this.lastWaveGrowth = { treasureCaught, sporeBonus };
     this.coins += sporeBonus; this.earned += sporeBonus;
-    combat.clearWave();
+    if (!seamless) combat.clearWave();
     this.pendingSwarm = this.pendingClock = 0;
     this.completedWaves++;
     this.coins += this.definition.reward; this.earned += this.definition.reward;
+    if (seamless) { this.advanceWave(); return; }
     this.phase = this.wave === RUN_WAVES.length ? 'won' : 'intermission';
     if (this.phase === 'intermission') this.intermissionRemaining = WAVE_INTERMISSION_SECONDS;
   }

@@ -19,10 +19,10 @@ const typeCount=(c:Combat,kind:string)=>c.enemies.filter(e=>e.active&&!e.rank&&e
 
 test('five-kind mix has weighted red, fast, rock, crystal and capped spore slots',()=>{
   expect(FORMAL_MIX).toHaveLength(12);
-  expect(FORMAL_MIX.filter(x=>x==='normal')).toHaveLength(5);
+  expect(FORMAL_MIX.filter(x=>x==='normal')).toHaveLength(3);
   expect(FORMAL_MIX.filter(x=>x==='fast')).toHaveLength(2);
   expect(FORMAL_MIX.filter(x=>x==='tank')).toHaveLength(2);
-  expect(FORMAL_MIX.filter(x=>x==='draft-crystal-swarm')).toHaveLength(2);
+  expect(FORMAL_MIX.filter(x=>x==='draft-crystal-swarm')).toHaveLength(4);
   expect(FORMAL_MIX.filter(x=>x==='draft-spore-bomber')).toHaveLength(1);
   const {c}=fixture();c.encounters.beginWave(3);
   const mixed={fastCap:18,tankCap:18,crystalCap:18,sporeCap:2,crystalAllowed:true,sporeAllowed:true};
@@ -39,6 +39,30 @@ test('five-kind mix has weighted red, fast, rock, crystal and capped spore slots
   expect(c.enemies).toHaveLength(COMBAT_LIMITS.enemies);
 });
 
+test('blocked threat slots diversify into crystals, respecting introduction and live caps',()=>{
+  for(const allowed of [false,true]) {
+    const {c}=fixture();c.encounters.beginWave(3);
+    const mixed={fastCap:0,tankCap:0,crystalCap:12,sporeCap:0,crystalAllowed:allowed,sporeAllowed:false};
+    for(let i=0;i<8;i++) c.spawnSwarm(origin,12,60,'normal',mixed);
+    const living=c.enemies.filter(e=>e.active);
+    expect(living.length).toBeGreaterThan(12);
+    expect(typeCount(c,'fast')).toBe(0); expect(typeCount(c,'tank')).toBe(0);
+    expect(typeCount(c,'draft-spore-bomber')).toBe(0);
+    expect(typeCount(c,'draft-crystal-swarm')).toBe(allowed?12:0);
+    expect(living.length).toBeLessThanOrEqual(60);
+  }
+});
+
+test('real first-wave refills hold 40 percent crystals after introduction without adding dangerous enemies',()=>{
+  const {c,run}=fixture();run.waveElapsed=9;
+  for(let i=0;i<30;i++)run.update(.4,c,origin);
+  const living=c.enemies.filter(e=>e.active&&!e.rank);
+  expect(living).toHaveLength(60);
+  expect(typeCount(c,'draft-crystal-swarm')).toBe(24);
+  expect(typeCount(c,'normal')).toBe(36);
+  expect(typeCount(c,'fast')).toBe(0); expect(typeCount(c,'tank')).toBe(0);
+});
+
 test('red holds a telegraphed ground slam without moving, unlike sprinter lanes and weaving crystal bugs',()=>{
   const {c}=fixture();c.encounters.beginWave(2);
   const red=c.spawn('normal',1.5,0,0)!;red.spawnTime=0;red.intentCooldown=0;
@@ -53,7 +77,7 @@ test('red holds a telegraphed ground slam without moving, unlike sprinter lanes 
   expect(c.hp).toBe(hp);
   expect(crystal.intent).toBe('chase');
   expect(Math.abs(crystal.z)).toBeGreaterThan(0);
-  tick(c,.41);
+  tick(c,.46);
   expect(red.intent).toBe('pounce');
   expect(red.x).toBeCloseTo(redX);
   expect(c.hp).toBe(hp); // Standing beyond the ring is safe.
@@ -134,7 +158,7 @@ test('moving outside the red floor circle during the warning avoids damage',()=>
   expect(red.intent).toBe('windup');
   c.party!.syncLeader({x:0,z:4},0);
   c.update(.5,{x:0,z:4});
-  c.update(.25,{x:0,z:4});
+  c.update(.3,{x:0,z:4});
   expect(red.intent).toBe('pounce');
   expect(c.hp).toBe(100);
   expect(red.x).toBeCloseTo(.9);

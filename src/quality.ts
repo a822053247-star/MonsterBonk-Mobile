@@ -1,10 +1,14 @@
 export type QualityMode = 'auto' | 'battery' | 'high';
-export interface Preferences { quality: QualityMode; music: boolean; sound: boolean }
-export const DEFAULT_PREFERENCES: Preferences = { quality: 'auto', music: true, sound: true };
+export const MAX_GAME_SPEED = 10;
+export function normalizeGameSpeed(value: unknown) {
+  return typeof value === 'number' && Number.isFinite(value) ? Math.min(MAX_GAME_SPEED, Math.max(1, Math.round(value))) : 1;
+}
+export interface Preferences { quality: QualityMode; music: boolean; sound: boolean; gameSpeed: number }
+export const DEFAULT_PREFERENCES: Preferences = { quality: 'auto', music: true, sound: true, gameSpeed: 1 };
 export function loadPreferences(): Preferences {
   try {
     const saved = JSON.parse(localStorage.getItem('monsterbonk-settings') || '{}');
-    return { quality: ['auto', 'battery', 'high'].includes(saved.quality) ? saved.quality : 'auto', music: typeof saved.music === 'boolean' ? saved.music : true, sound: typeof saved.sound === 'boolean' ? saved.sound : true };
+    return { quality: ['auto', 'battery', 'high'].includes(saved.quality) ? saved.quality : 'auto', music: typeof saved.music === 'boolean' ? saved.music : true, sound: typeof saved.sound === 'boolean' ? saved.sound : true, gameSpeed: normalizeGameSpeed(saved.gameSpeed) };
   } catch { return { ...DEFAULT_PREFERENCES }; }
 }
 export function savePreferences(value: Preferences) {

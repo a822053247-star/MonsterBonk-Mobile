@@ -91,8 +91,10 @@ test('swarm pays one XP per three kills, one coin per nine, and carries remainde
   for (const e of enemies.slice(0, 9)) { kill(c, e); kill(c, e); }
   expect(c.kills).toBe(9); expect(c.goldEarned).toBe(1);
   run.waveElapsed = 65; run.resolveBoundary(c);
-  expect(c.xp).toBe(3); expect(run.coins).toBe(36);
-  expect(run.phase).toBe('intermission'); run.updateRest(3.5, c); run.prepare(c, origin);
+  expect(c.xp).toBe(0);
+  expect(c.orbs.filter(o=>o.active).reduce((n,o)=>n+o.value,0)).toBe(3);
+  expect(run.coins).toBe(36);
+  expect(run.phase).toBe('fighting'); expect(run.wave).toBe(2); run.prepare(c, origin);
   c.spawnSwarm(origin, 3, 90);
   for (const e of c.enemies.filter(e => e.active)) kill(c, e);
   expect(c.goldEarned).toBe(1);
@@ -127,17 +129,19 @@ test('escorts keep their stats and boss wave receives massed low-health support'
 test('high-throughput clearing has bounded economy, pooled XP merge and exactly-once boundary settlement', () => {
   for (let wave = 1; wave <= 5; wave++) {
     const { c, run } = fixture(wave); run.waveIndex = wave-1;
-    for (let tick = 0; tick < run.definition.seconds*60; tick++) {
+    const duration=run.definition.seconds,reward=run.definition.reward;
+    for (let tick = 0; tick < duration*60; tick++) {
       run.update(1/60, c, origin);
       for (const e of c.enemies) if (e.active) kill(c, e);
       // Resolve choices only after automatic end-of-wave XP claim.
       while (c.progression.awaitingChoice) c.chooseUpgrade(c.progression.offers[0]);
       if (run.remaining < 1e-8) run.resolveBoundary(c);
     }
-    expect(run.earned).toBeGreaterThanOrEqual(run.definition.reward);
-    expect(run.earned).toBeLessThanOrEqual(run.definition.reward + c.kills + 18);
-    expect(c.xp).toBeLessThanOrEqual(c.kills * 8 + 24);
-    expect(c.xp).toBeGreaterThan(0); expect(run.phase).toBe('intermission');
+    expect(run.earned).toBeGreaterThanOrEqual(reward);
+    expect(run.earned).toBeLessThanOrEqual(reward + c.kills + 18);
+    const generatedXp=c.xp+c.orbs.filter(o=>o.active).reduce((n,o)=>n+o.value,0);
+    expect(generatedXp).toBeLessThanOrEqual(c.kills * 8 + 24);
+    expect(generatedXp).toBeGreaterThan(0); expect(run.phase).toBe(wave===1?'fighting':'intermission');
     const xp = c.xp, gold = run.earned;
     run.resolveBoundary(c); expect(c.xp).toBe(xp); expect(run.earned).toBe(gold);
     expect(c.orbs).toHaveLength(96);

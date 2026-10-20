@@ -839,3 +839,15 @@ h1>em{font-size:12px;line-height:1;letter-spacing:4px;display:inline-block;backg
   .upgrade-screen .skill-card[data-category=evolution]::after{display:none}
   .upgrade-screen .skill-card:active:not(:disabled){transform:none}
 }
+#game-speed-setting{font:inherit;width:100%;min-height:48px;border-radius:8px;border:1px solid #b7ce9b77;padding:8px 10px;color:#f1f1d8;background:#2b5848;touch-action:manipulation}
+.graphics-setting .speed-label{margin-top:18px}
+.hud .speed-button{font-size:14px;font-weight:700;font-variant-numeric:tabular-nums}
+.hud .speed-button.accelerated{color:#fff0a3;border-color:#dfbd65;background:#4d542ce8}
+.settings-card{display:flex;flex-direction:column}
+.settings-card header,.settings-card footer{flex-shrink:0}
+.settings-grid{min-height:0;overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y}
+@media(max-height:500px) and (orientation:landscape){
+  .graphics-setting>p,.graphics-setting>small{display:none}
+  .graphics-setting .speed-label{margin-top:10px}
+  #game-speed-setting{min-height:44px}
+}

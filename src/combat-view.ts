@@ -1,7 +1,9 @@
 import * as THREE from 'three';
 import { COMBAT_CLARITY, WATER_IMPACT_VISUAL, impactVisualPosition, readableEffects } from './combat-clarity';
 import { enemyPose } from './enemy-motion';
-import { Combat, COMBAT_LIMITS, ENEMY_TYPES, FORMAL_POUNCE, RED_BLOB_BASH } from './combat';
+import { grassBlobPose, grassBlobRoll, grassCrowdMotionScale } from './grass-blob';
+import { GrassBlobView } from './grass-blob-view';
+import { Combat, COMBAT_LIMITS, ENEMY_TYPES, FORMAL_POUNCE } from './combat';
 import { EncounterView } from './encounter-view';
 import { SKILL_RULES } from './progression';
 import { POUNCE } from './trial';
@@ -19,6 +21,7 @@ import { FUSION_ASSET_ROOT, elementalClip, clipFrame } from './fusion-pixels';
 /** All enemies and effects use shared instanced batches: no per-kill GPU allocations. */
 export class CombatView {
   readonly group = new THREE.Group();
+  private grassBlobs = new GrassBlobView();
   private dummy = new THREE.Object3D();
   private color = new THREE.Color();
   private enemyPose = { bob: 0, lean: 0, squash: 0 };
@@ -58,7 +61,7 @@ export class CombatView {
   private specialEnemies: SpecialEnemyView;
 
   constructor(private combat: Combat) {
-    this.group.add(this.shockwaveView.group);
+    this.group.add(this.shockwaveView.group,this.grassBlobs.group);
     this.specialEnemies = new SpecialEnemyView(combat,kind=>this.pixelEnemies?.height(kind)??ENEMY_PIXEL_HEIGHTS[kind]); this.group.add(this.specialEnemies.group);
     this.encounters=new EncounterView(combat); this.group.add(this.encounters.group);
     const lambert = (color: string) => new THREE.MeshLambertMaterial({ color, flatShading: true });
@@ -121,9 +124,10 @@ export class CombatView {
     if (this.pixelEnemies) { this.pixelEnemies.group.visible = true; this.pixelEnemies.begin(); }
   }
 
-  updateView(camera: THREE.Camera, viewportHeight: number, frustumHeight: number) { this.specialEnemies.setView(camera,viewportHeight,frustumHeight); this.flameSweep?.setView(camera); this.shockwaveView.setView(camera); this.encounters.setView(camera); this.pixelEnemies?.setView(camera, viewportHeight, frustumHeight); this.firePixels?.setView(camera); this.fusionPixels?.setView(camera); this.feedback?.setView(camera); }
+  updateView(camera: THREE.Camera, viewportHeight: number, frustumHeight: number) { this.grassBlobs.setView(camera); this.specialEnemies.setView(camera,viewportHeight,frustumHeight); this.flameSweep?.setView(camera); this.shockwaveView.setView(camera); this.encounters.setView(camera); this.pixelEnemies?.setView(camera, viewportHeight, frustumHeight); this.firePixels?.setView(camera); this.fusionPixels?.setView(camera); this.feedback?.setView(camera); }
 
   setFusion(enabled: boolean, _elemental = false) {
+    if(enabled)this.grassBlobs.enable();
     if (enabled && !this.flameSweep) { this.flameSweep = new FlameSweepView(); this.group.add(this.flameSweep.group, this.flameSweep.areaGroup); }
     this.flameSweep?.clear();
     if (enabled && !this.firePixels) { this.firePixels = new FirePixelView(); this.group.add(this.firePixels.mesh); }
@@ -135,6 +139,7 @@ export class CombatView {
   }
 
   render(alpha: number, time: number, player: { x: number; z: number } = { x: this.combat.anchorX, z: this.combat.anchorZ }) {
+    this.grassBlobs.render(this.combat);
     this.flameSweep?.render(this.combat,player);
     this.encounters.render(alpha);
     this.specialEnemies.render(alpha);
@@ -145,6 +150,7 @@ export class CombatView {
     this.feedback?.begin(this.detail);
     // New feedback belongs to the current run mode; legacy visuals stay intact.
     const feedback = this.combat.usesRunBuild ? this.feedback : undefined;
+    const grassMotionScale=grassCrowdMotionScale(this.combat.enemies.reduce((n,e)=>n+Number(e.active && e.spawnTime<=0 && e.kind==='normal' && !e.rank),0));
     for (const enemy of this.combat.enemies) {
       if (!enemy.active) continue;
       const type = ENEMY_TYPES[enemy.kind], size = this.combat.enemyRadius(enemy);
@@ -157,6 +163,7 @@ export class CombatView {
       if (enemy.rank === 'boss') continue;
       const tall = enemy.kind === 'fast' ? 1.55 : 1.3;
       const motion = enemyPose(enemy.kind, enemy.walkPhase ?? 0, enemy.walkAmount ?? 0, this.enemyPose);
+      if(this.combat.encounters.enabled && enemy.kind==='normal' && !enemy.rank) grassBlobPose(enemy,motion);
       const bob = motion.bob;
       const y = size * tall + bob;
       const color = enemy.flash > 0 ? '#fff5d6' : this.combat.hasAttackIntents && enemy.intent === 'windup' ? '#ffba5c' : this.combat.hasAttackIntents && enemy.intent === 'recover' ? '#a3ccb5' : type.color;
@@ -165,7 +172,7 @@ export class CombatView {
         const tint = enemy.rank === 'elite' ? '#ffd997' : this.combat.hasAttackIntents && enemy.intent === 'windup' ? '#ffba5c' : this.combat.hasAttackIntents && enemy.intent === 'recover' ? '#a3ccb5' : '#ffffff';
         this.enemyMovement.id = enemy.id;
         this.enemyMovement.dx = enemy.walkX ?? 0; this.enemyMovement.dz = enemy.walkZ ?? 0;
-        this.pixelEnemies!.put(enemy.kind, x, z, bob, this.combat.usesRunBuild ? Math.min(1, enemy.flash / .16) * .3 : enemy.flash > 0, tint, motion.lean, motion.squash, enemy.rank==='elite'?1.35:1, 1, this.enemyMovement);
+        this.pixelEnemies!.put(enemy.kind, x, z, bob, this.combat.usesRunBuild ? Math.min(1, enemy.flash / .16) * .3 : enemy.flash > 0, tint, motion.lean, motion.squash, enemy.rank==='elite'?1.35:1, 1, this.enemyMovement, this.combat.encounters.enabled && enemy.kind==='normal' && !enemy.rank ? grassBlobRoll(enemy,grassMotionScale) : 0);
       } else if (enemy.kind !== 'tank') this.put(this.body, x, y, z, size, size * tall, size, 0, enemy.facing, 0, color);
       this.put(this.shadows, x, 0.04, z, size * 1.1, size * 0.8, 1, -Math.PI / 2);
       const fx = Math.sin(enemy.facing), fz = Math.cos(enemy.facing);
@@ -190,10 +197,10 @@ export class CombatView {
           this.put(this.pounceLanes, x + enemy.aimX * length / 2, 0.075, z + enemy.aimZ * length / 2, 0.9, length, 1, -Math.PI / 2, 0, angle);
           this.put(this.pounceArrows, x + enemy.aimX * length, 0.085, z + enemy.aimZ * length, 0.4, 0.4, 1, -Math.PI / 2, 0, angle - Math.PI / 2);
         }
-        if(this.combat.encounters.enabled && enemy.kind!=='fast' && !enemy.rank && (enemy.intent==='windup'||enemy.intent==='pounce')) {
+        if(this.combat.encounters.enabled && enemy.kind!=='fast' && enemy.kind!=='normal' && !enemy.rank && (enemy.intent==='windup'||enemy.intent==='pounce')) {
           // Circular stationary danger for red blobs; directional lanes belong
           // exclusively to fast sprinters. Ground ring matches actual hit radius.
-          const warningRadius = enemy.kind === 'normal' ? RED_BLOB_BASH.radius : size + .62;
+          const warningRadius = size + .62;
           this.put(this.warnings,x,.09,z,warningRadius,warningRadius,1,-Math.PI/2);
         }
         if (enemy.intent === 'recover' || enemy.stagger > 0) this.put(this.recoveryRings, x, 0.08, z, size + 0.3, size + 0.3, 1, -Math.PI / 2);
@@ -324,9 +331,9 @@ export class CombatView {
     this.feedback?.finish();
   }
 
-  clear() { this.specialEnemies.clear(); this.flameSweep?.clear(); this.shockwaveView.clear(); this.encounters.clear(); for (const mesh of this.batches) mesh.count = 0; this.pixelEnemies?.begin(); this.pixelEnemies?.resetDirections(); this.firePixels?.begin(); this.fusionPixels?.begin(); this.feedback?.begin(); }
+  clear() { this.grassBlobs.clear(); this.specialEnemies.clear(); this.flameSweep?.clear(); this.shockwaveView.clear(); this.encounters.clear(); for (const mesh of this.batches) mesh.count = 0; this.pixelEnemies?.begin(); this.pixelEnemies?.resetDirections(); this.firePixels?.begin(); this.fusionPixels?.begin(); this.feedback?.begin(); }
   inspectElemental() { return this.fusionPixels?.inspect(); }
   inspectFusion() { return this.firePixels?.inspect(); }
-  inspect() { return { enabled: this.pixelsEnabled, ...this.pixelEnemies?.inspect(), specialEnemies:this.specialEnemies.inspect(), melee:this.flameSweep?.inspect(), encounters:this.encounters.inspect(), feedback:this.feedback?.inspect() }; }
-  dispose() { this.specialEnemies.dispose(); this.flameSweep?.dispose(); this.flameSweep = undefined; this.shockwaveView.dispose(); this.encounters.dispose(); this.pixelEnemies?.dispose(); this.pixelEnemies = undefined; this.firePixels?.dispose(); this.firePixels = undefined; this.fusionPixels?.dispose(); this.fusionPixels = undefined; this.feedback?.dispose(); this.feedback = undefined; }
+  inspect() { return { grass:this.grassBlobs.inspect(), enabled: this.pixelsEnabled, ...this.pixelEnemies?.inspect(), specialEnemies:this.specialEnemies.inspect(), melee:this.flameSweep?.inspect(), encounters:this.encounters.inspect(), feedback:this.feedback?.inspect() }; }
+  dispose() { this.grassBlobs.dispose(); this.specialEnemies.dispose(); this.flameSweep?.dispose(); this.flameSweep = undefined; this.shockwaveView.dispose(); this.encounters.dispose(); this.pixelEnemies?.dispose(); this.pixelEnemies = undefined; this.firePixels?.dispose(); this.firePixels = undefined; this.fusionPixels?.dispose(); this.fusionPixels = undefined; this.feedback?.dispose(); this.feedback = undefined; }
 }
