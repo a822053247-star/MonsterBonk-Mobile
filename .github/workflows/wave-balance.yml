@@ -1,0 +1,41 @@
+name: Wave balance baseline
+on:
+  pull_request:
+    paths:
+      - src/combat.ts
+      - scripts/wave-balance.ts
+      - scripts/run-wave-balance.mjs
+      - tests/run-balance.spec.ts
+      - package.json
+      - docs/WAVE-BALANCE-BASELINE.md
+      - .github/workflows/wave-balance.yml
+  push:
+    branches: [main]
+    paths:
+      - src/combat.ts
+      - scripts/wave-balance.ts
+      - scripts/run-wave-balance.mjs
+      - tests/run-balance.spec.ts
+      - package.json
+      - .github/workflows/wave-balance.yml
+jobs:
+  baseline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - run: npx playwright test tests/run-balance.spec.ts --project=chromium
+      - run: npm run balance:waves -- --seconds 12 --output artifacts/ci-wave-balance.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: wave-balance-data
+          path: artifacts/ci-wave-balance.json
+          if-no-files-found: ignore
