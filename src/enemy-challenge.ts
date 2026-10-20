@@ -3,7 +3,7 @@ import type { CrownthornAction } from './crownthorn-animation';
 
 type Point = { x: number; z: number };
 export const ENCOUNTER_RULES = {
-  hostileShots: 16, bossHp: 6000, bossRadius: 1.05, bossSpawn: 1.5,
+  hostileShots: 16, bossHp: 6000, bossRadius: 1.05, bossSpawn: 1.5, bossSupportCap: 120,
   waveHealth: [1,1.2,1.5,1.8,2.2,1.8],
   bossSpeed: 1.8, dashSpeed: 15, dashDuration: .65, dashWindup: 1.1,
   spreadWindup: 1, spreadSpeed: 6, spreadLife: 2, shotRadius: .24,
@@ -106,7 +106,7 @@ export class EnemyChallenge {
       } else if (this.bossState === 'dash-windup' && this.bossTime >= ENCOUNTER_RULES.dashWindup * tempo) this.transition('dash');
       else if (this.bossState === 'dash' && this.bossTime >= ENCOUNTER_RULES.dashDuration) this.transition('recover');
       else if (this.bossState === 'summon-windup' && this.bossTime >= .9 * tempo) {
-        for (let i = 0; i < 3; i++) combat.spawnEncounter('normal', enemy, 2.8, 4.2);
+        for (let i = 0; i < 3 && combat.enemies.filter(e => e.active).length < ENCOUNTER_RULES.bossSupportCap; i++) combat.spawnEncounter('normal', enemy, 2.8, 4.2);
         this.transition('summon');
       } else if ((this.bossState === 'spread' || this.bossState === 'summon') && this.bossTime >= .7) this.transition('recover');
       else if (this.bossState === 'recover' && this.bossTime >= 1.4 * tempo) this.transition('approach');
