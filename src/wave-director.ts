@@ -1,17 +1,12 @@
-/** Pure, deterministic threat choreography for the six-wave formal run.
- * No damage, reward, spawn-cap or graphics changes live in this file.
- * "end" uses elapsed seconds, exclusive except the final boundary.
- */
+/** Time-authored difficulty. Fodder feeds growth; bounded escorts create pressure.
+ * Rates never depend on the player's damage or chosen upgrades. */
 export type DirectorBeat = 'warmup' | 'pressure' | 'release';
-export type DirectorEscort = 'fast' | 'tank';
-
+export type DirectorEscort = 'fast' | 'tank' | 'draft-spore-bomber';
 export interface DirectorStage {
   readonly end: number;
   readonly beat: DirectorBeat;
-  /** Multiplies the wave's existing interval: lower means faster replacement. */
-  readonly pace: number;
-  /** Number of incoming half-batches that may carry one dangerous escort. */
-  readonly escortPulses: 0 | 1 | 2;
+  readonly fodderPerSecond: number;
+  readonly population: number;
   readonly escortEvery: number;
   readonly escorts: readonly DirectorEscort[];
   readonly fastCap: number;
@@ -19,49 +14,60 @@ export interface DirectorStage {
   readonly sporeCap: number;
 }
 export interface WaveDirectorPlan {
-  readonly stages: readonly [DirectorStage, DirectorStage, DirectorStage];
+  readonly stages: readonly DirectorStage[];
   readonly crystalFirst: number;
-  readonly crystalInterval: number;
   readonly sporeFirst: number | null;
-  readonly sporeInterval: number;
   readonly treasureFirst: number | null;
 }
-
+function stage(end: number, beat: DirectorBeat, rate: number, every: number,
+  escorts: readonly DirectorEscort[], fastCap: number, tankCap = 0, sporeCap = 0): DirectorStage {
+  return { end, beat, fodderPerSecond: rate, population: beat === 'warmup' ? .8 : beat === 'release' ? 1 : .9,
+    escortEvery: every, escorts, fastCap, tankCap, sporeCap };
+}
+const F = 'fast', T = 'tank', S = 'draft-spore-bomber';
 export const WAVE_DIRECTOR: readonly WaveDirectorPlan[] = [
   { stages: [
-    { end:20, beat:'warmup', pace:1.15, escortPulses:0, escortEvery:2, escorts:['fast'], fastCap:0, tankCap:0, sporeCap:0 },
-    { end:45, beat:'pressure',pace:.95, escortPulses:1, escortEvery:2, escorts:['fast'], fastCap:2, tankCap:0, sporeCap:0 },
-    { end:65, beat:'release', pace:1.05, escortPulses:1, escortEvery:2, escorts:['fast'], fastCap:3, tankCap:0, sporeCap:0 },
-  ], crystalFirst:8, crystalInterval:12, sporeFirst:null, sporeInterval:18, treasureFirst:null },
+    stage(20, 'warmup', 1.5, 0, [], 0),
+    stage(45, 'pressure', 1.8, 7, [F,F], 5),
+    stage(65, 'release', 2.8, 0, [], 0),
+  ], crystalFirst:8, sporeFirst:null, treasureFirst:null },
   { stages: [
-    { end:18, beat:'warmup', pace:1.15, escortPulses:1, escortEvery:3, escorts:['fast'], fastCap:2, tankCap:0, sporeCap:1 },
-    { end:50, beat:'pressure',pace:.90, escortPulses:2, escortEvery:1, escorts:['fast','tank','fast'], fastCap:9, tankCap:5, sporeCap:1 },
-    { end:70, beat:'release', pace:1.08, escortPulses:1, escortEvery:2, escorts:['fast','tank'], fastCap:4, tankCap:2, sporeCap:1 },
-  ], crystalFirst:8, crystalInterval:14, sporeFirst:14, sporeInterval:25, treasureFirst:22 },
+    stage(12, 'release', 3, 0, [], 0),
+    stage(42, 'pressure', 2.6, 6, [F,T,F], 9, 3, 1),
+    stage(60, 'release', 4, 0, [], 0),
+    stage(70, 'pressure', 3, 5, [F,F,T,S], 10, 4, 1),
+  ], crystalFirst:0, sporeFirst:14, treasureFirst:22 },
   { stages: [
-    { end:20, beat:'warmup', pace:1.12, escortPulses:1, escortEvery:2, escorts:['fast','tank'], fastCap:4, tankCap:2, sporeCap:1 },
-    { end:55, beat:'pressure',pace:.86, escortPulses:2, escortEvery:1, escorts:['fast','tank','fast'], fastCap:10, tankCap:5, sporeCap:2 },
-    { end:75, beat:'release', pace:1.1, escortPulses:1, escortEvery:2, escorts:['fast','tank'], fastCap:5, tankCap:3, sporeCap:1 },
-  ], crystalFirst:8, crystalInterval:12, sporeFirst:18, sporeInterval:18, treasureFirst:30 },
+    stage(28, 'pressure', 3.4, 5, [F,T,F,S], 12, 5, 2),
+    stage(48, 'release', 5.5, 0, [], 0),
+    stage(62, 'pressure', 3.8, 4, [F,F,T,F,S], 14, 6, 2),
+    stage(75, 'release', 6, 0, [], 0),
+  ], crystalFirst:0, sporeFirst:18, treasureFirst:30 },
   { stages: [
-    { end:10, beat:'warmup', pace:1.2, escortPulses:1, escortEvery:2, escorts:['fast','tank'], fastCap:5, tankCap:3, sporeCap:0 },
-    { end:50, beat:'pressure',pace:.9, escortPulses:2, escortEvery:1, escorts:['fast','tank','fast'], fastCap:23, tankCap:16, sporeCap:1 },
-    { end:75, beat:'release', pace:1.07, escortPulses:1, escortEvery:2, escorts:['fast','tank'], fastCap:11, tankCap:8, sporeCap:1 },
-  ], crystalFirst:8, crystalInterval:16, sporeFirst:25, sporeInterval:22, treasureFirst:40 },
+    stage(10, 'release', 5, 0, [], 0),
+    stage(40, 'pressure', 4, 5, [T,F,F,T,F], 16, 8, 1),
+    stage(60, 'release', 7, 0, [], 0),
+    stage(75, 'pressure', 4.5, 4, [F,T,F,S,F], 18, 8, 2),
+  ], crystalFirst:0, sporeFirst:25, treasureFirst:40 },
   { stages: [
-    { end:25, beat:'release', pace:1.0, escortPulses:1, escortEvery:2, escorts:['fast','tank'], fastCap:12, tankCap:9, sporeCap:1 },
-    { end:60, beat:'pressure',pace:.78, escortPulses:2, escortEvery:1, escorts:['fast','tank','fast'], fastCap:32, tankCap:24, sporeCap:2 },
-    { end:80, beat:'release', pace:.92, escortPulses:1, escortEvery:2, escorts:['fast','tank'], fastCap:10, tankCap:5, sporeCap:2 },
-  ], crystalFirst:8, crystalInterval:10, sporeFirst:16, sporeInterval:18, treasureFirst:30 },
+    stage(25, 'pressure', 5, 4, [F,T,F,S,T,F], 20, 10, 2),
+    stage(55, 'release', 8, 0, [], 0),
+    stage(70, 'pressure', 5.5, 3.5, [F,F,T,S,F,T], 22, 10, 2),
+    stage(80, 'release', 8, 0, [], 0),
+  ], crystalFirst:0, sporeFirst:16, treasureFirst:30 },
   { stages: [
-    { end:25, beat:'warmup', pace:1.2, escortPulses:1, escortEvery:2, escorts:['fast','tank'], fastCap:4, tankCap:2, sporeCap:0 },
-    { end:60, beat:'pressure',pace:.95, escortPulses:2, escortEvery:2, escorts:['fast','tank'], fastCap:13, tankCap:10, sporeCap:1 },
-    { end:90, beat:'pressure',pace:.88, escortPulses:1, escortEvery:1, escorts:['fast','tank'], fastCap:12, tankCap:9, sporeCap:1 },
-  ], crystalFirst:8, crystalInterval:17, sporeFirst:28, sporeInterval:24, treasureFirst:38 },
-] as const;
-
+    stage(10, 'warmup', 2.5, 0, [], 0),
+    stage(25, 'pressure', 3, 6, [F,T,F], 8, 4, 1),
+    stage(35, 'release', 5, 0, [], 0),
+    stage(50, 'pressure', 3.5, 5, [F,F,T,S], 10, 5, 1),
+    stage(62, 'release', 5.5, 0, [], 0),
+    stage(78, 'pressure', 4, 4, [F,T,F,S,F], 12, 5, 2),
+    stage(84, 'release', 6, 0, [], 0),
+    stage(90, 'pressure', 4.5, 3.5, [F,F,T,F], 14, 5, 2),
+  ], crystalFirst:0, sporeFirst:28, treasureFirst:38 },
+];
 export function directorStage(wave: number, elapsed: number): DirectorStage {
   const plan = WAVE_DIRECTOR[wave - 1];
   if (!plan) throw new RangeError('Invalid director wave');
-  return plan.stages.find(stage => elapsed < stage.end) ?? plan.stages[2];
+  return plan.stages.find(s => elapsed < s.end) ?? plan.stages[plan.stages.length - 1];
 }

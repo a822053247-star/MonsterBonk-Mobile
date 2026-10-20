@@ -48,7 +48,7 @@ test('the telemetry counts accepted hits, not blocked i-frame hits, and resets',
   expect(combat.hp).toBe(97);
   combat.reset();
   expect(combat.balanceTelemetry).toEqual({
-    damageEvents: 0, projectileBlockedAttempts: 0, sporeChainKills: 0,
+    damageEvents: 0, projectileBlockedAttempts: 0, sporeChainKills: 0, derivedDenied: 0, queuePeak: 0,
   });
 });
 

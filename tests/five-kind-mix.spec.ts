@@ -53,13 +53,14 @@ test('blocked threat slots diversify into crystals, respecting introduction and 
   }
 });
 
-test('real first-wave refills hold 40 percent crystals after introduction without adding dangerous enemies',()=>{
+test('first-wave arrivals stay below the soft budget and cap crystals at forty percent',()=>{
   const {c,run}=fixture();run.waveElapsed=9;
-  for(let i=0;i<30;i++)run.update(.4,c,origin);
+  for(let i=0;i<20;i++)run.update(.4,c,origin);
   const living=c.enemies.filter(e=>e.active&&!e.rank);
-  expect(living).toHaveLength(60);
-  expect(typeCount(c,'draft-crystal-swarm')).toBe(24);
-  expect(typeCount(c,'normal')).toBe(36);
+  expect(living.length).toBeGreaterThan(3);
+  expect(living.length).toBeLessThanOrEqual(run.inspect().director.populationTarget);
+  expect(typeCount(c,'draft-crystal-swarm')).toBeGreaterThan(0);
+  expect(typeCount(c,'draft-crystal-swarm')).toBeLessThanOrEqual(Math.floor(RUN_WAVES[0].cap * .4));
   expect(typeCount(c,'fast')).toBe(0); expect(typeCount(c,'tank')).toBe(0);
 });
 

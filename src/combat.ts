@@ -1,4 +1,5 @@
 import { COMBAT_CLARITY } from './combat-clarity';
+import { perimeterPoint, SPAWN_LAYOUT, type SpawnViewport } from './spawn-layout';
 import { REACTION_RULES, matureFire, martyrDamage, reserveReaction } from './combat-reactions';
 import { SKILL_SOUNDS } from './sound-design';
 import { FLAME_SWEEP, flameSweepStats, insideSweep } from './flame-sweep';
@@ -74,6 +75,8 @@ export class Combat {
   /** Enabled by the map prototype; preserved legacy modes keep their steering. */
   useNavigation = false;
   infiniteWorld = false;
+  /** Updated by the camera; absent in headless simulations, which use a fixed footprint. */
+  spawnViewport?: SpawnViewport;
   private worldRevision = -1;
   fusionEnabled = false;
   automaticSpawning = true;
@@ -321,11 +324,14 @@ export class Combat {
   /** One incoming sector per batch leaves the opposite side open at birth.
    * Finite placement attempts skip blocked members, never queue a catch-up burst. */
   spawnSwarm(player: Point, count: number, cap: number, escort: EnemyKind = 'normal',
-    mix?: { fastCap: number; tankCap: number; crystalCap?: number; sporeCap?: number; crystalAllowed?: boolean; sporeAllowed?: boolean }) {
+    mix?: { fastCap: number; tankCap: number; crystalCap?: number; sporeCap?: number; crystalAllowed?: boolean; sporeAllowed?: boolean; kinds?: readonly EnemyKind[] }, perimeterHeading?: number) {
     if (!this.encounters.enabled || !Number.isFinite(count) || !Number.isFinite(cap)) return 0;
+    if (perimeterHeading !== undefined && !Number.isFinite(perimeterHeading)) return 0;
     const available = Math.min(Math.floor(count), Math.floor(cap) - this.enemies.filter(e => e.active).length, COMBAT_LIMITS.enemies);
     if (available <= 0 || this.enemies.every(e => e.active)) return 0;
-    const anchor = this.spawnPosition(player, SWARM_RULES.minDistance, SWARM_RULES.maxDistance, ENEMY_TYPES.tank.radius);
+    const anchor = perimeterHeading === undefined
+      ? this.spawnPosition(player, SWARM_RULES.minDistance, SWARM_RULES.maxDistance, ENEMY_TYPES.tank.radius)
+      : this.spawnPerimeterPosition(player, ENEMY_TYPES.tank.radius, perimeterHeading);
     if (!anchor) return 0;
     const heading = Math.atan2(anchor.x-player.x, anchor.z-player.z);
     let spawned = 0;
@@ -333,9 +339,10 @@ export class Combat {
     if (mix) for (const enemy of this.enemies) if (enemy.active && !enemy.rank)
       alive[enemy.kind] = (alive[enemy.kind] ?? 0) + 1;
     for (let i = 0; i < available; i++) {
-      // Every ordinary wave slot participates in one deterministic five-kind cycle.
-      // Blocked threats use light crystal fodder first, rather than flooding the same normal silhouette.
-      const candidate: EnemyKind = mix ? FORMAL_MIX[this.spawned % FORMAL_MIX.length]
+      // The director can select fodder or a specific escort. Other callers retain
+      // the legacy five-kind cycle and its bounded crystal fallback.
+      const cycle = mix?.kinds?.length ? mix.kinds : FORMAL_MIX;
+      const candidate: EnemyKind = mix ? cycle[this.spawned % cycle.length]
         : i === available - 1 ? escort : 'normal';
       const quota = candidate === 'fast' ? mix?.fastCap
         : candidate === 'tank' ? mix?.tankCap
@@ -349,7 +356,9 @@ export class Combat {
       const kind: EnemyKind = mix && (occupied >= (quota ?? 0) || eventFull)
         ? crystalRoom ? 'draft-crystal-swarm' : 'normal' : candidate;
       const lane = i % 3 === 1 ? -SWARM_RULES.laneAngle : i % 3 === 2 ? SWARM_RULES.laneAngle : 0;
-      const point = i === 0 ? anchor : this.spawnPosition(player, SWARM_RULES.minDistance, SWARM_RULES.maxDistance, ENEMY_TYPES[kind].radius, heading + lane);
+      const point = i === 0 ? anchor : perimeterHeading === undefined
+        ? this.spawnPosition(player, SWARM_RULES.minDistance, SWARM_RULES.maxDistance, ENEMY_TYPES[kind].radius, heading + lane)
+        : this.spawnPerimeterPosition(player, ENEMY_TYPES[kind].radius, perimeterHeading + i * SPAWN_LAYOUT.goldenAngle);
       if (!point) continue;
       const enemy = this.spawn(kind, point.x, point.z);
       if (!enemy) break;
@@ -361,6 +370,23 @@ export class Combat {
       spawned++;
     }
     return spawned;
+  }
+
+  /** Bounded, deterministic off-screen placement. A blocked edge never falls back inside the view. */
+  private spawnPerimeterPosition(player: Point, radius: number, heading: number) {
+    const view = this.spawnViewport ?? { x: player.x, z: player.z, halfWidth: 14, halfDepth: 12 };
+    if (![view.x, view.z, view.halfWidth, view.halfDepth].every(Number.isFinite) || view.halfWidth <= 0 || view.halfDepth <= 0) return undefined;
+    for (let attempt = 0; attempt < 48; attempt++) {
+      const angle = heading + (attempt < 12 ? (this.random() - .5) * .65 : (attempt - 12) * SPAWN_LAYOUT.goldenAngle);
+      const point = perimeterPoint(view, angle, attempt < 12 ? this.random() : (attempt % 3) / 2);
+      const distance = Math.hypot(point.x - player.x, point.z - player.z);
+      if (distance < SPAWN_LAYOUT.minDistance || distance > SPAWN_LAYOUT.maxDistance) continue;
+      if (!this.infiniteWorld && Math.hypot(point.x, point.z) > this.boundary - radius - .2) continue;
+      if (this.obstacles.some(o => Math.hypot(point.x-o.x,point.z-o.z) < o.radius+radius+.3)) continue;
+      if (this.enemies.some(e => e.active && Math.hypot(point.x-e.x,point.z-e.z) < radius+this.enemyRadius(e)+.6)) continue;
+      if (this.navigation.reachable(point, player)) return point;
+    }
+    return undefined;
   }
 
   /** A compact group is committed only when at least five safe positions exist. */

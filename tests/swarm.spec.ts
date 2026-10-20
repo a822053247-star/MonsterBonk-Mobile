@@ -17,19 +17,18 @@ function kill(c: Combat, enemy: Combat['enemies'][number]) {
   (c as any).damageEnemy(enemy, 100000, 0, 0);
 }
 
-test('large groups spawn in two pulses, with a 256-slot pool and 200-active wave-five cap', () => {
-  expect(RUN_WAVES.map(w => w.cap)).toEqual([60, 90, 120, 160, 200, 120]);
-  expect(RUN_WAVES.map(w => w.groupSize)).toEqual([12, 18, 24, 32, 40, 16]);
+test('small waves arrive one at a time, with a 256-slot pool and 112-active wave-five ceiling', () => {
+  expect(RUN_WAVES.map(w => w.cap)).toEqual([36, 52, 72, 92, 112, 72]);
   for (let wave = 1; wave <= 5; wave++) {
     const { c, run } = fixture(); run.waveIndex = wave-1;
     run.update(1.2, c, origin);
     expect(c.enemies.filter(e => e.active).length).toBeGreaterThan(0);
     const before = c.enemies.filter(e => e.active).length;
-    expect(before).toBeLessThanOrEqual(Math.ceil(run.definition.groupSize / 2));
-    run.update(.35, c, origin);
-    expect(c.enemies.filter(e => e.active).length).toBeGreaterThan(before);
+    expect(before).toBe(1);
+    run.update(.7, c, origin);
+    expect(c.enemies.filter(e => e.active).length).toBe(before + 1);
     for (let batch = 0; batch < 40; batch++) {
-      run.waveElapsed = 12; run.update(run.definition.interval, c, origin);
+      run.waveElapsed = 12; run.update(.7, c, origin);
       expect(c.enemies.filter(e => e.active).length).toBeLessThanOrEqual(run.definition.cap);
     }
     expect(c.enemies).toHaveLength(COMBAT_LIMITS.enemies);
@@ -115,7 +114,7 @@ test('escorts keep their stats and boss wave receives massed low-health support'
   const first = c.enemies.filter(e => e.active && !e.rank);
   expect(first.length).toBeGreaterThan(0);
   expect(first.length).toBeLessThanOrEqual(8);
-  run.update(.35, c, origin);
+  run.update(.5, c, origin);
   const support = c.enemies.filter(e => e.active && !e.rank);
   expect(support.length).toBeGreaterThan(first.length);
   // The director now escorts a mostly-low-health group with bounded threats.
@@ -195,10 +194,10 @@ test('24/48/120/200 pooled enemies under dense fusions continue firing and stay 
 test('Boss summons never exceed the final-wave active cap', () => {
   const { c, run } = fixture(); run.waveIndex = 5; run.prepare(c, origin);
   const boss = c.encounters.boss!; boss.spawnTime = 0;
-  for (let i = 0; i < 119; i++) c.spawn('normal', -20, -20, 0);
-  expect(c.enemies.filter(e => e.active)).toHaveLength(120);
+  for (let i = 1; i < RUN_WAVES[5].cap; i++) c.spawn('normal', -20, -20, 0);
+  expect(c.enemies.filter(e => e.active)).toHaveLength(RUN_WAVES[5].cap);
   c.encounters.bossState = 'summon-windup'; c.encounters.bossTime = 1;
   c.update(1/60, origin);
-  expect(c.enemies.filter(e => e.active)).toHaveLength(120);
+  expect(c.enemies.filter(e => e.active)).toHaveLength(RUN_WAVES[5].cap);
   expect(c.encounters.bossState).toBe('summon');
 });

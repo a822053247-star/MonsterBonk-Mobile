@@ -1,18 +1,19 @@
 import type { Combat, EnemyKind } from './combat';
 import { RunShop } from './shop';
 import { CRYSTAL_SWARM, SPORE_BOMBER, TREASURE_RUNNER } from './special-enemies';
-import { WAVE_DIRECTOR, directorStage, type DirectorStage } from './wave-director';
+import { populationBudget, SPAWN_LAYOUT, FORMAL_SPAWN_CAPS } from './spawn-layout';
+import { WAVE_DIRECTOR, directorStage, type DirectorStage, type DirectorEscort } from './wave-director';
 
 export const WAVE_INTERMISSION_SECONDS = 3.5;
 export const SHOP_AFTER_WAVE = 5;
 
-export const RUN_WAVES: readonly { seconds: number; reward: number; interval: number; groupSize: number; cap: number; enemies: readonly EnemyKind[] }[] = [
-  { seconds: 65, reward: 35, interval: 1.4, groupSize: 12, cap: 60, enemies: ['normal', 'normal', 'normal', 'fast'] },
-  { seconds: 70, reward: 40, interval: 1.2, groupSize: 18, cap: 90, enemies: ['normal', 'fast', 'normal', 'tank'] },
-  { seconds: 75, reward: 45, interval: 1.0, groupSize: 24, cap: 120, enemies: ['normal', 'fast', 'tank', 'normal', 'fast'] },
-  { seconds: 75, reward: 50, interval: 0.9, groupSize: 32, cap: 160, enemies: ['normal', 'fast', 'tank', 'normal', 'fast'] },
-  { seconds: 80, reward: 55, interval: 0.8, groupSize: 40, cap: 200, enemies: ['normal', 'tank', 'fast', 'fast'] },
-  { seconds: 90, reward: 0, interval: 1.0, groupSize: 16, cap: 120, enemies: ['normal', 'fast', 'normal', 'tank'] },
+export const RUN_WAVES: readonly { seconds: number; reward: number; cap: number }[] = [
+  { seconds: 65, reward: 35, cap: FORMAL_SPAWN_CAPS[0] },
+  { seconds: 70, reward: 40, cap: FORMAL_SPAWN_CAPS[1] },
+  { seconds: 75, reward: 45, cap: FORMAL_SPAWN_CAPS[2] },
+  { seconds: 75, reward: 50, cap: FORMAL_SPAWN_CAPS[3] },
+  { seconds: 80, reward: 55, cap: FORMAL_SPAWN_CAPS[4] },
+  { seconds: 90, reward: 0, cap: FORMAL_SPAWN_CAPS[5] },
 ];
 
 /** Five survival waves and a final Boss. Timing out never grants a Boss victory. */
@@ -36,13 +37,25 @@ export class RunFlow {
   lastWaveGrowth = { treasureCaught: 0, sporeBonus: 0 };
   private spawnClock = 1.2;
   private spawnIndex = 0;
-  private pendingSwarm = 0;
-  private pendingClock = 0;
+  private escorts: DirectorEscort[] = [];
+  private escortClock = 2;
+  private arrivalClock = 0;
+  private stageEnd = -1;
+  private escortHeading = 0;
+  private escortIndex = 0;
+  private fodderArrivals = 0;
+  private escortArrivals = 0;
+  private perimeterHeading = 0;
   private claimedExperience = false;
   private treasureClock: number = TREASURE_RUNNER.first;
   private treasureSpawned = false;
   private treasureWaiting = false;
   private scheduledWave = 0;
+
+  private populationTarget(stage: DirectorStage) {
+    const elapsed = RUN_WAVES.slice(0, this.waveIndex).reduce((sum, w) => sum + w.seconds, 0) + this.waveElapsed;
+    return populationBudget(this.definition.cap, stage.population, elapsed);
+  }
 
   private ensureSchedule() {
     if (this.scheduledWave === this.wave) return;
@@ -111,39 +124,59 @@ export class RunFlow {
     if (this.remaining <= 1e-8 || this.wave === 6 && combat.encounters.defeated) { this.resolveBoundary(combat); return; }
     if (combat.encounters.dying) return;
     if (combat.progression.awaitingChoice) return;
-    const { cap: waveCap, groupSize, interval } = this.definition;
+    const { cap: waveCap } = this.definition;
     const stage = directorStage(this.wave, this.waveElapsed);
-    const pacedInterval = interval * stage.pace * (this.majorWarning(combat) ? 1.2 : 1);
     // The fourth-wave elite needs a free pool slot even at the swarm limit.
     const cap = this.wave === 4 && !combat.encounters.elite ? waveCap - 1 : waveCap;
     this.spawnSpecials(dt, combat, player, cap);
-    // The rare treasure event reserves a slot; the other five enemy kinds share batches.
-    const swarmCap = Math.max(0, cap - Number(this.treasureWaiting));
-    // Half the incoming group arrives 0.35s later; never queue multiple late batches.
-    if (this.pendingSwarm > 0) {
-      this.pendingClock -= dt;
-      if (this.pendingClock <= 0) {
-        combat.spawnSwarm(player, this.pendingSwarm, swarmCap, 'normal', this.mixedCaps(combat, stage, cap));
-        this.pendingSwarm = 0;
-        this.pendingClock = 0;
-      }
+    if (this.stageEnd !== stage.end) {
+      this.stageEnd = stage.end;
+      this.escorts = []; this.escortClock = 2;
+      // A new harvest starts promptly; it does not inherit a slow pressure interval.
+      this.spawnClock = Math.min(this.spawnClock, 1 / stage.fodderPerSecond);
     }
-    this.spawnClock -= dt;
+    this.escortClock -= dt;
+    if (this.majorWarning(combat)) {
+      // Suppressed events expire rather than bursting after the warning.
+      this.escorts = []; this.escortClock = 2;
+    } else if (stage.escortEvery > 0 && this.escortClock <= 0) {
+      this.escorts = [...stage.escorts];
+      this.escortHeading = this.random() * Math.PI * 2; this.escortIndex = 0;
+      this.escortClock = stage.escortEvery;
+    }
+    const target = Math.min(cap, this.populationTarget(stage));
+    // Leave room for authored threats even when fodder has filled its budget.
+    const reserve = stage.escorts.length + Number(this.treasureWaiting);
+    const swarmCap = Math.max(0, Math.min(target, cap - reserve));
     const active = combat.enemies.filter(e => e.active).length;
-    // A rapidly cleared map refills sooner without an unbounded catch-up loop.
-    if (this.spawnIndex > 0 && active < Math.floor(cap * .45)) {
-      this.spawnClock = Math.min(this.spawnClock, pacedInterval * .6);
+    const near = combat.enemies.filter(e => e.active && Math.hypot(e.x-player.x,e.z-player.z) < 5.5).length;
+    const nearLimit = [7, 9, 12, 15, 18, 10][this.waveIndex];
+    this.spawnClock -= dt;
+    this.arrivalClock -= dt;
+    if (this.arrivalClock > 0) return;
+    const mix = this.mixedCaps(combat, stage, cap);
+    if (this.escorts.length) {
+      const kind = this.escorts.shift()!;
+      const limit = kind === 'fast' ? mix.fastCap : kind === 'tank' ? mix.tankCap : mix.sporeAllowed ? mix.sporeCap : 0;
+      const occupied = combat.enemies.filter(e => e.active && !e.rank && e.kind === kind).length;
+      // Two adjacent approach lanes leave the opposite side available for escape.
+      const heading = this.escortHeading + (this.escortIndex++ % 2 ? .7 : -.7);
+      if (occupied < limit && active < cap - Number(this.treasureWaiting)) {
+        this.escortArrivals += combat.spawnSwarm(player, 1, cap - Number(this.treasureWaiting), kind,
+          { ...mix, kinds: [kind] }, heading);
+      }
+      this.arrivalClock = SPAWN_LAYOUT.stagger;
+      return;
     }
     if (this.spawnClock <= 0) {
-      if (active >= swarmCap) { this.spawnClock = .2; return; }
-      const firstHalf = Math.ceil(groupSize / 2);
-      const spawned = combat.spawnSwarm(player, firstHalf, swarmCap, 'normal', this.mixedCaps(combat, stage, cap));
-      if (spawned) {
-        this.pendingSwarm = groupSize - firstHalf;
-        this.pendingClock = .35;
-        this.spawnIndex++;
-        this.spawnClock = pacedInterval;
-      } else this.spawnClock = .2;
+      // Crowding slows background feed by 30%, never cancels an authored encounter.
+      this.spawnClock = 1 / (stage.fodderPerSecond * (near >= nearLimit ? .7 : 1));
+      this.arrivalClock = .12;
+      if (active >= swarmCap) return;
+      if (this.spawnIndex % 4 === 0) this.perimeterHeading = this.random() * Math.PI * 2 + this.spawnIndex * SPAWN_LAYOUT.goldenAngle;
+      const kinds: readonly EnemyKind[] = ['normal', 'draft-crystal-swarm', 'normal', 'draft-crystal-swarm'];
+      const spawned = combat.spawnSwarm(player, 1, swarmCap, 'normal', { ...mix, kinds }, this.perimeterHeading);
+      this.fodderArrivals += spawned; this.spawnIndex++;
     }
   }
 
@@ -187,7 +220,7 @@ export class RunFlow {
     this.lastWaveGrowth = { treasureCaught, sporeBonus };
     this.coins += sporeBonus; this.earned += sporeBonus;
     if (!seamless) combat.clearWave();
-    this.pendingSwarm = this.pendingClock = 0;
+    this.escorts = []; this.arrivalClock = 0;
     this.completedWaves++;
     this.coins += this.definition.reward; this.earned += this.definition.reward;
     if (seamless) { this.advanceWave(); return; }
@@ -227,7 +260,7 @@ export class RunFlow {
   private advanceWave() {
     this.waveIndex++; this.waveElapsed = 0;
     this.spawnClock = 1.2; this.spawnIndex = 0; this.claimedExperience = false;
-    this.pendingSwarm = this.pendingClock = 0;
+    this.escorts = []; this.arrivalClock = 0; this.stageEnd = -1; this.escortClock = 2;
     this.scheduledWave = 0;
     this.treasureClock = TREASURE_RUNNER.first; this.treasureSpawned = false;
     this.treasureWaiting = false;
@@ -249,7 +282,9 @@ export class RunFlow {
     return { phase: this.phase, wave: this.wave, waves: RUN_WAVES.length, completedWaves: this.completedWaves, remaining: this.remaining, intermissionRemaining: this.intermissionRemaining,
       combatElapsed: this.combatElapsed, restElapsed: this.restElapsed, totalElapsed: this.totalElapsed, coins: this.coins, earned: this.earned,
       bossDefeated:this.bossDefeated,failure:this.failure, growth: { ...this.lastWaveGrowth },
-      director: { beat: directorStage(this.wave, this.waveElapsed).beat, stage: directorStage(this.wave, this.waveElapsed) },
+      director: { populationTarget: this.populationTarget(directorStage(this.wave, this.waveElapsed)), pendingArrivals: this.escorts.length,
+        fodderArrivals: this.fodderArrivals, escortArrivals: this.escortArrivals,
+        beat: directorStage(this.wave, this.waveElapsed).beat, stage: directorStage(this.wave, this.waveElapsed) },
       shop: this.shop ? { token: this.shop.token, refreshCost: this.shop.refreshCost, treasureRefreshes: this.shop.treasureRefreshes, items: this.shop.items.map(s => ({ ...s })) } : null };
   }
 }

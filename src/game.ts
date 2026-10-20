@@ -898,6 +898,8 @@ export class Game {
     this.camera.position.copy(this.cameraTarget);
     // Position and look point share one smoothed anchor, so pitch never changes.
     this.camera.lookAt(this.cameraAnchor);
+    this.combat.spawnViewport = { x: this.cameraAnchor.x, z: this.cameraAnchor.z - this.cameraAnchor.y / Math.tan(VIEW_25D.pitch),
+      halfWidth: (this.camera.right - this.camera.left) / 2, halfDepth: (this.camera.top - this.camera.bottom) / (2 * Math.sin(VIEW_25D.pitch)) };
     this.combatView.updateView(this.camera, window.innerHeight, this.camera.top - this.camera.bottom);
     this.partyView.setCamera(this.camera);
   }
