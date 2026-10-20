@@ -776,7 +776,7 @@ export class Game {
     const coins = this.run?.coins ?? this.combat.goldEarned;
     document.getElementById('hud-coins')!.textContent = Math.max(0, coins).toLocaleString('en-US');
     if (this.run) { wave.textContent = `第 ${this.run.wave} / 6 波`; gold.textContent = `金币 ${this.run.coins}`; }
-    renderBuildSummary(this.combat.usesRunBuild ? this.combat.runBuild : undefined, this.combat.fusions);
+    renderBuildSummary(this.combat.usesRunBuild ? this.combat.runBuild : undefined, this.combat.fusions, this.combat.resonances);
     const fusionStatus = document.getElementById('fusion-status')!;
     fusionStatus.hidden = !this.combat.fusionEnabled;
     const fused = !!this.combat.fusion;
@@ -784,8 +784,8 @@ export class Game {
     const title = document.getElementById('fusion-title')!, hint = document.getElementById('fusion-hint')!;
     const base = this.combat.baseAttack;
     const titleText = this.combat.usesRunBuild && (this.combat.runBuild.attacks.length > 1 || this.combat.runBuild.attacks[0].level > 1) ? this.combat.runBuild.attacks.map(a => ATTACKS[a.attackId].title + (a.level > 1 ? ` ${a.level}级` : '')).join(' + ') + (fused ? ` · ${this.combat.fusions.length} 融合` : '') : fused ? this.combat.fusions.map(f => f.title).join(' / ')  : base === 'bubble' ? '水泡弹' : base === 'leaf' ? '飞叶弹' : '火花弹';
-    const hintText = '';
-    hint.hidden = true;
+    const hintText = this.combat.resonances.join(' · ');
+    hint.hidden = !hintText;
     fusionStatus.title = this.combat.fusions.map(f => f.title).join(' / ');
     const species = this.party.leader.species;
     const portrait = document.getElementById('creature-portrait') as HTMLImageElement;
@@ -899,6 +899,8 @@ export class Game {
     this.camera.position.copy(this.cameraTarget);
     // Position and look point share one smoothed anchor, so pitch never changes.
     this.camera.lookAt(this.cameraAnchor);
+    this.combat.spawnViewport = { x: this.cameraAnchor.x, z: this.cameraAnchor.z - this.cameraAnchor.y / Math.tan(VIEW_25D.pitch),
+      halfWidth: (this.camera.right - this.camera.left) / 2, halfDepth: (this.camera.top - this.camera.bottom) / (2 * Math.sin(VIEW_25D.pitch)) };
     this.combatView.updateView(this.camera, window.innerHeight, this.camera.top - this.camera.bottom);
     this.partyView.setCamera(this.camera);
   }

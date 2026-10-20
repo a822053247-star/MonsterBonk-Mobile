@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { Combat } from '../src/combat';
 import { PartySystem } from '../src/party';
-import { readableEffects } from '../src/combat-clarity';
+import { COMBAT_CLARITY, readableEffects } from '../src/combat-clarity';
 
 test('even a single multishot weapon spaces its shots over time', () => {
   const c = new Combat([], 32, () => .999);
@@ -26,7 +26,9 @@ test('three ready weapons and multishot emit distinguishable bullets instead of 
   }
   expect(emitted.length).toBeGreaterThan(6);
   expect(c.runBuild.attacks.every(a => a.shotsFired > 0)).toBe(true);
-  for (let i = 1; i < emitted.length; i++) expect(emitted[i] - emitted[i - 1]).toBeGreaterThanOrEqual(.07);
+  // Haste now accelerates the serial volley as well as the weapon cooldown.
+  const minimumGap = COMBAT_CLARITY.shotGap / c.stats.attackRateMultiplier;
+  for (let i = 1; i < emitted.length; i++) expect(emitted[i] - emitted[i - 1]).toBeGreaterThanOrEqual(minimumGap - 1e-8);
 });
 
 test('overlapping impact visuals keep the major explosion and leave combat state untouched', () => {

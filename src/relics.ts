@@ -1,13 +1,14 @@
 import type { BaseAttackId } from './fusion';
 
 export const RELICS = {
+  'draft-boiling-core': { title: '沸腾核心', benefit: '水泡铺湿润，火系命中引发蒸爆 · 半径 2.5', tradeoff: '消耗湿润；同一目标间隔 0.6 秒，蒸爆不再触发蒸爆', icon: 'wave', color: '#ffd49b' },
   'overload-core': { title: '过载核心', benefit: '范围半径 +50%', tradeoff: '所有武器攻击间隔 +20%', icon: 'wave', color: '#ffb45f' },
   'hunter-eye': { title: '追猎之眼', benefit: '派生弹轻微追踪', tradeoff: '派生弹伤害 -20%', icon: 'compass', color: '#e7c67a' },
   'shattered-core': { title: '破碎晶核', benefit: '每次分裂子弹 +1', tradeoff: '派生弹伤害 -25%，仍受弹体预算限制', icon: 'battle', color: '#d6b9f5' },
   'tidal-pearl': { title: '潮汐遗珠', benefit: '水泡减速时长 +60%', tradeoff: '所有武器直接命中伤害 -15%', icon: 'wave', color: '#8fe8ff' },
   'specialist-badge': { title: '专精徽记', benefit: '仅装备一种武器时伤害 +45%', tradeoff: '装备副武器后加成失效', icon: 'spark', color: '#f3de9a' },
   'echo-rune': { title: '回声符石', benefit: '连锁距离 +40%', tradeoff: '每次额外跳跃伤害再乘 70%', icon: 'orbit', color: '#a5edbe' },
-  'draft-martyr-core': { title: '殉爆晶核', benefit: '火系击杀爆炸 · 半径 1.35 · 50% 伤害', tradeoff: '最多 2 代；同源去重，燃烧击杀不触发', icon: 'spark', color: '#ff9849' },
+  'draft-martyr-core': { title: '殉爆晶核', benefit: '火系击杀连爆 · 三级可觉醒', tradeoff: '觉醒65%原伤/3代，燃烧可触发；火花需分裂，每链限24节点', description: '基础击杀爆炸为致死伤害50%，最多两代。三级火花+命中分裂，或三级横扫自动觉醒：按原始攻击65%计算，后续每代保留85%，最多三代；燃烧击杀也可引爆。', icon: 'spark', color: '#ff9849' },
   'draft-kindling-flask': { title: '引火油壶', benefit: '燃烧 2 秒，每 0.5 秒造成命中伤害的 10%', tradeoff: '重复火系命中叠层，上限 3；下次爆炸消耗，每层范围 +15%', icon: 'spark', color: '#ffc16b' },
   'draft-thorn-testament': { title: '荆棘遗嘱', benefit: '草系击杀发射 3 枚 35% 伤害荆棘', tradeoff: '荆棘不再触发遗嘱；共享派生弹预算', icon: 'leaf', color: '#a5ec69' },
   'draft-bubble-spore': { title: '泡泡孢子', benefit: '水系击杀生成 35% 伤害小泡，额外弹射 2 次', tradeoff: '触发间隔 0.35 秒；小泡不再派生孢子，共享弹池', icon: 'wave', color: '#70dcff' },
@@ -28,7 +29,12 @@ export const TRIGGER_RELIC_RULES = {
 export interface RelicDamageSource {
   rootId: number;
   attackId: BaseAttackId;
-  kind: 'hit' | 'explosion' | 'burn' | 'testament' | 'bubble-spore';
+  kind: 'hit' | 'explosion' | 'burn' | 'testament' | 'bubble-spore' | 'steam';
+  /** Original actual hit snapshot, including copy/direct modifiers. */
+  rootDamage?: number;
+  mature?: boolean;
+  reaction?: 'steam';
+  chain?: { nodes: number };
   copied?: boolean;
   generation: number;
   rules: AttackRules;

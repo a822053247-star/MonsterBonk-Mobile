@@ -1,0 +1,64 @@
+{
+  "baseline": "6db569c32d378522c2fe4cbbe04b96e063dd5f9d",
+  "assumptions": [
+    "45 simulated seconds, fixed seed, no obstacles, stationary invulnerable player, weapons disabled.",
+    "This isolates incoming pressure and visual birth positions, not player difficulty, win rate or phone FPS.",
+    "Before is the committed HEAD captured at execution. Re-running after committing changes the baseline."
+  ],
+  "rows": [
+    {
+      "mode": "before",
+      "wave": 1,
+      "activePeak": 60,
+      "nearPeak": 60,
+      "largestPulse": 6,
+      "ordinaryBirths": 60,
+      "visibleBirths": 54
+    },
+    {
+      "mode": "before",
+      "wave": 3,
+      "activePeak": 120,
+      "nearPeak": 120,
+      "largestPulse": 12,
+      "ordinaryBirths": 120,
+      "visibleBirths": 113
+    },
+    {
+      "mode": "before",
+      "wave": 5,
+      "activePeak": 200,
+      "nearPeak": 198,
+      "largestPulse": 20,
+      "ordinaryBirths": 200,
+      "visibleBirths": 169
+    },
+    {
+      "mode": "after",
+      "wave": 1,
+      "activePeak": 18,
+      "nearPeak": 18,
+      "largestPulse": 1,
+      "ordinaryBirths": 18,
+      "visibleBirths": 0
+    },
+    {
+      "mode": "after",
+      "wave": 3,
+      "activePeak": 38,
+      "nearPeak": 37,
+      "largestPulse": 1,
+      "ordinaryBirths": 37,
+      "visibleBirths": 0
+    },
+    {
+      "mode": "after",
+      "wave": 5,
+      "activePeak": 63,
+      "nearPeak": 62,
+      "largestPulse": 1,
+      "ordinaryBirths": 62,
+      "visibleBirths": 0
+    }
+  ]
+}

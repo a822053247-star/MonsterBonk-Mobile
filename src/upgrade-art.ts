@@ -3,6 +3,7 @@ import type { SkillDefinition, SkillId } from './progression';
 
 /** Presentation only. Categories and availability still come from Progression. */
 export const UPGRADE_ART = {
+  'draft-boiling-core': ['skills/area-expansion.png', 'skills/split-on-hit-fire.png'],
   'draft-martyr-core': ['relics/draft-martyr-core.png'],
   'draft-kindling-flask': ['relics/draft-kindling-flask.png'],
   'draft-thorn-testament': ['relics/draft-thorn-testament.png'],

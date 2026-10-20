@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { COMBAT_CLARITY, WATER_IMPACT_VISUAL, impactVisualPosition, readableEffects } from './combat-clarity';
+import { COMBAT_CLARITY, WATER_IMPACT_VISUAL, impactVisualPosition, impactSize, readableEffects } from './combat-clarity';
 import { enemyPose } from './enemy-motion';
 import { grassBlobPose, grassBlobRoll, grassCrowdMotionScale } from './grass-blob';
 import { GrassBlobView } from './grass-blob-view';
@@ -14,6 +14,7 @@ import { FirePixelView } from './fire-pixel-view';
 import { ParticleFeedbackView } from './particle-feedback';
 import { ShockwaveView } from './shockwave-view';
 import { FlameSweepView } from './flame-sweep-view';
+import { ReactionView } from './reaction-view';
 import { SpecialEnemyView } from './special-enemy-view';
 import { BURST_SEED } from './fusion';
 import { FUSION_ASSET_ROOT, elementalClip, clipFrame } from './fusion-pixels';
@@ -56,6 +57,7 @@ export class CombatView {
   private firePixels?: FirePixelView;
   private fusionPixels?: FirePixelView;
   private feedback?: ParticleFeedbackView;
+  private reactions?: ReactionView;
   private encounters: EncounterView;
   private flameSweep?: FlameSweepView;
   private specialEnemies: SpecialEnemyView;
@@ -124,7 +126,7 @@ export class CombatView {
     if (this.pixelEnemies) { this.pixelEnemies.group.visible = true; this.pixelEnemies.begin(); }
   }
 
-  updateView(camera: THREE.Camera, viewportHeight: number, frustumHeight: number) { this.grassBlobs.setView(camera); this.specialEnemies.setView(camera,viewportHeight,frustumHeight); this.flameSweep?.setView(camera); this.shockwaveView.setView(camera); this.encounters.setView(camera); this.pixelEnemies?.setView(camera, viewportHeight, frustumHeight); this.firePixels?.setView(camera); this.fusionPixels?.setView(camera); this.feedback?.setView(camera); }
+  updateView(camera: THREE.Camera, viewportHeight: number, frustumHeight: number) { this.grassBlobs.setView(camera); this.specialEnemies.setView(camera,viewportHeight,frustumHeight); this.flameSweep?.setView(camera); this.shockwaveView.setView(camera); this.encounters.setView(camera); this.pixelEnemies?.setView(camera, viewportHeight, frustumHeight); this.firePixels?.setView(camera); this.fusionPixels?.setView(camera); this.feedback?.setView(camera); this.reactions?.setView(camera); }
 
   setFusion(enabled: boolean, _elemental = false) {
     if(enabled)this.grassBlobs.enable();
@@ -132,6 +134,7 @@ export class CombatView {
     this.flameSweep?.clear();
     if (enabled && !this.firePixels) { this.firePixels = new FirePixelView(); this.group.add(this.firePixels.mesh); }
     if (enabled && !this.fusionPixels) { this.fusionPixels = new FirePixelView(FUSION_ASSET_ROOT + 'effects.normalized.png', 8, 4, 'WaterGrassFusionAtlas'); this.group.add(this.fusionPixels.mesh); }
+    if (enabled && !this.reactions) { this.reactions = new ReactionView(); this.group.add(this.reactions.group); }
     if (enabled && !this.feedback) { this.feedback = new ParticleFeedbackView(); this.group.add(this.feedback.mesh); }
     this.firePixels?.begin();
     this.fusionPixels?.begin();
@@ -265,7 +268,9 @@ export class CombatView {
       this.put(this.gems, x, 0.4 + Math.sin(time * 3 + index) * 0.08, z, size, size * 1.4, size, 0, time + index);
       this.put(this.gemRings, x, 0.045, z, size * 1.4, size * 1.4, 1, -Math.PI / 2);
     }
-    for (const effect of this.combat.usesRunBuild ? readableEffects(this.combat.effects) : this.combat.effects) {
+    const visibleEffects = this.combat.usesRunBuild ? readableEffects(this.combat.effects) : this.combat.effects;
+    this.reactions?.render(this.combat.usesRunBuild && this.combat.hp > 0 ? visibleEffects : [], this.combat.usesRunBuild && this.combat.hp > 0 ? this.combat.enemies : [], this.detail);
+    for (const effect of visibleEffects) {
       if (!effect.active || this.combat.hp <= 0) continue;
       if (this.combat.usesRunBuild && effect.kind === 'collect') continue;
       const progress = 1 - effect.time / effect.duration;
@@ -281,7 +286,7 @@ export class CombatView {
       if (clip?.impact.length && this.fusionPixels?.loaded) {
         const frame = clipFrame(clip.impact, effect.duration - effect.time, clip.impactFPS, false);
         if (frame !== undefined) {
-          const baseSize = Math.min(COMBAT_CLARITY.impactSize, Math.max(1, (effect.radius || .6) * 2));
+          const baseSize = impactSize(effect);
           const size = baseSize * (effect.kind === 'water'
             ? effect.enemyKind === 'tank' ? WATER_IMPACT_VISUAL.tankScale : WATER_IMPACT_VISUAL.normalScale : 1);
           const enemyHeight = this.pixelEnemies?.height(effect.enemyKind)
@@ -291,11 +296,15 @@ export class CombatView {
         }
         continue;
       }
+      if (effect.kind === 'steam') {
+        if (progress < .42) this.firePixels?.put(2, Math.min(3, Math.floor(progress * 8)), effect.x, .8, effect.z, Math.min(3.2, (effect.radius ?? 2.5) * 1.3));
+        continue;
+      }
       if (effect.kind === 'burst') {
         const radius = effect.radius ?? BURST_SEED.explosionRadius;
         if (this.firePixels?.loaded) {
           const frame = Math.min(3, Math.floor(progress * 4));
-          this.firePixels.put(2, frame, effect.x, 1.3, effect.z, Math.min(COMBAT_CLARITY.impactSize, radius * 2));
+          this.firePixels.put(2, frame, effect.x, 1.3, effect.z, this.combat.usesRunBuild ? impactSize(effect) : Math.min(COMBAT_CLARITY.impactSize, radius * 2));
           continue;
         }
       }
@@ -331,9 +340,9 @@ export class CombatView {
     this.feedback?.finish();
   }
 
-  clear() { this.grassBlobs.clear(); this.specialEnemies.clear(); this.flameSweep?.clear(); this.shockwaveView.clear(); this.encounters.clear(); for (const mesh of this.batches) mesh.count = 0; this.pixelEnemies?.begin(); this.pixelEnemies?.resetDirections(); this.firePixels?.begin(); this.fusionPixels?.begin(); this.feedback?.begin(); }
+  clear() { this.reactions?.clear(); this.grassBlobs.clear(); this.specialEnemies.clear(); this.flameSweep?.clear(); this.shockwaveView.clear(); this.encounters.clear(); for (const mesh of this.batches) mesh.count = 0; this.pixelEnemies?.begin(); this.pixelEnemies?.resetDirections(); this.firePixels?.begin(); this.fusionPixels?.begin(); this.feedback?.begin(); }
   inspectElemental() { return this.fusionPixels?.inspect(); }
   inspectFusion() { return this.firePixels?.inspect(); }
-  inspect() { return { grass:this.grassBlobs.inspect(), enabled: this.pixelsEnabled, ...this.pixelEnemies?.inspect(), specialEnemies:this.specialEnemies.inspect(), melee:this.flameSweep?.inspect(), encounters:this.encounters.inspect(), feedback:this.feedback?.inspect() }; }
-  dispose() { this.grassBlobs.dispose(); this.specialEnemies.dispose(); this.flameSweep?.dispose(); this.flameSweep = undefined; this.shockwaveView.dispose(); this.encounters.dispose(); this.pixelEnemies?.dispose(); this.pixelEnemies = undefined; this.firePixels?.dispose(); this.firePixels = undefined; this.fusionPixels?.dispose(); this.fusionPixels = undefined; this.feedback?.dispose(); this.feedback = undefined; }
+  inspect() { return { reactions:this.reactions?.inspect(), grass:this.grassBlobs.inspect(), enabled: this.pixelsEnabled, ...this.pixelEnemies?.inspect(), specialEnemies:this.specialEnemies.inspect(), melee:this.flameSweep?.inspect(), encounters:this.encounters.inspect(), feedback:this.feedback?.inspect() }; }
+  dispose() { this.reactions?.dispose(); this.reactions = undefined; this.grassBlobs.dispose(); this.specialEnemies.dispose(); this.flameSweep?.dispose(); this.flameSweep = undefined; this.shockwaveView.dispose(); this.encounters.dispose(); this.pixelEnemies?.dispose(); this.pixelEnemies = undefined; this.firePixels?.dispose(); this.firePixels = undefined; this.fusionPixels?.dispose(); this.fusionPixels = undefined; this.feedback?.dispose(); this.feedback = undefined; }
 }

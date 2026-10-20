@@ -120,8 +120,9 @@ test('formal scheduling introduces the enemies by wave and stays under each shar
   for(let wave=1;wave<=6;wave++) {
     const c=fixture(), run=new RunFlow(); run.waveIndex=wave-1;
     const kinds=new Set<string>(); let runners=0;
-    for(let i=0;i<55;i++) {
-      run.update(1,c,origin);
+    // Events belong to pressure windows, including late-wave spikes.
+    for(let i=0;i<(RUN_WAVES[wave-1].seconds-1)*60;i++) {
+      run.update(1/60,c,origin);
       expect(c.enemies.filter(e=>e.active).length).toBeLessThanOrEqual(RUN_WAVES[wave-1].cap);
       for(const e of c.enemies) if(e.active) { kinds.add(e.kind); if(e.kind==='draft-treasure-runner') runners++; e.active=false; }
     }
@@ -141,7 +142,7 @@ test('special scheduling cannot overflow a crowded wave or leak into legacy auto
   expect(c.enemies.every(e=>!e.active||['normal','fast','tank'].includes(e.kind))).toBe(true);
 });
 
-test('crowded wave refills can include crystals from the same shared weighted batches', () => {
+test('crowded waves stop refilling until the soft budget has room for mixed arrivals', () => {
   const c=fixture(), run=new RunFlow();
   for(let i=0;i<60;i++) c.spawn('normal',10,10,0);
   run.update(8,c,origin);
@@ -150,6 +151,9 @@ test('crowded wave refills can include crystals from the same shared weighted ba
     run.update(.2,c,origin);
     expect(c.enemies.filter(e=>e.active).length).toBeLessThanOrEqual(60);
   }
+  expect(c.enemies.filter(e=>e.active&&e.kind==='draft-crystal-swarm').length).toBe(0);
+  for(const enemy of c.enemies)enemy.active=false;
+  for(let i=0;i<30;i++)run.update(.2,c,origin);
   expect(c.enemies.filter(e=>e.active&&e.kind==='draft-crystal-swarm').length).toBeGreaterThan(0);
 });
 

@@ -60,7 +60,7 @@ const BUILD_SKILLS: readonly SkillDefinition[] = [...SKILLS,
   { ...BUBBLE_WEAPON, id: 'leaf-weapon', title: '获得飞叶弹', benefit: '增加草系独立自动攻击 · 穿透', description: '装备飞叶弹，基础伤害 16，可穿透一名额外敌人。支持命中分裂与连锁弹射，副武器间隔按槽位为基础的 1.6 / 1.9 倍。', icon: 'leaf', color: '#70bc52' },
 ];
 const RARE_SKILLS: readonly SkillDefinition[] = [
-  ...Object.entries(RELICS).map(([id, data]) => ({ ...data, id: id as RelicId, category: 'relic' as const, description: '获得后本局持续生效，同一道具不能重复获得。', maxRank: 1, effect: { type: 'spell' as const, levels: [{}] } })),
+  ...Object.entries(RELICS).map(([id, data]) => ({ ...data, id: id as RelicId, category: 'relic' as const, description: 'description' in data ? data.description : '获得后本局持续生效，同一道具不能重复获得。', maxRank: 1, effect: { type: 'spell' as const, levels: [{}] } })),
   ...Object.entries(EVOLUTIONS).map(([id, data]) => ({ ...data, id: id as EvolutionId, category: 'evolution' as const, description: '爆裂火种的互斥进化，选择后本局不可切换。', maxRank: 1, effect: { type: 'spell' as const, levels: [{}] } })),
 ];
 const RUN_SKILLS = [...BUILD_SKILLS.map(skill => WEAPON_CARDS[skill.id] ? { ...skill, maxRank: 5 } : skill), ...RARE_SKILLS];
@@ -113,6 +113,7 @@ export class Progression {
   private currentOffers: SkillId[] = [];
   private fusionSkills = false;
   private purchasedRanks = 0;
+  private rollsWithoutCore = 0;
   build?: RunBuild;
   fusionBase: 'spark' | 'bubble' | 'leaf' = 'spark';
 
@@ -131,6 +132,7 @@ export class Progression {
       if (skill.id === 'overload-core') return this.build!.has('flame-sweep') || (this.build!.has('spark') && this.ranks['split-on-hit'] > 0) || (this.build!.has('bubble') && this.ranks.area > 0);
       if (skill.id === 'hunter-eye' || skill.id === 'shattered-core') return (this.ranks['split-on-hit'] > 0 && (this.build!.has('spark') || this.build!.has('leaf'))) || this.build!.relics.includes('draft-thorn-testament');
       if (skill.id === 'draft-martyr-core' || skill.id === 'draft-kindling-flask') return this.build!.has('spark') || this.build!.has('flame-sweep');
+      if (skill.id === 'draft-boiling-core') return this.build!.has('bubble') && (this.build!.has('spark') || this.build!.has('flame-sweep'));
       if (skill.id === 'draft-thorn-testament') return this.build!.has('leaf');
       if (skill.id === 'draft-bubble-spore') return this.build!.has('bubble');
       if (skill.id === 'tidal-pearl') return this.build!.has('bubble');
@@ -208,6 +210,7 @@ export class Progression {
     if (weapon && (!this.build || !(this.build.has(weapon) ? this.build.upgrade(weapon) : this.build.acquire(weapon)))) return false;
     if (skill.category === 'relic' && !this.build?.addRelic(id as RelicId)) return false;
     if (skill.category === 'evolution' && !this.build?.evolve(id as EvolutionId)) return false;
+    if (this.coreReward(id)) this.rollsWithoutCore = 0;
     this.ranks[id]++;
     return true;
   }
@@ -220,29 +223,44 @@ export class Progression {
       [candidates[i], candidates[j]] = [candidates[j], candidates[i]];
     }
     if (!this.build || !this.fusionSkills) { this.currentOffers = candidates.slice(0, 3); return; }
-    // One rare slot at most, with a 25% opportunity per roll. Never force a recipe.
-    const rareAllowed = this.random() < .25;
-    let rareUsed = false;
-    const eligible = candidates.filter(id => {
-      const rare = this.skills.find(skill => skill.id === id)?.category;
-      if (!rare) return true;
-      if (!rareAllowed || rareUsed) return false;
-      rareUsed = true; return true;
-    });
-    this.currentOffers = eligible.slice(0, 3);
-    const relevant = (id: SkillId) => !WEAPON_CARDS[id] || this.build!.has(WEAPON_CARDS[id]!);
-    if (this.currentOffers.length && !this.currentOffers.some(relevant)) {
-      const useful = eligible.find(relevant);
-      if (useful) this.currentOffers[this.currentOffers.length - 1] = useful;
+    const skills = this.skills;
+    const normal = candidates.filter(id => !skills.find(s => s.id === id)!.category);
+    const rare = candidates.filter(id => !!skills.find(s => s.id === id)!.category);
+    const core = rare.filter(id => this.coreReward(id));
+    this.rollsWithoutCore++;
+    const pity = this.rollsWithoutCore >= 6 && core.length > 0;
+    const rareAllowed = this.random() < Math.min(.55, .25 + Math.max(0, this.rollsWithoutCore - 3) * .1) || pity;
+    const rareChoice = pity ? core[0] : rare[0];
+    this.currentOffers = normal.slice(0, rareAllowed && rareChoice ? 2 : 3);
+    // Keep exploration; one ordinary slot advances an equipped weapon or its fusion.
+    const support = normal.find(id => this.supportsBuild(id));
+    if (support && !this.currentOffers.some(id => this.supportsBuild(id))) {
+      if (this.currentOffers.length) this.currentOffers[this.currentOffers.length - 1] = support;
+      else this.currentOffers.push(support);
     }
+    if (rareAllowed && rareChoice) this.currentOffers.push(rareChoice);
     // Exhaustion can leave only rare choices; do not trap an earned level-up.
     if (!this.currentOffers.length && candidates.length) this.currentOffers = [candidates[0]];
+  }
+
+  private coreReward(id: SkillId) {
+    return ['draft-martyr-core', 'draft-kindling-flask', 'draft-thorn-testament', 'draft-bubble-spore', 'draft-boiling-core'].includes(id);
+  }
+
+  private supportsBuild(id: SkillId) {
+    const weapon = WEAPON_CARDS[id];
+    if (weapon) return this.build!.has(weapon);
+    if (id === 'split-on-hit') return this.build!.has('spark') || this.build!.has('leaf');
+    if (id === 'area') return this.build!.has('bubble');
+    if (id === 'chain') return this.build!.has('bubble') || this.build!.has('leaf');
+    return false;
   }
 
   reset(fusionSkills = this.fusionSkills) {
     this.fusionSkills = fusionSkills;
     this.level = 1;
     this.purchasedRanks = 0;
+    this.rollsWithoutCore = 0;
     this.experience = this.totalExperience = this.pendingChoices = 0;
     for (const skill of ALL_SKILLS) this.ranks[skill.id] = 0;
     if (this.build && this.fusionSkills) this.ranks[`${this.fusionBase}-weapon`] = 1;

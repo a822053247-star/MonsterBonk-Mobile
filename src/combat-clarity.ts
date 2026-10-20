@@ -14,7 +14,13 @@ export function impactVisualPosition(effect: Pick<CombatEffect, 'x' | 'z' | 'kin
     z: z + (target?.z ?? effect.anchorZ) - effect.anchorZ };
 }
 
-const PRIORITY: Partial<Record<CombatEffect['kind'], number>> = { burst: 4, water: 3, thorn: 2, hit: 1 };
+const PRIORITY: Partial<Record<CombatEffect['kind'], number>> = { steam: 5, burst: 4, water: 3, thorn: 2, hit: 1 };
+
+/** Generous mowing silhouettes. Damage radii and enemy warnings are independent. */
+export function impactSize(effect: Pick<CombatEffect, 'kind' | 'radius' | 'chainDepth'>) {
+  if (effect.kind === 'burst') return Math.min(effect.chainDepth ? 3.8 : 2.8, Math.max(1, (effect.radius ?? .6) * 2.2));
+  return Math.min(2.25, Math.max(1, (effect.radius ?? .6) * 2));
+}
 
 /** Presentation only. Dropped duplicate visuals never drop damage or status events. */
 export function readableEffects(effects: readonly CombatEffect[]) {

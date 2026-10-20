@@ -1,9 +1,10 @@
 import type { Combat, Enemy } from './combat';
+import { FORMAL_SPAWN_CAPS } from './spawn-layout';
 import type { CrownthornAction } from './crownthorn-animation';
 
 type Point = { x: number; z: number };
 export const ENCOUNTER_RULES = {
-  hostileShots: 16, bossHp: 6000, bossRadius: 1.05, bossSpawn: 1.5, bossSupportCap: 120,
+  hostileShots: 16, bossHp: 6000, bossRadius: 1.05, bossSpawn: 1.5, bossSupportCap: FORMAL_SPAWN_CAPS[5],
   waveHealth: [1,1.2,1.5,1.8,2.2,1.8],
   bossSpeed: 1.8, dashSpeed: 15, dashDuration: .65, dashWindup: 1.1,
   spreadWindup: 1, spreadSpeed: 6, spreadLife: 2, shotRadius: .24,

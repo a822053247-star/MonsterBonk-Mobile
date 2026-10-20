@@ -9,7 +9,8 @@
     "preview": "vite preview --host 0.0.0.0",
     "test": "playwright test",
     "balance:weapons": "node scripts/run-weapon-balance.mjs",
-    "balance:waves": "node scripts/run-wave-balance.mjs"
+    "balance:waves": "node scripts/run-wave-balance.mjs",
+    "balance:campaign": "node scripts/run-campaign-balance.mjs"
   },
   "dependencies": {
     "three": "0.186.1"
