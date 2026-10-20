@@ -56,7 +56,13 @@ export class EnemyChallenge {
     this.eliteCooldown = 2; this.elitePulsing = this.pulseDue = false; this.aimX = 0; this.aimZ = 1;
     this.clearShots();
   }
-  beginWave(wave: number) { this.reset(); this.enabled = true; this.wave = wave; }
+  beginWave(wave: number, continuous = false) {
+    if (continuous && this.enabled && wave === this.wave + 1 && wave <= 5) {
+      // An unfinished wave-four elite keeps its pulse/health into wave five.
+      this.wave = wave; return;
+    }
+    this.reset(); this.enabled = true; this.wave = wave;
+  }
   beforeTick(dt: number) {
     this.pulseDue = false;
     if (this.bossState === 'dying') { this.bossTime += dt; if (this.bossTime >= 1) this.bossState = 'defeated'; }

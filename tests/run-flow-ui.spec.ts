@@ -31,8 +31,8 @@ test('complete six-wave UI with shopping, healing, refresh, victory, clean resta
     if (wave === 2) await page.evaluate(() => { (window as any).game.combat.hp = 40; });
     await finishWave(page);
     await expect(page.locator('#shop-screen')).toBeHidden();
-    if(wave===1) {
-      await expect(page.locator('#run-wave')).toContainText('第 2 / 6 波');
+    if(wave<5) {
+      await expect(page.locator('#run-wave')).toContainText(`第 ${wave+1} / 6 波`);
       expect(await page.evaluate(() => (window as any).game.run.phase)).toBe('fighting');
       continue;
     }

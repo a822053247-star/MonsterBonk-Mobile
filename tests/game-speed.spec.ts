@@ -58,7 +58,7 @@ test('10x advances the real fixed-step frame loop tenfold without enlarging coll
   expect(result.ticks).toBeLessThanOrEqual(50);expect(result.maxStep).toBe(1/60);
 });
 
-test('10x speeds battlefield rest but upgrades still freeze and shop time stays real',async({page})=>{
+test('10x continues survival waves but upgrades still freeze and shop time stays real',async({page})=>{
   await page.locator('#start-fusion').click();
   const result=await page.evaluate(()=>{
     const g=(window as any).game;g.sleep();g.preferences.gameSpeed=10;

@@ -11,16 +11,19 @@ test.beforeEach(async ({ page }, info) => {
   await page.locator('#start-fusion').click();
 });
 
-for (const control of ['keyboard', 'joystick']) test(`held ${control} movement and a living enemy carry across the first boundary`, async ({ page }) => {
-  await page.evaluate(() => {
+for(const config of [{wave:1,speed:1},{wave:2,speed:1},{wave:2,speed:10},{wave:3,speed:10},{wave:4,speed:10}])
+for (const control of ['keyboard', 'joystick']) test(`held ${control} carries across wave ${config.wave} at ${config.speed}x with music unavailable`, async ({ page }) => {
+  await page.route('**/assets/music/*.ogg',route=>route.abort());
+  await page.evaluate(({wave,speed}) => {
     const g = (window as any).game; g.sleep();
+    g.run.waveIndex=wave-1;g.preferences.gameSpeed=speed;
     for (const e of g.combat.enemies) e.active = false;
     for (const o of g.combat.orbs) o.active = false;
-    g.run.waveElapsed = 65 - .01;
+    g.run.waveElapsed = g.run.definition.seconds - .01;
     const enemy = g.combat.spawn('tank', -12, -12, 0); enemy.hp = 37;
     (window as any).carriedEnemy = enemy;
     Object.assign(g.combat.orbs[0], { active: true, value: 8, x: 15, z: 15, previousX: 15, previousZ: 15 });
-  });
+  },config);
   if (control === 'keyboard') await page.keyboard.down('KeyD');
   else {
     const box = (await page.locator('#joystick').boundingBox())!;
@@ -30,21 +33,24 @@ for (const control of ['keyboard', 'joystick']) test(`held ${control} movement a
   }
   const state = await page.evaluate(() => {
     const g = (window as any).game, x = g.position.x, z = g.position.z;
-    for (let i = 0; i < 30; i++) g.step(1 / 60);
+    g.lastTime=g.renderTime=1000;g.accumulator=0;
+    for (let i = 1; i <= 30/g.preferences.gameSpeed; i++) {
+      g.frame(1000+i*1000/60);cancelAnimationFrame(g.frameId);g.frameId=0;
+    }
     return { wave: g.run.wave, phase: g.run.phase, rest: g.run.restElapsed, enemyActive: (window as any).carriedEnemy.active,
       enemyHp: (window as any).carriedEnemy.hp, looseXp: g.combat.orbs[0].active, choices: g.combat.progression.pendingChoices,
       moved: Math.hypot(g.position.x - x, g.position.z - z) };
   });
   if (control === 'keyboard') await page.keyboard.up('KeyD'); else await page.mouse.up();
-  expect(state).toMatchObject({ wave: 2, phase: 'fighting', rest: 0, enemyActive: true, enemyHp: 37, looseXp: true, choices: 0 });
+  expect(state).toMatchObject({ wave: config.wave+1, phase: 'fighting', rest: 0, enemyActive: true, enemyHp: 37, looseXp: true, choices: 0 });
   expect(state.moved).toBeGreaterThan(.5);
-  await expect(page.locator('#welcome h2')).toContainText('第 2 波');
+  await expect(page.locator('#welcome h2')).toContainText(`第 ${config.wave+1} 波`);
 });
 
 for (const looseExperience of [0, 96]) test(`wave boundary with ${looseExperience} loose XP keeps catch-up work bounded`, async ({ page }) => {
   const result = await page.evaluate((xp) => {
     const g = (window as any).game; g.sleep();
-    g.run.waveIndex = 1; g.run.prepare(g.combat, g.position);
+    g.run.waveIndex = 4; g.run.prepare(g.combat, g.position);
     for (const e of g.combat.enemies) e.active = false;
     for (const o of g.combat.orbs) o.active = false;
     for (let i = 0; i < xp; i++) Object.assign(g.combat.orbs[i], { active: true, value: 1, x: 15, z: 15, previousX: 15, previousZ: 15 });
@@ -78,9 +84,8 @@ for (const looseExperience of [0, 96]) test(`wave boundary with ${looseExperienc
   expect(result.catchUpCalls).toBeLessThanOrEqual(1);
   expect(result.calls).toBeLessThanOrEqual(5);
   expect(result.combatRenders).toBe(0);
-  expect(result.phase).toBe('fighting');
-  expect(result.wave).toBe(3);
-  expect(result.title).toContain('第 3 波');
+  expect(result.phase).toBe('shop');
+  expect(result.wave).toBe(5);
   expect(result.experience).toBe(looseExperience);
   expect(result.choices > 0).toBe(looseExperience > 0);
 });
@@ -90,7 +95,7 @@ test('live animation loop completes a later intermission without repeated HUD or
   page.on('pageerror', error => errors.push(error.message));
   await page.evaluate(() => {
     const g = (window as any).game; g.sleep();
-    g.run.waveIndex = 1; g.run.prepare(g.combat, g.position);
+    g.run.waveIndex = 4; g.run.prepare(g.combat, g.position);
     for (const e of g.combat.enemies) e.active = false;
     for (const o of g.combat.orbs) o.active = false;
     g.run.waveElapsed = g.run.definition.seconds - .001;
@@ -105,9 +110,9 @@ test('live animation loop completes a later intermission without repeated HUD or
     }
     g.wake();
   });
-  await page.waitForFunction(() => (window as any).game.run.wave === 3, { timeout: 12_000 });
+  await page.waitForFunction(() => (window as any).game.run.phase === 'shop', { timeout: 12_000 });
   expect(await page.evaluate(() => (window as any).restWork)).toEqual({ hud: 3, combat: 0, clears: 0 });
-  await expect(page.locator('#run-wave')).toContainText('第 3 / 6 波');
+  await expect(page.locator('#shop-screen')).toBeVisible();
   await expect(page.locator('#upgrade-screen')).toBeHidden();
   expect(errors).toEqual([]);
 });

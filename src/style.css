@@ -848,6 +848,7 @@ h1>em{font-size:12px;line-height:1;letter-spacing:4px;display:inline-block;backg
 .settings-grid{min-height:0;overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y}
 @media(max-height:500px) and (orientation:landscape){
   .graphics-setting>p,.graphics-setting>small{display:none}
-  .graphics-setting .speed-label{margin-top:10px}
-  #game-speed-setting{min-height:44px}
+  .graphics-setting>label{margin-bottom:4px}
+  .graphics-setting .speed-label{margin-top:6px}
+  #quality,#game-speed-setting{min-height:44px;padding:6px 8px}
 }

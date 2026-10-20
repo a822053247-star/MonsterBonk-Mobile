@@ -88,7 +88,7 @@ export class RunFlow {
   /** Called before the combat tick; also callable by headless simulations. */
   prepare(combat: Combat, player: {x: number; z: number}) {
     if (this.phase !== 'fighting') return;
-    if (combat.encounters.wave !== this.wave) combat.encounters.beginWave(this.wave);
+    if (combat.encounters.wave !== this.wave) combat.encounters.beginWave(this.wave, this.wave <= SHOP_AFTER_WAVE);
     if (this.wave === 6) combat.encounters.spawnBoss(combat,player);
     if (this.wave === 4 && this.waveElapsed >= 10) combat.encounters.spawnElite(combat,player);
   }
@@ -168,9 +168,9 @@ export class RunFlow {
       if (!combat.encounters.defeated) { this.phase='lost'; this.failure='boss-timeout'; combat.clearTransientEffects(); return; }
       this.bossDefeated=true;
     }
-    // The opening wave changes spawn rules without interrupting the battle.
+    // Survival waves change spawn rules without interrupting the battle.
     // Leave living enemies, loose XP and ongoing attacks in their current state.
-    const seamless = this.wave === 1;
+    const seamless = this.wave < SHOP_AFTER_WAVE;
     if (!seamless && !this.claimedExperience) {
       let experience = 0;
       for (const orb of combat.orbs) if (orb.active) { experience += orb.value; orb.active = false; }

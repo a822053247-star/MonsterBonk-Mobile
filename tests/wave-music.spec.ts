@@ -33,6 +33,7 @@ test('real Ogg tracks loop for waves 3–5 and 6, share pause/mute and reset on 
   const errors: string[] = []; page.on('pageerror', error => errors.push(error.message));
   expect(await audio(page)).toMatchObject({ track: 'original', playingTrack: 'original', looping: true });
   await wave(page, 2);
+  await expect.poll(async () => (await audio(page)).loadedTracks).toContain('grassland');
   expect((await audio(page)).playingTrack).toBe('original');
   await wave(page, 3);
   await expect.poll(async () => (await audio(page)).playingTrack).toBe('grassland');

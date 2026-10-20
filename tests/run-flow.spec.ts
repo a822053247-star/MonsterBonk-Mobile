@@ -19,7 +19,7 @@ function fifthShop(f: ReturnType<typeof fixture>) {
   return f.run.shop!;
 }
 
-test('first wave connects seamlessly, later boundaries rest and only wave five has a shop', () => {
+test('survival waves connect seamlessly and only wave five rests for the shop', () => {
   const { c, run } = fixture();
   expect(SHOP_AFTER_WAVE).toBe(5);
   for(let wave=1; wave<=6; wave++) {
@@ -30,8 +30,8 @@ test('first wave connects seamlessly, later boundaries rest and only wave five h
     }
     expect(run.wave).toBe(wave);
     run.update(run.definition.seconds,c,origin);
-    if(wave===1) {
-      expect(run.phase).toBe('fighting');expect(run.wave).toBe(2);
+    if(wave<5) {
+      expect(run.phase).toBe('fighting');expect(run.wave).toBe(wave+1);
       expect(run.intermissionRemaining).toBe(0);
     } else if(wave<6) {
       expect(run.phase).toBe('intermission');
@@ -56,13 +56,15 @@ test('first wave connects seamlessly, later boundaries rest and only wave five h
   expect(run.phase).toBe('won');
   expect(run.completedWaves).toBe(6);
   expect(run.combatElapsed).toBe(455);
-  expect(run.totalElapsed).toBeCloseTo(455+4*WAVE_INTERMISSION_SECONDS+20);
+  expect(run.totalElapsed).toBeCloseTo(455+WAVE_INTERMISSION_SECONDS+20);
   expect(run.coins).toBe(225);
   expect(RUN_WAVES).toHaveLength(6);
 });
 
-test('first wave continues immediately with living enemies, loose XP and active combat state intact',()=>{
+for(const wave of [1,2,3,4]) test(`wave ${wave} continues immediately with living enemies, loose XP and active combat state intact`,()=>{
   const {c,run}=fixture();c.hp=73;
+  run.waveIndex=wave-1;
+  const reward=run.definition.reward;
   Object.assign(c.orbs[0],{active:true,value:8});
   run.prepare(c,origin);
   const enemy=c.spawn('tank',6,0,0)!;
@@ -71,8 +73,8 @@ test('first wave continues immediately with living enemies, loose XP and active 
   Object.assign(c.projectiles[0],{active:true,life:1.5});
   Object.assign(c.effects[0],{active:true,life:.3});
   const previous=JSON.stringify({enemy,orb:c.orbs[0],shot:c.projectiles[0],effect:c.effects[0]});
-  run.update(65,c,origin);
-  expect(run.phase).toBe('fighting');expect(run.wave).toBe(2);
+  run.update(run.definition.seconds,c,origin);
+  expect(run.phase).toBe('fighting');expect(run.wave).toBe(wave+1);
   expect(run.intermissionRemaining).toBe(0);expect(run.restElapsed).toBe(0);
   expect(c.progression.awaitingChoice).toBe(false);expect(c.progression.totalExperience).toBe(0);
   run.prepare(c,origin);
@@ -80,13 +82,27 @@ test('first wave continues immediately with living enemies, loose XP and active 
   expect(c.invulnerability).toBe(.3);expect(c.hurtFlash).toBe(.1);
   expect(c.kills).toBe(0);expect(run.completedWaves).toBe(1);
   run.resolveBoundary(c);
-  expect(run.coins).toBe(35);expect(c.hp).toBe(73);
+  expect(run.coins).toBe(reward);expect(c.hp).toBe(73);
   (c as any).damageEnemy(enemy,enemy.hp,0,0);
   run.update(.01,c,origin);
-  expect(c.kills).toBe(1);expect(run.coins).toBe(37);
+  expect(c.kills).toBe(1);expect(run.coins).toBe(reward+2);
   (c as any).damageEnemy(enemy,1000,0,0);
   run.update(.01,c,origin);
-  expect(c.kills).toBe(1);expect(run.coins).toBe(37);
+  expect(c.kills).toBe(1);expect(run.coins).toBe(reward+2);
+});
+
+test('unfinished elite and hostile warnings carry into wave five, then shop clears them',()=>{
+  const {c,run}=fixture();run.waveIndex=3;run.waveElapsed=12;run.prepare(c,origin);
+  const elite=c.encounters.elite!;elite.hp=239;
+  c.encounters.elitePulsing=true;c.encounters.eliteTime=.3;c.encounters.eliteCooldown=.7;
+  c.encounters.shots[0].active=true;
+  run.waveElapsed=75;run.resolveBoundary(c);run.prepare(c,origin);
+  expect(run.wave).toBe(5);expect(c.encounters.elite).toBe(elite);expect(elite.active).toBe(true);expect(elite.hp).toBe(239);
+  expect(c.encounters.elitePulsing).toBe(true);expect(c.encounters.eliteTime).toBe(.3);expect(c.encounters.eliteCooldown).toBe(.7);
+  expect(c.encounters.shots[0].active).toBe(true);
+  run.waveElapsed=80;run.resolveBoundary(c);
+  expect(run.phase).toBe('intermission');expect(elite.active).toBe(false);expect(c.encounters.shots[0].active).toBe(false);
+  run.updateRest(WAVE_INTERMISSION_SECONDS,c);expect(run.phase).toBe('shop');
 });
 
 test('real kills earn gold once and cannot be recycled into duplicates',()=>{

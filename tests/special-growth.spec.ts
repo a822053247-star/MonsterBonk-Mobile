@@ -20,8 +20,8 @@ function boundary(c:Combat,run:RunFlow) {
   run.resolveBoundary(c);
   while(c.progression.awaitingChoice) expect(c.chooseUpgrade(c.progression.offers[0])).toBe(true);
   run.resolveBoundary(c);
-  expect(run.phase).toBe('intermission');
-  run.updateRest(WAVE_INTERMISSION_SECONDS,c);
+  if(run.phase==='intermission') run.updateRest(WAVE_INTERMISSION_SECONDS,c);
+  else expect(run.phase).toBe('fighting');
 }
 function fifthShop(c:Combat,run:RunFlow) {
   run.waveIndex=4;run.prepare(c,origin);

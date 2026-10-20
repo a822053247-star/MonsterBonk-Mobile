@@ -115,7 +115,7 @@ test('wave four retries a saturated elite spawn, and wave clears/restarts remove
   run.prepare(c,origin); expect(c.encounters.elite).toBeUndefined();
   c.enemies[0].active=false; run.prepare(c,origin); expect(c.encounters.elite?.rank).toBe('elite');
   c.encounters.shots[0].active=true; c.clearWave(); expect(c.encounters.inspect()).toMatchObject({enabled:false,boss:null,elite:null,shots:[]});
-  run.waveElapsed=75; run.resolveBoundary(c); expect(run.phase).toBe('intermission');
+  run.waveElapsed=75; run.resolveBoundary(c); expect(run.phase).toBe('fighting');expect(run.wave).toBe(5);
   c.reset(); expect(c.encounters.enabled).toBe(false); expect(c.enemies.every(e=>!e.active)).toBe(true);
 });
 

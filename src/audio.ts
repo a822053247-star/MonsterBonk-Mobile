@@ -69,11 +69,19 @@ export class GameAudio {
     this.playingTrack = track; this.musicStarts++;
   }
   setWave(wave?: number) {
+    if (wave === 2) this.prepareMusic('grassland');
+    if (wave === 5) this.prepareMusic('boss');
     const track: MusicTrack = wave === 6 ? 'boss' : wave && wave >= 3 && wave <= 5 ? 'grassland' : 'original';
     if (track === this.track) return;
     this.track = track;
     this.failedTracks.delete(track);
     void this.syncMusic();
+  }
+  private prepareMusic(track: 'grassland' | 'boss') {
+    const context = this.context;
+    if (!context || this.disposed || !this.running || !this.music || this.musicBuffers.has(track) || this.musicLoads.has(track) || this.failedTracks.has(track)) return;
+    // Cache only; do not switch the currently playing music during preloading.
+    void this.loadMusic(track, context);
   }
   private loadMusic(track: 'grassland' | 'boss', context: AudioContext) {
     const cached = this.musicBuffers.get(track);

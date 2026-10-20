@@ -141,7 +141,7 @@ test('high-throughput clearing has bounded economy, pooled XP merge and exactly-
     expect(run.earned).toBeLessThanOrEqual(reward + c.kills + 18);
     const generatedXp=c.xp+c.orbs.filter(o=>o.active).reduce((n,o)=>n+o.value,0);
     expect(generatedXp).toBeLessThanOrEqual(c.kills * 8 + 24);
-    expect(generatedXp).toBeGreaterThan(0); expect(run.phase).toBe(wave===1?'fighting':'intermission');
+    expect(generatedXp).toBeGreaterThan(0); expect(run.phase).toBe(wave<5?'fighting':'intermission');
     const xp = c.xp, gold = run.earned;
     run.resolveBoundary(c); expect(c.xp).toBe(xp); expect(run.earned).toBe(gold);
     expect(c.orbs).toHaveLength(96);

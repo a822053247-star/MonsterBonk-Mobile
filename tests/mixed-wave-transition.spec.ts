@@ -63,19 +63,12 @@ test('formal sprinters flank during chase, leap with locked telegraph, then dise
   expect(sprinter.intent).toBe('windup');
 });
 
-test('battlefield intermission preserves HP/build and blocks shops before the fifth boundary',()=>{
+test('continuous survival waves preserve HP/build and block shops before the fifth boundary',()=>{
   const {c,flow}=fixture();c.hp=73;
   c.grantUpgrade('damage');
   for(let wave=1;wave<=4;wave++) {
     flow.update(flow.definition.seconds,c,origin);
     expect(flow.shop).toBeUndefined();
-    if(wave===1) { expect(flow.phase).toBe('fighting');expect(flow.wave).toBe(2);continue; }
-    expect(flow.phase).toBe('intermission');
-    const frozen=JSON.stringify(c.inspect());
-    flow.updateRest(1.5,c);
-    expect(flow.phase).toBe('intermission');
-    expect(JSON.stringify(c.inspect())).toBe(frozen);
-    flow.updateRest(WAVE_INTERMISSION_SECONDS-1.5,c);
     expect(flow.phase).toBe('fighting');
     expect(flow.wave).toBe(wave+1);
     expect(c.hp).toBe(73);
