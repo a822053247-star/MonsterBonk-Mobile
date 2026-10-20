@@ -116,7 +116,12 @@ test('escorts keep their stats and boss wave receives massed low-health support'
   run.update(.35, c, origin);
   const support = c.enemies.filter(e => e.active && !e.rank);
   expect(support.length).toBeGreaterThan(first.length);
-  expect(support.every(e => e.swarm && e.hp === SWARM_RULES.health[5])).toBe(true);
+  // The director now escorts a mostly-low-health group with bounded threats.
+  const fodder = support.filter(e => e.swarm);
+  const escorts = support.filter(e => !e.swarm);
+  expect(fodder.length).toBeGreaterThanOrEqual(support.length - 2);
+  expect(fodder.every(e => e.hp === SWARM_RULES.health[5])).toBe(true);
+  expect(escorts.length).toBeLessThanOrEqual(2);
 });
 
 test('high-throughput clearing has bounded economy, pooled XP merge and exactly-once boundary settlement', () => {

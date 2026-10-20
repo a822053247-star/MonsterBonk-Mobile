@@ -1,0 +1,40 @@
+name: Six-wave director
+on:
+  pull_request:
+    paths:
+      - src/run-flow.ts
+      - src/wave-director.ts
+      - tests/wave-director.spec.ts
+      - tests/swarm.spec.ts
+      - docs/WAVE-DIRECTOR-P0.md
+      - .github/workflows/wave-director.yml
+  push:
+    branches: [main]
+    paths:
+      - src/run-flow.ts
+      - src/wave-director.ts
+      - tests/wave-director.spec.ts
+      - .github/workflows/wave-director.yml
+
+jobs:
+  director:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - run: npx playwright test tests/wave-director.spec.ts tests/run-flow.spec.ts tests/special-enemies.spec.ts tests/run-balance.spec.ts --project=chromium
+      - run: npx playwright test tests/swarm.spec.ts --project=chromium --grep 'escorts keep their stats|large groups spawn'
+      - run: npm run balance:waves -- --seconds 12 --output artifacts/ci-wave-director-baseline.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: director-baseline-data
+          path: artifacts/ci-wave-director-baseline.json
+          if-no-files-found: ignore
