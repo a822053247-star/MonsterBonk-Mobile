@@ -869,7 +869,7 @@ h1>em{font-size:12px;line-height:1;letter-spacing:4px;display:inline-block;backg
 .hud .health-block{width:var(--hud-card-width);min-width:0;flex-shrink:0;gap:0}
 .hud .health-panel{
   position:relative;isolation:isolate;width:100%;height:var(--hud-card-height);
-  border:0;border-radius:10px;padding:0;background:transparent;box-shadow:none;
+  border:0;border-radius:10px;padding:0;background:#f3e6c9;box-shadow:none;
 }
 .hud .health-panel:has(>.health-frame-art.art-loaded){border:0;background:transparent;box-shadow:none}
 .hud .health-frame-art{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;pointer-events:none;z-index:-1;image-rendering:pixelated}
