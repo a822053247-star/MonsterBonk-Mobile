@@ -72,9 +72,21 @@ test('explosion snapshots survive enemy-slot reuse, and every bomber reserves a 
 });
 
 test('cover and spawn protection block spore damage', () => {
-  const c=fixture([{x:0,z:0,radius:.35}]), bomber=c.spawn('draft-spore-bomber',-1,0,0)!, victim=still(c.spawn('tank',1,0,0)!);
-  const spawning=c.spawn('normal',-1,1,2)!; kill(c,bomber); c.update(.7,{x:1,z:0});
-  expect(c.hp).toBe(100); expect(victim.hp).toBe(125); expect(spawning.hp).toBe(30);
+  const cover = [{x:0,z:0,radius:.35}];
+
+  // Check blocked enemy splash and the spawning immunity without placing a tank
+  // directly on top of the player (which legitimately causes 16 contact damage).
+  const c=fixture(cover), bomber=c.spawn('draft-spore-bomber',-1,0,0)!, victim=still(c.spawn('tank',1,0,0)!);
+  const spawning=c.spawn('normal',-1,1,2)!;
+  kill(c,bomber); c.update(.7,{x:0,z:20});
+  expect(victim.hp).toBe(125);
+  expect(spawning.hp).toBe(30);
+
+  // Check player cover separately: this fixture has no nearby live tank.
+  const protectedPlayer=fixture(cover), secondBomber=protectedPlayer.spawn('draft-spore-bomber',-1,0,0)!;
+  kill(protectedPlayer,secondBomber);
+  protectedPlayer.update(.7,{x:1,z:0});
+  expect(protectedPlayer.hp).toBe(100);
 });
 
 test('runner lingers, flees away, never bites, and escapes without rewards', () => {
