@@ -67,7 +67,7 @@ test('main HUD only shows wave and elapsed timer; levels and XP progress stay sy
     const rect=(selector:string)=>{const box=document.querySelector(selector)!.getBoundingClientRect();return {x:box.x,y:box.y,width:box.width,height:box.height}};
     return {health:rect('.health-panel'),portrait:rect('#creature-portrait'),bar:rect('.health-track'),
       xp:rect('.xp-row'),level:rect('#level-value'),gold:rect('.hud-gold'),
-      wave:rect('.run-status'),button:rect('#pause'),
+      coin:rect('.hud-gold img'),wave:rect('.run-status'),button:rect('#pause'),
       statsVisible:getComputedStyle(document.querySelector('.combat-stats')!).display};
   });
   expect(layout.health.width).toBeGreaterThanOrEqual(510);
@@ -77,7 +77,9 @@ test('main HUD only shows wave and elapsed timer; levels and XP progress stay sy
   expect(layout.bar.height).toBeGreaterThan(40);
   expect(Math.abs((layout.level.y+layout.level.height/2)-(layout.xp.y+layout.xp.height/2))).toBeLessThan(5);
   expect(Math.abs((layout.gold.y+layout.gold.height/2)-(layout.xp.y+layout.xp.height/2))).toBeLessThan(5);
-  expect(layout.gold.x).toBeGreaterThan(layout.xp.x+layout.xp.width-1);
+  expect(layout.gold.x+layout.gold.width).toBeLessThanOrEqual(layout.xp.x+1);
+  expect(layout.gold.x+layout.gold.width/2).toBeLessThan(layout.bar.x);
+  expect(layout.coin.width).toBeGreaterThanOrEqual(27);
   expect(layout.xp.y).toBeGreaterThan(layout.bar.y);
   expect(layout.wave.height).toBeGreaterThan(75);
   expect(layout.wave.height).toBeLessThan(115);
@@ -90,14 +92,17 @@ test('landscape phone HUD scales safely, buttons remain usable and wave stays cl
   for(const [width,height] of [[844,390],[568,320]]){
     await page.setViewportSize({width,height});
     await page.evaluate(()=>{document.documentElement.style.setProperty('--safe-left','44px');
-      document.documentElement.style.setProperty('--safe-right','44px');(window as any).updateHud()});
+      document.documentElement.style.setProperty('--safe-right','44px');
+      const g=(window as any).game;g.run.coins=1234;(window as any).updateHud()});
     const health=(await page.locator('.health-block').boundingBox())!;
     const actions=(await page.locator('.hud-actions').boundingBox())!;
     const timer=(await page.locator('.run-status').boundingBox())!;
     const wallet=(await page.locator('.hud-gold').boundingBox())!;
     const xp=(await page.locator('.xp-row').boundingBox())!;
     expect(Math.abs((wallet.y+wallet.height/2)-(xp.y+xp.height/2))).toBeLessThan(4);
-    expect(wallet.x).toBeGreaterThanOrEqual(xp.x+xp.width-1);
+    expect(wallet.x+wallet.width).toBeLessThanOrEqual(xp.x+1);
+    const coin=(await page.locator('.hud-gold img').boundingBox())!;
+    expect(coin.width).toBeGreaterThanOrEqual(width === 568 ? 15 : 17);
     expect(wallet.x).toBeGreaterThanOrEqual(44);
     expect(wallet.x+wallet.width).toBeLessThanOrEqual(health.x+health.width+1);
     const walletOverlapsTimer=wallet.x<timer.x+timer.width && wallet.x+wallet.width>timer.x &&
