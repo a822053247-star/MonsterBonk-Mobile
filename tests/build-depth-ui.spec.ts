@@ -16,6 +16,9 @@ test('rare choices expose costs, and pause shows levels, all six relics and the 
       const index = candidates.findIndex((s: any) => s.id === id), rolls: number[] = [];
       if (index < 0) throw new Error('Missing card: ' + id);
       for (let i = candidates.length - 1; i > 0; i--) rolls.push(((i === index ? 0 : i) + .1) / (i + 1));
+      // This UI fixture selects each declared rare card; pity-draw behavior is
+      // covered separately and must not replace the fixture's requested offer.
+      p.rollsWithoutCore = 0;
       rolls.push(.01); p.random = () => rolls.shift() ?? .999;
       p.gainExperience(p.threshold - p.experience); g.step(1 / 60);
     }, id);
@@ -27,10 +30,10 @@ test('rare choices expose costs, and pause shows levels, all six relics and the 
     if (id === 'pursuit-route') await expect(card).toContainText('放弃狂暴路线');
     await card.click();
   }
-  await expect(page.locator('#fusion-title')).toContainText('火花弹 Lv.2');
+  await expect(page.locator('#fusion-title')).toContainText('火花弹 2级');
   await expect(page.locator('#build-status')).toHaveText('6 件稀有道具 · 追猎火种 · 暂停查看构筑');
   await page.locator('#pause').click();
-  await expect(page.locator('#build-weapons')).toContainText('主武器：火花弹 Lv.2 / 5');
+  await expect(page.locator('#build-weapons')).toContainText('主武器火花弹 2级');
   await expect(page.locator('#build-fusions')).toContainText('连环水爆');
   await expect(page.locator('#build-relics')).toContainText('专精徽记（副武器已装备，加成失效）');
   await expect(page.locator('#build-relics')).toContainText('回声符石');

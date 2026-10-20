@@ -4,7 +4,7 @@ import type { RunFlow } from './run-flow';
 import type { Combat } from './combat';
 import { ATTACKS, type RunBuild } from './run-build';
 import { flameSweepStats } from './flame-sweep';
-import { upgradePreview, type Progression } from './progression';
+import { upgradePreview, type Progression, type SkillId } from './progression';
 import { FUSION_ASSET_ROOT, type ElementalFusionId } from './fusion-pixels';
 import { bindUpgradeArt, uiArtUrl, upgradeArt } from './upgrade-art';
 import { shopArt } from './shop-art';
@@ -75,12 +75,12 @@ export function createUI(root: HTMLElement) {
       <div id="boundary-hint" class="boundary-hint" hidden>已到边界</div>
       <div class="stage-note">2.5D 原型 <span>·</span> 幻兽幸存者</div>
     </section>
-    <section id="pause-screen" class="modal-screen" aria-label="暂停菜单" hidden><div class="modal pause-card"><div class="pause-controls"><div class="modal-symbol">${icon('leaf')}</div><h2>已暂停</h2><p id="pause-reason"></p><button id="resume" class="primary">继续 ${icon('arrow')}</button><button id="pause-settings" class="text-button">画质与声音</button><div class="pause-links"><button id="restart" class="text-button">重新开始</button><button id="back-menu" class="text-button">返回主菜单</button></div><a id="map-replay" class="map-replay" hidden></a></div><section id="build-summary" class="build-summary" aria-label="本局构筑" tabindex="0" hidden><h3>本局构筑</h3><div id="build-weapons"></div><h4>技能融合</h4><p id="build-fusions"></p><h4>稀有道具与进化</h4><p id="build-relics"></p><p id="build-evolution"></p></section></div></section>
+    <section id="pause-screen" class="modal-screen" role="dialog" aria-modal="true" aria-labelledby="pause-heading" aria-label="暂停菜单" hidden><div class="modal pause-card"><div class="pause-controls"><div class="modal-symbol" aria-hidden="true">${icon('leaf')}</div><h2 id="pause-heading">已暂停</h2><p id="pause-reason"></p><button id="resume" class="primary">继续冒险 ${icon('arrow')}</button><button id="pause-settings" class="text-button">画质与声音</button><div class="pause-links"><button id="restart" class="text-button">重新开始</button><button id="back-menu" class="text-button">返回主菜单</button></div><a id="map-replay" class="map-replay" hidden></a></div><section id="build-summary" class="build-summary" aria-label="本局构筑" tabindex="0" hidden><h3>本局构筑</h3><div id="build-weapons" class="build-weapon-list"></div><h4>技能融合</h4><div id="build-fusions" class="build-detail"></div><h4>稀有道具与进化</h4><div id="build-relics" class="build-detail"></div><p id="build-evolution"></p></section></div></section>
     <section id="gameover-screen" class="modal-screen" role="dialog" aria-modal="true" aria-labelledby="result-heading" aria-label="本局结束" data-outcome="defeat" hidden>
       <div class="modal result-card">
         <header class="result-header"><span class="result-insignia" aria-hidden="true"><span class="result-art-fallback">${icon('leaf')}</span><img id="result-victory-art" data-upgrade-art="result-victory" src="${uiArtUrl('result/victory-crown.png')}" alt="" draggable="false" hidden/><img id="result-defeat-art" data-upgrade-art="result-defeat" src="${uiArtUrl('result/defeat-badge.png')}" alt="" draggable="false"/></span><div><span id="result-eyebrow" class="eyebrow">冒险战报</span><h2 id="result-heading">本局结束</h2><p id="result-message"></p></div></header>
         <div class="result-report" style="--result-panel-url:url('${uiArtUrl('result/battle-report-panel.png')}')"><img class="result-panel-art" data-upgrade-art="result-panel" src="${uiArtUrl('result/battle-report-panel.png')}" alt="" draggable="false"/><div class="result-body"><div class="result-overview"><div class="result-stats"><div><strong id="result-time">00:00</strong><span>生存时间</span></div><div><strong id="result-kills">0</strong><span>击败怪物</span></div><div><strong id="result-xp">0</strong><span>获得经验</span></div></div><div id="result-challenge" class="result-challenge" hidden></div><p id="result-run"></p></div>
-          <section id="result-build" class="build-summary" aria-label="最终构筑" tabindex="0"><h3>最终构筑</h3><p id="result-weapons"></p><p id="result-skills"></p><p id="result-fusions"></p><p id="result-relics"></p></section></div></div>
+          <section id="result-build" class="build-summary" aria-label="最终构筑" tabindex="0"><h3>最终构筑</h3><div id="result-weapons" class="build-weapon-list"></div><div id="result-skills" class="build-detail"></div><div id="result-fusions" class="build-detail"></div><div id="result-relics" class="build-detail"></div></section></div></div>
         <footer class="result-actions"><button id="gameover-restart" class="primary">再次挑战 ${icon('arrow')}</button><button id="gameover-menu" class="text-button">返回菜单</button></footer>
       </div>
     </section>
@@ -165,6 +165,19 @@ export function setFusionIcons(root: HTMLElement, ids: ElementalFusionId[]) {
   root.dataset.icons = key; root.innerHTML = ids.map(fusionIcon).join(''); bindFireIcons(root);
 }
 
+/** Build names are local catalog text; keep generated markup safe if copy changes. */
+const buildText = (value: string) => value.replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]!));
+function buildTokens(values: readonly string[]) {
+  return `<ul class="build-tokens">${values.map(value => `<li>${buildText(value)}</li>`).join('')}</ul>`;
+}
+function buildWeaponRows(build: RunBuild) {
+  return build.attacks.map(attack => {
+    const art = upgradeArt({id:`${attack.attackId}-weapon` as SkillId}, attack.attackId);
+    const growth = attack.attackId === 'flame-sweep' ? flameSweepStats(attack.level) : undefined;
+    return `<div class="build-weapon" data-element="${art.element}"><span class="build-weapon-art" aria-hidden="true">${icon(art.element === 'water' ? 'wave' : art.element === 'grass' ? 'leaf' : 'spark')}<img data-upgrade-art="build-weapon" src="${art.illustrations[0]}" alt="" draggable="false"/></span><div class="build-weapon-copy"><span class="build-weapon-role">${attack.slot ? '副武器'+attack.slot : '主武器'}</span><strong>${buildText(ATTACKS[attack.attackId].title)} ${attack.level}级</strong>${growth ? `<small>${growth.radius} 范围 / ${growth.degrees}° 火浪</small>` : ''}</div><span class="build-weapon-ranks" aria-label="最高5级，当前${attack.level}级">${Array.from({length:5},(_,i)=>`<i${i<attack.level?' class="filled"':''}></i>`).join('')}</span></div>`;
+  }).join('');
+}
+
 /** Long build details live in the existing pause menu, never over the joystick. */
 export function renderBuildSummary(build: RunBuild | undefined, fusions: readonly { title: string }[], resonances: readonly string[] = []) {
   const panel = document.getElementById('build-summary')!;
@@ -178,19 +191,15 @@ export function renderBuildSummary(build: RunBuild | undefined, fusions: readonl
   status.textContent = `${build.relics.length} 件稀有道具 · ${evolution} · 暂停查看构筑`;
   if (panel.dataset.snapshot === key) return;
   panel.dataset.snapshot = key;
-  document.getElementById('build-weapons')!.textContent = build.attacks.map(a => {
-    const label = `${a.slot ? '副武器' + a.slot : '主武器'}：${ATTACKS[a.attackId].title} ${a.level}级 / 5`;
-    if (a.attackId !== 'flame-sweep') return label;
-    const growth = flameSweepStats(a.level);
-    return label + ` · ${growth.radius} 范围 / ${growth.degrees}° 火浪`;
-  }).join('\n');
-  document.getElementById('build-fusions')!.textContent = (fusions.length ? fusions.map(f => f.title).join(' / ') : '尚未形成融合，升级选择通用改造。') + (resonances.length ? '\n已激活：' + resonances.join(' / ') : '');
-  document.getElementById('build-relics')!.textContent = build.relics.length ? build.relics.map(id => {
+  document.getElementById('build-weapons')!.innerHTML = buildWeaponRows(build);
+  document.getElementById('build-fusions')!.innerHTML = (fusions.length ? buildTokens(fusions.map(f=>f.title)) : '<p class="build-empty">尚未形成融合，升级时选择适配改造。</p>') + (resonances.length ? `<p>已激活：${buildText(resonances.join(' / '))}</p>` : '');
+  document.getElementById('build-relics')!.innerHTML = build.relics.length ? build.relics.map(id => {
     const relic = RELICS[id];
     const inactive = id === 'specialist-badge' && build.attacks.length > 1 ? '（副武器已装备，加成失效）' : '';
-    return `${relic.title}${inactive}：${relic.benefit}；${relic.tradeoff}`;
-  }).join('\n\n') : '尚未获得稀有道具，升级时偶尔出现。';
+    return `<article class="build-relic"><strong>${buildText(relic.title+inactive)}</strong><p>${buildText(relic.benefit)}</p><p class="build-tradeoff">代价：${buildText(relic.tradeoff)}</p></article>`;
+  }).join('') : '<p class="build-empty">尚未获得稀有道具，升级时偶尔出现。</p>';
   document.getElementById('build-evolution')!.textContent = build.evolution ? `${evolution}：${EVOLUTIONS[build.evolution].benefit}；${EVOLUTIONS[build.evolution].tradeoff}` : '火花弹获得命中分裂后，可出现互斥进化路线。';
+  bindUpgradeArt(panel);
 }
 
 export function renderRunShop(run: RunFlow, combat: Combat) {
@@ -236,14 +245,15 @@ export function renderRunResult(run: RunFlow | undefined, combat: Combat) {
   const runSummary = document.getElementById('result-run')!;
   runSummary.hidden = !run;
   runSummary.textContent = run ? `第 ${run.wave} / 6 波 · 完成 ${run.completedWaves} 波\n本局获得 ${run.earned} 金币` : '';
-  document.getElementById('result-weapons')!.textContent = build ? build.attacks.map(a => `${ATTACKS[a.attackId].title} ${a.level}级`).join(' / ') : `基础攻击：${ATTACKS[combat.baseAttack].title}`;
+  document.getElementById('result-weapons')!.innerHTML = build ? buildWeaponRows(build) : `<p>基础攻击：${buildText(ATTACKS[combat.baseAttack].title)}</p>`;
   const learned = combat.progression.skills.filter(skill => !skill.category && !skill.id.endsWith('-weapon') && combat.progression.ranks[skill.id] > 0);
-  document.getElementById('result-skills')!.textContent = learned.length ? learned.map(skill => `${skill.title} ${combat.progression.ranks[skill.id]}级`).join(' / ') : '强化：无';
-  document.getElementById('result-fusions')!.textContent = '融合：' + (combat.fusions.map(f => f.title).join(' / ') || '无') + (combat.resonances.length ? '\n共鸣：' + combat.resonances.join(' / ') : '') + `\n连锁击杀 ${combat.relicTelemetry.chainKills} · 蒸爆 ${combat.relicTelemetry.steamBursts} 次`;
-  document.getElementById('result-relics')!.textContent = '道具：' + (build?.relics.map(id => RELICS[id].title).join(' / ') || '无') + '\n进化：' + (build?.evolution ? EVOLUTIONS[build.evolution].title : '无');
+  document.getElementById('result-skills')!.innerHTML = `<h4>技能强化</h4>${buildTokens(learned.map(skill => `${skill.title} ${combat.progression.ranks[skill.id]}级`))}`;
+  document.getElementById('result-fusions')!.innerHTML = `<h4>技能融合</h4>${buildTokens(combat.fusions.map(f=>f.title))}` + (combat.resonances.length ? `<p>共鸣：${buildText(combat.resonances.join(' / '))}</p>` : '') + `<p class="build-chain-summary">连锁击杀 <strong>${combat.relicTelemetry.chainKills}</strong> · 蒸爆 <strong>${combat.relicTelemetry.steamBursts}</strong> 次</p>`;
+  document.getElementById('result-relics')!.innerHTML = `<h4>稀有道具与进化</h4>${buildTokens([...(build?.relics.map(id=>RELICS[id].title) ?? []),...(build?.evolution ? [EVOLUTIONS[build.evolution].title] : [])])}`;
   document.getElementById('result-skills')!.hidden = !learned.length;
-  document.getElementById('result-fusions')!.hidden = !combat.fusions.length && !combat.resonances.length;
+  document.getElementById('result-fusions')!.hidden = !combat.fusions.length && !combat.resonances.length && !combat.relicTelemetry.chainKills && !combat.relicTelemetry.steamBursts;
   document.getElementById('result-relics')!.hidden = !build?.relics.length && !build?.evolution;
+  bindUpgradeArt(panel);
 }
 
 export function renderResultOutcome(won: boolean) {

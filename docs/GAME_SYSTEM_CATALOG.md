@@ -1,7 +1,7 @@
 ---
 title: 幻兽幸存者｜游戏系统与内容总档案
 file_id: monsterbonk-game-system-catalog
-catalog_version: 1.9.1
+catalog_version: 1.9.2
 updated_at: 2026-10-21
 repository: https://github.com/a822053247-star/MonsterBonk-Mobile
 baseline_branch: main
@@ -170,6 +170,14 @@ language: zh-CN
 - **连续性与成长：** 四次无缝边界不清怪、不重新做18秒热身；阶段切换丢弃未入场旧护卫。单敌HP/伤害/速度、掉落与经验阈值、成熟连锁与大范围特效不变；压力后的大量可击杀目标提供反攻和拾取机会，实际成型时间需结合选卡/走位测量。波长、第五波唯一商店、Boss必须击败和历史模式保持原规则。
 
 实现：`src/wave-director.ts`、`src/run-flow.ts`、`src/spawn-layout.ts`、`src/combat.ts`。新增整局探针 `npm run balance:campaign`，记录真实HP/拾取/选卡/最终商店和各段受伤、击杀、经验、护卫及连锁，不注入预置升级。验收记录与局限见 `docs/DIFFICULTY_CURVE_IMPLEMENTATION.md`；旧1.9.0探针仅作为历史证据保留于 `docs/PERIMETER_SPAWNING_REPORT.md`。
+
+### 1.7 暂停与结算界面可读性（`IMPLEMENTED`，1.9.2，2026-10-21）
+
+暂停页采用左侧操作、右侧构筑的森林绿面板；结算战报采用顶部统计、横排武器、分组技能/融合/遗物的羊皮纸布局。正文16px起，武器名17–18px起；使用视口相关尺度在大屏放大，4K下正文最高32px、武器名36px。手机横屏不再通过9–12px正文塞下所有内容，改为详情区域纵向滚动；继续/再次挑战按钮保持可见，主要触控高度至少48px。保留安全区与键盘焦点样式。
+
+两页复用既有武器插画，按主/副武器、名称、等级与五级刻度展示；缺图保留SVG与文字。暂停仍完整显示遗物收益、代价、专精失效提示及互斥进化信息；结算按真实战斗状态生成统计和构筑，单独存在连锁/蒸爆计数时也可显示反馈。保留原暂停、恢复、重开、返回菜单及胜败状态逻辑。
+
+实现：`src/ui.ts`、`src/style.css`。截图与验证范围见 `docs/RUN_PANELS_READABILITY.md`；预览来自固定构筑的真实Game界面测试，不是用户当前存档或一局实战记录。
 
 ## 2. 现有武器、技能与融合（`IMPLEMENTED`）
 
@@ -671,6 +679,7 @@ open_questions: ["最终数值与美术待定"]
 
 | 日期 | 版本 | 内容 | 证据 |
 |---|---|---|---|
+| 2026-10-21 | 1.9.2 | 放大暂停/结算文字并重排构筑信息；复用武器插画，保留短屏滚动、安全区和固定操作入口 | 1.7、`docs/RUN_PANELS_READABILITY.md` |
 | 2026-10-21 | 1.9.1 | 背景/护卫独立调度；跨波不重置人口热身、近身仅减速；压力与高供给收割交替，加入真实成长的连续局探针 | 基于`6db569c3`的工作区；1.6、`docs/DIFFICULTY_CURVE_IMPLEMENTATION.md` |
 | 2026-10-21 | 1.9.0 | 正式六波改为实际镜头外围逐只入场、阶段人口与近身压力保护，降低硬上限和威胁配额；保留构筑/经济和连续波 | 基于`6db569c3`的工作区；1.6、`docs/PERIMETER_SPAWNING_REPORT.md` |
 | 2026-10-21 | 1.8.0 | 构筑相关抽取与核心保底、三级火系连爆觉醒、湿润/水火蒸爆、攻速连射与大范围特效；真实四幕预览 | 基于`7eec9585`的本分支工作区；3.5、`docs/BUILD_CHAIN_REPORT.md` |

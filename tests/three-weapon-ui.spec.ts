@@ -48,7 +48,9 @@ test('grass creature acquires fire/water through upgrade cards, shows all five f
     return [...observed.values()];
   });
   expect(fired).toEqual(expect.arrayContaining([{ id: 'leaf', recipes: 2 }, { id: 'spark', recipes: 1 }, { id: 'bubble', recipes: 2 }]));
-  await expect(page.locator('#fusion-hint')).toContainText('融合协同');
+  // Fusion recipes are exposed in the status title and pause build; the HUD hint
+  // is reserved for active resonances rather than a generic synergy message.
+  await expect(page.locator('#fusion-status')).toHaveAttribute('title', /爆裂火种/);
   await expect(page.locator('#fusion-burst-icon')).toBeVisible();
   await page.screenshot({ path: 'artifacts/v5.1-b-three-weapon.png' });
   await page.setViewportSize({ width: 568, height: 320 });
@@ -56,6 +58,8 @@ test('grass creature acquires fire/water through upgrade cards, shows all five f
   expect(bounds!.x).toBeGreaterThanOrEqual(0); expect(bounds!.x + bounds!.width).toBeLessThanOrEqual(568);
   expect(await page.locator('#fusion-title').evaluate(el => el.scrollWidth <= el.clientWidth)).toBe(true);
   await page.locator('#pause').click();
+  await expect(page.locator('#build-weapons .build-weapon')).toHaveCount(3);
+  await expect(page.locator('#build-fusions')).toContainText('爆裂火种');
   expect(await page.evaluate(() => {
     const g = (window as any).game, snapshot = JSON.stringify(g.combat.inspect());
     g.step(1); return JSON.stringify(g.combat.inspect()) === snapshot;

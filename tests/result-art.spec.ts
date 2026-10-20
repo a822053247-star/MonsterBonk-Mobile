@@ -88,6 +88,7 @@ test('health and timeout defeats show real reasons, soft badge, and no victory a
     expect(card.x + card.width).toBeLessThanOrEqual(524);
     expect(card.y + card.height).toBeLessThanOrEqual(299);
     const clean = await page.locator('.result-body').evaluate(body => {
+      body.scrollTop = body.scrollHeight;
       const report = body.parentElement!, border = getComputedStyle(report);
       const outer = report.getBoundingClientRect(), inner = body.getBoundingClientRect();
       const last = body.querySelector('#result-relics')!.getBoundingClientRect();
@@ -95,7 +96,8 @@ test('health and timeout defeats show real reasons, soft badge, and no victory a
         && inner.top >= outer.top + parseFloat(border.borderTopWidth)
         && inner.right <= outer.right - parseFloat(border.borderRightWidth)
         && inner.bottom <= outer.bottom - parseFloat(border.borderBottomWidth)
-        && last.bottom <= inner.bottom;
+        && body.scrollWidth <= body.clientWidth
+        && last.bottom <= inner.bottom + 1;
     });
     expect(clean).toBe(true);
     await page.screenshot({ path: `artifacts/adventure-report-${kind}-${info.project.name}.png` });
