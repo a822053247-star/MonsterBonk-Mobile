@@ -613,7 +613,7 @@ export class Game {
       document.getElementById('hud')!.inert = true;
       document.getElementById('shop-screen')!.hidden = false;
       const growth = this.run.lastWaveGrowth;
-      document.getElementById('shop-message')!.textContent = `本波奖励 +${this.run.definition.reward} 金币${growth.sporeBonus ? ` · 爆孢连锁 +${growth.sporeBonus} 金币` : ''}${growth.treasureCaught ? ' · 携宝兽奖励免费刷新' : ''}`;
+      document.getElementById('shop-message')!.textContent = `本波奖励 +${this.run.definition.reward} 金币${growth.sporeBonus ? ` · 爆孢连锁 +${growth.sporeBonus} 金币` : ''}${this.run.shop?.treasureRefreshes ? ' · 前五波携宝兽奖励免费刷新' : ''}`;
       renderRunShop(this.run, this.combat); this.updateHUD();
       document.getElementById('shop-next')!.focus({ preventScroll: true }); this.wake(); return true;
     }
