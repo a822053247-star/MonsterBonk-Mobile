@@ -29,3 +29,13 @@ jobs:
       - run: npm run build
       - run: npx playwright install --with-deps chromium
       - run: npx playwright test tests/hud-readability-ui.spec.ts tests/hud-art.spec.ts tests/run-flow-ui.spec.ts tests/player-hurt-ui.spec.ts --project=chromium
+      - name: Upload real HUD screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hud-readability-screenshots
+          path: |
+            artifacts/hud-readable-normal-desktop.png
+            artifacts/hud-readable-danger-desktop.png
+          if-no-files-found: ignore
+          retention-days: 30
