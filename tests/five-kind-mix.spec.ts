@@ -39,9 +39,9 @@ test('five-kind mix has weighted red, fast, rock, crystal and capped spore slots
   expect(c.enemies).toHaveLength(COMBAT_LIMITS.enemies);
 });
 
-test('red braces visibly before a short damaging lunge, while crystal bugs weave without the red bash',()=>{
+test('red holds a telegraphed ground slam without moving, unlike sprinter lanes and weaving crystal bugs',()=>{
   const {c}=fixture();c.encounters.beginWave(2);
-  const red=c.spawn('normal',2,0,0)!;red.spawnTime=0;red.intentCooldown=0;
+  const red=c.spawn('normal',1.5,0,0)!;red.spawnTime=0;red.intentCooldown=0;
   const crystal=c.spawn('draft-crystal-swarm',6,0,0)!;crystal.spawnTime=0;
   tick(c);
   expect(red.intent).toBe('windup');
@@ -55,9 +55,11 @@ test('red braces visibly before a short damaging lunge, while crystal bugs weave
   expect(Math.abs(crystal.z)).toBeGreaterThan(0);
   tick(c,.41);
   expect(red.intent).toBe('pounce');
-  expect(red.x).toBeLessThan(redX);
-  tick(c,.35);
+  expect(red.x).toBeCloseTo(redX);
+  expect(c.hp).toBe(hp); // Standing beyond the ring is safe.
+  tick(c,.25);
   expect(red.intent).toBe('recover');
+  expect(red.x).toBeCloseTo(redX);
   expect(red.intentTime).toBeGreaterThan(0);
 });
 
@@ -101,4 +103,39 @@ test('six waves still honor global cap and the fifth-only shop with deterministi
     for(let n=0;n<6;n++)run.update(.5,c,origin);
     expect(c.enemies.filter(e=>e.active).length).toBeLessThanOrEqual(RUN_WAVES[wave-1].cap);
   }
+});
+
+test('red warning overlap is bounded; fast retains real directional movement',()=>{
+  const {c}=fixture();c.encounters.beginWave(3);
+  const reds=[
+    c.spawn('normal',1.2,0,0)!,
+    c.spawn('normal',1.3,.2,0)!,
+    c.spawn('normal',1.4,-.2,0)!,
+    c.spawn('normal',1.1,.3,0)!,
+  ];
+  for(const e of reds) {e.spawnTime=0;e.intentCooldown=0;}
+  tick(c);
+  expect(reds.filter(e=>e.intent==='windup')).toHaveLength(RED_BLOB_BASH.nearbyWarningCap);
+  const fast=c.spawn('fast',5,0,0)!;fast.spawnTime=0;
+  tick(c);
+  expect(fast.intent).toBe('windup');
+  const startX=fast.x;
+  tick(c,1);
+  expect(fast.intent).toBe('pounce');
+  tick(c,.15);
+  expect(fast.x).toBeLessThan(startX);
+  expect(reds.filter(e=>e.intent==='windup').length).toBeLessThanOrEqual(RED_BLOB_BASH.nearbyWarningCap);
+});
+
+test('moving outside the red floor circle during the warning avoids damage',()=>{
+  const {c}=fixture();c.encounters.beginWave(3);
+  const red=c.spawn('normal',.9,0,0)!;red.spawnTime=0;
+  tick(c);
+  expect(red.intent).toBe('windup');
+  c.party!.syncLeader({x:0,z:4},0);
+  c.update(.5,{x:0,z:4});
+  c.update(.25,{x:0,z:4});
+  expect(red.intent).toBe('pounce');
+  expect(c.hp).toBe(100);
+  expect(red.x).toBeCloseTo(.9);
 });
