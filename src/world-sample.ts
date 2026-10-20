@@ -76,7 +76,7 @@ function makeGround(images: HTMLImageElement[], layout: WorldLayout) {
 }
 
 /** Retain the main eight-connected sprite; atlas cells can contain stray pixels. */
-function crop(image: HTMLImageElement, x: number, y: number, size: number) {
+export function crop(image: HTMLImageElement, x: number, y: number, size: number) {
   const canvas = document.createElement('canvas');
   canvas.width = canvas.height = size;
   const ctx = canvas.getContext('2d')!;

@@ -42,7 +42,7 @@ export class Game {
   private partyView = new PartyView(this.party, this.pixelPartyEnabled);
   private partyPrototype = false;
   private selectedSpecies: SpeciesId = 'yanrong';
-  private prototypeVariant: 'sample' | 'fusion' | 'legacy-party' = 'sample';
+  private prototypeVariant: 'sample' | 'fusion' | 'legacy-party' | 'infinite' = 'sample';
   private world: World;
   private combat: Combat;
   private combatView: CombatView;
@@ -154,6 +154,7 @@ export class Game {
       this.preferences.sound = (document.getElementById('sound-toggle') as HTMLInputElement).checked;
       this.audio.configure(this.preferences.music, this.preferences.sound); this.saveSettings();
     }, options);
+    click('start-infinite', () => this.start('classic', true, true, 'infinite'));
     click('start-party', () => this.start('classic', true, true, 'sample'));
     click('start-fusion', () => this.start('classic', true, true, 'fusion'));
     click('choose-creature', () => {
@@ -349,8 +350,11 @@ export class Game {
     this.prototypeVariant = partyPrototype ? variant : 'sample';
     this.combat.fusionEnabled = partyPrototype && variant === 'fusion';
     this.combatView.setFusion(this.combat.fusionEnabled, this.selectedSpecies !== 'yanrong');
-    this.world.setSample(partyPrototype && new URLSearchParams(window.location.search).get('world') !== 'legacy', newMap);
-    this.combat.useNavigation = partyPrototype && this.world.sampleActive;
+    const endless = partyPrototype && variant === 'infinite';
+    this.world.setSample(!endless && partyPrototype && new URLSearchParams(window.location.search).get('world') !== 'legacy', newMap);
+    this.world.setInfinite(endless, newMap);
+    this.combat.infiniteWorld = endless;
+    this.combat.useNavigation = partyPrototype && (this.world.sampleActive || endless);
     this.combat.party = partyPrototype ? this.party : undefined;
     const species: SpeciesId = this.combat.fusionEnabled ? this.selectedSpecies : 'yanrong';
     document.getElementById('creature-picker')!.hidden = true;
@@ -375,6 +379,8 @@ export class Game {
     this.elapsed = this.cooldown = this.dashRemaining = this.distance = 0;
     this.intermissionHudSecond = -1;
     this.combat.reset(ruleset);
+    this.world.update(0, 0);
+    this.combat.refreshWorld(0, 0, this.world.revision);
     this.run = this.combat.usesRunBuild ? new RunFlow() : undefined;
     if (this.run && new URLSearchParams(window.location.search).get('meleeDev') === 'flame-sweep') this.combat.grantUpgrade('flame-sweep-weapon');
     this.combat.automaticSpawning = !this.run;
@@ -404,8 +410,8 @@ export class Game {
     document.getElementById('gameover-screen')!.hidden = true;
     (document.activeElement as HTMLElement | null)?.blur();
     this.welcome.classList.remove('faded');
-    this.welcome.querySelector('h2')!.textContent = this.combat.fusionEnabled && species !== 'yanrong' ? `${CREATURES[species].name}，准备出发。` : this.combat.fusionEnabled ? '一簇火花，生长成烈焰。' : partyPrototype ? '草场已就绪，出发吧。' : this.challenge ? '三波迎战，冲出一条路。' : this.combat.isTrial ? '犄角已就绪，冲出一条路。' : '小小魔法，准备就绪。';
-    this.welcome.querySelector('p')!.textContent = this.combat.fusionEnabled && species !== 'yanrong' ? `${CREATURES[species].name}出战 · 摇杆移动 · 自动攻击 · 升级三选一` : this.combat.fusionEnabled ? '六波自动战斗 · 升级形成融合 · 前四波连续迎战，第五波后才可购物' : partyPrototype && variant === 'legacy-party' ? '三兽兼容模式 · 主控移动，伙伴跟随并自动攻击' : partyPrototype ? '摇杆操控焰绒 · 自动攻击 · 沿泥路绕过林地与水岸' : this.challenge ? '击败三波即可通关 · 冲锋命中 6 次、打断 2 次各加一星' : this.combat.isTrial ? '冲刺命中可击退和打断 · 留意黄色扑击预警线' : '移动躲避敌人，焰绒会自动施法 · 靠近拾取经验';
+    this.welcome.querySelector('h2')!.textContent = endless ? '无尽草场，向远方出发。' : this.combat.fusionEnabled && species !== 'yanrong' ? `${CREATURES[species].name}，准备出发。` : this.combat.fusionEnabled ? '一簇火花，生长成烈焰。' : partyPrototype ? '草场已就绪，出发吧。' : this.challenge ? '三波迎战，冲出一条路。' : this.combat.isTrial ? '犄角已就绪，冲出一条路。' : '小小魔法，准备就绪。';
+    this.welcome.querySelector('p')!.textContent = endless ? '向任何方向移动 · 无边界草场 · 自动战斗与升级' : this.combat.fusionEnabled && species !== 'yanrong' ? `${CREATURES[species].name}出战 · 摇杆移动 · 自动攻击 · 升级三选一` : this.combat.fusionEnabled ? '六波自动战斗 · 升级形成融合 · 前四波连续迎战，第五波后才可购物' : partyPrototype && variant === 'legacy-party' ? '三兽兼容模式 · 主控移动，伙伴跟随并自动攻击' : partyPrototype ? '摇杆操控焰绒 · 自动攻击 · 沿泥路绕过林地与水岸' : this.challenge ? '击败三波即可通关 · 冲锋命中 6 次、打断 2 次各加一星' : this.combat.isTrial ? '冲刺命中可击退和打断 · 留意黄色扑击预警线' : '移动躲避敌人，焰绒会自动施法 · 靠近拾取经验';
     this.accumulator = 0;
     this.placeCamera(true);
     this.updateHUD();
@@ -507,7 +513,7 @@ export class Game {
       this.syncRunPhase();
       return;
     }
-    this.combat.useNavigation = this.partyPrototype && this.world.sampleActive;
+    this.combat.useNavigation = this.partyPrototype && (this.world.sampleActive || this.combat.infiniteWorld);
     if (this.combat.progression.awaitingChoice && !this.combat.encounters.dying) { this.openUpgrade(); return; }
     if (this.run && this.run.remaining <= 1e-8) { this.run.resolveBoundary(this.combat); if (this.syncRunPhase()) return; }
     this.run?.prepare(this.combat,this.position);
@@ -555,6 +561,9 @@ export class Game {
     const dx = this.velocity.x * dt, dz = this.velocity.y * dt;
     this.position.x += dx;
     this.position.z += dz;
+    // Refresh streamed chunks before resolving collisions or enemy navigation.
+    this.world.update(this.position.x, this.position.z);
+    this.combat.refreshWorld(this.position.x, this.position.z, this.world.revision);
     // Circle collisions allow sliding around trunks and rocks.
     for (const obstacle of this.world.obstacles) {
       const x = this.position.x - obstacle.x, z = this.position.z - obstacle.z;
@@ -566,7 +575,7 @@ export class Game {
       }
     }
     const radius = Math.hypot(this.position.x, this.position.z);
-    if (radius > WORLD_RADIUS - 0.7) this.position.multiplyScalar((WORLD_RADIUS - 0.7) / radius);
+    if (!this.combat.infiniteWorld && radius > WORLD_RADIUS - 0.7) this.position.multiplyScalar((WORLD_RADIUS - 0.7) / radius);
     this.distance += this.position.distanceTo(this.previousPosition);
     if (this.velocity.lengthSq() > 0.05) {
       const target = Math.atan2(this.velocity.x, this.velocity.y);
@@ -761,7 +770,10 @@ export class Game {
     renderHudWeaponIcons(this.combat);
     const wave = document.getElementById('run-wave')!, gold = document.getElementById('run-gold')!;
     wave.hidden = gold.hidden = !this.run;
-    document.querySelector<HTMLElement>('.run-status .explore-label')!.hidden = !!this.run;
+    const exploreLabel = document.querySelector<HTMLElement>('.run-status .explore-label')!;
+    exploreLabel.hidden = !!this.run;
+    if (this.combat.infiniteWorld) exploreLabel.textContent = '无尽探索 · ' + Math.floor(this.distance) + ' 步';
+    else if (exploreLabel.textContent?.startsWith('无尽')) exploreLabel.textContent = '草原遭遇';
     if (this.run) { wave.textContent = `第 ${this.run.wave} / 6 波 · ${this.run.wave===6?'兽王挑战 · ':''}剩余 ${Math.ceil(this.run.remaining)} 秒`; gold.textContent = `金币 ${this.run.coins}`; }
     renderBuildSummary(this.combat.usesRunBuild ? this.combat.runBuild : undefined, this.combat.fusions);
     const fusionStatus = document.getElementById('fusion-status')!;
@@ -801,7 +813,7 @@ export class Game {
       replay.dataset.seed = map.seed;
     }
     const seedCharacters = Array.from(map.seed ?? '');
-    document.getElementById('map-seed')!.textContent = map.seed ? '种子 ' + (seedCharacters.length > 18 ? seedCharacters.slice(0, 18).join('') + '…' : map.seed) : '中央草场';
+    document.getElementById('map-seed')!.textContent = map.seed ? (this.combat.infiniteWorld ? '无限种子 ' : '种子 ') + (seedCharacters.length > 18 ? seedCharacters.slice(0, 18).join('') + '…' : map.seed) : '中央草场';
     document.getElementById('party-status')!.hidden = !this.partyPrototype || this.party.members.length < 2;
     const trialStatus = document.getElementById('trial-status')!;
     trialStatus.hidden = !this.combat.isTrial;
@@ -847,7 +859,7 @@ export class Game {
       this.welcome.querySelector('p')!.textContent = this.run.wave === 6 ? '荆冠兽王登场 · 留意攻击预警' : '开始新一波战斗';
       this.welcome.classList.remove('faded');
     } else this.welcome.classList.toggle('faded', this.elapsed > 5 || this.distance > 8);
-    this.boundaryHint.hidden = Math.hypot(this.position.x, this.position.z) < WORLD_RADIUS - 1.2;
+    this.boundaryHint.hidden = this.combat.infiniteWorld || Math.hypot(this.position.x, this.position.z) < WORLD_RADIUS - 1.2;
     const hp = this.combat.hp, maxHp = this.combat.maxHp;
     this.healthValue.textContent = `${hp} / ${maxHp}`;
     this.healthFill.style.width = `${hp / maxHp * 100}%`;

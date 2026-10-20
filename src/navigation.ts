@@ -11,6 +11,8 @@ export class GroundNavigation {
   private readonly queue: Int32Array;
   private obstacleCount = -1;
   private targetCell = -2;
+  private centerX = 0;
+  private centerZ = 0;
   private readonly clearance = .95;
 
   constructor(private obstacles: readonly GroundObstacle[], private boundary: number) {
@@ -22,9 +24,18 @@ export class GroundNavigation {
 
   invalidate() { this.obstacleCount = -1; this.targetCell = -2; }
 
+  setCenter(x: number, z: number, force = false) {
+    if (!force && Math.hypot(x - this.centerX, z - this.centerZ) < 7) return;
+    this.centerX = x; this.centerZ = z;
+    this.invalidate();
+  }
+
   private clear(x: number, z: number, radius: number) {
-    return Math.hypot(x, z) <= this.boundary - radius
-      && this.obstacles.every(o => Math.hypot(x - o.x, z - o.z) >= o.radius + radius);
+    return Math.hypot(x - this.centerX, z - this.centerZ) <= this.boundary - radius
+      && this.obstacles.every(o => {
+        const r = o.radius + radius;
+        return Math.abs(x - o.x) > r || Math.abs(z - o.z) > r || Math.hypot(x - o.x, z - o.z) >= r;
+      });
   }
 
   private line(ax: number, az: number, bx: number, bz: number, radius: number) {
@@ -37,11 +48,11 @@ export class GroundNavigation {
     return true;
   }
 
-  private x(index: number) { return index % this.width - this.boundary; }
-  private z(index: number) { return Math.floor(index / this.width) - this.boundary; }
+  private x(index: number) { return index % this.width - this.boundary + this.centerX; }
+  private z(index: number) { return Math.floor(index / this.width) - this.boundary + this.centerZ; }
 
   private cell(point: GroundPoint, requireConnection: boolean) {
-    const cx = Math.round(point.x + this.boundary), cz = Math.round(point.z + this.boundary);
+    const cx = Math.round(point.x - this.centerX + this.boundary), cz = Math.round(point.z - this.centerZ + this.boundary);
     let closest = -1, best = Infinity;
     for (let ring = 0; ring <= 3; ring++) {
       for (let dz = -ring; dz <= ring; dz++) for (let dx = -ring; dx <= ring; dx++) {
@@ -101,7 +112,7 @@ export class GroundNavigation {
     this.prepare(target);
     let walkable = 0, reachable = 0, inside = 0;
     for (let i = 0; i < this.blocked.length; i++) {
-      if (Math.hypot(this.x(i), this.z(i)) <= this.boundary - this.clearance) inside++;
+      if (Math.hypot(this.x(i) - this.centerX, this.z(i) - this.centerZ) <= this.boundary - this.clearance) inside++;
       if (this.blocked[i]) continue;
       walkable++;
       if (this.distance[i] >= 0) reachable++;
