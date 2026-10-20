@@ -1062,3 +1062,34 @@ h1>em{font-size:12px;line-height:1;letter-spacing:4px;display:inline-block;backg
   .hud .hud-actions .icon{width:19px;height:19px}
   .hud .encounter-status{left:auto;right:calc(12px + var(--safe-right));top:calc(186px + var(--safe-top));transform:none}
 }
+
+
+/* Gold belongs to the upper-left player cluster, not the centered wave plaque.
+   Use the existing coin artwork and the same dark-green / gold trim. */
+.hud .hud-gold{
+  display:inline-flex;align-items:center;align-self:flex-start;justify-content:center;
+  gap:9px;min-height:38px;max-width:calc(100% - 12px);
+  margin:7px 0 0 13px;padding:5px 16px 5px 9px;
+  color:#ffe9a6;font-size:19px;line-height:1.1;font-weight:950;
+  border:2px solid #c4a36c;border-radius:22px;
+  background:linear-gradient(145deg,#284739e8,#132d29ef);
+  box-shadow:inset 0 0 0 1px #f8dea121,0 3px 8px #081c1e70;
+  text-shadow:0 2px 3px #0a201a;pointer-events:none;
+  white-space:nowrap;font-variant-numeric:tabular-nums;
+}
+.hud .hud-gold img{
+  display:block;width:25px;height:25px;object-fit:contain;image-rendering:pixelated;flex-shrink:0;
+}
+.hud #hud-coins{display:block;min-width:16px;text-align:right}
+@media(max-width:1250px) and (orientation:landscape){
+  .hud .hud-gold{min-height:30px;margin:5px 0 0 7px;padding:3px 12px 3px 6px;gap:6px;font-size:14px;border-width:1px}
+  .hud .hud-gold img{width:20px;height:20px}
+}
+@media(max-width:900px) and (orientation:landscape){
+  .hud .hud-gold{min-height:25px;margin:4px 0 0 5px;padding:2px 9px 2px 5px;font-size:12px;gap:4px}
+  .hud .hud-gold img{width:17px;height:17px}
+}
+@media(max-width:700px) and (orientation:landscape){
+  .hud .hud-gold{min-height:23px;margin:3px 0 0 2px;padding:2px 7px 2px 4px;font-size:11px;gap:3px}
+  .hud .hud-gold img{width:15px;height:15px}
+}

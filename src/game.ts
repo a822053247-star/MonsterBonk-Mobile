@@ -772,7 +772,9 @@ export class Game {
     renderHudWeaponIcons(this.combat);
     const wave = document.getElementById('run-wave')!, gold = document.getElementById('run-gold')!;
     wave.hidden = !this.run;
-    gold.hidden = true; // Top center deliberately contains only wave and elapsed time.
+    gold.hidden = true; // Only wave and elapsed time occupy the top center.
+    const coins = this.run?.coins ?? this.combat.goldEarned;
+    document.getElementById('hud-coins')!.textContent = Math.max(0, coins).toLocaleString('en-US');
     if (this.run) { wave.textContent = `第 ${this.run.wave} / 6 波`; gold.textContent = `金币 ${this.run.coins}`; }
     renderBuildSummary(this.combat.usesRunBuild ? this.combat.runBuild : undefined, this.combat.fusions);
     const fusionStatus = document.getElementById('fusion-status')!;

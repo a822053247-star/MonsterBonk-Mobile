@@ -43,6 +43,8 @@ test('main HUD only shows wave and elapsed timer; levels and XP progress stay sy
   await expect(page.locator('#creature-name')).toHaveCount(0);
   await expect(page.locator('.run-label, .explore-label, .location-label')).toHaveCount(0);
   await expect(page.locator('#run-gold')).toBeHidden();
+  await expect(page.locator('#hud-coins')).toHaveText('0');
+  await expect(page.locator('.hud-gold img')).toHaveAttribute('src', /common\/coin\.png$/);
   await expect(page.locator('#run-wave')).toContainText('第 1 / 6 波');
   await expect(page.locator('#timer')).toBeVisible();
   await page.evaluate(()=>{
@@ -53,6 +55,12 @@ test('main HUD only shows wave and elapsed timer; levels and XP progress stay sy
   await expect(page.locator('#xp-progress')).toHaveText('3 / 8');
   await expect(page.locator('#xp-track')).toHaveAttribute('aria-valuenow','3');
   await expect(page.locator('#xp-track')).toHaveAttribute('aria-valuemax','8');
+  // The HUD reads the actual run wallet, not lifetime gold earned or static markup.
+  await page.evaluate(()=>{const g=(window as any).game;g.run.coins=1234;(window as any).updateHud()});
+  await expect(page.locator('#hud-coins')).toHaveText('1,234');
+  await expect(page.locator('#run-gold')).toBeHidden();
+  await page.evaluate(()=>{const g=(window as any).game;g.run.coins=975;(window as any).updateHud()});
+  await expect(page.locator('#hud-coins')).toHaveText('975');
   const layout=await page.evaluate(()=>{
     const rect=(selector:string)=>{const box=document.querySelector(selector)!.getBoundingClientRect();return {x:box.x,y:box.y,width:box.width,height:box.height}};
     return {health:rect('.health-panel'),portrait:rect('#creature-portrait'),bar:rect('.health-track'),
@@ -79,6 +87,12 @@ test('landscape phone HUD scales safely, buttons remain usable and wave stays cl
     const health=(await page.locator('.health-block').boundingBox())!;
     const actions=(await page.locator('.hud-actions').boundingBox())!;
     const timer=(await page.locator('.run-status').boundingBox())!;
+    const wallet=(await page.locator('.hud-gold').boundingBox())!;
+    expect(wallet.x).toBeGreaterThanOrEqual(44);
+    expect(wallet.x+wallet.width).toBeLessThanOrEqual(health.x+health.width+1);
+    const walletOverlapsTimer=wallet.x<timer.x+timer.width && wallet.x+wallet.width>timer.x &&
+      wallet.y<timer.y+timer.height && wallet.y+wallet.height>timer.y;
+    expect(walletOverlapsTimer).toBe(false);
     expect(health.x).toBeGreaterThanOrEqual(44);
     expect(actions.x+actions.width).toBeLessThanOrEqual(width-44+1);
     // Cards and buttons cannot overlap. On narrow phones the time moves below them.
