@@ -2,6 +2,7 @@ import { test, expect } from '@playwright/test';
 import { Combat } from '../src/combat';
 import { PartySystem } from '../src/party';
 import { FLAME_SWEEP, flameSweepStats, insideSweep } from '../src/flame-sweep';
+import { WEAPON_DAMAGE_PER_LEVEL } from '../src/relics';
 
 const origin={x:0,z:0};
 function fixture(level=5,obstacles:{x:number;z:number;radius:number}[]=[]){
@@ -28,7 +29,7 @@ test('actual upgraded swings reach far and rear-side enemies that level one leav
     const c=fixture(level);c.spawn('tank',1.6,0,0);
     const far=c.spawn('tank',5.1,0,0)!,back=c.spawn('tank',-3.8,0,0)!;
     tick(c);
-    for(const e of [far,back])expect(e.hp).toBeCloseTo(level===1?100:35.2);
+    for(const e of [far,back])expect(e.hp).toBeCloseTo(level===1?100:100-FLAME_SWEEP.damage*(1+4*WEAPON_DAMAGE_PER_LEVEL['flame-sweep']));
     if(level===5){expect(c.melee.x).toBe(0);expect(c.melee.z).toBe(0);}
   }
 });
@@ -38,14 +39,14 @@ test('a lone enemy whose body overlaps the sector edge can trigger a real swing'
     const c=fixture(level),profile=flameSweepStats(level),offset=level===5?0:FLAME_SWEEP.bodyOffset;
     const target=c.spawn('tank',profile.radius+offset+.8,0,0)!;
     tick(c);expect(c.melee.attackInstanceId).toBe(1);
-    expect(target.hp).toBeCloseTo(100-36*(1+.2*(level-1)));
+    expect(target.hp).toBeCloseTo(100-FLAME_SWEEP.damage*(1+WEAPON_DAMAGE_PER_LEVEL['flame-sweep']*(level-1)));
   }
 });
 
 test('a full-circle swing still hits once and has no second periodic attack or clock',()=>{
   const c=fixture();const targets=[[-2,0],[2,0],[0,2],[0,-2]].map(([x,z])=>c.spawn('tank',x,z,0)!);
   tick(c);expect(c.melee.hitIds.filter(Boolean)).toHaveLength(4);expect(c.shotsFired).toBe(0);
-  for(const e of targets)expect(e.hp).toBeCloseTo(35.2);
+  for(const e of targets)expect(e.hp).toBeCloseTo(100-FLAME_SWEEP.damage*(1+4*WEAPON_DAMAGE_PER_LEVEL['flame-sweep']));
   c.runBuild.attacks[1].cooldown=1000;const hits=c.hits;
   for(let i=0;i<300;i++)tick(c);
   expect(c.hits).toBe(hits);expect(c.inspect()).not.toHaveProperty('flameRing');
@@ -55,7 +56,7 @@ test('moving cast origins respect walls and spawn protection at every angle',()=
   const c=fixture(5,[{x:11,z:0,radius:.4}]);
   const hit=c.spawn('tank',8,0,0)!,covered=c.spawn('tank',12,0,0)!,warning=c.spawn('tank',10,1,1)!;
   const p={x:10,z:0};c.party!.syncLeader(p,0);c.update(1/60,p);
-  expect(c.melee.x).toBe(10);expect(hit.hp).toBeCloseTo(35.2);expect(covered.hp).toBe(100);expect(warning.hp).toBe(100);
+  expect(c.melee.x).toBe(10);expect(hit.hp).toBeCloseTo(100-FLAME_SWEEP.damage*(1+4*WEAPON_DAMAGE_PER_LEVEL['flame-sweep']));expect(covered.hp).toBe(100);expect(warning.hp).toBe(100);
 });
 
 test('upgrade cooldown progress and text describe a single widening wave',()=>{
