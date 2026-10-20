@@ -5,7 +5,7 @@ export const RELICS = {
   'hunter-eye': { title: '追猎之眼', benefit: '派生弹轻微追踪', tradeoff: '派生弹伤害 -20%', icon: 'compass', color: '#e7c67a' },
   'shattered-core': { title: '破碎晶核', benefit: '每次分裂子弹 +1', tradeoff: '派生弹伤害 -25%，仍受弹体预算限制', icon: 'battle', color: '#d6b9f5' },
   'tidal-pearl': { title: '潮汐遗珠', benefit: '水泡减速时长 +60%', tradeoff: '所有武器直接命中伤害 -15%', icon: 'wave', color: '#8fe8ff' },
-  'specialist-badge': { title: '专精徽记', benefit: '仅装备一种武器时伤害 +60%', tradeoff: '装备副武器后加成失效', icon: 'spark', color: '#f3de9a' },
+  'specialist-badge': { title: '专精徽记', benefit: '仅装备一种武器时伤害 +45%', tradeoff: '装备副武器后加成失效', icon: 'spark', color: '#f3de9a' },
   'echo-rune': { title: '回声符石', benefit: '连锁距离 +40%', tradeoff: '每次额外跳跃伤害再乘 70%', icon: 'orbit', color: '#a5edbe' },
 } as const;
 export type RelicId = keyof typeof RELICS;
@@ -14,6 +14,12 @@ export const EVOLUTIONS = {
   'pursuit-route': { title: '追猎火种', benefit: '派生火种追踪敌人', tradeoff: '火种爆炸半径 -25%，放弃狂暴路线', icon: 'compass', color: '#f3de9a' },
 } as const;
 export type EvolutionId = keyof typeof EVOLUTIONS;
+
+/** Late-game damage growth is deliberately weaker than the old universal +20% per rank.
+ * Level one remains unchanged; coverage/piercing/slow/arc are the reward for investing. */
+export const WEAPON_DAMAGE_PER_LEVEL: Readonly<Record<BaseAttackId, number>> = {
+  spark: .16, bubble: .18, leaf: .16, 'flame-sweep': .12,
+};
 
 /** Snapshot these rules on a volley; upgrades never rewrite an in-flight attack. */
 export interface AttackRules {
@@ -27,7 +33,7 @@ export function resolveAttackRules(attack: BaseAttackId, relics: readonly RelicI
   const has = (id: RelicId) => relics.includes(id);
   const spark = attack === 'spark';
   return {
-    damageMultiplier: (1 + .2 * (level - 1)) * (has('specialist-badge') && weaponCount === 1 ? 1.6 : 1),
+    damageMultiplier: (1 + WEAPON_DAMAGE_PER_LEVEL[attack] * (level - 1)) * (has('specialist-badge') && weaponCount === 1 ? 1.45 : 1),
     directMultiplier: has('tidal-pearl') ? .85 : 1,
     intervalMultiplier: (has('overload-core') ? 1.2 : 1) * (spark && evolution === 'berserk-route' ? 1.25 : 1),
     areaMultiplier: (has('overload-core') ? 1.5 : 1) * (spark ? 1 + .06 * (level - 1) : 1)
