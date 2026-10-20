@@ -107,6 +107,7 @@ export class Game {
     this.scene.add(sun);
     this.world = createWorld();
     this.scene.add(this.world.group, this.monster.root, this.partyView.group);
+    this.monster.root.visible = false;
     this.combat = new Combat(this.world.obstacles, WORLD_RADIUS - 0.7);
     this.combatView = new CombatView(this.combat);
     this.scene.add(this.combatView.group);
@@ -450,7 +451,7 @@ export class Game {
     this.world.setSample(false);
     this.combat.infiniteWorld = false;
     this.combat.useNavigation = false;
-    this.monster.root.visible = true;
+    this.monster.root.visible = false;
     document.getElementById('game-canvas')!.classList.remove('pixel-party');
     this.partyPrototype = false;
     this.prototypeVariant = 'sample';
@@ -939,7 +940,7 @@ export class Game {
     this.monster.animate(renderDt * speed, Math.min(1, this.velocity.length() / 4.6), this.dashRemaining > 0, this.visualTime, THREE.MathUtils.lerp(this.previousJump, this.jumpHeight, this.accumulator / STEP), this.combat.hurtFlash / 0.25);
       this.placeCamera(false, renderDt * speed);
       this.world.update(this.position.x, this.position.z);
-      this.monster.root.visible = !this.partyPrototype || !this.partyView.hasPixelLeader;
+      this.monster.root.visible = this.mode !== 'menu' && (!this.partyPrototype || !this.partyView.hasPixelLeader);
       this.renderer.render(this.scene, this.camera);
     }
     if (this.mode === 'menu' || this.mode === 'playing') this.frameId = window.requestAnimationFrame(this.frame);

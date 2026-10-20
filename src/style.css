@@ -14,7 +14,10 @@ button:active:not(:disabled){transform:translateY(2px)}
 #game-canvas.pixel-party{image-rendering:pixelated}
 .screen{position:absolute;inset:0}
 .vignette{position:absolute;inset:0;pointer-events:none;background:linear-gradient(0deg,rgba(12,39,29,.3),transparent 24%,transparent 85%,rgba(12,39,29,.07))}
-.menu{padding:calc(30px + var(--safe-top)) calc(48px + var(--safe-right)) calc(28px + var(--safe-bottom)) calc(48px + var(--safe-left));display:flex;flex-direction:column;background:linear-gradient(90deg,rgba(14,40,34,.96),rgba(14,40,34,.85) 25%,rgba(14,40,34,.48) 45%,transparent 65%)}
+.menu{isolation:isolate;padding:calc(30px + var(--safe-top)) calc(48px + var(--safe-right)) calc(28px + var(--safe-bottom)) calc(48px + var(--safe-left));display:flex;flex-direction:column;background:#153d30}
+.menu-background{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;z-index:-2;pointer-events:none;user-select:none}
+.menu::before{content:'';position:absolute;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(90deg,#082c2466,transparent 65%),linear-gradient(0deg,#082c2466,transparent 24%)}
+.menu-footer{position:relative;z-index:1}
 .menu-header{display:flex;justify-content:space-between;align-items:center;gap:20px;z-index:1}
 .studio-mark{display:flex;gap:10px;align-items:center;font-size:12px;letter-spacing:1.5px;font-weight:800}
 .studio-mark>.icon{color:var(--lime);width:27px;height:27px}

@@ -36,6 +36,7 @@ export function createUI(root: HTMLElement) {
     <div class="vignette" aria-hidden="true"></div>
     <div id="damage-overlay" class="damage-overlay" aria-hidden="true"></div>
     <section id="menu" class="menu screen" aria-label="主菜单">
+      <img class="menu-background" src="${uiArtUrl('menu/forest-yanrong-background.png')}" alt="" fetchpriority="high" draggable="false"/>
       <header class="menu-header"><div class="studio-mark">${icon('leaf')}<span>幻兽幸存者 </span></div><span class="version">六波挑战</span></header>
       <div class="menu-copy">
         <div class="eyebrow"><span></span> 小小怪兽，大大冒险</div>
@@ -45,7 +46,6 @@ export function createUI(root: HTMLElement) {
         <div class="prototype-entries"><button id="start-infinite" class="text-button">无尽草场 · 无限探索</button><button id="start-party" class="text-button">随机草场冒险</button><button id="start-legacy-party" class="text-button">三兽编队原型 <small>兼容</small></button></div>
         <div class="menu-hint"><span>摇杆或方向键移动 · 自动攻击</span></div>
       </div>
-      <div class="character-tag"><span class="tag-line"></span><div><small>出战幻兽</small><strong>焰绒 <span></span></strong><p>火花弹</p></div><span class="tag-star">✧</span></div>
       <footer class="menu-footer" aria-label="旧版兼容回归入口"><button id="start" class="trial-entry practice-entry">单兽回归 <small>旧版</small></button><div class="mode-entries"><button id="start-trial" class="trial-entry practice-entry">${icon('dash')} 犄角试炼 <small>旧版 · 自由练习</small></button><button id="start-challenge" class="trial-entry">${icon('battle')} 三波闯关 <small>旧版 · 赢取星级</small></button></div></footer>
     </section>
     <section id="creature-picker" class="modal-screen" role="dialog" aria-modal="true" aria-labelledby="creature-picker-title" hidden>

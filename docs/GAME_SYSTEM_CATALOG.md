@@ -1,7 +1,7 @@
 ---
 title: 幻兽幸存者｜游戏系统与内容总档案
 file_id: monsterbonk-game-system-catalog
-catalog_version: 1.9.2
+catalog_version: 1.9.3
 updated_at: 2026-10-21
 repository: https://github.com/a822053247-star/MonsterBonk-Mobile
 baseline_branch: main
@@ -178,6 +178,12 @@ language: zh-CN
 两页复用既有武器插画，按主/副武器、名称、等级与五级刻度展示；缺图保留SVG与文字。暂停仍完整显示遗物收益、代价、专精失效提示及互斥进化信息；结算按真实战斗状态生成统计和构筑，单独存在连锁/蒸爆计数时也可显示反馈。保留原暂停、恢复、重开、返回菜单及胜败状态逻辑。
 
 实现：`src/ui.ts`、`src/style.css`。截图与验证范围见 `docs/RUN_PANELS_READABILITY.md`；预览来自固定构筑的真实Game界面测试，不是用户当前存档或一局实战记录。
+
+### 1.8 首页背景（`IMPLEMENTED`，1.9.3，2026-10-21）
+
+首页使用用户提供的森林/城堡/焰绒插画，原图存放于 `public/assets/ui/menu/forest-yanrong-background.png`，未重新生成或修改图片。背景使用独立装饰图片层、`object-fit:cover` 和左侧/底部轻遮罩，兼顾桌面及手机横屏裁切和按钮可读性。移除原首页角色标签，并在首次加载、菜单渲染和返回菜单时隐藏原Three.js焰绒展示模型；不删除游戏内角色或旧模式仍使用的模型。进入游戏按原规则恢复可玩角色表现。
+
+实现：`src/ui.ts`、`src/style.css`、`src/game.ts`。预览：`artifacts/home-background-desktop.png`、`artifacts/home-background-phone.png`。原图与入库文件SHA-256一致；浏览器探针覆盖首次加载/返回菜单隐藏模型、旧模式角色仍可见及两种横屏尺寸。Chromium/WebKit角色选择及重开/返回菜单回归10项通过，构建与差异检查通过。测试中的旧HUD角色名节点断言替换为当前头像的物种标识，未恢复已移除的旧HUD文字。
 
 ## 2. 现有武器、技能与融合（`IMPLEMENTED`）
 
@@ -679,6 +685,7 @@ open_questions: ["最终数值与美术待定"]
 
 | 日期 | 版本 | 内容 | 证据 |
 |---|---|---|---|
+| 2026-10-21 | 1.9.3 | 首页改用用户提供背景插画，移除首页焰绒展示模型与角色标签，保留游戏内角色 | 1.8、`artifacts/home-background-{desktop,phone}.png` |
 | 2026-10-21 | 1.9.2 | 放大暂停/结算文字并重排构筑信息；复用武器插画，保留短屏滚动、安全区和固定操作入口 | 1.7、`docs/RUN_PANELS_READABILITY.md` |
 | 2026-10-21 | 1.9.1 | 背景/护卫独立调度；跨波不重置人口热身、近身仅减速；压力与高供给收割交替，加入真实成长的连续局探针 | 基于`6db569c3`的工作区；1.6、`docs/DIFFICULTY_CURVE_IMPLEMENTATION.md` |
 | 2026-10-21 | 1.9.0 | 正式六波改为实际镜头外围逐只入场、阶段人口与近身压力保护，降低硬上限和威胁配额；保留构筑/经济和连续波 | 基于`6db569c3`的工作区；1.6、`docs/PERIMETER_SPAWNING_REPORT.md` |
