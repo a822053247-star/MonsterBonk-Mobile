@@ -1102,3 +1102,81 @@ h1>em{font-size:12px;line-height:1;letter-spacing:4px;display:inline-block;backg
     left:calc(50% + 84px + (var(--safe-left) - var(--safe-right)) / 2);
   }
 }
+
+
+/* Reference HUD refinement: XP + Lv. + coins share one baseline. */
+.hud .health-panel .portrait{
+  left:5%;top:16%;width:24%;height:69%;
+}
+.hud #creature-portrait{padding:2px}
+.hud .hud-bottom-row{
+  position:relative;z-index:8;display:flex;align-items:center;
+  width:65%;margin:-18px 0 0 34%;height:36px;gap:8px;
+  min-width:0;pointer-events:none;
+}
+.hud .hud-bottom-row .xp-row{
+  display:flex;align-items:center;min-width:0;flex:1 1 auto;width:auto;
+  height:31px;margin:0;padding:0 6px 0 2px;gap:7px;
+  background:#122725d8;border:1px solid #658c6b7d;border-radius:18px;
+}
+.hud .hud-bottom-row .xp-track{
+  flex:1 1 0;min-width:15px;height:23px;overflow:hidden;
+}
+.hud .hud-bottom-row #level-value{
+  position:static;display:block;flex:none;padding:0 2px 0 0;
+  color:#fff7d4;background:transparent;border:0;
+  font-size:clamp(14px,.92vw,19px);font-weight:950;letter-spacing:-.3px;
+  white-space:nowrap;line-height:1;text-shadow:0 2px 3px #081b1b;
+}
+.hud .hud-bottom-row .hud-gold{
+  display:inline-flex;align-items:center;flex:none;align-self:center;
+  height:33px;min-height:33px;width:auto;max-width:42%;
+  gap:6px;margin:0;padding:3px 10px 3px 6px;
+  font-size:16px;border-width:1px;border-radius:18px;
+}
+.hud .hud-bottom-row .hud-gold img{width:22px;height:22px}
+.hud .hud-bottom-row #hud-coins{font-size:inherit}
+
+/* Slightly reduce the wave plaque and clock; retain the visual hierarchy. */
+.hud .run-status{
+  min-width:clamp(190px,13.5vw,280px);
+  min-height:clamp(78px,5.3vw,110px);
+  padding:8px 18px 10px;
+}
+.hud #run-wave{font-size:clamp(21px,1.75vw,35px)}
+.hud #timer{font-size:clamp(31px,2.4vw,49px)}
+@media(max-width:1250px) and (orientation:landscape){
+  .hud .health-panel .portrait{left:5%;top:17%;width:24%;height:68%}
+  .hud .hud-bottom-row{width:66%;margin:-12px 0 0 33%;height:25px;gap:4px}
+  .hud .hud-bottom-row .xp-row{height:23px;padding:0 3px 0 1px;gap:3px}
+  .hud .hud-bottom-row .xp-track{height:17px}
+  .hud .hud-bottom-row #level-value{font-size:12px;padding:0}
+  .hud .hud-bottom-row .hud-gold{height:24px;min-height:24px;padding:1px 7px 1px 4px;gap:4px;font-size:12px;max-width:40%}
+  .hud .hud-bottom-row .hud-gold img{width:18px;height:18px}
+  .hud .run-status{min-width:163px;min-height:71px;padding:6px 12px}
+  .hud #run-wave{font-size:19px}
+  .hud #timer{font-size:28px}
+}
+@media(max-width:900px) and (orientation:landscape){
+  .hud .hud-bottom-row{width:67%;margin:-11px 0 0 33%;height:22px;gap:3px}
+  .hud .hud-bottom-row .xp-row{height:20px;gap:2px;padding-right:2px}
+  .hud .hud-bottom-row .xp-track{height:14px}
+  .hud .hud-bottom-row #level-value{font-size:10px}
+  .hud .hud-bottom-row .hud-gold{height:21px;min-height:21px;padding:1px 5px 1px 3px;font-size:10px;gap:2px}
+  .hud .hud-bottom-row .hud-gold img{width:14px;height:14px}
+  .hud .run-status{min-width:131px;min-height:61px;padding:5px 9px}
+  .hud #run-wave{font-size:15px}
+  .hud #timer{font-size:23px}
+}
+@media(max-width:700px) and (orientation:landscape){
+  .hud .health-panel .portrait{left:5%;top:18%;width:24%;height:66%}
+  .hud .hud-bottom-row{width:67%;margin:-8px 0 0 33%;height:18px;gap:2px}
+  .hud .hud-bottom-row .xp-row{height:17px;padding:0 1px;gap:2px}
+  .hud .hud-bottom-row .xp-track{height:11px;min-width:10px}
+  .hud .hud-bottom-row #level-value{font-size:9px}
+  .hud .hud-bottom-row .hud-gold{height:18px;min-height:18px;max-width:42%;padding:0 3px 0 2px;font-size:9px;gap:1px}
+  .hud .hud-bottom-row .hud-gold img{width:12px;height:12px}
+  .hud .run-status{min-width:110px;min-height:52px;padding:4px 7px}
+  .hud #run-wave{font-size:12px}
+  .hud #timer{font-size:20px}
+}

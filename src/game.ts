@@ -873,11 +873,11 @@ export class Game {
     this.xpValue.textContent = String(this.combat.xp);
     const progression = this.combat.progression, maxed = !Number.isFinite(progression.threshold);
     document.getElementById('level-value')!.textContent = `Lv.${progression.level}${maxed ? ' MAX' : ''}`;
-    document.getElementById('xp-progress')!.textContent = maxed ? '满级' : `${progression.experience} / ${progression.threshold}`;
     document.getElementById('xp-fill')!.style.width = `${maxed ? 100 : progression.experience / progression.threshold * 100}%`;
     const xpTrack = document.getElementById('xp-track')!;
     xpTrack.setAttribute('aria-valuemax', String(maxed ? 1 : progression.threshold));
     xpTrack.setAttribute('aria-valuenow', String(maxed ? 1 : progression.experience));
+    xpTrack.setAttribute('aria-valuetext', maxed ? '经验已满级' : `升级经验 ${progression.experience} / ${progression.threshold}`);
     this.damageOverlay.style.opacity = String(this.combat.hurtFlash / 0.25 * 0.7);
   }
 
