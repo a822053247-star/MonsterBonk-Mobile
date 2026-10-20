@@ -27,8 +27,9 @@ export const WEAPON = { range: 10.5, interval: 0.44, speed: 18, damage: 18, life
 /** Rock tanks are tougher only in the formal six-wave run, not legacy modes. */
 export const FORMAL_ROCK_HP = 125;
 export const FORMAL_SPORE_HP = 140;
-/** The slow red blob braces, lunges briefly, then exposes a punish window. */
-export const RED_BLOB_BASH = { range: 2.55, windup: .7, speed: 4.3, active: .33, recovery: .9, cooldown: 1.4 } as const;
+/** Red blobs hold ground for a short area slam; only sprinters can lunge.
+ * The hit radius matches the ground warning, and recovery is punishable. */
+export const RED_BLOB_BASH = { range: 1.65, radius: 1.35, windup: .7, active: .2, recovery: 1.1, cooldown: 1.35, nearbyWarningCap: 2 } as const;
 /** Five enemy silhouettes share normal group slots; spores remain live-capped. */
 export const FORMAL_MIX: readonly EnemyKind[] = ['normal','fast','normal','tank','draft-crystal-swarm','normal','fast','normal','tank','draft-crystal-swarm','normal','draft-spore-bomber'] as const;
 export const FORMAL_POUNCE = { ...POUNCE, range: 6, windup: .85, speed: 13, duration: .5, recovery: 1.1, cooldown: 2 } as const;
@@ -508,11 +509,9 @@ export class Combat {
           }
         }
         else if (this.encounters.enabled && enemy.kind === 'normal') {
+          // Stand-and-slam is a positional threat, not a second sprinter charge.
           this.updateRedBash(enemy,dt,dx,dz,length);
-          if (enemy.intent === 'pounce') {
-            moveX = enemy.aimX * RED_BLOB_BASH.speed;
-            moveZ = enemy.aimZ * RED_BLOB_BASH.speed;
-          } else if (enemy.intent !== 'chase') moveX = moveZ = 0;
+          if (enemy.intent !== 'chase') moveX = moveZ = 0;
         } else if (this.encounters.enabled) {
           this.updateMelee(enemy,dt,dx,dz,length);
           if (enemy.intent !== 'chase') moveX = moveZ = 0;
@@ -684,7 +683,13 @@ export class Combat {
         const type = ENEMY_TYPES[enemy.kind];
         // Relative sweep catches a fast pounce crossing the player between ticks.
         const pounceHit = this.hasAttackIntents && (enemy.intent === 'pounce' || enemy.rank === 'boss') && segmentHit(enemy.previousX - this.previousAnchorX, enemy.previousZ - this.previousAnchorZ, enemy.x - player.x, enemy.z - player.z, 0, 0, this.enemyRadius(enemy) + 0.62) !== Infinity;
-        if ((pounceHit || Math.hypot(enemy.x - player.x, enemy.z - player.z) < this.enemyRadius(enemy) + 0.62) && (!this.encounters.enabled || !this.covered(enemy.x,enemy.z,player.x,player.z))) damage = Math.max(damage, enemy.rank === 'boss' ? 24 : enemy.swarm ? SWARM_RULES.contactDamage : type.damage);
+        const radius = this.encounters.enabled && enemy.kind === 'normal' && !enemy.rank
+          ? RED_BLOB_BASH.radius : this.enemyRadius(enemy) + 0.62;
+        // Red blobs hit inside a clearly marked stationary ring. Sprinters and
+        // the Boss retain swept movement-based hit detection.
+        const slamHit = enemy.kind === 'normal' && this.encounters.enabled
+          ? Math.hypot(enemy.x-player.x,enemy.z-player.z) < radius : pounceHit;
+        if ((slamHit || Math.hypot(enemy.x - player.x, enemy.z - player.z) < radius) && (!this.encounters.enabled || !this.covered(enemy.x,enemy.z,player.x,player.z))) damage = Math.max(damage, enemy.rank === 'boss' ? 24 : enemy.swarm ? SWARM_RULES.contactDamage : type.damage);
       }
       if (damage > 0) {
         this.hitPlayer(damage);
@@ -997,6 +1002,16 @@ export class Combat {
     if (enemy.intent === 'chase') {
       if (!enemy.intentCooldown && distance < RED_BLOB_BASH.range
         && !this.covered(enemy.x,enemy.z,enemy.x+dx,enemy.z+dz)) {
+        // Only two local red slams may telegraph at once, preventing an
+        // unreadable pile of overlapping floor rings in later 200-mob waves.
+        let warningCount = 0;
+        for (const other of this.enemies) {
+          if (other === enemy || !other.active || other.kind !== 'normal' ||
+              (other.intent !== 'windup' && other.intent !== 'pounce')) continue;
+          if (Math.hypot(other.x-enemy.x,other.z-enemy.z) < RED_BLOB_BASH.radius * 2)
+            warningCount++;
+          if (warningCount >= RED_BLOB_BASH.nearbyWarningCap) return;
+        }
         enemy.intent = 'windup'; enemy.intentTime = RED_BLOB_BASH.windup;
         enemy.aimX = dx/distance; enemy.aimZ = dz/distance;
       }
