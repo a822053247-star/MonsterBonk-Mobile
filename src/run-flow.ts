@@ -39,12 +39,8 @@ export class RunFlow {
   private pendingSwarm = 0;
   private pendingClock = 0;
   private claimedExperience = false;
-  private crystalClock: number = CRYSTAL_SWARM.first;
-  private sporeClock: number = SPORE_BOMBER.first;
   private treasureClock: number = TREASURE_RUNNER.first;
   private treasureSpawned = false;
-  private crystalWaiting = false;
-  private sporeWaiting = false;
   private treasureWaiting = false;
   private scheduledWave = 0;
 
@@ -52,10 +48,8 @@ export class RunFlow {
     if (this.scheduledWave === this.wave) return;
     const plan = WAVE_DIRECTOR[this.waveIndex];
     this.scheduledWave = this.wave;
-    this.crystalClock = plan.crystalFirst;
-    this.sporeClock = plan.sporeFirst ?? Infinity;
     this.treasureClock = plan.treasureFirst ?? Infinity;
-    this.crystalWaiting = this.sporeWaiting = this.treasureWaiting = false;
+    this.treasureWaiting = false;
     this.treasureSpawned = false;
   }
 
@@ -66,6 +60,22 @@ export class RunFlow {
       || (this.wave === 6 && (combat.encounters.bossState === 'dash-windup'
         || combat.encounters.bossState === 'spread-windup'
         || combat.encounters.bossState === 'summon-windup'));
+  }
+
+  /** Crystals and spores participate in the same deterministic mob budget. */
+  private mixedCaps(combat: Combat, stage: DirectorStage, waveCap: number) {
+    const plan = WAVE_DIRECTOR[this.waveIndex];
+    const major = this.majorWarning(combat);
+    const sporeWarning = combat.sporeExplosions.some(e => e.active && !e.detonated);
+    return {
+      fastCap: major ? 0 : stage.fastCap,
+      tankCap: major ? 0 : stage.tankCap,
+      crystalCap: Math.max(CRYSTAL_SWARM.maxGroup, Math.floor(waveCap / 6)),
+      sporeCap: Math.min(stage.sporeCap, SPORE_BOMBER.maxAlive),
+      crystalAllowed: this.waveElapsed >= plan.crystalFirst,
+      sporeAllowed: plan.sporeFirst !== null && this.waveElapsed >= plan.sporeFirst
+        && !major && !sporeWarning && stage.sporeCap > 0,
+    };
   }
 
   get wave() { return this.waveIndex + 1; }
@@ -106,15 +116,14 @@ export class RunFlow {
     const pacedInterval = interval * stage.pace * (this.majorWarning(combat) ? 1.2 : 1);
     // The fourth-wave elite needs a free pool slot even at the swarm limit.
     const cap = this.wave === 4 && !combat.encounters.elite ? waveCap - 1 : waveCap;
-    this.spawnSpecials(dt, combat, player, cap, stage);
-    // Let kills open room for a waiting special encounter instead of immediately
-    // refilling every free slot with ordinary enemies and starving the encounter.
-    const swarmCap = Math.max(0, cap - (this.crystalWaiting ? CRYSTAL_SWARM.minGroup : 0) - Number(this.sporeWaiting) - Number(this.treasureWaiting));
+    this.spawnSpecials(dt, combat, player, cap);
+    // The rare treasure event reserves a slot; the other five enemy kinds share batches.
+    const swarmCap = Math.max(0, cap - Number(this.treasureWaiting));
     // Half the incoming group arrives 0.35s later; never queue multiple late batches.
     if (this.pendingSwarm > 0) {
       this.pendingClock -= dt;
       if (this.pendingClock <= 0) {
-        combat.spawnSwarm(player, this.pendingSwarm, swarmCap, 'normal', { fastCap: this.majorWarning(combat) ? 0 : stage.fastCap, tankCap: this.majorWarning(combat) ? 0 : stage.tankCap });
+        combat.spawnSwarm(player, this.pendingSwarm, swarmCap, 'normal', this.mixedCaps(combat, stage, cap));
         this.pendingSwarm = 0;
         this.pendingClock = 0;
       }
@@ -128,7 +137,7 @@ export class RunFlow {
     if (this.spawnClock <= 0) {
       if (active >= swarmCap) { this.spawnClock = .2; return; }
       const firstHalf = Math.ceil(groupSize / 2);
-      const spawned = combat.spawnSwarm(player, firstHalf, swarmCap, 'normal', { fastCap: this.majorWarning(combat) ? 0 : stage.fastCap, tankCap: this.majorWarning(combat) ? 0 : stage.tankCap });
+      const spawned = combat.spawnSwarm(player, firstHalf, swarmCap, 'normal', this.mixedCaps(combat, stage, cap));
       if (spawned) {
         this.pendingSwarm = groupSize - firstHalf;
         this.pendingClock = .35;
@@ -138,45 +147,16 @@ export class RunFlow {
     }
   }
 
-  private spawnSpecials(dt: number, combat: Combat, player: {x: number; z: number}, cap: number, stage: DirectorStage) {
+  /** Treasure remains a rare once-per-wave event rather than a generic batch slot. */
+  private spawnSpecials(dt: number, combat: Combat, player: {x: number; z: number}, cap: number) {
     const plan = WAVE_DIRECTOR[this.waveIndex];
-    this.crystalClock -= dt;
-    if (this.crystalClock <= 0) {
-      this.crystalWaiting = !combat.spawnCrystalSwarm(player, cap);
-      this.crystalClock = this.crystalWaiting ? 2 : plan.crystalInterval;
-    }
-    if (plan.sporeFirst !== null) {
-      this.sporeClock -= dt;
-      if (this.sporeClock <= 0) {
-        const active = combat.enemies.filter(e => e.active);
-        const livingSpores = active.filter(e => e.kind === 'draft-spore-bomber').length;
-        // Keep fresh explosive warnings clear of elite/Boss attack telegraphs.
-        const bossWindup = this.wave === 6 && (
-          combat.encounters.bossState === 'spread-windup' ||
-          combat.encounters.bossState === 'dash-windup' ||
-          combat.encounters.bossState === 'summon-windup');
-        const overlappingWarning = combat.sporeExplosions.some(e => e.active && !e.detonated);
-        if (!stage.sporeCap || livingSpores >= Math.min(stage.sporeCap, SPORE_BOMBER.maxAlive)) {
-          this.sporeWaiting = false;
-          this.sporeClock = 1;
-        } else if (combat.encounters.elitePulsing || bossWindup || overlappingWarning) {
-          this.sporeWaiting = false;
-          this.sporeClock = 1;
-        } else {
-          const spawned = active.length < cap && combat.spawnEncounter('draft-spore-bomber', player, 7, 10);
-          this.sporeWaiting = !spawned;
-          this.sporeClock = spawned ? plan.sporeInterval : 2;
-        }
-      }
-    }
-    if (plan.treasureFirst !== null && !this.treasureSpawned) {
-      this.treasureClock -= dt;
-      if (this.treasureClock <= 0) {
-        if (combat.enemies.filter(e => e.active).length < cap && combat.spawnEncounter('draft-treasure-runner', player, 6, 8)) this.treasureSpawned = true;
-        else this.treasureClock = 2;
-        this.treasureWaiting = !this.treasureSpawned;
-      }
-    }
+    if (plan.treasureFirst === null || this.treasureSpawned) return;
+    this.treasureClock -= dt;
+    if (this.treasureClock > 0) return;
+    if (combat.enemies.filter(e => e.active).length < cap
+      && combat.spawnEncounter('draft-treasure-runner', player, 6, 8)) this.treasureSpawned = true;
+    else this.treasureClock = 2;
+    this.treasureWaiting = !this.treasureSpawned;
   }
 
   resolveBoundary(combat: Combat) {
@@ -245,9 +225,8 @@ export class RunFlow {
     this.spawnClock = 1.2; this.spawnIndex = 0; this.claimedExperience = false;
     this.pendingSwarm = this.pendingClock = 0;
     this.scheduledWave = 0;
-    this.crystalClock = CRYSTAL_SWARM.first; this.sporeClock = SPORE_BOMBER.first;
     this.treasureClock = TREASURE_RUNNER.first; this.treasureSpawned = false;
-    this.crystalWaiting = this.sporeWaiting = this.treasureWaiting = false;
+    this.treasureWaiting = false;
     this.shop = undefined; this.phase = 'fighting'; this.intermissionRemaining = 0;
   }
 
