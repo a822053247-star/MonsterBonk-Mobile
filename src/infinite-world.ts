@@ -1,5 +1,6 @@
 import * as THREE from 'three';
-import { crop } from './world-sample';
+import { crop, pixelTexture, PIXELS_PER_UNIT } from './world-sample';
+import { ROAD_WIDTH } from './world-layout';
 import type { Obstacle } from './world';
 
 /**
@@ -13,6 +14,9 @@ const ACTIVE_RADIUS = 1;
 export interface InfiniteChunkLayout {
   cx: number;
   cz: number;
+  biome: 'grove' | 'rocky' | 'clearing';
+  bendX: number;
+  bendZ: number;
   trees: [number, number, number][];
   rocks: [number, number][];
   water: { x: number; z: number; radius: number }[];
@@ -39,10 +43,13 @@ export function generateInfiniteChunk(seed: string, cx: number, cz: number): Inf
   const forest = biome < .4, rocky = biome > .77;
   const baseX = cx * CHUNK_SIZE - HALF, baseZ = cz * CHUNK_SIZE - HALF;
   const trees: [number, number, number][] = [], rocks: [number, number][] = [];
+  const bendX = (random() - .5) * 3.5, bendZ = (random() - .5) * 3.5;
   const water: InfiniteChunkLayout['water'] = [];
   const occupied: { x: number; z: number; radius: number }[] = [];
   if ((cx !== 0 || cz !== 0) && random() < .23) {
-    const x = 18 + random() * 28, z = 18 + random() * 28;
+    // Keep ponds entirely outside the 4.8-unit-wide cross-chunk roads.
+    const x = (random() < .5 ? 12 : 45) + random() * 7;
+    const z = (random() < .5 ? 12 : 45) + random() * 7;
     const radius = 3.1 + random() * 1.4;
     const pond = { x, z, radius };
     const lobe = { x: x + 1.7, z: z + 1.1, radius: radius * .6 };
@@ -56,7 +63,7 @@ export function generateInfiniteChunk(seed: string, cx: number, cz: number): Inf
       const wx = baseX + x, wz = baseZ + z;
       if (Math.hypot(wx, wz) < 9 + radius) continue;
       // Open longitudinal and transverse passages join every neighboring chunk.
-      if (Math.abs(x - HALF) < 3.8 || Math.abs(z - HALF) < 3.8) continue;
+      if (Math.abs(x - HALF) < 7 || Math.abs(z - HALF) < 7) continue;
       if (occupied.some(o => Math.hypot(x - o.x, z - o.z) < radius + o.radius + 2.4)) continue;
       occupied.push({ x, z, radius });
       return { x, z };
@@ -76,7 +83,7 @@ export function generateInfiniteChunk(seed: string, cx: number, cz: number): Inf
     ...trees.map(([x, z]) => ({ x: baseX + x, z: baseZ + z, radius: .65 })),
     ...rocks.map(([x, z]) => ({ x: baseX + x, z: baseZ + z, radius: .8 })),
   ];
-  return { cx, cz, trees, rocks, water, obstacles };
+  return { cx, cz, biome: forest ? 'grove' : rocky ? 'rocky' : 'clearing', bendX, bendZ, trees, rocks, water, obstacles };
 }
 
 function loadImage(path: string): Promise<HTMLImageElement> {
@@ -85,18 +92,66 @@ function loadImage(path: string): Promise<HTMLImageElement> {
   });
 }
 
-function tiledTexture(image: HTMLImageElement) {
-  const texture = new THREE.Texture(image);
-  texture.colorSpace = THREE.SRGBColorSpace;
-  texture.magFilter = texture.minFilter = THREE.NearestFilter;
-  texture.generateMipmaps = false;
-  texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-  texture.repeat.set(4, 4);
-  texture.needsUpdate = true;
-  return texture;
-}
+type Chunk = { group: THREE.Group; layout: InfiniteChunkLayout; instances: THREE.InstancedMesh[]; groundTexture: THREE.Texture };
 
-type Chunk = { group: THREE.Group; layout: InfiniteChunkLayout; instances: THREE.InstancedMesh[] };
+/**
+ * Bake terrain with the very same 16 pixel/unit native tiles, mud-road strokes,
+ * grass tint and pixel-row pond shorelines used by the six-wave challenge map.
+ * Each 64x64 chunk is 1024x1024 texture pixels, not a stretched 4x grass tile.
+ * Edge roads meet at (0, 32)/(64, 32) and (32, 0)/(32, 64) in every chunk.
+ */
+function bakeChunkGround(images: readonly HTMLImageElement[], layout: InfiniteChunkLayout) {
+  const canvas = document.createElement('canvas');
+  const size = CHUNK_SIZE * PIXELS_PER_UNIT;
+  canvas.width = canvas.height = size;
+  const ctx = canvas.getContext('2d')!;
+  ctx.imageSmoothingEnabled = false;
+  ctx.scale(PIXELS_PER_UNIT, PIXELS_PER_UNIT);
+  const pattern = (image: HTMLImageElement) => {
+    const fill = ctx.createPattern(image, 'repeat')!;
+    fill.setTransform(new DOMMatrix().scale(1 / PIXELS_PER_UNIT));
+    return fill;
+  };
+
+  ctx.fillStyle = pattern(images[0]);
+  ctx.fillRect(0, 0, CHUNK_SIZE, CHUNK_SIZE);
+  ctx.fillStyle = layout.biome === 'grove' ? 'rgba(39, 86, 51, .14)' :
+    layout.biome === 'rocky' ? 'rgba(164, 146, 112, .17)' : 'rgba(201, 215, 134, .15)';
+  ctx.beginPath(); ctx.ellipse(HALF, HALF, 17, 15, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = 'rgba(103, 144, 87, .48)';
+  ctx.fillRect(0, 0, CHUNK_SIZE, CHUNK_SIZE);
+
+  // Slight bends add variety without discontinuities or collision on seams.
+  const x = HALF + layout.bendX, z = HALF + layout.bendZ;
+  const road = new Path2D();
+  road.moveTo(0, HALF);
+  road.bezierCurveTo(11, HALF, 20, z, x, z);
+  road.bezierCurveTo(44, z, 53, HALF, CHUNK_SIZE, HALF);
+  road.moveTo(HALF, 0);
+  road.bezierCurveTo(HALF, 11, x, 20, x, z);
+  road.bezierCurveTo(x, 44, HALF, 53, HALF, CHUNK_SIZE);
+  ctx.lineCap = ctx.lineJoin = 'round';
+  ctx.strokeStyle = '#789653'; ctx.lineWidth = ROAD_WIDTH + .6; ctx.stroke(road);
+  ctx.strokeStyle = pattern(images[1]); ctx.lineWidth = ROAD_WIDTH; ctx.stroke(road);
+  ctx.strokeStyle = 'rgba(185, 159, 111, .42)'; ctx.lineWidth = ROAD_WIDTH; ctx.stroke(road);
+
+  const disk = (p: { x: number; z: number; radius: number }, radius: number, fill: string | CanvasPattern) => {
+    ctx.fillStyle = fill;
+    for (let row = Math.floor((p.z - radius) * PIXELS_PER_UNIT); row < (p.z + radius) * PIXELS_PER_UNIT; row++) {
+      const dz = (row + .5) / PIXELS_PER_UNIT - p.z;
+      const half = Math.sqrt(Math.max(0, radius * radius - dz * dz));
+      const left = Math.ceil((p.x - half) * PIXELS_PER_UNIT);
+      const right = Math.floor((p.x + half) * PIXELS_PER_UNIT);
+      if (right > left) ctx.fillRect(left / PIXELS_PER_UNIT, row / PIXELS_PER_UNIT, (right - left) / PIXELS_PER_UNIT, 1 / PIXELS_PER_UNIT);
+    }
+  };
+  for (const p of layout.water) disk(p, p.radius + .7, pattern(images[2]));
+  for (const p of layout.water) disk(p, p.radius + .7, 'rgba(116, 139, 102, .46)');
+  for (const p of layout.water) disk(p, p.radius + .14, '#588779');
+  for (const p of layout.water) disk(p, p.radius, pattern(images[3]));
+  for (const p of layout.water) disk(p, p.radius, 'rgba(67, 130, 151, .42)');
+  return pixelTexture(canvas);
+}
 
 export function createInfiniteWorld(initialSeed: string) {
   const group = new THREE.Group();
@@ -107,34 +162,29 @@ export function createInfiniteWorld(initialSeed: string) {
   const ownedTextures: THREE.Texture[] = [];
   const materials: THREE.Material[] = [];
   const groundGeometry = new THREE.PlaneGeometry(CHUNK_SIZE, CHUNK_SIZE);
-  const diskGeometry = new THREE.CircleGeometry(1, 40);
   const spriteGeometry = new THREE.PlaneGeometry(1, 1);
+  // Exactly match the challenge-map trees: foot anchored and 45-degree lean.
   spriteGeometry.translate(0, .5, 0);
   const dummy = new THREE.Object3D();
   let seed = initialSeed, readyFlag = false, disposed = false;
   let centerX = NaN, centerZ = NaN;
-  let groundMaterial: THREE.MeshBasicMaterial;
-  let sandMaterial: THREE.MeshBasicMaterial;
-  let waterMaterial: THREE.MeshBasicMaterial;
+  let images: HTMLImageElement[] = [];
   let treeMaterials: THREE.MeshBasicMaterial[] = [];
   let rockMaterial: THREE.MeshBasicMaterial;
+  let art: ReturnType<typeof crop>[] = [];
 
-  const release = () => {
-    for (const chunk of chunks.values()) {
-      for (const instance of chunk.instances) instance.dispose();
-      group.remove(chunk.group);
-      chunk.group.clear();
-    }
-    chunks.clear();
-    obstacles.length = 0;
+  const disposeChunk = (chunk: Chunk) => {
+    for (const instance of chunk.instances) instance.dispose();
+    group.remove(chunk.group);
+    chunk.group.clear();
+    chunk.groundTexture.dispose();
+    (chunk.group.userData.groundMaterial as THREE.Material).dispose();
   };
 
-  const disk = (parent: THREE.Group, x: number, z: number, radius: number, y: number, material: THREE.Material) => {
-    const mesh = new THREE.Mesh(diskGeometry, material);
-    mesh.rotation.x = -Math.PI / 2;
-    mesh.position.set(x, y, z);
-    mesh.scale.set(radius, radius, 1);
-    parent.add(mesh);
+  const release = () => {
+    for (const chunk of chunks.values()) disposeChunk(chunk);
+    chunks.clear();
+    obstacles.length = 0;
   };
 
   const build = (cx: number, cz: number): Chunk => {
@@ -142,34 +192,34 @@ export function createInfiniteWorld(initialSeed: string) {
     const tile = new THREE.Group();
     tile.name = 'chunk:' + cx + ':' + cz;
     tile.position.set(cx * CHUNK_SIZE - HALF, 0, cz * CHUNK_SIZE - HALF);
+    const groundTexture = bakeChunkGround(images, layout);
+    const groundMaterial = new THREE.MeshBasicMaterial({ map: groundTexture, color: '#ffffff', toneMapped: false });
+    tile.userData.groundMaterial = groundMaterial;
     const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+    ground.name = '像素草地与泥路';
     ground.rotation.x = -Math.PI / 2;
     ground.position.set(HALF, 0, HALF);
     tile.add(ground);
-    for (const pond of layout.water) {
-      disk(tile, pond.x, pond.z, pond.radius + .72, .008, sandMaterial);
-      disk(tile, pond.x, pond.z, pond.radius, .012, waterMaterial);
-    }
+
     const instances: THREE.InstancedMesh[] = [];
-    const addInstances = (points: readonly (readonly number[])[], material: THREE.MeshBasicMaterial, height: number) => {
+    const addInstances = (points: readonly (readonly number[])[], material: THREE.MeshBasicMaterial, height: number, aspect: number) => {
       if (!points.length) return;
       const mesh = new THREE.InstancedMesh(spriteGeometry, material, points.length);
       for (let i = 0; i < points.length; i++) {
         dummy.position.set(points[i][0], .025, points[i][1]);
         dummy.rotation.set(-Math.PI / 4, 0, 0);
-        dummy.scale.set(height, height, 1);
+        dummy.scale.set(height * aspect, height, 1);
         dummy.updateMatrix();
         mesh.setMatrixAt(i, dummy.matrix);
       }
       mesh.instanceMatrix.needsUpdate = true;
       mesh.computeBoundingSphere();
-      mesh.frustumCulled = false;
       tile.add(mesh);
       instances.push(mesh);
     };
-    treeMaterials.forEach((mat, variant) => addInstances(layout.trees.filter(tree => tree[2] === variant), mat, variant === 2 ? 4.6 : 4.2));
-    addInstances(layout.rocks, rockMaterial, 1.4);
-    return { group: tile, layout, instances };
+    treeMaterials.forEach((mat, variant) => addInstances(layout.trees.filter(tree => tree[2] === variant), mat, variant === 2 ? 4.6 : 4.2, art[variant].aspect));
+    addInstances(layout.rocks, rockMaterial, 1.25, art[3].aspect);
+    return { group: tile, layout, instances, groundTexture };
   };
 
   const update = (x: number, z: number) => {
@@ -182,9 +232,7 @@ export function createInfiniteWorld(initialSeed: string) {
       for (let dx = -ACTIVE_RADIUS; dx <= ACTIVE_RADIUS; dx++)
         wanted.add((centerX + dx) + ':' + (centerZ + dz));
     for (const [key, chunk] of chunks) if (!wanted.has(key)) {
-      for (const instance of chunk.instances) instance.dispose();
-      group.remove(chunk.group);
-      chunk.group.clear();
+      disposeChunk(chunk);
       chunks.delete(key);
     }
     for (let dz = -ACTIVE_RADIUS; dz <= ACTIVE_RADIUS; dz++)
@@ -202,24 +250,21 @@ export function createInfiniteWorld(initialSeed: string) {
 
   const ready = Promise.all([
     loadImage('Original Textures/Grass.png'),
+    loadImage('Original Textures/Dirt .png'),
     loadImage('Original Textures/Sand.png'),
     loadImage('Original Textures/Water.png'),
     loadImage('Tileset/Decorations/trees.png'),
-  ]).then(([grass, sand, water, sprites]) => {
+  ]).then(loaded => {
     if (disposed) return;
-    const groundTexture = tiledTexture(grass), sandTexture = tiledTexture(sand), waterTexture = tiledTexture(water);
-    ownedTextures.push(groundTexture, sandTexture, waterTexture);
-    groundMaterial = new THREE.MeshBasicMaterial({ map: groundTexture, toneMapped: false, color: '#e0efc9' });
-    sandMaterial = new THREE.MeshBasicMaterial({ map: sandTexture, toneMapped: false, color: '#e6d7a4' });
-    waterMaterial = new THREE.MeshBasicMaterial({ map: waterTexture, toneMapped: false, color: '#9acada' });
-    const atlas = [[0, 0], [32, 32], [32, 64], [64, 32]].map(([x, y]) => crop(sprites, x, y, 32));
-    ownedTextures.push(...atlas.map(a => a.texture));
+    images = loaded.slice(0, 4);
+    art = [[0, 0], [32, 32], [32, 64], [64, 32]].map(([x, y]) => crop(loaded[4], x, y, 32));
+    ownedTextures.push(...art.map(a => a.texture));
     const spriteMaterial = (texture: THREE.Texture) => new THREE.MeshBasicMaterial({
-      map: texture, transparent: true, alphaTest: .1, depthWrite: false, toneMapped: false, fog: false, side: THREE.DoubleSide,
+      map: texture, transparent: true, alphaTest: .1, toneMapped: false, fog: false, side: THREE.DoubleSide,
     });
-    treeMaterials = atlas.slice(0, 3).map(a => spriteMaterial(a.texture));
-    rockMaterial = spriteMaterial(atlas[3].texture);
-    materials.push(groundMaterial, sandMaterial, waterMaterial, ...treeMaterials, rockMaterial);
+    treeMaterials = art.slice(0, 3).map(a => spriteMaterial(a.texture));
+    rockMaterial = spriteMaterial(art[3].texture);
+    materials.push(...treeMaterials, rockMaterial);
     readyFlag = true;
     update(0, 0);
   });
@@ -241,7 +286,8 @@ export function createInfiniteWorld(initialSeed: string) {
       release();
       materials.forEach(material => material.dispose());
       ownedTextures.forEach(texture => texture.dispose());
-      groundGeometry.dispose(); diskGeometry.dispose(); spriteGeometry.dispose();
+      groundGeometry.dispose();
+      spriteGeometry.dispose();
     },
   };
 }

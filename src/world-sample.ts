@@ -3,7 +3,7 @@ import type { Obstacle } from './world';
 import { fixedWorldLayout, SAMPLE_PATHS, ROAD_WIDTH, sampleObstacles, type WorldLayout } from './world-layout';
 
 const SIZE = 128;
-const PIXELS_PER_UNIT = 16;
+export const PIXELS_PER_UNIT = 16;
 
 function loadImage(path: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
@@ -11,7 +11,7 @@ function loadImage(path: string): Promise<HTMLImageElement> {
   });
 }
 
-function pixelTexture(canvas: HTMLCanvasElement) {
+export function pixelTexture(canvas: HTMLCanvasElement) {
   const texture = new THREE.CanvasTexture(canvas);
   texture.colorSpace = THREE.SRGBColorSpace;
   texture.magFilter = texture.minFilter = THREE.NearestFilter;
