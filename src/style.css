@@ -937,3 +937,14 @@ h1>em{font-size:12px;line-height:1;letter-spacing:4px;display:inline-block;backg
   .hud .hud-actions .icon-button{width:44px;height:44px;min-width:44px;min-height:44px}
   .hud .hud-actions .icon{width:20px;height:20px}
 }
+
+
+/* Keep wave/time readable during elites and bosses; encounter health moves below the header. */
+.hud.encounter-active .run-status{visibility:visible}
+.hud .encounter-status{top:calc(110px + var(--safe-top))}
+@media(max-width:1100px) and (orientation:landscape){
+  .hud .encounter-status{top:calc(114px + var(--safe-top));left:calc(50% + 55px + (var(--safe-left) - var(--safe-right)) / 2)}
+}
+@media(max-width:700px) and (orientation:landscape){
+  .hud .encounter-status{left:auto;right:calc(12px + var(--safe-right));top:calc(130px + var(--safe-top));transform:none}
+}
