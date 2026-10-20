@@ -1,0 +1,44 @@
+name: Special enemy growth
+on:
+  pull_request:
+    paths:
+      - src/combat.ts
+      - src/run-flow.ts
+      - src/shop.ts
+      - src/game.ts
+      - src/ui.ts
+      - tests/special-growth.spec.ts
+      - tests/special-growth-ui.spec.ts
+      - docs/SPECIAL-GROWTH-P0.md
+      - .github/workflows/special-growth.yml
+  push:
+    branches: [main]
+    paths:
+      - src/combat.ts
+      - src/run-flow.ts
+      - src/shop.ts
+      - src/game.ts
+      - src/ui.ts
+      - .github/workflows/special-growth.yml
+jobs:
+  growth:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium webkit
+      - run: npx playwright test tests/special-growth.spec.ts tests/special-growth-ui.spec.ts tests/run-flow.spec.ts tests/special-enemies.spec.ts tests/shop-art.spec.ts tests/run-flow-ui.spec.ts tests/run-balance.spec.ts --project=chromium
+      - run: npx playwright test tests/special-growth-ui.spec.ts --project=webkit
+      - run: npm run balance:waves -- --seconds 12 --output artifacts/ci-special-growth-baseline.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: special-growth-baseline-data
+          path: artifacts/ci-special-growth-baseline.json
+          if-no-files-found: ignore
