@@ -56,9 +56,18 @@ export class RunFlow {
     this.treasureSpawned = false;
   }
 
+  /** Prevent fresh dangerous escorts while a major elite/Boss warning needs attention.
+   * Existing enemies keep their behavior and the normal swarm still refills. */
+  private majorWarning(combat: Combat) {
+    return (this.wave === 4 && combat.encounters.elitePulsing)
+      || (this.wave === 6 && (combat.encounters.bossState === 'dash-windup'
+        || combat.encounters.bossState === 'spread-windup'
+        || combat.encounters.bossState === 'summon-windup'));
+  }
+
   /** One dangerous escort per eligible half-batch, with explicit live caps. */
   private escortFor(combat: Combat, stage: DirectorStage, pulse: 0 | 1): EnemyKind {
-    if (pulse >= stage.escortPulses || this.spawnIndex % stage.escortEvery !== 0 || !stage.escorts.length) return 'normal';
+    if (this.majorWarning(combat) || pulse >= stage.escortPulses || this.spawnIndex % stage.escortEvery !== 0 || !stage.escorts.length) return 'normal';
     const kind = stage.escorts[(this.spawnIndex * 2 + pulse) % stage.escorts.length];
     const alive = combat.enemies.filter(e => e.active && !e.rank && e.kind === kind).length;
     return alive < (kind === 'fast' ? stage.fastCap : stage.tankCap) ? kind : 'normal';
@@ -99,7 +108,7 @@ export class RunFlow {
     if (combat.progression.awaitingChoice) return;
     const { cap: waveCap, groupSize, interval } = this.definition;
     const stage = directorStage(this.wave, this.waveElapsed);
-    const pacedInterval = interval * stage.pace;
+    const pacedInterval = interval * stage.pace * (this.majorWarning(combat) ? 1.2 : 1);
     // The fourth-wave elite needs a free pool slot even at the swarm limit.
     const cap = this.wave === 4 && !combat.encounters.elite ? waveCap - 1 : waveCap;
     this.spawnSpecials(dt, combat, player, cap, stage);
@@ -114,7 +123,7 @@ export class RunFlow {
           ? combat.enemies.filter(e => e.active && !e.rank && e.kind === 'fast').length < stage.fastCap
           : this.pendingEscort === 'tank'
             ? combat.enemies.filter(e => e.active && !e.rank && e.kind === 'tank').length < stage.tankCap : true;
-        combat.spawnSwarm(player, this.pendingSwarm, swarmCap, allowed ? this.pendingEscort : 'normal');
+        combat.spawnSwarm(player, this.pendingSwarm, swarmCap, allowed && !this.majorWarning(combat) ? this.pendingEscort : 'normal');
         this.pendingSwarm = 0;
         this.pendingClock = 0;
       }

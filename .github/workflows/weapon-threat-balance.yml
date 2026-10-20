@@ -1,0 +1,48 @@
+name: Weapon and threat balance
+on:
+  pull_request:
+    paths:
+      - src/relics.ts
+      - src/flame-sweep.ts
+      - src/progression.ts
+      - src/enemy-challenge.ts
+      - src/run-flow.ts
+      - tests/weapon-threat-balance.spec.ts
+      - tests/flame-sweep-growth.spec.ts
+      - tests/enemy-challenge.spec.ts
+      - docs/WEAPON-THREAT-BALANCE-P4-P5.md
+      - .github/workflows/weapon-threat-balance.yml
+  push:
+    branches: [main]
+    paths:
+      - src/relics.ts
+      - src/flame-sweep.ts
+      - src/progression.ts
+      - src/enemy-challenge.ts
+      - src/run-flow.ts
+      - .github/workflows/weapon-threat-balance.yml
+jobs:
+  balance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium webkit
+      - run: npx playwright test tests/weapon-threat-balance.spec.ts tests/weapon-balance.spec.ts tests/flame-sweep-growth.spec.ts tests/flame-sweep.spec.ts tests/enemy-challenge.spec.ts tests/wave-director.spec.ts tests/run-flow.spec.ts tests/special-growth.spec.ts --project=chromium
+      - run: npx playwright test tests/enemy-challenge-ui.spec.ts tests/flame-sweep-ui.spec.ts --project=webkit
+      - run: npm run balance:weapons
+      - run: npm run balance:waves -- --seconds 12 --output artifacts/p4-p5-wave-baseline.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: weapon-threat-balance
+          path: |
+            artifacts/weapon-balance-results.json
+            artifacts/p4-p5-wave-baseline.json
+          if-no-files-found: ignore

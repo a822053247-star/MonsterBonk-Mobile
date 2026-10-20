@@ -1,7 +1,7 @@
 import type { RunBuild } from './run-build';
 import type { BaseAttackId } from './fusion';
 import { flameSweepStats } from './flame-sweep';
-import { RELICS, EVOLUTIONS, type RelicId, type EvolutionId } from './relics';
+import { RELICS, EVOLUTIONS, WEAPON_DAMAGE_PER_LEVEL, type RelicId, type EvolutionId } from './relics';
 
 export type SkillId = 'damage' | 'haste' | 'multishot' | 'vitality' | 'movement' | 'range' | 'orbit' | 'shockwave' | 'split-on-hit' | 'area' | 'chain' | 'bubble-weapon' | 'spark-weapon' | 'leaf-weapon' | 'flame-sweep-weapon' | RelicId | EvolutionId;
 export type SkillRanks = Record<SkillId, number>;
@@ -52,7 +52,7 @@ export const GRASS_SKILLS: readonly SkillDefinition[] = [...SKILLS, { ...FUSION_
 const BUBBLE_WEAPON: SkillDefinition = { id: 'bubble-weapon', title: '获得水泡弹', benefit: '增加独立自动攻击 · 命中减速', description: '装备第二种武器。水泡弹独立索敌、自动释放，命中使敌人减速 30%，持续 1.5 秒。副武器初始攻击间隔为基础的 1.6 倍。', maxRank: 1, icon: 'wave', color: '#55c9ed', effect: { type: 'spell', levels: [{}] } };
 export const WEAPON_CARDS: Partial<Record<SkillId, BaseAttackId>> = { 'spark-weapon': 'spark', 'bubble-weapon': 'bubble', 'leaf-weapon': 'leaf', 'flame-sweep-weapon': 'flame-sweep' };
 const BUILD_SKILLS: readonly SkillDefinition[] = [...SKILLS,
-  { ...BUBBLE_WEAPON, id: 'flame-sweep-weapon', title: '获得火焰横扫', benefit: '扇形火浪 · 升级扩大覆盖', description: '向附近敌人展开一片火焰：伤害 36、半径 2.8、180°、间隔 0.72 秒。升级逐步扩大火浪，5 级覆盖一整圈；每次只有一次横扫。对精英和首领造成 75% 伤害；不穿障碍，分枝、分裂和连锁不复制攻击。', icon: 'battle', color: '#ff8c35' },
+  { ...BUBBLE_WEAPON, id: 'flame-sweep-weapon', title: '获得火焰横扫', benefit: '扇形火浪 · 升级扩大覆盖', description: '向附近敌人展开一片火焰：伤害 36、半径 2.8、180°、间隔 0.72 秒。升级逐步扩大火浪，5 级覆盖一整圈；每次只有一次横扫。对精英和首领造成 70% 伤害；不穿障碍，分枝、分裂和连锁不复制攻击。', icon: 'battle', color: '#ff8c35' },
   { ...FUSION_SKILLS[FUSION_SKILLS.length - 1], benefit: '火花爆炸分裂 / 飞叶弹散射', description: '所有已装备火花弹自动形成爆裂火种，飞叶弹形成荆棘散射；派生最多一代，可与连锁共存。' },
   AREA_CARD, CHAIN_CARD,
   { ...BUBBLE_WEAPON, description: '独立自动释放水泡弹，命中减速 30%，持续 1.5 秒。副武器一 / 二的攻击间隔分别为基础的 1.6 / 1.9 倍。' },
@@ -145,9 +145,9 @@ export class Progression {
         const level = this.build!.attacks.find(a => a.attackId === weapon)!.level;
         const before = flameSweepStats(level), after = flameSweepStats(level + 1);
         return { ...skill, title: title+'强化', benefit: `半径 ${before.radius} → ${after.radius} · ${after.degrees}° 横扫`,
-          description: `基础伤害每级 +20%；火浪角度 ${before.degrees}° → ${after.degrees}°，间隔 ${before.interval} → ${after.interval} 秒。${after.degrees === 360 ? '本次横扫覆盖一整圈。' : '同一片火浪扩大覆盖，5级达到一整圈。'}精英与首领受到 75% 伤害；最高 5 级。` };
+          description: `基础伤害每级 +12%；火浪角度 ${before.degrees}° → ${after.degrees}°，间隔 ${before.interval} → ${after.interval} 秒。${after.degrees === 360 ? '本次横扫覆盖一整圈。' : '同一片火浪扩大覆盖，5级达到一整圈。'}精英与首领受到 70% 伤害；最高 5 级。` };
       }
-      return { ...skill, title: title + '强化', benefit: '该武器基础伤害 +20%', description: '只强化这件武器，最高 5 级。火花每级爆炸半径 +6%；水泡每级减速时长 +0.1 秒；飞叶弹 3 级额外穿透一名敌人。' };
+      return { ...skill, title: title + '强化', benefit: `该武器基础伤害 +${Math.round(WEAPON_DAMAGE_PER_LEVEL[weapon] * 100)}%`, description: `每级基础伤害 +${Math.round(WEAPON_DAMAGE_PER_LEVEL[weapon] * 100)}%；最高 5 级。火花每级爆炸半径 +6%；水泡每级减速时长 +0.1 秒；飞叶弹 3 级额外穿透一名敌人。` };
     });
   }
   get maxLevel() { return 1 + this.pool.reduce((total, skill) => total + skill.maxRank, 0) - this.purchasedRanks - (this.build && this.fusionSkills ? 2 + (this.build.attacks.length > 1 && !this.ranks['specialist-badge'] ? 1 : 0)

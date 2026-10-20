@@ -7,7 +7,8 @@ export const ENCOUNTER_RULES = {
   waveHealth: [1,1.2,1.5,1.8,2.2,1.8],
   bossSpeed: 1.8, dashSpeed: 15, dashDuration: .65, dashWindup: 1.1,
   spreadWindup: 1, spreadSpeed: 6, spreadLife: 2, shotRadius: .24,
-  eliteHp: 360, eliteRadius: 1, elitePulseRadius: 3.2, eliteWindup: 1.1,
+  eliteHp: 480, eliteRadius: 1, elitePulseRadius: 3.4, eliteWindup: 1.3,
+  elitePulseCooldown: 2.9, elitePulseDamage: 20,
   meleeWindup: .55, meleeActive: .16, meleeRecovery: .9,
 } as const;
 /** Predict only when locking a warning. Bounded curvature makes an unchanged
@@ -110,17 +111,21 @@ export class EnemyChallenge {
         for (let i = 0; i < 3 && combat.enemies.filter(e => e.active).length < ENCOUNTER_RULES.bossSupportCap; i++) combat.spawnEncounter('normal', enemy, 2.8, 4.2);
         this.transition('summon');
       } else if ((this.bossState === 'spread' || this.bossState === 'summon') && this.bossTime >= .7) this.transition('recover');
-      else if (this.bossState === 'recover' && this.bossTime >= 1.4 * tempo) this.transition('approach');
+      else if (this.bossState === 'recover' && this.bossTime >= (this.enraged ? 1.06 : 1.4)) this.transition('approach');
       if (this.bossState === 'dash') { this.motion.x = this.aimX*ENCOUNTER_RULES.dashSpeed; this.motion.z = this.aimZ*ENCOUNTER_RULES.dashSpeed; }
       else if (this.bossState !== 'approach') this.motion.x = this.motion.z = 0;
       else { this.motion.x *= ENCOUNTER_RULES.bossSpeed/.75; this.motion.z *= ENCOUNTER_RULES.bossSpeed/.75; }
     } else if (enemy === this.elite) {
       if (this.elitePulsing) {
         this.eliteTime += dt; this.motion.x = this.motion.z = 0;
-        if (this.eliteTime >= ENCOUNTER_RULES.eliteWindup) { this.pulseDue = true; this.elitePulsing = false; this.eliteCooldown = 3.4; }
+        if (this.eliteTime >= ENCOUNTER_RULES.eliteWindup) { this.pulseDue = true; this.elitePulsing = false; this.eliteCooldown = ENCOUNTER_RULES.elitePulseCooldown; }
       } else {
         this.eliteCooldown = Math.max(0,this.eliteCooldown-dt);
-        if (!this.eliteCooldown && Math.hypot(player.x-enemy.x, player.z-enemy.z)<6) { this.elitePulsing=true; this.eliteTime=0; this.motion.x=this.motion.z=0; }
+        // A spore explosion has its own warning; avoid starting two major warnings together.
+        const sporeWarning = combat.sporeExplosions.some(e => e.active && !e.detonated);
+        if (!this.eliteCooldown && !sporeWarning && Math.hypot(player.x-enemy.x, player.z-enemy.z)<6) {
+          this.elitePulsing=true; this.eliteTime=0; this.motion.x=this.motion.z=0;
+        }
       }
     }
     return this.motion;
@@ -128,7 +133,7 @@ export class EnemyChallenge {
   advanceHazards(dt: number, combat: Combat, player: Point, previous: Point) {
     if (this.dying) { this.clearShots(); return; }
     if (this.pulseDue && this.elite?.active && Math.hypot(player.x-this.elite.x,player.z-this.elite.z) < ENCOUNTER_RULES.elitePulseRadius+.62
-      && !combat.covered(this.elite.x,this.elite.z,player.x,player.z)) combat.hitPlayer(18);
+      && !combat.covered(this.elite.x,this.elite.z,player.x,player.z)) combat.hitPlayer(ENCOUNTER_RULES.elitePulseDamage);
     for (const shot of this.shots) {
       if (!shot.active) continue;
       shot.previousX=shot.x; shot.previousZ=shot.z;
