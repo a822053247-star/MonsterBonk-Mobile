@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { Combat } from '../src/combat';
 import { PartySystem } from '../src/party';
-import { RunFlow, RUN_WAVES } from '../src/run-flow';
+import { RunFlow, RUN_WAVES, SHOP_AFTER_WAVE, WAVE_INTERMISSION_SECONDS } from '../src/run-flow';
 
 const origin = { x: 0, z: 0 };
 function fixture() {
@@ -9,85 +9,126 @@ function fixture() {
   c.party = new PartySystem(); c.fusionEnabled = true; c.automaticSpawning = false; c.reset();
   return { c, run: new RunFlow(() => 0) };
 }
-function shop(f: ReturnType<typeof fixture>) { f.run.update(f.run.definition.seconds, f.c, origin); expect(f.run.phase).toBe('shop'); return f.run.shop!; }
+function fifthShop(f: ReturnType<typeof fixture>) {
+  f.run.waveIndex = 4;
+  f.run.update(f.run.definition.seconds, f.c, origin);
+  expect(f.run.phase).toBe('intermission');
+  expect(f.run.shop).toBeUndefined();
+  f.run.updateRest(WAVE_INTERMISSION_SECONDS, f.c);
+  expect(f.run.phase).toBe('shop');
+  return f.run.shop!;
+}
 
-test('six waves provide five shops, 455 combat seconds and a 9m15s reference run with 20s rests', () => {
+test('six waves have only one shop after wave five, plus distinct visible intermissions', () => {
   const { c, run } = fixture();
-  for (let wave = 1; wave <= 6; wave++) {
+  expect(SHOP_AFTER_WAVE).toBe(5);
+  for(let wave=1; wave<=6; wave++) {
     if(wave===6) {
-      run.prepare(c,origin); const boss=c.encounters.boss!; boss.spawnTime=0;
+      run.prepare(c,origin);
+      const boss=c.encounters.boss!;boss.spawnTime=0;
       (c as any).damageEnemy(boss,boss.hp,0,0); c.encounters.beforeTick(1);
     }
-    expect(run.wave).toBe(wave); run.update(run.definition.seconds, c, origin);
-    if (wave < 6) {
-      expect(run.phase).toBe('shop'); const token = run.shop!.token;
-      run.update(100, c, origin); expect(run.wave).toBe(wave);
-      run.updateRest(20); expect(run.nextWave(token, c)).toBe(true);
-      expect(run.nextWave(token, c)).toBe(false);
+    expect(run.wave).toBe(wave);
+    run.update(run.definition.seconds,c,origin);
+    if(wave<6) {
+      expect(run.phase).toBe('intermission');
+      expect(run.shop).toBeUndefined();
+      run.updateRest(WAVE_INTERMISSION_SECONDS/2,c);
+      expect(run.phase).toBe('intermission');
+      run.updateRest(WAVE_INTERMISSION_SECONDS/2,c);
+      if(wave<5) {
+        expect(run.phase).toBe('fighting');
+        expect(run.wave).toBe(wave+1);
+      } else {
+        expect(run.phase).toBe('shop');
+        expect(run.wave).toBe(5);
+        const token=run.shop!.token;
+        run.update(100,c,origin);expect(run.wave).toBe(5);
+        run.updateRest(20,c);
+        expect(run.nextWave(token,c)).toBe(true);
+        expect(run.nextWave(token,c)).toBe(false);
+      }
     }
   }
-  expect(run.phase).toBe('won'); expect(run.completedWaves).toBe(6);
-  expect(run.combatElapsed).toBe(455); expect(run.totalElapsed).toBe(555);
-  expect(run.coins).toBe(225); expect(RUN_WAVES).toHaveLength(6);
+  expect(run.phase).toBe('won');
+  expect(run.completedWaves).toBe(6);
+  expect(run.combatElapsed).toBe(455);
+  expect(run.totalElapsed).toBeCloseTo(455+5*WAVE_INTERMISSION_SECONDS+20);
+  expect(run.coins).toBe(225);
+  expect(RUN_WAVES).toHaveLength(6);
 });
 
-test('wave boundary claims loose XP once, resolves pending upgrades, and clears combat without resetting build/HP', () => {
-  const f = fixture(); f.c.hp = 73;
-  Object.assign(f.c.orbs[0], { active: true, value: 8 });
-  f.c.spawn('tank', 6, 0, 0);
-  f.run.update(65, f.c, origin);
-  expect(f.run.phase).toBe('fighting'); expect(f.c.progression.awaitingChoice).toBe(true);
-  expect(f.c.progression.totalExperience).toBe(8); expect(f.run.coins).toBe(0);
-  f.run.resolveBoundary(f.c); expect(f.c.progression.totalExperience).toBe(8);
-  expect(f.c.chooseUpgrade(f.c.progression.offers[0])).toBe(true);
-  f.run.resolveBoundary(f.c); expect(f.run.phase).toBe('shop');
-  expect(f.run.coins).toBe(35); expect(f.c.hp).toBe(73);
-  expect(f.c.enemies.some(e => e.active)).toBe(false); expect(f.c.projectiles.some(s => s.active)).toBe(false);
-  f.run.resolveBoundary(f.c); expect(f.run.coins).toBe(35);
+test('wave boundary claims loose XP once and restores automatic progression after upgrade selection',()=>{
+  const {c,run}=fixture();c.hp=73;
+  Object.assign(c.orbs[0],{active:true,value:8});
+  c.spawn('tank',6,0,0);
+  run.update(65,c,origin);
+  expect(run.phase).toBe('fighting');expect(c.progression.awaitingChoice).toBe(true);
+  expect(c.progression.totalExperience).toBe(8);
+  run.resolveBoundary(c);expect(c.progression.totalExperience).toBe(8);
+  expect(c.chooseUpgrade(c.progression.offers[0])).toBe(true);
+  run.resolveBoundary(c);
+  expect(run.phase).toBe('intermission');
+  expect(run.coins).toBe(35);expect(c.hp).toBe(73);
+  expect(c.enemies.some(e=>e.active)).toBe(false);
+  const before=run.coins;
+  run.resolveBoundary(c);expect(run.coins).toBe(before);
+  run.updateRest(WAVE_INTERMISSION_SECONDS,c);
+  expect(run.phase).toBe('fighting');expect(run.wave).toBe(2);
 });
 
-test('real kills award gold once and recycling a living enemy does not count', () => {
-  const { c, run } = fixture();
-  c.spawn('normal', 5, 0, 0)!.hp = 1; c.update(.3, origin); run.update(.3, c, origin);
-  expect(c.kills).toBe(1); expect(run.coins).toBe(1);
-  const alive = c.spawn('tank', 7, 0, 0)!; alive.active = false;
-  run.update(.01, c, origin); expect(run.coins).toBe(1);
-  run.waveElapsed = 65; run.resolveBoundary(c); expect(run.coins).toBe(36);
+test('real kills earn gold once and cannot be recycled into duplicates',()=>{
+  const {c,run}=fixture();
+  c.spawn('normal',5,0,0)!.hp=1;c.update(.3,origin);run.update(.3,c,origin);
+  expect(c.kills).toBe(1);expect(run.coins).toBe(1);
+  const e=c.spawn('tank',7,0,0)!;e.active=false;
+  run.update(.01,c,origin);expect(run.coins).toBe(1);
+  run.waveElapsed=65;run.resolveBoundary(c);expect(run.coins).toBe(36);
 });
 
-test('buying a weapon is atomic, costs gold rather than XP, and rejects stale/double/poor purchases', () => {
-  const f = fixture(), s = shop(f), token = s.token;
-  expect(s.items[0].price).toBe(35); const xp = f.c.progression.totalExperience;
-  expect(f.run.buy(0, token)).toBe(true); expect(f.run.coins).toBe(0);
-  expect(f.c.runBuild.attacks).toHaveLength(2); expect(f.c.progression.totalExperience).toBe(xp);
-  expect(f.c.progression.level).toBe(1); expect(f.c.progression.pendingChoices).toBe(0);
-  expect(f.run.buy(0, token)).toBe(false); expect(f.run.buy(1, s.token)).toBe(false);
-  expect(f.run.refresh(s.token)).toBe(false); expect(f.run.coins).toBe(0);
+test('the fifth-wave shop still has atomic purchases, stale tokens and insufficient-fund protection',()=>{
+  const f=fixture(),s=fifthShop(f),token=s.token;
+  expect(s.items[0].price).toBe(35);
+  const xp=f.c.progression.totalExperience;
+  expect(f.run.buy(0,token)).toBe(true);expect(f.run.coins).toBe(20);
+  expect(f.c.runBuild.attacks).toHaveLength(2);
+  expect(f.c.progression.totalExperience).toBe(xp);
+  expect(f.run.buy(0,token)).toBe(false);
+  expect(f.run.buy(1,s.token)).toBe(false);
+  expect(f.run.refresh(s.token)).toBe(true);expect(f.run.coins).toBe(15);
+  expect(f.run.refresh(token)).toBe(false);
 });
 
-test('healing preserves max HP; refresh prices increase and stale shop tokens cannot spend', () => {
-  const f = fixture(); f.c.hp = 40; const s = shop(f);
-  expect(f.run.buy(3, s.token)).toBe(true); expect(f.c.hp).toBe(75); expect(f.c.maxHp).toBe(100);
-  expect(f.run.coins).toBe(17); const token = s.token;
-  expect(f.run.refresh(token)).toBe(true); expect(f.run.coins).toBe(12); expect(s.refreshCost).toBe(10);
-  expect(f.run.buy(0, token)).toBe(false); expect(f.run.refresh(token)).toBe(false);
-  expect(f.run.refresh(s.token)).toBe(true); expect(f.run.coins).toBe(2); expect(s.refreshCost).toBe(15);
-  const frozen = JSON.stringify(f.c.inspect()); f.run.updateRest(20);
+test('only fifth shop can heal and paid refreshes remain progressive',()=>{
+  const f=fixture(); f.c.hp=40;const s=fifthShop(f);
+  expect(f.run.buy(3,s.token)).toBe(true);expect(f.c.hp).toBe(75);
+  expect(f.run.coins).toBe(37);const token=s.token;
+  expect(f.run.refresh(token)).toBe(true);expect(f.run.coins).toBe(32);expect(s.refreshCost).toBe(10);
+  expect(f.run.buy(0,token)).toBe(false);expect(f.run.refresh(token)).toBe(false);
+  expect(f.run.refresh(s.token)).toBe(true);expect(f.run.coins).toBe(22);expect(s.refreshCost).toBe(15);
+  const frozen=JSON.stringify(f.c.inspect());f.run.updateRest(20,f.c);
   expect(JSON.stringify(f.c.inspect())).toBe(frozen);
-  expect(f.run.nextWave(s.token, f.c)).toBe(true); expect(f.c.hp).toBe(75);
+  expect(f.run.nextWave(s.token,f.c)).toBe(true);expect(f.run.wave).toBe(6);
+  expect(f.c.hp).toBe(75);
 });
 
-test('fixed rewards give a low-kill build real purchasing tradeoffs', () => {
-  const f = fixture(); let s = shop(f);
-  expect(f.run.buy(0, s.token)).toBe(true); expect(f.run.coins).toBe(0);
-  expect(f.run.nextWave(s.token, f.c)).toBe(true); s = shop(f);
-  expect(f.run.coins).toBe(40); expect(f.run.buy(1, s.token)).toBe(true);
-  expect(f.run.coins).toBe(15); expect(f.run.buy(0, s.token)).toBe(false);
+test('shop is not accessible during any earlier wave and unspent rewards accumulate',()=>{
+  const {c,run}=fixture();
+  for(let wave=1;wave<=5;wave++) {
+    run.update(run.definition.seconds,c,origin);
+    expect(run.buy(0,'anything')).toBe(false);
+    expect(run.refresh('anything')).toBe(false);
+    run.updateRest(WAVE_INTERMISSION_SECONDS,c);
+  }
+  expect(run.phase).toBe('shop');
+  expect(run.coins).toBe(225);
+  expect(run.shop!.items.length).toBe(4);
 });
 
-test('death at the last boundary defeats rather than wins and leaves historical modes unchanged', () => {
-  const f = fixture(); f.run.waveIndex = 5; f.run.waveElapsed = 90; f.c.hp = 0;
-  f.run.resolveBoundary(f.c); expect(f.run.phase).toBe('lost'); expect(f.run.completedWaves).toBe(0);
-  f.c.fusionEnabled = false; f.c.automaticSpawning = true; f.c.reset();
-  expect(f.c.progression.skills).toHaveLength(8); expect(f.c.goldEarned).toBe(0);
+test('death at the final boundary loses and historical modes do not inherit shops',()=>{
+  const {c,run}=fixture();run.waveIndex=5;run.waveElapsed=90;c.hp=0;
+  run.resolveBoundary(c);expect(run.phase).toBe('lost');
+  expect(run.completedWaves).toBe(0);
+  c.fusionEnabled=false;c.automaticSpawning=true;c.reset();
+  expect(c.progression.skills).toHaveLength(8);expect(c.goldEarned).toBe(0);
 });
