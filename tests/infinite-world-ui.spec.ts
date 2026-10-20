@@ -36,6 +36,25 @@ test('endless mode crosses original world boundary and streams exactly nine chun
   expect(new Set(results.map(r => r.seed))).toEqual(new Set(['forest-42']));
 });
 
+test('held movement walks over the original boundary without interrupting combat', async ({ page }) => {
+  await start(page);
+  const state = await page.evaluate(() => {
+    const g = (window as any).game;
+    g.sleep();
+    g.position.set(30, 0, 0);
+    g.previousPosition.copy(g.position);
+    g.input.keys.add('KeyD');
+    for (let i = 0; i < 120; i++) g.step(1 / 60);
+    g.input.keys.delete('KeyD');
+    return { x: g.position.x, world: g.inspect().world, hp: g.combat.hp, elapsed: g.combat.elapsed };
+  });
+  expect(state.x).toBeGreaterThan(34);
+  expect(state.world.chunks).toBe(9);
+  expect(state.world.layout).toBe('infinite-pixel-meadow');
+  expect(state.elapsed).toBeGreaterThan(1);
+  expect(state.hp).toBeGreaterThan(0);
+});
+
 test('teleporting across many chunks does not accumulate chunk groups or materials', async ({ page }) => {
   await start(page);
   const result = await page.evaluate(() => {
