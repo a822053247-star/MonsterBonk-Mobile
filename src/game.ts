@@ -870,7 +870,7 @@ export class Game {
     this.killValue.textContent = String(this.combat.kills);
     this.xpValue.textContent = String(this.combat.xp);
     const progression = this.combat.progression, maxed = !Number.isFinite(progression.threshold);
-    document.getElementById('level-value')!.textContent = `等级 ${progression.level}${maxed ? ' · 满级' : ''}`;
+    document.getElementById('level-value')!.textContent = `Lv.${progression.level}${maxed ? ' MAX' : ''}`;
     document.getElementById('xp-progress')!.textContent = maxed ? '满级' : `${progression.experience} / ${progression.threshold}`;
     document.getElementById('xp-fill')!.style.width = `${maxed ? 100 : progression.experience / progression.threshold * 100}%`;
     const xpTrack = document.getElementById('xp-track')!;

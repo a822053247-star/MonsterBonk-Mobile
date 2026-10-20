@@ -858,93 +858,207 @@ h1>em{font-size:12px;line-height:1;letter-spacing:4px;display:inline-block;backg
 .prototype-entries #start-infinite{color:#f1d8a4;font-weight:700}
 
 
-/*
- * Readable combat HUD — deliberately override the earlier compact HUD rules.
- * All widths scale down for narrow landscape phones; controls keep ≥44px targets.
- */
-.hud{--hud-card-width:340px;--hud-card-height:112px}
-.hud .hud-top{position:relative;z-index:3}
-.hud .health-block{width:var(--hud-card-width);gap:6px;min-width:0}
-.hud .health-panel{height:var(--hud-card-height);border-radius:9px}
-.hud .health-panel .portrait{left:6%;top:17%;width:29%;height:67%}
-.hud .health-title{left:39%;right:5%;top:21%;display:block;margin:0}
-.hud .health-title>span{font-size:16px;line-height:1.25;font-weight:900;color:#314a34;text-shadow:0 1px #fff4bf66}
-.hud .health-values{left:39%;right:5%;top:42%;height:27px;display:flex;align-items:baseline;justify-content:flex-start;gap:9px;white-space:nowrap;text-shadow:0 1px 2px #132e27}
-.hud .health-values .hp-label{font-size:17px;font-weight:950;letter-spacing:1px;color:#344c34;text-shadow:0 1px #fff3b878}
-.hud #health-value{font-size:22px;line-height:1.1;font-weight:950;letter-spacing:.25px;color:#133e2a;font-variant-numeric:tabular-nums;text-shadow:0 1px 1px #fff4d5c7}
-.hud .health-track{left:39%;right:7%;top:77%;height:15px;border:2px solid #7b7045;border-radius:6px;background:#1c352d}
-.hud #health-fill{height:100%;border:0;background:linear-gradient(180deg,#a9e27b,#3b9950);box-shadow:inset 0 2px #dff5ae77}
-.hud .xp-row{padding:0 7px;gap:8px;font-size:12px;font-weight:750;color:#f3f8db;text-shadow:0 1px 3px #123b2d}
-.hud .xp-label{white-space:nowrap}
-.hud .xp-track{height:12px;min-width:40px;border:1px solid #a3dace;border-radius:4px}
-.hud .xp-row>span:last-child{min-width:47px;text-align:right;font-size:11px}
-.hud .combat-stats{padding:0 7px;gap:14px;font-size:12px}
-.hud .combat-stats>div{gap:6px}
-.hud .combat-stats strong{font-size:13px}
-.hud .combat-stats .icon{width:14px;height:14px}
-.hud .run-status{top:3px;left:50%;gap:3px;min-width:175px;text-align:center;text-shadow:0 2px 8px #102f25,0 0 5px #122e25}
-.hud #run-wave{order:0;font-size:19px;line-height:1.25;font-weight:900;letter-spacing:1px;color:#f9e6ad}
-.hud #timer{order:1;margin:0;font-size:34px;line-height:1.15;font-weight:950;letter-spacing:1.7px;color:#fff5d4}
-.hud .hud-actions{gap:9px}
-.hud .hud-actions .icon-button{width:56px;height:56px;min-width:56px;min-height:56px;font-size:16px;font-weight:900;border-radius:9px}
-.hud .hud-actions .icon{width:24px;height:24px}
-.hud.critical-health #health-value,.hud.critical-health .health-values .hp-label{color:#cf1d31;text-shadow:0 1px #fff6d0,0 0 7px #ef404a75}
-.hud .health-track.low-health{border-color:#b73641;box-shadow:0 0 12px #e9414d85}
-.hud .health-track.low-health #health-fill{background:linear-gradient(180deg,#ff6468,#bd142c);box-shadow:inset 0 2px #ffd4c87d}
-.low-health-effect{position:absolute;inset:0;z-index:1;pointer-events:none;opacity:0;visibility:hidden;background:radial-gradient(ellipse at 50% 50%,transparent 45%,#e01a3840 76%,#b900315c 100%);box-shadow:inset 0 0 80px 10px #a8093245}
-.hud.critical-health .low-health-effect{visibility:visible;opacity:.8;animation:hud-danger-pulse 2.4s ease-in-out infinite}
-.hud.critical-health .health-panel{filter:drop-shadow(0 0 10px #ca244766)}
-@keyframes hud-danger-pulse{0%,100%{opacity:.38}50%{opacity:.9}}
-/* Do not obscure the arena or cause flashing for motion-sensitive players. */
-@media(prefers-reduced-motion:reduce){.hud.critical-health .low-health-effect{animation:none;opacity:.55}}
-@media(max-width:1100px) and (orientation:landscape){
-  .hud{--hud-card-width:260px;--hud-card-height:91px}
-  .hud .health-title{top:18%}
-  .hud .health-title>span{font-size:13px}
-  .hud .health-values{top:40%;gap:6px;height:24px}
-  .hud .health-values .hp-label{font-size:13px}
-  .hud #health-value{font-size:17px}
-  .hud .health-track{top:76%;height:12px}
-  .hud .xp-row{font-size:10px;gap:5px}
-  .hud .xp-track{height:9px}
-  .hud .xp-row>span:last-child{font-size:9px}
-  .hud .combat-stats{font-size:10px}
-  .hud .combat-stats strong{font-size:11px}
+
+/* Reference-led HUD V2: portrait medallion, horizontal ornamented HP, XP below. */
+.hud{
+  --hud-card-width:clamp(440px,30.5vw,625px);
+  --hud-card-height:clamp(145px,9.3vw,186px);
+  padding:calc(14px + var(--safe-top)) calc(14px + var(--safe-right)) calc(14px + var(--safe-bottom)) calc(14px + var(--safe-left));
+}
+.hud .hud-top{position:relative;z-index:3;gap:10px;align-items:flex-start}
+.hud .health-block{width:var(--hud-card-width);min-width:0;flex-shrink:0;gap:0}
+.hud .health-panel{
+  position:relative;isolation:isolate;width:100%;height:var(--hud-card-height);
+  border:0;border-radius:10px;padding:0;background:transparent;box-shadow:none;
+}
+.hud .health-panel:has(>.health-frame-art.art-loaded){border:0;background:transparent;box-shadow:none}
+.hud .health-frame-art{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;pointer-events:none;z-index:-1;image-rendering:pixelated}
+.hud .health-panel .portrait{
+  position:absolute;left:3%;top:11%;width:29%;height:78%;
+  border:0;border-radius:50%;background:#f0ddb5;
+  box-shadow:inset 0 0 0 3px #744b28,0 0 0 2px #e2b15b99;
+  object-fit:contain;pointer-events:none;
+}
+.hud #creature-portrait{padding:2px}
+.hud .health-copy{position:absolute;inset:0;min-width:0}
+.hud .health-title{
+  position:absolute;left:6.8%;right:auto;top:78%;display:block;margin:0;
+  z-index:6;line-height:1;pointer-events:none;
+}
+.hud .health-title>span{
+  display:block;width:max-content;max-width:120px;padding:2px 7px;
+  font-size:clamp(17px,1.35vw,27px);font-weight:950;letter-spacing:-.4px;
+  color:#fff7d4;background:#1b2a1dc9;border-radius:7px;
+  text-shadow:-2px -2px #15201a,2px -2px #15201a,-2px 2px #15201a,2px 2px #15201a,0 3px 4px #102119;
+}
+.hud .health-track{
+  position:absolute;left:34%;right:4.5%;top:43%;height:32%;z-index:2;
+  border:3px solid #e1aa5a;border-radius:16px;
+  background:linear-gradient(180deg,#132a2a,#243638 55%,#0d2024);
+  box-shadow:0 0 0 2px #49301e,0 3px 0 #2b1b13,inset 0 2px 4px #08191e;
+  overflow:hidden;
+}
+.hud #health-fill{
+  height:100%;border:0;
+  background:linear-gradient(180deg,#a6f59c,#40aa62 42%,#257e46);
+  box-shadow:inset 0 2px #d5ffca91,inset 0 -2px #16432b66;
+}
+.hud .health-values{
+  position:absolute;left:34%;right:4.5%;top:43%;height:32%;z-index:3;
+  display:flex;align-items:center;justify-content:center;white-space:nowrap;
+  pointer-events:none;margin:0;
+}
+.hud #health-value{
+  display:block;font-size:clamp(22px,1.8vw,37px);line-height:1;font-weight:950;
+  letter-spacing:.3px;color:#fff9ed;font-variant-numeric:tabular-nums;
+  text-shadow:-2px -2px #20211d,2px -2px #20211d,-2px 2px #20211d,2px 2px #20211d,0 2px 4px #081714;
+}
+.hud .combat-stats{display:none}
+.hud .xp-row{
+  position:relative;z-index:6;margin-top:-19px;margin-left:34%;width:62%;
+  padding:0 7px 0 0;gap:11px;height:32px;
+  display:flex;align-items:center;
+  background:#122725bb;border:1px solid #658c6b66;border-radius:18px;
+  font-weight:850;color:#f6fff0;font-size:15px;letter-spacing:0;
+  text-shadow:-1px -1px #14251e,1px 1px #14251e,0 1px 3px #10281a;
+}
+.hud .xp-label{display:none}
+.hud .xp-track{
+  height:23px;min-width:40px;flex:1;border:2px solid #214a48;
+  background:#192a2d;border-radius:13px;overflow:hidden;
+}
+.hud #xp-fill{height:100%;background:linear-gradient(180deg,#85f3ff,#31b9e8 60%,#1980ad);box-shadow:inset 0 1px #d7ffff75}
+.hud .xp-row>span:last-child{min-width:73px;text-align:center;white-space:nowrap;font-size:14px}
+
+/* The wave/timer is a single dark rounded plaque, centered independently of other controls. */
+.hud .run-status{
+  position:absolute;left:50%;top:0;transform:translateX(-50%);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  min-width:clamp(220px,16vw,335px);min-height:clamp(94px,6.35vw,132px);
+  padding:11px 23px 13px;border:1px solid #5e784e29;border-radius:55px;
+  background:linear-gradient(180deg,#133e2ad9,#0a2c21dd);
+  box-shadow:0 4px 15px #0b301c40,inset 0 1px 0 #a5d09a20;
+  gap:2px;text-align:center;white-space:nowrap;
+  text-shadow:-2px -2px #09261e,2px 2px #09261e,0 2px 5px #09241f;
+  pointer-events:none;
+}
+.hud .run-status::before,.hud .run-status::after{
+  content:'';position:absolute;top:49%;width:12px;height:12px;
+  background:#f3c565;transform:translateY(-50%) rotate(45deg);
+  border:2px solid #fff0ba;box-shadow:0 0 0 2px #3d4027;
+}
+.hud .run-status::before{left:-27px}.hud .run-status::after{right:-27px}
+.hud #run-wave{
+  order:0;display:block;font-size:clamp(25px,2.05vw,43px);
+  font-weight:950;line-height:1.18;letter-spacing:.5px;color:#fff8e9;
+}
+.hud #timer{
+  order:1;font-size:clamp(37px,2.9vw,60px);font-weight:950;line-height:1.12;
+  margin:0;letter-spacing:1px;color:#fffdf1;
+}
+.hud #run-gold{display:none!important}
+.hud.encounter-active .run-status{visibility:visible}
+
+/* Big, square, gold-rimmed top-right actions, matching the reference. */
+.hud .hud-actions{gap:clamp(7px,.55vw,13px);margin-left:auto;flex-shrink:0}
+.hud .hud-actions .icon-button{
+  width:clamp(65px,5.25vw,108px);height:clamp(65px,5.25vw,108px);
+  min-width:clamp(65px,5.25vw,108px);min-height:clamp(65px,5.25vw,108px);
+  border:2px solid #c5a168;border-radius:12px;
+  background:linear-gradient(145deg,#23483dde,#102c29ef);color:#fff8e6;
+  box-shadow:inset 0 0 0 2px #d8bb7430,0 2px 8px #071f1c66;
+  font-size:clamp(21px,1.4vw,30px);font-weight:950;
+}
+.hud .hud-actions .speed-button.accelerated{background:linear-gradient(145deg,#6f512c,#4e371f);color:#fff6df}
+.hud .hud-actions .icon{width:clamp(30px,2vw,44px);height:clamp(30px,2vw,44px)}
+
+/* Non-verbal critical-health feedback: blood-red meter and gentle embers around the medallion. */
+.hud .health-track.low-health{border-color:#e8a065;box-shadow:0 0 0 2px #613626,0 0 14px #f23537b6,inset 0 2px 4px #141919}
+.hud .health-track.low-health #health-fill{
+  background:linear-gradient(180deg,#ff9c6b,#f84846 37%,#bd142d);
+  box-shadow:inset 0 2px #ffe6a47a,inset 0 -2px #67071b65;
+}
+.hud.critical-health #health-value{color:#ff8b7b;text-shadow:-2px -2px #251313,2px -2px #251313,-2px 2px #251313,2px 2px #251313,0 0 8px #ff5959a0}
+.hud.critical-health .health-panel{filter:drop-shadow(0 0 12px #ff442c90)}
+.hud .health-panel::after{
+  content:'';position:absolute;left:-13px;top:-15px;width:38%;height:117%;
+  z-index:7;pointer-events:none;opacity:0;
+  background:
+    radial-gradient(circle at 10% 18%,#fff2ab 0 2px,#fa4035 3px 6px,transparent 12px),
+    radial-gradient(circle at 95% 16%,#ffe18a 0 3px,#f23428 4px 8px,transparent 16px),
+    radial-gradient(circle at 9% 81%,#ff8f4b 0 4px,#da1b26 5px 9px,transparent 16px),
+    radial-gradient(circle at 76% 94%,#ffe28d 0 2px,#ef3439 3px 7px,transparent 14px),
+    radial-gradient(circle at 87% 67%,#ffa750 0 2px,#e3202d 4px,transparent 12px);
+  filter:drop-shadow(0 0 7px #ff3b27);
+}
+.hud.critical-health .health-panel::after{opacity:.9;animation:health-embers 2.2s ease-in-out infinite}
+.low-health-effect{
+  position:absolute;inset:0;z-index:1;pointer-events:none;
+  opacity:0;visibility:hidden;
+  background:radial-gradient(ellipse at center,transparent 43%,#ce17301d 75%,#a8002b4b 100%);
+  box-shadow:inset 0 0 80px 4px #ae122c40;
+}
+.hud.critical-health .low-health-effect{opacity:.7;visibility:visible;animation:hud-danger-pulse 2.4s ease-in-out infinite}
+@keyframes hud-danger-pulse{0%,100%{opacity:.3}50%{opacity:.76}}
+@keyframes health-embers{0%,100%{opacity:.45;transform:scale(.98)}50%{opacity:1;transform:scale(1.03)}}
+@media(prefers-reduced-motion:reduce){
+  .hud.critical-health .low-health-effect,.hud.critical-health .health-panel::after{animation:none;opacity:.6}
+}
+
+/* Boss info does not hide the center wave/timer. */
+.hud .encounter-status{top:calc(150px + var(--safe-top))}
+
+/* Landscape tablet and phone: proportionally downscale and avoid blocking play. */
+@media(max-width:1250px) and (orientation:landscape){
+  .hud{--hud-card-width:clamp(280px,31vw,390px);--hud-card-height:clamp(100px,10vw,130px)}
+  .hud .health-title>span{font-size:17px}
+  .hud .health-track{border-width:2px;border-radius:10px}
+  .hud #health-value{font-size:23px}
+  .hud .xp-row{margin-top:-13px;height:23px;font-size:11px;gap:5px}
+  .hud .xp-track{height:17px;border-width:1px}
+  .hud .xp-row>span:last-child{min-width:50px;font-size:10px}
+  .hud .run-status{min-width:176px;min-height:80px;padding:7px 15px}
+  .hud #run-wave{font-size:21px}
+  .hud #timer{font-size:32px}
+  .hud .hud-actions .icon-button{width:56px;height:56px;min-width:56px;min-height:56px;font-size:17px;border-radius:8px}
+  .hud .hud-actions .icon{width:23px;height:23px}
+  .hud .encounter-status{top:calc(124px + var(--safe-top))}
+}
+@media(max-width:900px) and (orientation:landscape){
+  .hud{--hud-card-width:250px;--hud-card-height:98px}
+  .hud .health-title{top:77%}.hud .health-title>span{font-size:14px}
+  .hud #health-value{font-size:19px}
+  .hud .health-track{top:42%;height:34%;border-width:2px}
+  .hud .health-values{top:42%;height:34%}
+  .hud .xp-row{margin-top:-12px;height:19px;gap:3px;padding-right:3px}
+  .hud .xp-track{height:14px}
+  .hud .xp-row>span:last-child{font-size:9px;min-width:42px}
+  .hud .run-status{min-width:141px;min-height:68px;gap:1px;padding:6px 10px}
+  .hud .run-status::before,.hud .run-status::after{width:7px;height:7px}
+  .hud .run-status::before{left:-13px}.hud .run-status::after{right:-13px}
   .hud #run-wave{font-size:16px}
-  .hud #timer{font-size:29px}
-  .hud .hud-actions{gap:6px}
-  .hud .hud-actions .icon-button{width:48px;height:48px;min-width:48px;min-height:48px;font-size:14px}
-  .hud .hud-actions .icon{width:21px;height:21px}
+  .hud #timer{font-size:25px}
+  .hud .hud-actions{gap:5px}
+  .hud .hud-actions .icon-button{width:47px;height:47px;min-width:47px;min-height:47px;font-size:14px}
+  .hud .hud-actions .icon{width:20px;height:20px}
+  .hud .encounter-status{top:calc(130px + var(--safe-top))}
 }
 @media(max-width:700px) and (orientation:landscape){
-  .hud{--hud-card-width:192px;--hud-card-height:74px}
-  .hud .health-panel .portrait{left:4%;top:14%;width:30%;height:70%}
-  .hud .health-title{left:37%;top:16%}
-  .hud .health-title>span{font-size:10px}
-  .hud .health-values{left:37%;right:2%;top:41%;gap:4px;height:18px}
-  .hud .health-values .hp-label{font-size:10px}
-  .hud #health-value{font-size:13px}
-  .hud .health-track{left:37%;right:5%;top:77%;height:10px}
-  .hud .xp-row{font-size:9px;padding:0 3px}
-  .hud .xp-track{height:8px}
-  .hud .xp-row>span:last-child{min-width:33px;font-size:8px}
-  .hud .combat-stats{font-size:9px}
-  .hud .combat-stats strong{font-size:10px}
-  .hud .run-status{top:120px;left:50%;transform:translateX(-50%);min-width:116px}
+  .hud{--hud-card-width:183px;--hud-card-height:79px}
+  .hud .health-panel .portrait{left:3%;width:29%;height:78%}
+  .hud .health-title{left:5%;top:80%}
+  .hud .health-title>span{font-size:10px;padding:2px 3px}
+  .hud .health-track{left:33%;right:4%;top:43%;height:30%}
+  .hud .health-values{left:33%;right:4%;top:43%;height:30%}
+  .hud #health-value{font-size:14px}
+  .hud .xp-row{margin-left:33%;width:64%;margin-top:-8px;height:15px}
+  .hud .xp-track{height:11px}
+  .hud .xp-row>span:last-child{font-size:8px;min-width:35px}
+  .hud .run-status{top:118px;left:50%;min-height:57px;min-width:118px;padding:5px 9px}
   .hud #run-wave{font-size:13px}
   .hud #timer{font-size:22px}
   .hud .hud-actions{gap:4px}
-  .hud .hud-actions .icon-button{width:44px;height:44px;min-width:44px;min-height:44px}
-  .hud .hud-actions .icon{width:20px;height:20px}
-}
-
-
-/* Keep wave/time readable during elites and bosses; encounter health moves below the header. */
-.hud.encounter-active .run-status{visibility:visible}
-.hud .encounter-status{top:calc(110px + var(--safe-top))}
-@media(max-width:1100px) and (orientation:landscape){
-  .hud .encounter-status{top:calc(114px + var(--safe-top));left:calc(50% + 55px + (var(--safe-left) - var(--safe-right)) / 2)}
-}
-@media(max-width:700px) and (orientation:landscape){
-  .hud .encounter-status{left:auto;right:calc(12px + var(--safe-right));top:calc(175px + var(--safe-top));transform:none}
+  .hud .hud-actions .icon-button{width:44px;height:44px;min-width:44px;min-height:44px;font-size:12px}
+  .hud .hud-actions .icon{width:19px;height:19px}
+  .hud .encounter-status{left:auto;right:calc(12px + var(--safe-right));top:calc(186px + var(--safe-top));transform:none}
 }
