@@ -14,6 +14,59 @@ async function start(page: Page) {
   await page.waitForFunction(() => (window as any).game?.inspect().world.layout === 'infinite-pixel-meadow');
 }
 
+test('endless exploration shares the EXACT six-wave build, species, upgrades and shop flow of start challenge', async ({ page }) => {
+  await page.goto('/infinite-harness?seed=forest-42');
+  // Choose a nondefault species to catch regressions to the old one-creature prototype.
+  await page.locator('#choose-creature').click();
+  await page.locator('[data-creature="sproutspike"]').click();
+  await page.locator('#start-selected-creature').click();
+  const snapshot = () => page.evaluate(() => {
+    const g = (window as any).game;
+    const combat = g.combat;
+    return { mode: g.inspect().mode, species: g.party.leader.species,
+      runActive: !!g.run, wave: g.run?.wave, phase: g.run?.phase,
+      shopAvailable: !!g.run?.buy, fusion: combat.fusionEnabled, usesRunBuild: combat.usesRunBuild,
+      weaponIds: combat.runBuild.attacks.map((a: any) => a.attackId),
+      upgradeCards: combat.progression.fusionBase,
+      sixWaveHud: !document.getElementById('run-wave')!.hidden,
+      world: g.inspect().world.layout };
+  });
+  const challenge = await snapshot();
+  await page.locator('#pause').click();
+  await page.locator('#back-menu').click();
+  await page.locator('#start-infinite').click();
+  await page.waitForFunction(() => (window as any).game?.inspect().world.layout === 'infinite-pixel-meadow');
+  const endless = await snapshot();
+  expect(challenge.world).toBe('random-pixel-meadow');
+  expect(endless.world).toBe('infinite-pixel-meadow');
+  const { world: _challengeWorld, ...expected } = challenge;
+  const { world: _endlessWorld, ...actual } = endless;
+  expect(actual).toEqual(expected);
+  expect(endless).toMatchObject({ species: 'sproutspike', runActive: true, wave: 1,
+    phase: 'fighting', shopAvailable: true, fusion: true, usesRunBuild: true, sixWaveHud: true });
+});
+
+test('pixel terrain matches the challenge map 16px/unit and shares its pixel-art atlases', async ({ page }) => {
+  await start(page);
+  const view = await page.evaluate(() => {
+    const g = (window as any).game, terrain = g.world.group.getObjectByName('无尽草场');
+    const chunks = terrain.children;
+    const first = chunks[0];
+    const ground = first.children.find((child: any) => child.name === '像素草地与泥路') as any;
+    const sprites = first.children.filter((child: any) => child.isInstancedMesh) as any[];
+    return { chunks: chunks.length, width: ground.material.map.image.width,
+      height: ground.material.map.image.height,
+      generateMipmaps: ground.material.map.generateMipmaps,
+      hasSpriteArt: sprites.length > 0,
+      nativeArtWidth: sprites.map(s => s.material.map.image.width),
+      nativeArtHeight: sprites.map(s => s.material.map.image.height) };
+  });
+  expect(view).toMatchObject({ chunks: 9, width: 1024, height: 1024,
+    generateMipmaps: false, hasSpriteArt: true });
+  expect(view.nativeArtWidth.every(x => x > 0 && x <= 32)).toBe(true);
+  expect(view.nativeArtHeight.every(x => x > 0 && x <= 32)).toBe(true);
+});
+
 test('endless mode crosses original world boundary and streams exactly nine chunks', async ({ page }) => {
   await start(page);
   const results = await page.evaluate(() => {

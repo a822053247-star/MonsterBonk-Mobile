@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { CHUNK_SIZE, chunkCoordinates, generateInfiniteChunk } from '../src/infinite-world';
+import { ROAD_WIDTH } from '../src/world-layout';
 
 test('negative, positive and boundary coordinates select stable centered chunks', () => {
   expect(chunkCoordinates(0, 0)).toEqual({ cx: 0, cz: 0 });
@@ -15,6 +16,22 @@ test('independent chunk seeds are deterministic across traversal order and revis
   positions.toReversed().forEach(([x, z]) => generateInfiniteChunk('other', x, z));
   positions.forEach(([x, z], i) => expect(generateInfiniteChunk('forest-42', x, z)).toEqual(original[i]));
   expect(generateInfiniteChunk('shore-19', -2, 3)).not.toEqual(original[3]);
+});
+
+test('cross-chunk challenge-style roads stay traversable around every pond and rock', () => {
+  for (let cx = -6; cx <= 6; cx++) for (let cz = -6; cz <= 6; cz++) {
+    const layout = generateInfiniteChunk('meadow-roads', cx, cz);
+    for (const obstacle of layout.obstacles) {
+      const x = obstacle.x - cx * CHUNK_SIZE;
+      const z = obstacle.z - cz * CHUNK_SIZE;
+      // The baked roads center on the x/z axes, not at the outer world origin.
+      // A margin around both axes must remain clear for even the largest enemies.
+      expect(Math.abs(x) > ROAD_WIDTH / 2 + obstacle.radius + .95 ||
+             Math.abs(z) > ROAD_WIDTH / 2 + obstacle.radius + .95).toBe(true);
+    }
+    expect(Math.abs(layout.bendX)).toBeLessThan(2);
+    expect(Math.abs(layout.bendZ)).toBeLessThan(2);
+  }
 });
 
 test('streamed obstacles remain inside each chunk, apart from generous free border lanes', () => {
