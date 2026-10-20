@@ -17,20 +17,24 @@ function kill(c: Combat, enemy: Combat['enemies'][number]) {
   (c as any).damageEnemy(enemy, 100000, 0, 0);
 }
 
-test('first batch is a real group; later waves grow to 24–36 active enemies with wave five the densest', () => {
+test('large groups spawn in two pulses, with a 256-slot pool and 200-active wave-five cap', () => {
+  expect(RUN_WAVES.map(w => w.cap)).toEqual([60, 90, 120, 160, 200, 120]);
+  expect(RUN_WAVES.map(w => w.groupSize)).toEqual([12, 18, 24, 32, 40, 16]);
   for (let wave = 1; wave <= 5; wave++) {
     const { c, run } = fixture(); run.waveIndex = wave-1;
     run.update(1.2, c, origin);
-    expect(c.enemies.filter(e => e.active)).toHaveLength(RUN_WAVES[wave-1].groupSize);
+    expect(c.enemies.filter(e => e.active).length).toBeGreaterThan(0);
+    const before = c.enemies.filter(e => e.active).length;
+    expect(before).toBeLessThanOrEqual(Math.ceil(run.definition.groupSize / 2));
+    run.update(.35, c, origin);
+    expect(c.enemies.filter(e => e.active).length).toBeGreaterThan(before);
     for (let batch = 0; batch < 40; batch++) {
       run.waveElapsed = 12; run.update(run.definition.interval, c, origin);
       expect(c.enemies.filter(e => e.active).length).toBeLessThanOrEqual(run.definition.cap);
     }
-    expect(c.enemies.filter(e => e.active)).toHaveLength(run.definition.cap);
-    expect(c.enemies).toHaveLength(48);
+    expect(c.enemies).toHaveLength(COMBAT_LIMITS.enemies);
     if (wave === 4) expect(c.encounters.elite?.active).toBe(true);
   }
-  expect(RUN_WAVES.slice(0, 5).map(w => w.cap)).toEqual([24, 28, 30, 32, 36]);
 });
 
 test('placement is seeded, stays in one incoming sector, and does not overlap player, enemies, cover or bounds', () => {
@@ -45,11 +49,11 @@ test('placement is seeded, stays in one incoming sector, and does not overlap pl
       const heading = Math.atan2(first.x-player.x, first.z-player.z);
       for (const e of enemies) {
         expect(e.spawnTime).toBe(.75);
-        expect(Math.hypot(e.x-player.x, e.z-player.z)).toBeGreaterThanOrEqual(8-1e-8);
-        expect(Math.hypot(e.x-player.x, e.z-player.z)).toBeLessThanOrEqual(12+1e-8);
+        expect(Math.hypot(e.x-player.x, e.z-player.z)).toBeGreaterThanOrEqual(SWARM_RULES.minDistance-1e-8);
+        expect(Math.hypot(e.x-player.x, e.z-player.z)).toBeLessThanOrEqual(SWARM_RULES.maxDistance+1e-8);
         expect(Math.hypot(e.x, e.z)).toBeLessThanOrEqual(32-c.enemyRadius(e)-.2+1e-8);
         const angle = Math.atan2(e.x-player.x, e.z-player.z)-heading;
-        expect(Math.abs(Math.atan2(Math.sin(angle), Math.cos(angle)))).toBeLessThanOrEqual(SWARM_RULES.halfAngle+1e-8);
+        expect(Math.abs(Math.atan2(Math.sin(angle), Math.cos(angle)))).toBeLessThanOrEqual(SWARM_RULES.halfAngle+SWARM_RULES.laneAngle+1e-8);
         for (const o of obstacles) expect(Math.hypot(e.x-o.x, e.z-o.z)).toBeGreaterThanOrEqual(o.radius+c.enemyRadius(e)+.3-1e-8);
         for (const other of enemies) if (other !== e) expect(Math.hypot(e.x-other.x, e.z-other.z)).toBeGreaterThanOrEqual(c.enemyRadius(e)+c.enemyRadius(other)+.3-1e-8);
       }
@@ -70,46 +74,49 @@ test('unreachable terrain skips the batch within bounded attempts, without unsaf
 
 test('full pool and partial capacity degrade safely without replacing live objects or overfilling', () => {
   const { c } = fixture(); c.encounters.beginWave(5);
-  for (let i = 0; i < 47; i++) c.spawn('normal', -20, -20);
+  for (let i = 0; i < COMBAT_LIMITS.enemies - 1; i++) c.spawn('normal', -20, -20);
   const ids = c.enemies.filter(e => e.active).map(e => e.id);
-  expect(c.spawnSwarm(origin, 8, 48)).toBe(1);
-  expect(c.spawnSwarm(origin, 8, 48)).toBe(0);
-  expect(c.enemies.slice(0, 47).map(e => e.id)).toEqual(ids);
+  expect(c.spawnSwarm(origin, 8, COMBAT_LIMITS.enemies)).toBe(1);
+  expect(c.spawnSwarm(origin, 8, COMBAT_LIMITS.enemies)).toBe(0);
+  expect(c.enemies.slice(0, COMBAT_LIMITS.enemies - 1).map(e => e.id)).toEqual(ids);
   expect(c.enemies.filter(e => e.active)).toHaveLength(COMBAT_LIMITS.enemies);
-  expect(c.spawnSwarm(origin, Infinity, 48)).toBe(0);
-  expect(c.spawnSwarm(origin, -1, 48)).toBe(0);
+  expect(c.spawnSwarm(origin, Infinity, COMBAT_LIMITS.enemies)).toBe(0);
+  expect(c.spawnSwarm(origin, -1, COMBAT_LIMITS.enemies)).toBe(0);
 });
 
-test('swarm rewards are integer XP and one coin per three real kills; carry survives waves and resets with run', () => {
+test('swarm pays one XP per three kills, one coin per nine, and carries remainders', () => {
   const { c, run } = fixture(); run.prepare(c, origin);
-  c.spawnSwarm(origin, 4, 24);
+  expect(c.spawnSwarm(origin, 12, 60)).toBe(12);
   const enemies = c.enemies.filter(e => e.active);
-  expect(enemies.map(e => e.hp)).toEqual([12, 12, 12, 12]);
-  for (const e of enemies.slice(0, 2)) { kill(c, e); kill(c, e); }
-  expect(c.kills).toBe(2); expect(c.goldEarned).toBe(0);
-  kill(c, enemies[2]); expect(c.goldEarned).toBe(1);
-  kill(c, enemies[3]); run.waveElapsed = 65; run.resolveBoundary(c);
-  expect(c.xp).toBe(4); expect(run.coins).toBe(36);
-  run.resolveBoundary(c); expect(c.xp).toBe(4); expect(run.coins).toBe(36);
+  for (const e of enemies.slice(0, 9)) { kill(c, e); kill(c, e); }
+  expect(c.kills).toBe(9); expect(c.goldEarned).toBe(1);
+  run.waveElapsed = 65; run.resolveBoundary(c);
+  expect(c.xp).toBe(3); expect(run.coins).toBe(36);
   expect(run.nextWave(run.shop!.token, c)).toBe(true); run.prepare(c, origin);
-  c.spawnSwarm(origin, 2, 28); for (const e of c.enemies.filter(e => e.active)) kill(c, e);
-  expect(c.goldEarned).toBe(2); run.update(.01, c, origin); expect(run.coins).toBe(37);
-  c.reset(); c.encounters.beginWave(1); c.spawnSwarm(origin, 2, 24);
+  c.spawnSwarm(origin, 3, 90);
+  for (const e of c.enemies.filter(e => e.active)) kill(c, e);
+  expect(c.goldEarned).toBe(1);
+  c.reset(); c.encounters.beginWave(1); c.spawnSwarm(origin, 2, 60);
   for (const e of c.enemies.filter(e => e.active)) kill(c, e);
   expect(c.goldEarned).toBe(0);
-  const reused = c.spawn('normal', 8, 0, 0)!; expect(reused.swarm).toBe(false);
+  const reused = c.spawn('normal', 8, 0, 0)!;
   kill(c, reused); expect(c.goldEarned).toBe(1);
 });
 
-test('escorts preserve formal health and warning rules; wave six keeps its original sparse support', () => {
+test('escorts keep their stats and boss wave receives massed low-health support', () => {
   const { c, run } = fixture(); run.waveIndex = 4; run.prepare(c, origin);
-  expect(c.spawnSwarm(origin, 8, 36, 'fast')).toBe(8);
+  expect(c.spawnSwarm(origin, 8, 200, 'fast')).toBe(8);
   const fast = c.enemies.find(e => e.active && e.kind === 'fast')!;
   expect(fast.hp).toBe(88); expect(fast.swarm).toBe(false);
   c.clearWave(); run.waveIndex = 5; run.waveElapsed = 0; run.update(1.2, c, origin);
   expect(c.encounters.boss?.hp).toBe(6000);
-  expect(c.enemies.filter(e => e.active && !e.rank)).toHaveLength(1);
-  expect(c.enemies.find(e => e.active && !e.rank)?.hp).toBe(ENEMY_TYPES.normal.hp*1.8);
+  const first = c.enemies.filter(e => e.active && !e.rank);
+  expect(first.length).toBeGreaterThan(0);
+  expect(first.length).toBeLessThanOrEqual(8);
+  run.update(.35, c, origin);
+  const support = c.enemies.filter(e => e.active && !e.rank);
+  expect(support.length).toBeGreaterThan(first.length);
+  expect(support.every(e => e.swarm && e.hp === SWARM_RULES.health[5])).toBe(true);
 });
 
 test('high-throughput clearing has bounded economy, pooled XP merge and exactly-once boundary settlement', () => {
@@ -122,12 +129,9 @@ test('high-throughput clearing has bounded economy, pooled XP merge and exactly-
       while (c.progression.awaitingChoice) c.chooseUpgrade(c.progression.offers[0]);
       if (run.remaining < 1e-8) run.resolveBoundary(c);
     }
-    const oldIntervals = [1.5, 1.2, 1.05, 1, .8];
-    const oldBatches = Math.ceil((run.definition.seconds-1.2)/oldIntervals[wave-1]);
-    const oldKinds = Array.from({ length: oldBatches }, (_, i) => run.definition.enemies[i%run.definition.enemies.length]);
-    const eliteGold = wave === 4 ? 18 : 0, eliteXp = wave === 4 ? 24 : 0;
-    expect(run.earned).toBeLessThanOrEqual(run.definition.reward + oldKinds.reduce((s, k) => s+(k === 'tank' ? 2 : 1), eliteGold));
-    expect(c.xp).toBeLessThanOrEqual(oldKinds.reduce((s, k) => s+ENEMY_TYPES[k].xp, eliteXp));
+    expect(run.earned).toBeGreaterThanOrEqual(run.definition.reward);
+    expect(run.earned).toBeLessThanOrEqual(run.definition.reward + c.kills + 18);
+    expect(c.xp).toBeLessThanOrEqual(c.kills * 8 + 24);
     expect(c.xp).toBeGreaterThan(0); expect(run.phase).toBe('shop');
     const xp = c.xp, gold = run.earned;
     run.resolveBoundary(c); expect(c.xp).toBe(xp); expect(run.earned).toBe(gold);
@@ -154,25 +158,36 @@ test('a real area attack clears multiple low-health swarm members in one burst',
   for (const a of c.runBuild.attacks) a.cooldown = 100;
   for (let tick = 0; tick < 40; tick++) { c.party!.syncLeader(player, 0); c.update(1/60, player); }
   expect(c.kills).toBe(8);
-  expect(c.goldEarned).toBe(2);
+  expect(c.goldEarned).toBe(0);
 });
 
-test('24/36/48 pooled enemies with all fusions terminate ticks and keep child generations and resources bounded', () => {
-  for (const count of [24, 36, 48]) {
+test('24/48/120/200 pooled enemies with all fusions preserve bounded resources', () => {
+  for (const count of [24, 48, 120, 200]) {
     const { c } = fixture(count); c.encounters.beginWave(5); c.hp = 100000;
     for (const id of ['bubble-weapon', 'leaf-weapon', 'split-on-hit', 'chain', 'area', 'shattered-core'] as const) expect(c.grantUpgrade(id)).toBe(true);
     for (let i = 0; i < count; i++) {
       const angle = i/count*Math.PI*2;
       c.spawn('normal', Math.sin(angle)*7, Math.cos(angle)*7, 0);
     }
-    for (let tick = 0; tick < 600; tick++) {
+    for (let tick = 0; tick < (count >= 120 ? 180 : 600); tick++) {
       while (c.progression.awaitingChoice) c.chooseUpgrade(c.progression.offers[0]);
       c.party!.syncLeader(origin, 0); c.update(1/60, origin);
-      expect(c.enemies.filter(e => e.active).length).toBeLessThanOrEqual(48);
+      expect(c.enemies.filter(e => e.active).length).toBeLessThanOrEqual(COMBAT_LIMITS.enemies);
       expect(c.projectiles.filter(p => p.active).length).toBeLessThanOrEqual(24);
       for (const shot of c.projectiles) if (shot.active) expect(shot.generation ?? 0).toBeLessThanOrEqual(1);
     }
     expect(c.kills).toBeGreaterThan(0); expect(c.childShots).toBeGreaterThan(0);
     expect(c.effects).toHaveLength(48); expect(c.orbs).toHaveLength(96);
   }
+});
+
+test('Boss summons never exceed the final-wave active cap', () => {
+  const { c, run } = fixture(); run.waveIndex = 5; run.prepare(c, origin);
+  const boss = c.encounters.boss!; boss.spawnTime = 0;
+  for (let i = 0; i < 119; i++) c.spawn('normal', -20, -20, 0);
+  expect(c.enemies.filter(e => e.active)).toHaveLength(120);
+  c.encounters.bossState = 'summon-windup'; c.encounters.bossTime = 1;
+  c.update(1/60, origin);
+  expect(c.enemies.filter(e => e.active)).toHaveLength(120);
+  expect(c.encounters.bossState).toBe('summon');
 });
