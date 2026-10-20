@@ -26,6 +26,11 @@ export const ENEMY_TYPES = {
 export const WEAPON = { range: 10.5, interval: 0.44, speed: 18, damage: 18, lifetime: 0.8, radius: 0.2 } as const;
 /** Rock tanks are tougher only in the formal six-wave run, not legacy modes. */
 export const FORMAL_ROCK_HP = 125;
+export const FORMAL_SPORE_HP = 140;
+/** The slow red blob braces, lunges briefly, then exposes a punish window. */
+export const RED_BLOB_BASH = { range: 2.55, windup: .7, speed: 4.3, active: .33, recovery: .9, cooldown: 1.4 } as const;
+/** Five enemy silhouettes share normal group slots; spores remain live-capped. */
+export const FORMAL_MIX: readonly EnemyKind[] = ['normal','fast','normal','tank','draft-crystal-swarm','normal','fast','normal','tank','draft-crystal-swarm','normal','draft-spore-bomber'] as const;
 export const FORMAL_POUNCE = { ...POUNCE, range: 6, windup: .85, speed: 13, duration: .5, recovery: 1.1, cooldown: 2 } as const;
 export const SWARM_RULES = { health: [12, 14, 16, 18, 20, 22], minDistance: 7.5, maxDistance: 14, halfAngle: .42, laneAngle: .78, xp: 1, killsPerXp: 3, killsPerCoin: 9, contactDamage: 3 } as const;
 type Point = { x: number; z: number };
@@ -210,7 +215,7 @@ export class Combat {
     Object.assign(enemy, { active: true, id: this.nextId++, kind, x, z, previousX: x, previousZ: z, hp: this.enemyMaxHp(kind), age: 0, spawnTime, flash: 0, knockX: 0, knockZ: 0, facing: 0, orbitCooldown: 0, intent: 'chase', intentTime: 0, intentCooldown: 0, aimX: 0, aimZ: 1, stagger: 0, hornDash: 0, slowTime: 0, walkPhase: (this.nextId * 2.399963) % (Math.PI * 2), walkAmount: 0, walkX: 0, walkZ: 0, steerX: undefined, steerZ: undefined });
     enemy.rank = undefined; enemy.maxHp = enemy.radius = undefined; enemy.swarm = false;
     enemy.specialTime = 0;
-    if (this.encounters.enabled) enemy.hp = enemy.maxHp = (kind==='fast'?40:kind==='tank'?FORMAL_ROCK_HP:ENEMY_TYPES[kind].hp)*(ENCOUNTER_RULES.waveHealth[this.encounters.wave-1]??1);
+    if (this.encounters.enabled) enemy.hp = enemy.maxHp = (kind==='fast'?40:kind==='tank'?FORMAL_ROCK_HP:kind==='draft-spore-bomber'?FORMAL_SPORE_HP:ENEMY_TYPES[kind].hp)*(ENCOUNTER_RULES.waveHealth[this.encounters.wave-1]??1);
     this.spawned++;
     return enemy;
   }
@@ -268,7 +273,7 @@ export class Combat {
   /** One incoming sector per batch leaves the opposite side open at birth.
    * Finite placement attempts skip blocked members, never queue a catch-up burst. */
   spawnSwarm(player: Point, count: number, cap: number, escort: EnemyKind = 'normal',
-    mix?: { fastCap: number; tankCap: number }) {
+    mix?: { fastCap: number; tankCap: number; crystalCap?: number; sporeCap?: number; crystalAllowed?: boolean; sporeAllowed?: boolean }) {
     if (!this.encounters.enabled || !Number.isFinite(count) || !Number.isFinite(cap)) return 0;
     const available = Math.min(Math.floor(count), Math.floor(cap) - this.enemies.filter(e => e.active).length, COMBAT_LIMITS.enemies);
     if (available <= 0 || this.enemies.every(e => e.active)) return 0;
@@ -276,16 +281,23 @@ export class Combat {
     if (!anchor) return 0;
     const heading = Math.atan2(anchor.x-player.x, anchor.z-player.z);
     let spawned = 0;
-    let fast = mix ? this.enemies.filter(e => e.active && !e.rank && e.kind === 'fast').length : 0;
-    let tank = mix ? this.enemies.filter(e => e.active && !e.rank && e.kind === 'tank').length : 0;
+    const alive: Partial<Record<EnemyKind, number>> = {};
+    if (mix) for (const enemy of this.enemies) if (enemy.active && !enemy.rank)
+      alive[enemy.kind] = (alive[enemy.kind] ?? 0) + 1;
     for (let i = 0; i < available; i++) {
-      // A reproducible 3:1:1 target mix, with live quotas: fodder never disappears,
-      // and specialist-heavy swarms cannot grow unbounded in the 200-enemy pool.
-      const slot = (this.spawned + i) % 5;
-      const candidate: EnemyKind = !mix ? i === available-1 ? escort : 'normal'
-        : slot === 1 ? 'fast' : slot === 3 ? 'tank' : 'normal';
-      const kind = mix && candidate === 'fast' && fast >= mix.fastCap ? 'normal'
-        : mix && candidate === 'tank' && tank >= mix.tankCap ? 'normal' : candidate;
+      // Every ordinary wave slot participates in one deterministic five-kind cycle.
+      // Cap- or telegraph-blocked candidates fall back to cheap red fodder.
+      const candidate: EnemyKind = mix ? FORMAL_MIX[this.spawned % FORMAL_MIX.length]
+        : i === available - 1 ? escort : 'normal';
+      const quota = candidate === 'fast' ? mix?.fastCap
+        : candidate === 'tank' ? mix?.tankCap
+        : candidate === 'draft-crystal-swarm' ? (mix?.crystalAllowed ? mix.crystalCap : 0)
+        : candidate === 'draft-spore-bomber' ? (mix?.sporeAllowed ? mix.sporeCap : 0)
+        : Infinity;
+      const occupied = (alive[candidate] ?? 0);
+      const eventFull = candidate === 'draft-spore-bomber' &&
+        this.sporeExplosions.filter(e => e.active).length + occupied >= SPORE_BOMBER.capacity;
+      const kind: EnemyKind = mix && (occupied >= (quota ?? 0) || eventFull) ? 'normal' : candidate;
       const lane = i % 3 === 1 ? -SWARM_RULES.laneAngle : i % 3 === 2 ? SWARM_RULES.laneAngle : 0;
       const point = i === 0 ? anchor : this.spawnPosition(player, SWARM_RULES.minDistance, SWARM_RULES.maxDistance, ENEMY_TYPES[kind].radius, heading + lane);
       if (!point) continue;
@@ -294,8 +306,8 @@ export class Combat {
       if (kind === 'normal') {
         enemy.swarm = true;
         enemy.hp = enemy.maxHp = SWARM_RULES.health[this.encounters.wave-1] ?? 18;
-      } else if (mix && kind === 'fast') fast++;
-      else if (mix && kind === 'tank') tank++;
+      }
+      if (mix) alive[kind] = (alive[kind] ?? 0) + 1;
       spawned++;
     }
     return spawned;
@@ -495,9 +507,22 @@ export class Combat {
             moveZ = (moveZ + steerX * type.speed * .72 * side) * .8;
           }
         }
-        else if (this.encounters.enabled) {
+        else if (this.encounters.enabled && enemy.kind === 'normal') {
+          this.updateRedBash(enemy,dt,dx,dz,length);
+          if (enemy.intent === 'pounce') {
+            moveX = enemy.aimX * RED_BLOB_BASH.speed;
+            moveZ = enemy.aimZ * RED_BLOB_BASH.speed;
+          } else if (enemy.intent !== 'chase') moveX = moveZ = 0;
+        } else if (this.encounters.enabled) {
           this.updateMelee(enemy,dt,dx,dz,length);
           if (enemy.intent !== 'chase') moveX = moveZ = 0;
+          else if (enemy.kind === 'draft-crystal-swarm') {
+            // Crystal bugs zigzag instead of the red blob's stop-and-bash.
+            const phase = enemy.id * 2.399963 + this.elapsed * 4.2;
+            const sway = Math.sin(phase) * .65 * type.speed;
+            moveX += -dz / length * sway;
+            moveZ += dx / length * sway;
+          }
         }
       }
       if (this.encounters.enabled && enemy.rank) {
@@ -832,7 +857,7 @@ export class Combat {
           if (!enemy.active || enemy.spawnTime > 0) continue;
           const dx = enemy.x-x, dz = enemy.z-z, distance = Math.hypot(dx,dz);
           if (distance > SPORE_BOMBER.radius+this.enemyRadius(enemy) || this.covered(x,z,enemy.x,enemy.z)) continue;
-          this.damageEnemy(enemy,SPORE_BOMBER.enemyDamage,dx/Math.max(.001,distance),dz/Math.max(.001,distance),'spore');
+          this.damageEnemy(enemy,SPORE_BOMBER.enemyDamage * (enemy.kind === 'draft-spore-bomber' ? SPORE_BOMBER.chainMultiplier : 1),dx/Math.max(.001,distance),dz/Math.max(.001,distance),'spore');
           if (this.encounters.dying) return;
         }
       }
@@ -965,6 +990,23 @@ export class Combat {
     if (enemy.intent === 'windup') { enemy.intent = 'pounce'; enemy.intentTime = rule.duration; }
     else if (enemy.intent === 'pounce') { enemy.intent = 'recover'; enemy.intentTime = rule.recovery; }
     else { enemy.intent = 'chase'; enemy.intentCooldown = rule.cooldown; }
+  }
+
+  private updateRedBash(enemy: Enemy, dt: number, dx: number, dz: number, distance: number) {
+    enemy.intentCooldown = Math.max(0,enemy.intentCooldown-dt);
+    if (enemy.intent === 'chase') {
+      if (!enemy.intentCooldown && distance < RED_BLOB_BASH.range
+        && !this.covered(enemy.x,enemy.z,enemy.x+dx,enemy.z+dz)) {
+        enemy.intent = 'windup'; enemy.intentTime = RED_BLOB_BASH.windup;
+        enemy.aimX = dx/distance; enemy.aimZ = dz/distance;
+      }
+      return;
+    }
+    enemy.intentTime = Math.max(0,enemy.intentTime-dt);
+    if (enemy.intentTime > 1e-8) return;
+    if (enemy.intent === 'windup') { enemy.intent='pounce'; enemy.intentTime=RED_BLOB_BASH.active; }
+    else if (enemy.intent === 'pounce') { enemy.intent='recover'; enemy.intentTime=RED_BLOB_BASH.recovery; }
+    else { enemy.intent='chase'; enemy.intentCooldown=RED_BLOB_BASH.cooldown; }
   }
 
   private updateMelee(enemy: Enemy, dt: number, dx: number, dz: number, distance: number) {
