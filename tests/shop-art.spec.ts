@@ -6,7 +6,7 @@ test.beforeEach(async ({ page }) => {
   await page.route('**/shop-art-harness*', route => route.fulfill({ contentType: 'text/html; charset=utf-8', body: `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"></head><body><div id="app"></div><script type="module">
     import '/src/style.css';import {createUI,renderRunShop} from '/src/ui.ts';import {Game} from '/src/game.ts';import {RunShop} from '/src/shop.ts';
     createUI(document.getElementById('app'));const g=window.game=new Game();
-    window.openShop=()=>{g.sleep();g.combat.hp=40;for(const e of g.combat.enemies)e.active=false;g.run.waveElapsed=g.run.definition.seconds-.001;g.step(1/60);g.run.coins=200;g.run.shop=new RunShop(g.combat,901,()=>0);renderRunShop(g.run,g.combat)};
+    window.openShop=()=>{g.sleep();g.combat.hp=40;for(const e of g.combat.enemies)e.active=false;g.run.waveIndex=4;g.run.waveElapsed=g.run.definition.seconds-.001;g.step(1/60);g.run.updateRest(3.5,g.combat);g.syncRunPhase();g.run.coins=200;g.run.shop=new RunShop(g.combat,901,()=>0);renderRunShop(g.run,g.combat)};
     window.redrawShop=()=>renderRunShop(g.run,g.combat);
     window.emptyShop=()=>{for(const skill of g.combat.progression.pool)g.combat.progression.ranks[skill.id]=skill.maxRank;g.combat.hp=g.combat.maxHp;g.run.shop=new RunShop(g.combat,902,()=>0);renderRunShop(g.run,g.combat)};
   </script></body></html>` }));

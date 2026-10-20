@@ -1,0 +1,41 @@
+name: Five-kind wave encounters
+on:
+  pull_request:
+    paths:
+      - src/combat.ts
+      - src/run-flow.ts
+      - src/special-enemies.ts
+      - tests/five-kind-mix.spec.ts
+      - tests/wave-director.spec.ts
+      - tests/special-enemies.spec.ts
+      - docs/FIVE-KIND-MIX.md
+      - .github/workflows/five-kind-mix.yml
+  push:
+    branches: [main]
+    paths:
+      - src/combat.ts
+      - src/run-flow.ts
+      - src/special-enemies.ts
+      - .github/workflows/five-kind-mix.yml
+jobs:
+  mixed:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium webkit
+      - run: npx playwright test tests/five-kind-mix.spec.ts tests/wave-director.spec.ts tests/special-enemies.spec.ts tests/mixed-wave-transition.spec.ts tests/run-flow.spec.ts tests/weapon-threat-balance.spec.ts tests/special-growth.spec.ts --project=chromium
+      - run: npx playwright test tests/run-flow-ui.spec.ts tests/special-enemies-ui.spec.ts --project=webkit
+      - run: npm run balance:waves -- --seconds 12 --output artifacts/ci-five-kind-baseline.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: five-kind-mix-baseline
+          path: artifacts/ci-five-kind-baseline.json
+          if-no-files-found: ignore

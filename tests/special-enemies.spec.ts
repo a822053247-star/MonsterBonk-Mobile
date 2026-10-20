@@ -45,9 +45,9 @@ test('spore death warns for .7 seconds then hurts both monsters and player exact
   const c=fixture(), bomber=still(c.spawn('draft-spore-bomber',0,1,0)!), victim=still(c.spawn('tank',1,1,0)!);
   kill(c,bomber); kill(c,bomber);
   expect(c.sporeExplosions.filter(e=>e.active)).toHaveLength(1);
-  c.update(.69,origin); expect(c.hp).toBe(100); expect(victim.hp).toBe(100);
-  c.update(.01,origin); expect(c.hp).toBe(88); expect(victim.hp).toBe(55);
-  c.update(.1,origin); expect(c.hp).toBe(88); expect(victim.hp).toBe(55);
+  c.update(.69,origin); expect(c.hp).toBe(100); expect(victim.hp).toBe(125);
+  c.update(.01,origin); expect(c.hp).toBe(88); expect(victim.hp).toBe(80);
+  c.update(.1,origin); expect(c.hp).toBe(88); expect(victim.hp).toBe(80);
   c.update(.3,origin); expect(c.sporeExplosions.some(e=>e.active)).toBe(false);
 });
 
@@ -74,7 +74,7 @@ test('explosion snapshots survive enemy-slot reuse, and every bomber reserves a 
 test('cover and spawn protection block spore damage', () => {
   const c=fixture([{x:0,z:0,radius:.35}]), bomber=c.spawn('draft-spore-bomber',-1,0,0)!, victim=still(c.spawn('tank',1,0,0)!);
   const spawning=c.spawn('normal',-1,1,2)!; kill(c,bomber); c.update(.7,{x:1,z:0});
-  expect(c.hp).toBe(100); expect(victim.hp).toBe(100); expect(spawning.hp).toBe(30);
+  expect(c.hp).toBe(100); expect(victim.hp).toBe(125); expect(spawning.hp).toBe(30);
 });
 
 test('runner lingers, flees away, never bites, and escapes without rewards', () => {
@@ -129,7 +129,7 @@ test('special scheduling cannot overflow a crowded wave or leak into legacy auto
   expect(c.enemies.every(e=>!e.active||['normal','fast','tank'].includes(e.kind))).toBe(true);
 });
 
-test('ordinary refills leave room for a waiting crystal group when a crowded field is cleared slowly', () => {
+test('crowded wave refills can include crystals from the same shared weighted batches', () => {
   const c=fixture(), run=new RunFlow();
   for(let i=0;i<60;i++) c.spawn('normal',10,10,0);
   run.update(8,c,origin);
@@ -138,7 +138,7 @@ test('ordinary refills leave room for a waiting crystal group when a crowded fie
     run.update(.2,c,origin);
     expect(c.enemies.filter(e=>e.active).length).toBeLessThanOrEqual(60);
   }
-  expect(c.enemies.filter(e=>e.active&&e.kind==='draft-crystal-swarm').length).toBeGreaterThanOrEqual(5);
+  expect(c.enemies.filter(e=>e.active&&e.kind==='draft-crystal-swarm').length).toBeGreaterThan(0);
 });
 
 test('real firebolts kill a bomber and a treasure runner through their special death settlements', () => {
@@ -146,7 +146,7 @@ test('real firebolts kill a bomber and a treasure runner through their special d
     const c=fixture(), e=still(c.spawn(kind,0,4,0)!); c.invulnerability=100;
     c.runBuild.attacks[0].cooldown=0;
     let warned=false;
-    for(let tick=0;tick<180&&e.active;tick++) { c.party!.syncLeader(origin,0); c.update(1/60,origin); warned ||= c.sporeExplosions.some(e=>e.active); }
+    for(let tick=0;tick<720&&e.active;tick++) { c.party!.syncLeader(origin,0); c.update(1/60,origin); warned ||= c.sporeExplosions.some(e=>e.active); }
     expect(e.active).toBe(false); expect(c.kills).toBe(1);
     if(kind==='draft-spore-bomber') expect(warned).toBe(true);
     else { expect(c.goldEarned).toBe(12); expect(c.treasureRewards.some(e=>e.active)).toBe(true); }

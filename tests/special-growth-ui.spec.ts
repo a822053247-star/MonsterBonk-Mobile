@@ -15,7 +15,7 @@ test('treasure capture visibly grants a free real shop refresh, then normal pric
   await page.evaluate(() => {
     const g = (window as any).game;
     g.sleep();
-    g.run.waveIndex = 1;
+    g.run.waveIndex = 4;
     g.run.prepare(g.combat, g.position);
     const runner = g.combat.spawn('draft-treasure-runner', g.position.x + 5, g.position.z, 0);
     g.combat.damageEnemy(runner, 100000, 0, 0);
@@ -28,6 +28,8 @@ test('treasure capture visibly grants a free real shop refresh, then normal pric
     }
     g.run.waveElapsed = g.run.definition.seconds - .001;
     g.step(1 / 60);
+    g.run.updateRest(3.5, g.combat);
+    g.syncRunPhase();
   });
   await expect(page.locator('#shop-screen')).toBeVisible();
   await expect(page.locator('#shop-message')).toContainText('携宝兽奖励免费刷新');

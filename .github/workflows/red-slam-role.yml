@@ -1,0 +1,31 @@
+name: Distinct red and sprinter roles
+on:
+  pull_request:
+    paths:
+      - src/combat.ts
+      - src/combat-view.ts
+      - tests/five-kind-mix.spec.ts
+      - tests/red-slam-ui.spec.ts
+      - docs/FIVE-KIND-MIX.md
+      - .github/workflows/red-slam-role.yml
+  push:
+    branches: [main]
+    paths:
+      - src/combat.ts
+      - src/combat-view.ts
+      - .github/workflows/red-slam-role.yml
+jobs:
+  roles:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium webkit
+      - run: npx playwright test tests/five-kind-mix.spec.ts tests/enemy-challenge.spec.ts tests/mixed-wave-transition.spec.ts --project=chromium
+      - run: npx playwright test tests/red-slam-ui.spec.ts --project=chromium --project=webkit

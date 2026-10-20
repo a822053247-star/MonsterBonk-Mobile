@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { COMBAT_CLARITY, WATER_IMPACT_VISUAL, impactVisualPosition, readableEffects } from './combat-clarity';
 import { enemyPose } from './enemy-motion';
-import { Combat, COMBAT_LIMITS, ENEMY_TYPES, FORMAL_POUNCE } from './combat';
+import { Combat, COMBAT_LIMITS, ENEMY_TYPES, FORMAL_POUNCE, RED_BLOB_BASH } from './combat';
 import { EncounterView } from './encounter-view';
 import { SKILL_RULES } from './progression';
 import { POUNCE } from './trial';
@@ -190,7 +190,12 @@ export class CombatView {
           this.put(this.pounceLanes, x + enemy.aimX * length / 2, 0.075, z + enemy.aimZ * length / 2, 0.9, length, 1, -Math.PI / 2, 0, angle);
           this.put(this.pounceArrows, x + enemy.aimX * length, 0.085, z + enemy.aimZ * length, 0.4, 0.4, 1, -Math.PI / 2, 0, angle - Math.PI / 2);
         }
-        if(this.combat.encounters.enabled && enemy.kind!=='fast' && !enemy.rank && (enemy.intent==='windup'||enemy.intent==='pounce')) this.put(this.warnings,x,.09,z,size+.62,size+.62,1,-Math.PI/2);
+        if(this.combat.encounters.enabled && enemy.kind!=='fast' && !enemy.rank && (enemy.intent==='windup'||enemy.intent==='pounce')) {
+          // Circular stationary danger for red blobs; directional lanes belong
+          // exclusively to fast sprinters. Ground ring matches actual hit radius.
+          const warningRadius = enemy.kind === 'normal' ? RED_BLOB_BASH.radius : size + .62;
+          this.put(this.warnings,x,.09,z,warningRadius,warningRadius,1,-Math.PI/2);
+        }
         if (enemy.intent === 'recover' || enemy.stagger > 0) this.put(this.recoveryRings, x, 0.08, z, size + 0.3, size + 0.3, 1, -Math.PI / 2);
       }
     }

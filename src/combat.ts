@@ -24,6 +24,16 @@ export const ENEMY_TYPES = {
   'draft-treasure-runner': { name: '携宝兽', hp: 65, speed: 3.5, radius: .48, damage: 0, xp: TREASURE_RUNNER.xp, color: '#f1cd68' },
 } as const;
 export const WEAPON = { range: 10.5, interval: 0.44, speed: 18, damage: 18, lifetime: 0.8, radius: 0.2 } as const;
+/** Rock tanks are tougher only in the formal six-wave run, not legacy modes. */
+export const FORMAL_ROCK_HP = 125;
+/** Rock armor inexorably marches and hurts only on actual close contact. It never performs a red slam. */
+export const ROCK_MARCH = { turnResponse: 3.2, contactPadding: .17 } as const;
+export const FORMAL_SPORE_HP = 140;
+/** Red blobs hold ground for a short area slam; only sprinters can lunge.
+ * The hit radius matches the ground warning, and recovery is punishable. */
+export const RED_BLOB_BASH = { range: 1.65, radius: 1.35, windup: .7, active: .2, recovery: 1.1, cooldown: 1.35, nearbyWarningCap: 2 } as const;
+/** Five enemy silhouettes share normal group slots; spores remain live-capped. */
+export const FORMAL_MIX: readonly EnemyKind[] = ['normal','fast','normal','tank','draft-crystal-swarm','normal','fast','normal','tank','draft-crystal-swarm','normal','draft-spore-bomber'] as const;
 export const FORMAL_POUNCE = { ...POUNCE, range: 6, windup: .85, speed: 13, duration: .5, recovery: 1.1, cooldown: 2 } as const;
 export const SWARM_RULES = { health: [12, 14, 16, 18, 20, 22], minDistance: 7.5, maxDistance: 14, halfAngle: .42, laneAngle: .78, xp: 1, killsPerXp: 3, killsPerCoin: 9, contactDamage: 3 } as const;
 type Point = { x: number; z: number };
@@ -225,7 +235,7 @@ export class Combat {
     enemy.rank = undefined; enemy.maxHp = enemy.radius = undefined; enemy.swarm = false;
     enemy.specialTime = 0;
     enemy.burnTime = enemy.burnClock = enemy.burnDamage = enemy.burnStacks = 0; enemy.burnSource = undefined;
-    if (this.encounters.enabled) enemy.hp = enemy.maxHp = (kind==='fast'?40:ENEMY_TYPES[kind].hp)*(ENCOUNTER_RULES.waveHealth[this.encounters.wave-1]??1);
+    if (this.encounters.enabled) enemy.hp = enemy.maxHp = (kind==='fast'?40:kind==='tank'?FORMAL_ROCK_HP:kind==='draft-spore-bomber'?FORMAL_SPORE_HP:ENEMY_TYPES[kind].hp)*(ENCOUNTER_RULES.waveHealth[this.encounters.wave-1]??1);
     this.spawned++;
     return enemy;
   }
@@ -282,7 +292,8 @@ export class Combat {
 
   /** One incoming sector per batch leaves the opposite side open at birth.
    * Finite placement attempts skip blocked members, never queue a catch-up burst. */
-  spawnSwarm(player: Point, count: number, cap: number, escort: EnemyKind = 'normal') {
+  spawnSwarm(player: Point, count: number, cap: number, escort: EnemyKind = 'normal',
+    mix?: { fastCap: number; tankCap: number; crystalCap?: number; sporeCap?: number; crystalAllowed?: boolean; sporeAllowed?: boolean }) {
     if (!this.encounters.enabled || !Number.isFinite(count) || !Number.isFinite(cap)) return 0;
     const available = Math.min(Math.floor(count), Math.floor(cap) - this.enemies.filter(e => e.active).length, COMBAT_LIMITS.enemies);
     if (available <= 0 || this.enemies.every(e => e.active)) return 0;
@@ -290,8 +301,23 @@ export class Combat {
     if (!anchor) return 0;
     const heading = Math.atan2(anchor.x-player.x, anchor.z-player.z);
     let spawned = 0;
+    const alive: Partial<Record<EnemyKind, number>> = {};
+    if (mix) for (const enemy of this.enemies) if (enemy.active && !enemy.rank)
+      alive[enemy.kind] = (alive[enemy.kind] ?? 0) + 1;
     for (let i = 0; i < available; i++) {
-      const kind = i === available-1 ? escort : 'normal';
+      // Every ordinary wave slot participates in one deterministic five-kind cycle.
+      // Cap- or telegraph-blocked candidates fall back to cheap red fodder.
+      const candidate: EnemyKind = mix ? FORMAL_MIX[this.spawned % FORMAL_MIX.length]
+        : i === available - 1 ? escort : 'normal';
+      const quota = candidate === 'fast' ? mix?.fastCap
+        : candidate === 'tank' ? mix?.tankCap
+        : candidate === 'draft-crystal-swarm' ? (mix?.crystalAllowed ? mix.crystalCap : 0)
+        : candidate === 'draft-spore-bomber' ? (mix?.sporeAllowed ? mix.sporeCap : 0)
+        : Infinity;
+      const occupied = (alive[candidate] ?? 0);
+      const eventFull = candidate === 'draft-spore-bomber' &&
+        this.sporeExplosions.filter(e => e.active).length + occupied >= SPORE_BOMBER.capacity;
+      const kind: EnemyKind = mix && (occupied >= (quota ?? 0) || eventFull) ? 'normal' : candidate;
       const lane = i % 3 === 1 ? -SWARM_RULES.laneAngle : i % 3 === 2 ? SWARM_RULES.laneAngle : 0;
       const point = i === 0 ? anchor : this.spawnPosition(player, SWARM_RULES.minDistance, SWARM_RULES.maxDistance, ENEMY_TYPES[kind].radius, heading + lane);
       if (!point) continue;
@@ -301,6 +327,7 @@ export class Combat {
         enemy.swarm = true;
         enemy.hp = enemy.maxHp = SWARM_RULES.health[this.encounters.wave-1] ?? 18;
       }
+      if (mix) alive[kind] = (alive[kind] ?? 0) + 1;
       spawned++;
     }
     return spawned;
@@ -478,7 +505,12 @@ export class Combat {
         }
       }
       const steeringLength = Math.max(1, Math.hypot(steerX, steerZ));
-      const desiredX = steerX / steeringLength, desiredZ = steerZ / steeringLength, smoothing = 1 - Math.exp(-14 * dt);
+      const desiredX = steerX / steeringLength, desiredZ = steerZ / steeringLength;
+      // The ordinary rock troop has weight: it turns in a wide arc rather than
+      // snapping toward the player like a red blob. Ranked elite/Boss unchanged.
+      const steeringResponse = this.encounters.enabled && enemy.kind === 'tank' && !enemy.rank
+        ? ROCK_MARCH.turnResponse : 14;
+      const smoothing = 1 - Math.exp(-steeringResponse * dt);
       enemy.steerX = (enemy.steerX ?? desiredX) + (desiredX - (enemy.steerX ?? desiredX)) * smoothing;
       enemy.steerZ = (enemy.steerZ ?? desiredZ) + (desiredZ - (enemy.steerZ ?? desiredZ)) * smoothing;
       const smoothLength = Math.max(1, Math.hypot(enemy.steerX, enemy.steerZ));
@@ -491,11 +523,36 @@ export class Combat {
           const rule = this.encounters.enabled ? FORMAL_POUNCE : POUNCE;
           if (!this.encounters.enabled || enemy.intent !== 'chase' || !this.covered(enemy.x,enemy.z,player.x,player.z)) this.updatePounce(enemy, dt, dx, dz, length, rule);
           if (enemy.intent === 'pounce') { moveX = enemy.aimX * rule.speed; moveZ = enemy.aimZ * rule.speed; }
-          else if (enemy.intent !== 'chase') { moveX = moveZ = 0; }
+          else if (this.encounters.enabled && enemy.intent === 'recover') {
+            // Disengage after a missed leap; players can punish the recovery.
+            moveX = -dx / length * type.speed * .55; moveZ = -dz / length * type.speed * .55;
+          } else if (enemy.intent !== 'chase') { moveX = moveZ = 0; }
+          else if (this.encounters.enabled && length > 2.2 && length < 8 && enemy.intentCooldown > 0) {
+            // Alternate flanking sides per enemy; lock-on/charge remains fully telegraphed.
+            const side = enemy.id % 2 ? 1 : -1;
+            moveX = (moveX - steerZ * type.speed * .72 * side) * .8;
+            moveZ = (moveZ + steerX * type.speed * .72 * side) * .8;
+          }
         }
-        else if (this.encounters.enabled) {
+        else if (this.encounters.enabled && enemy.kind === 'normal') {
+          // Stand-and-slam is a positional threat, not a second sprinter charge.
+          this.updateRedBash(enemy,dt,dx,dz,length);
+          if (enemy.intent !== 'chase') moveX = moveZ = 0;
+        } else if (this.encounters.enabled && enemy.kind === 'tank') {
+          // No windup/pounce/recover: a heavy, continuously moving body-blocker,
+          // distinct from red's stationary circle and sprinter's directional dash.
+          enemy.intent = 'chase';
+          enemy.intentTime = enemy.intentCooldown = 0;
+        } else if (this.encounters.enabled) {
           this.updateMelee(enemy,dt,dx,dz,length);
           if (enemy.intent !== 'chase') moveX = moveZ = 0;
+          else if (enemy.kind === 'draft-crystal-swarm') {
+            // Crystal bugs zigzag instead of the red blob's stop-and-bash.
+            const phase = enemy.id * 2.399963 + this.elapsed * 4.2;
+            const sway = Math.sin(phase) * .65 * type.speed;
+            moveX += -dz / length * sway;
+            moveZ += dx / length * sway;
+          }
         }
       }
       if (this.encounters.enabled && enemy.rank) {
@@ -642,11 +699,21 @@ export class Combat {
       for (const enemy of this.enemies) {
         if (!enemy.active || enemy.spawnTime > 0) continue;
         if (this.hasAttackIntents && (enemy.stagger > 0 || enemy.intent === 'windup' || enemy.intent === 'recover')) continue;
-        if (this.encounters.enabled && (enemy.rank === 'elite' || enemy.rank === 'boss' && this.encounters.bossState !== 'dash' || !enemy.rank && enemy.intent !== 'pounce')) continue;
+        if (this.encounters.enabled && (enemy.rank === 'elite' || enemy.rank === 'boss' && this.encounters.bossState !== 'dash'
+          || !enemy.rank && enemy.kind !== 'tank' && enemy.intent !== 'pounce')) continue;
         const type = ENEMY_TYPES[enemy.kind];
         // Relative sweep catches a fast pounce crossing the player between ticks.
         const pounceHit = this.hasAttackIntents && (enemy.intent === 'pounce' || enemy.rank === 'boss') && segmentHit(enemy.previousX - this.previousAnchorX, enemy.previousZ - this.previousAnchorZ, enemy.x - player.x, enemy.z - player.z, 0, 0, this.enemyRadius(enemy) + 0.62) !== Infinity;
-        if ((pounceHit || Math.hypot(enemy.x - player.x, enemy.z - player.z) < this.enemyRadius(enemy) + 0.62) && (!this.encounters.enabled || !this.covered(enemy.x,enemy.z,player.x,player.z))) damage = Math.max(damage, enemy.rank === 'boss' ? 24 : enemy.swarm ? SWARM_RULES.contactDamage : type.damage);
+        const radius = this.encounters.enabled && !enemy.rank && enemy.kind === 'normal'
+          ? RED_BLOB_BASH.radius
+          : this.encounters.enabled && !enemy.rank && enemy.kind === 'tank'
+            ? this.enemyRadius(enemy) + ROCK_MARCH.contactPadding
+            : this.enemyRadius(enemy) + 0.62;
+        // Red blobs hit inside a stationary warning ring. Rocks require actual
+        // close body contact; sprinters/Boss retain swept movement-based hits.
+        const slamHit = enemy.kind === 'normal' && this.encounters.enabled
+          ? Math.hypot(enemy.x-player.x,enemy.z-player.z) < radius : pounceHit;
+        if ((slamHit || Math.hypot(enemy.x - player.x, enemy.z - player.z) < radius) && (!this.encounters.enabled || !this.covered(enemy.x,enemy.z,player.x,player.z))) damage = Math.max(damage, enemy.rank === 'boss' ? 24 : enemy.swarm ? SWARM_RULES.contactDamage : type.damage);
       }
       if (damage > 0) {
         this.hitPlayer(damage);
@@ -824,7 +891,7 @@ export class Combat {
           if (!enemy.active || enemy.spawnTime > 0) continue;
           const dx = enemy.x-x, dz = enemy.z-z, distance = Math.hypot(dx,dz);
           if (distance > SPORE_BOMBER.radius+this.enemyRadius(enemy) || this.covered(x,z,enemy.x,enemy.z)) continue;
-          this.damageEnemy(enemy,SPORE_BOMBER.enemyDamage,dx/Math.max(.001,distance),dz/Math.max(.001,distance),'spore');
+          this.damageEnemy(enemy,SPORE_BOMBER.enemyDamage * (enemy.kind === 'draft-spore-bomber' ? SPORE_BOMBER.chainMultiplier : 1),dx/Math.max(.001,distance),dz/Math.max(.001,distance),'spore');
           if (this.encounters.dying) return;
         }
       }
@@ -957,6 +1024,33 @@ export class Combat {
     if (enemy.intent === 'windup') { enemy.intent = 'pounce'; enemy.intentTime = rule.duration; }
     else if (enemy.intent === 'pounce') { enemy.intent = 'recover'; enemy.intentTime = rule.recovery; }
     else { enemy.intent = 'chase'; enemy.intentCooldown = rule.cooldown; }
+  }
+
+  private updateRedBash(enemy: Enemy, dt: number, dx: number, dz: number, distance: number) {
+    enemy.intentCooldown = Math.max(0,enemy.intentCooldown-dt);
+    if (enemy.intent === 'chase') {
+      if (!enemy.intentCooldown && distance < RED_BLOB_BASH.range
+        && !this.covered(enemy.x,enemy.z,enemy.x+dx,enemy.z+dz)) {
+        // Only two local red slams may telegraph at once, preventing an
+        // unreadable pile of overlapping floor rings in later 200-mob waves.
+        let warningCount = 0;
+        for (const other of this.enemies) {
+          if (other === enemy || !other.active || other.kind !== 'normal' ||
+              (other.intent !== 'windup' && other.intent !== 'pounce')) continue;
+          if (Math.hypot(other.x-enemy.x,other.z-enemy.z) < RED_BLOB_BASH.radius * 2)
+            warningCount++;
+          if (warningCount >= RED_BLOB_BASH.nearbyWarningCap) return;
+        }
+        enemy.intent = 'windup'; enemy.intentTime = RED_BLOB_BASH.windup;
+        enemy.aimX = dx/distance; enemy.aimZ = dz/distance;
+      }
+      return;
+    }
+    enemy.intentTime = Math.max(0,enemy.intentTime-dt);
+    if (enemy.intentTime > 1e-8) return;
+    if (enemy.intent === 'windup') { enemy.intent='pounce'; enemy.intentTime=RED_BLOB_BASH.active; }
+    else if (enemy.intent === 'pounce') { enemy.intent='recover'; enemy.intentTime=RED_BLOB_BASH.recovery; }
+    else { enemy.intent='chase'; enemy.intentCooldown=RED_BLOB_BASH.cooldown; }
   }
 
   private updateMelee(enemy: Enemy, dt: number, dx: number, dz: number, distance: number) {

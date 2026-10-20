@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { Combat, COMBAT_LIMITS, FORMAL_POUNCE } from '../src/combat';
+import { Combat, COMBAT_LIMITS, FORMAL_POUNCE, RED_BLOB_BASH } from '../src/combat';
 import { ENCOUNTER_RULES } from '../src/enemy-challenge';
 import { PartySystem } from '../src/party';
 import { RunFlow } from '../src/run-flow';
@@ -22,7 +22,8 @@ function boss(c:Combat) {
 test('formal melee warns before contact, can be walked out of, and legacy contact is unchanged',()=>{
   const c=fixture(), e=c.spawn('normal',.9,0,0)!;
   advance(c,.5); expect(e.intent).toBe('windup'); expect(c.hp).toBe(100);
-  advance(c,.15); expect(c.hp).toBe(92); expect(e.intent).toBe('pounce');
+  expect(RED_BLOB_BASH.windup).toBe(.7);
+  advance(c,.25); expect(c.hp).toBe(92); expect(e.intent).toBe('pounce');
   const evade=fixture(); evade.spawn('normal',.9,0,0); advance(evade,.4); advance(evade,.5,{x:0,z:4}); expect(evade.hp).toBe(100);
   c.encounters.reset(); c.invulnerability=0; c.hp=100; Object.assign(e,{x:.9,z:0,spawnTime:0}); c.update(1/60,origin); expect(c.hp).toBe(92);
 });
@@ -114,7 +115,7 @@ test('wave four retries a saturated elite spawn, and wave clears/restarts remove
   run.prepare(c,origin); expect(c.encounters.elite).toBeUndefined();
   c.enemies[0].active=false; run.prepare(c,origin); expect(c.encounters.elite?.rank).toBe('elite');
   c.encounters.shots[0].active=true; c.clearWave(); expect(c.encounters.inspect()).toMatchObject({enabled:false,boss:null,elite:null,shots:[]});
-  run.waveElapsed=75; run.resolveBoundary(c); expect(run.phase).toBe('shop');
+  run.waveElapsed=75; run.resolveBoundary(c); expect(run.phase).toBe('intermission');
   c.reset(); expect(c.encounters.enabled).toBe(false); expect(c.enemies.every(e=>!e.active)).toBe(true);
 });
 

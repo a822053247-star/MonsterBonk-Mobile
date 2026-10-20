@@ -1,0 +1,47 @@
+name: Mixed waves and fifth-shop transition
+on:
+  pull_request:
+    paths:
+      - src/combat.ts
+      - src/run-flow.ts
+      - src/wave-director.ts
+      - src/game.ts
+      - tests/mixed-wave-transition.spec.ts
+      - tests/run-flow.spec.ts
+      - tests/run-flow-ui.spec.ts
+      - tests/swarm.spec.ts
+      - tests/special-growth.spec.ts
+      - tests/special-growth-ui.spec.ts
+      - tests/shop-art.spec.ts
+      - docs/MIXED-WAVE-TRANSITION.md
+      - .github/workflows/mixed-wave-transition.yml
+  push:
+    branches: [main]
+    paths:
+      - src/combat.ts
+      - src/run-flow.ts
+      - src/wave-director.ts
+      - src/game.ts
+      - .github/workflows/mixed-wave-transition.yml
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium webkit
+      - run: npx playwright test tests/mixed-wave-transition.spec.ts tests/run-flow.spec.ts tests/run-flow-ui.spec.ts tests/swarm.spec.ts tests/wave-director.spec.ts tests/enemy-challenge.spec.ts tests/special-enemies.spec.ts tests/special-growth.spec.ts tests/special-growth-ui.spec.ts tests/shop-art.spec.ts tests/run-balance.spec.ts --project=chromium
+      - run: npx playwright test tests/run-flow-ui.spec.ts tests/shop-art.spec.ts tests/special-growth-ui.spec.ts --project=webkit
+      - run: npm run balance:waves -- --seconds 12 --output artifacts/ci-mixed-waves.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: mixed-waves-baseline-data
+          path: artifacts/ci-mixed-waves.json
+          if-no-files-found: ignore
