@@ -1093,3 +1093,12 @@ h1>em{font-size:12px;line-height:1;letter-spacing:4px;display:inline-block;backg
   .hud .hud-gold{min-height:23px;margin:3px 0 0 2px;padding:2px 7px 2px 4px;font-size:11px;gap:3px}
   .hud .hud-gold img{width:15px;height:15px}
 }
+
+
+/* The wallet increases the left stack's height: keep the boss banner to its
+   right on tablet landscape, instead of grazing the new gold badge. */
+@media(min-width:701px) and (max-width:1100px) and (orientation:landscape){
+  .hud .encounter-status{
+    left:calc(50% + 84px + (var(--safe-left) - var(--safe-right)) / 2);
+  }
+}
