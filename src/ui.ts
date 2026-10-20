@@ -219,7 +219,7 @@ export function renderRunShop(run: RunFlow, combat: Combat) {
   }).join('');
   if (resetScroll) { items.scrollTop = 0; items.scrollLeft = 0; }
   const refresh = document.getElementById('shop-refresh') as HTMLButtonElement;
-  refresh.innerHTML = `<img data-upgrade-art="refresh" src="${uiArtUrl('shop/refresh-rune.png')}" alt="" draggable="false"/><span>刷新商品 · ${shop.refreshCost} 金币</span>`;
+  refresh.innerHTML = `<img data-upgrade-art="refresh" src="${uiArtUrl('shop/refresh-rune.png')}" alt="" draggable="false"/><span>${shop.treasureRefreshes ? '携宝兽奖励 · 免费刷新 1 次' : `刷新商品 · ${shop.refreshCost} 金币`}</span>`;
   refresh.dataset.shopToken = shop.token; refresh.disabled = run.coins < shop.refreshCost || !shop.canRefresh;
   const next = document.getElementById('shop-next') as HTMLButtonElement;
   next.textContent = `进入第 ${run.wave + 1} 波`;
