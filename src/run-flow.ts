@@ -3,6 +3,9 @@ import { RunShop } from './shop';
 import { CRYSTAL_SWARM, SPORE_BOMBER, TREASURE_RUNNER } from './special-enemies';
 import { WAVE_DIRECTOR, directorStage, type DirectorStage } from './wave-director';
 
+export const WAVE_INTERMISSION_SECONDS = 3.5;
+export const SHOP_AFTER_WAVE = 5;
+
 export const RUN_WAVES: readonly { seconds: number; reward: number; interval: number; groupSize: number; cap: number; enemies: readonly EnemyKind[] }[] = [
   { seconds: 65, reward: 35, interval: 1.4, groupSize: 12, cap: 60, enemies: ['normal', 'normal', 'normal', 'fast'] },
   { seconds: 70, reward: 40, interval: 1.2, groupSize: 18, cap: 90, enemies: ['normal', 'fast', 'normal', 'tank'] },
@@ -14,7 +17,8 @@ export const RUN_WAVES: readonly { seconds: number; reward: number; interval: nu
 
 /** Five survival waves and a final Boss. Timing out never grants a Boss victory. */
 export class RunFlow {
-  phase: 'fighting' | 'shop' | 'won' | 'lost' = 'fighting';
+  phase: 'fighting' | 'intermission' | 'shop' | 'won' | 'lost' = 'fighting';
+  intermissionRemaining = 0;
   waveIndex = 0;
   waveElapsed = 0;
   combatElapsed = 0;
@@ -123,7 +127,7 @@ export class RunFlow {
           ? combat.enemies.filter(e => e.active && !e.rank && e.kind === 'fast').length < stage.fastCap
           : this.pendingEscort === 'tank'
             ? combat.enemies.filter(e => e.active && !e.rank && e.kind === 'tank').length < stage.tankCap : true;
-        combat.spawnSwarm(player, this.pendingSwarm, swarmCap, allowed && !this.majorWarning(combat) ? this.pendingEscort : 'normal');
+        combat.spawnSwarm(player, this.pendingSwarm, swarmCap, 'normal', { fastCap: this.majorWarning(combat) ? 0 : stage.fastCap, tankCap: this.majorWarning(combat) ? 0 : stage.tankCap });
         this.pendingSwarm = 0;
         this.pendingClock = 0;
       }
@@ -137,7 +141,7 @@ export class RunFlow {
     if (this.spawnClock <= 0) {
       if (active >= swarmCap) { this.spawnClock = .2; return; }
       const firstHalf = Math.ceil(groupSize / 2);
-      const spawned = combat.spawnSwarm(player, firstHalf, swarmCap, this.escortFor(combat, stage, 0));
+      const spawned = combat.spawnSwarm(player, firstHalf, swarmCap, 'normal', { fastCap: this.majorWarning(combat) ? 0 : stage.fastCap, tankCap: this.majorWarning(combat) ? 0 : stage.tankCap });
       if (spawned) {
         this.pendingSwarm = groupSize - firstHalf;
         this.pendingEscort = this.escortFor(combat, stage, 1);
@@ -217,11 +221,24 @@ export class RunFlow {
     this.pendingSwarm = this.pendingClock = 0;
     this.completedWaves++;
     this.coins += this.definition.reward; this.earned += this.definition.reward;
-    this.phase = this.wave === RUN_WAVES.length ? 'won' : 'shop';
-    if (this.phase === 'shop') this.shop = new RunShop(combat, this.wave, this.random, treasureCaught);
+    this.phase = this.wave === RUN_WAVES.length ? 'won' : 'intermission';
+    if (this.phase === 'intermission') this.intermissionRemaining = WAVE_INTERMISSION_SECONDS;
   }
 
-  updateRest(dt: number) { if (this.phase === 'shop' && Number.isFinite(dt) && dt > 0) this.restElapsed += dt; }
+  updateRest(dt: number, combat?: Combat) {
+    if (!Number.isFinite(dt) || dt <= 0) return;
+    if (this.phase === 'shop') { this.restElapsed += dt; return; }
+    if (this.phase !== 'intermission') return;
+    const step = Math.min(dt, this.intermissionRemaining);
+    this.restElapsed += step;
+    this.intermissionRemaining = Math.max(0, this.intermissionRemaining - step);
+    if (this.intermissionRemaining > 1e-8) return;
+    if (this.wave === SHOP_AFTER_WAVE) {
+      // Catches in any of the first five waves earn one *final* shop refresh.
+      this.shop = new RunShop(combat!, this.wave, this.random, combat!.treasureCaught);
+      this.phase = 'shop';
+    } else if (combat) this.advanceWave();
+  }
 
   buy(index: number, token: string) {
     if (this.phase !== 'shop' || !this.shop) return false;
@@ -237,8 +254,7 @@ export class RunFlow {
     this.coins = balance; return true;
   }
 
-  nextWave(token: string, combat: Combat) {
-    if (this.phase !== 'shop' || token !== this.shop?.token || combat.hp <= 0 || combat.progression.awaitingChoice) return false;
+  private advanceWave() {
     this.waveIndex++; this.waveElapsed = 0;
     this.spawnClock = 1.2; this.spawnIndex = 0; this.claimedExperience = false;
     this.pendingSwarm = this.pendingClock = 0; this.pendingEscort = 'normal';
@@ -246,16 +262,22 @@ export class RunFlow {
     this.crystalClock = CRYSTAL_SWARM.first; this.sporeClock = SPORE_BOMBER.first;
     this.treasureClock = TREASURE_RUNNER.first; this.treasureSpawned = false;
     this.crystalWaiting = this.sporeWaiting = this.treasureWaiting = false;
-    this.shop = undefined; this.phase = 'fighting'; return true;
+    this.shop = undefined; this.phase = 'fighting'; this.intermissionRemaining = 0;
+  }
+
+  nextWave(token: string, combat: Combat) {
+    if (this.phase !== 'shop' || this.wave !== SHOP_AFTER_WAVE || token !== this.shop?.token || combat.hp <= 0 || combat.progression.awaitingChoice) return false;
+    this.advanceWave();
+    return true;
   }
 
   finish(combat: Combat, won: boolean) {
-    this.collectGold(combat); this.phase = won ? 'won' : 'lost'; this.shop = undefined;
+    this.collectGold(combat); this.phase = won ? 'won' : 'lost'; this.shop = undefined; this.intermissionRemaining = 0;
     if (!won && !this.failure) this.failure='health';
   }
 
   inspect() {
-    return { phase: this.phase, wave: this.wave, waves: RUN_WAVES.length, completedWaves: this.completedWaves, remaining: this.remaining,
+    return { phase: this.phase, wave: this.wave, waves: RUN_WAVES.length, completedWaves: this.completedWaves, remaining: this.remaining, intermissionRemaining: this.intermissionRemaining,
       combatElapsed: this.combatElapsed, restElapsed: this.restElapsed, totalElapsed: this.totalElapsed, coins: this.coins, earned: this.earned,
       bossDefeated:this.bossDefeated,failure:this.failure, growth: { ...this.lastWaveGrowth },
       director: { beat: directorStage(this.wave, this.waveElapsed).beat, stage: directorStage(this.wave, this.waveElapsed) },
