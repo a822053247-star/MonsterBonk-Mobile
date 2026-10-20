@@ -26,7 +26,7 @@ test('grass creature acquires fire/water through upgrade cards, shows all five f
     const card = page.locator(`[data-skill="${id}"]`);
     await expect(card).toBeEnabled(); await card.click();
   }
-  await expect(page.locator('#fusion-title')).toHaveText('叶刃 + 火花弹 + 水泡弹 · 5 融合');
+  await expect(page.locator('#fusion-title')).toHaveText('飞叶弹 + 火花弹 + 水泡弹 · 5 融合');
   await expect.poll(() => page.evaluate(() => {
     const g = (window as any).game;
     return !!g.combatView.firePixels?.loaded && !!g.combatView.fusionPixels?.loaded;

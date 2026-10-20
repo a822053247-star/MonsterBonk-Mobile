@@ -2,6 +2,7 @@ import { RELICS, EVOLUTIONS } from './relics';
 import type { RunFlow } from './run-flow';
 import type { Combat } from './combat';
 import { ATTACKS, type RunBuild } from './run-build';
+import { flameSweepStats } from './flame-sweep';
 import { upgradePreview, type Progression } from './progression';
 import { FUSION_ASSET_ROOT, type ElementalFusionId } from './fusion-pixels';
 import { bindUpgradeArt, uiArtUrl, upgradeArt } from './upgrade-art';
@@ -51,7 +52,7 @@ export function createUI(root: HTMLElement) {
         <div class="creature-options" role="group" aria-label="可选幻兽">
           <button type="button" class="creature-option" data-creature="yanrong" aria-pressed="true"><img data-creature-src="${import.meta.env.BASE_URL}assets/pixel/creatures/yanrong-base.png" alt=""/><strong>焰绒</strong><span>火花弹 · 爆炸分裂</span></button>
           <button type="button" class="creature-option" data-creature="bubblesalamander" aria-pressed="false"><img data-creature-src="${import.meta.env.BASE_URL}assets/pixel/creatures/paopaoyuan.png" alt=""/><strong>泡泡螈</strong><span>水泡弹 · 减速扩散</span></button>
-          <button type="button" class="creature-option" data-creature="sproutspike" aria-pressed="false"><img data-creature-src="${import.meta.env.BASE_URL}assets/pixel/creatures/yacishou.png" alt=""/><strong>芽刺兽</strong><span>叶刃 · 穿透连锁</span></button>
+          <button type="button" class="creature-option" data-creature="sproutspike" aria-pressed="false"><img data-creature-src="${import.meta.env.BASE_URL}assets/pixel/creatures/yacishou.png" alt=""/><strong>芽刺兽</strong><span>飞叶弹 · 穿透连锁</span></button>
         </div>
         <button id="start-selected-creature" class="primary">焰绒 · 开始挑战 ${icon('arrow')}</button>
       </div>
@@ -175,7 +176,12 @@ export function renderBuildSummary(build: RunBuild | undefined, fusions: readonl
   status.textContent = `${build.relics.length} 件稀有道具 · ${evolution} · 暂停查看构筑`;
   if (panel.dataset.snapshot === key) return;
   panel.dataset.snapshot = key;
-  document.getElementById('build-weapons')!.textContent = build.attacks.map(a => `${a.slot ? '副武器' + a.slot : '主武器'}：${ATTACKS[a.attackId].title} ${a.level}级 / 5`).join('\n');
+  document.getElementById('build-weapons')!.textContent = build.attacks.map(a => {
+    const label = `${a.slot ? '副武器' + a.slot : '主武器'}：${ATTACKS[a.attackId].title} ${a.level}级 / 5`;
+    if (a.attackId !== 'flame-sweep') return label;
+    const growth = flameSweepStats(a.level);
+    return label + ` · ${growth.radius} 范围 / ${growth.degrees}° 火浪`;
+  }).join('\n');
   document.getElementById('build-fusions')!.textContent = fusions.length ? fusions.map(f => f.title).join(' / ') : '尚未形成融合，升级选择通用改造。';
   document.getElementById('build-relics')!.textContent = build.relics.length ? build.relics.map(id => {
     const relic = RELICS[id];

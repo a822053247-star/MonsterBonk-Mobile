@@ -1,0 +1,12 @@
+[WebServer] (node:58304) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 3 tests using 1 worker
+
+(node:56072) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 1 [chromium] › tests\flame-sweep-ui.spec.ts:4:1 › level one is a single sector, grows with levels and never overlays an independent ring (4.0s)
+  ok 2 [chromium] › tests\flame-sweep-ui.spec.ts:27:1 › reused source frames share a cast origin, freeze and reset without GPU growth (3.3s)
+  ok 3 [chromium] › tests\flame-sweep-ui.spec.ts:46:1 › all presets and missing assets preserve the single sector and actual damage (2.8s)
+
+  3 passed (14.2s)

@@ -121,7 +121,7 @@ export class CombatView {
   updateView(camera: THREE.Camera, viewportHeight: number, frustumHeight: number) { this.flameSweep?.setView(camera); this.shockwaveView.setView(camera); this.encounters.setView(camera); this.pixelEnemies?.setView(camera, viewportHeight, frustumHeight); this.firePixels?.setView(camera); this.fusionPixels?.setView(camera); this.feedback?.setView(camera); }
 
   setFusion(enabled: boolean, _elemental = false) {
-    if (enabled && !this.flameSweep) { this.flameSweep = new FlameSweepView(); this.group.add(this.flameSweep.group); }
+    if (enabled && !this.flameSweep) { this.flameSweep = new FlameSweepView(); this.group.add(this.flameSweep.group, this.flameSweep.areaGroup); }
     this.flameSweep?.clear();
     if (enabled && !this.firePixels) { this.firePixels = new FirePixelView(); this.group.add(this.firePixels.mesh); }
     if (enabled && !this.fusionPixels) { this.fusionPixels = new FirePixelView(FUSION_ASSET_ROOT + 'effects.normalized.png', 8, 4, 'WaterGrassFusionAtlas'); this.group.add(this.fusionPixels.mesh); }

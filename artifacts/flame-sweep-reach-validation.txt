@@ -1,0 +1,13 @@
+[WebServer] (node:24420) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 2 tests using 1 worker
+
+(node:58944) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 1 [chromium] › tests\flame-sweep-growth.spec.ts:48:1 › real upgraded swings reach distant and rear-side enemies that level one leaves untouched (17ms)
+(node:60308) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 2 [webkit] › tests\flame-sweep-growth.spec.ts:48:1 › real upgraded swings reach distant and rear-side enemies that level one leaves untouched (18ms)
+
+  2 passed (4.0s)

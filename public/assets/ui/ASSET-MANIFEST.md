@@ -26,7 +26,7 @@
 | C04 | 草原冲击波 | raw/四连魔法狐灵技能图标.png | [1584, 10, 2171, 724] | [skills/shockwave.png](skills/shockwave.png) | 762×762 | 通过 |
 | D01 | 获得火花弹 | raw/三元素萌宠攻击精灵图.png | [0, 19, 740, 724] | [skills/spark-weapon.png](skills/spark-weapon.png) | 788×788 | 通过 |
 | D02 | 获得水泡弹 | raw/三元素萌宠攻击精灵图.png | [748, 7, 1404, 577] | [skills/bubble-weapon.png](skills/bubble-weapon.png) | 704×704 | 通过 |
-| D03 | 获得叶刃 | raw/三元素萌宠攻击精灵图.png | [1409, 9, 2172, 724] | [skills/leaf-weapon.png](skills/leaf-weapon.png) | 811×811 | 通过 |
+| D03 | 获得飞叶弹 | raw/三元素萌宠攻击精灵图.png | [1409, 9, 2172, 724] | [skills/leaf-weapon.png](skills/leaf-weapon.png) | 811×811 | 通过 |
 | E01 | 狂暴火种 | raw/双狐烈焰技能精灵图.png | [0, 9, 1086, 704] | [skills/berserk-route.png](skills/berserk-route.png) | 1134×1134 | 通过 |
 | E02 | 追猎火种 | raw/双狐烈焰技能精灵图.png | [1087, 45, 2152, 724] | [skills/pursuit-route.png](skills/pursuit-route.png) | 1113×1113 | 通过 |
 

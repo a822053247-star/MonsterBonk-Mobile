@@ -1,0 +1,161 @@
+
+[WebServer] (node:40780) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 134 tests using 3 workers
+
+
+(node:52616) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+(node:57552) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+(node:45176) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[1/134] [chromium] › tests\flame-sweep-growth.spec.ts:18:1 › upgrades grow actual range and angle, and cap relic/range stacking at close range
+[2/134] [chromium] › tests\build-depth.spec.ts:37:1 › weapon upgrades use real cards, cap at five and do not duplicate slots
+[3/134] [chromium] › tests\elemental-fusion-model.spec.ts:19:1 › only four new recipes exist, modifiers form independent water/grass fusions and do not leak to legacy pools
+[4/134] [chromium] › tests\flame-sweep-growth.spec.ts:33:1 › periodic fire ring hits all directions once even with a saturated bolt pool and no sweep
+[5/134] [chromium] › tests\build-depth.spec.ts:48:1 › single-weapon specialization loses its bonus when a side weapon is equipped
+[6/134] [chromium] › tests\elemental-fusion-model.spec.ts:28:1 › base water slow expires, refreshes without stacking, and legacy bubbles do not acquire it
+[7/134] [chromium] › tests\build-depth.spec.ts:57:1 › overload and berserk expand real splash while slowing fire, and evolution is exclusive
+[8/134] [chromium] › tests\build-depth.spec.ts:70:1 › hunter and shattered core change child motion/count with real damage costs and bounded generation
+[9/134] [chromium] › tests\elemental-fusion-model.spec.ts:35:1 › water impact visuals move into the victim and follow it without moving the damaging contact point
+[10/134] [chromium] › tests\elemental-fusion-model.spec.ts:56:1 › deep bubble damages and slows neighbors once per impact, excludes the direct victim and spawned enemies
+[11/134] [chromium] › tests\build-depth.spec.ts:83:1 › pursuit route creates homing fire children at the cost of explosion radius
+[12/134] [chromium] › tests\elemental-fusion-model.spec.ts:63:1 › leaf sweep pierces one additional enemy in the same tick, never hits the same victim twice
+[13/134] [chromium] › tests\build-depth.spec.ts:91:1 › tidal pearl extends water control and reduces direct hits without reducing splash
+[14/134] [chromium] › tests\flame-sweep-growth.spec.ts:48:1 › ring protects walls and spawn warnings; its unlocked area follows the current player position
+[15/134] [chromium] › tests\elemental-fusion-model.spec.ts:70:66 › bubblesalamander chain flies to two fresh targets, respects cap and uses fixed subsequent damage
+[16/134] [chromium] › tests\build-depth.spec.ts:99:1 › echo extends leaf chain reach and increases damage decay at each extra hop
+[17/134] [chromium] › tests\flame-sweep-growth.spec.ts:58:1 › ring timing pauses for upgrades and death, clears on wave boundaries and resets on restart
+[18/134] [chromium] › tests\build-depth.spec.ts:110:1 › reset clears levels/relics/evolution; legacy card pools never receive build rewards
+[19/134] [chromium] › tests\flame-sweep-growth.spec.ts:68:1 › upgrading level four to five preserves ring cooldown progress and exposes the next reward
+[20/134] [chromium] › tests\elemental-fusion-model.spec.ts:70:66 › sproutspike chain flies to two fresh targets, respects cap and uses fixed subsequent damage
+[21/134] [chromium] › tests\flame-sweep-growth.spec.ts:78:1 › elite and boss resistance preserves remote single-target roles; ring respects Boss death gating
+[22/134] [chromium] › tests\build-depth.spec.ts:120:1 › large experience queues keep rare offers bounded and finish without an empty upgrade trap
+[23/134] [chromium] › tests\elemental-fusion-model.spec.ts:83:1 › scatter spawns three weaker children next tick, ignores original and never recursively splits
+[24/134] [chromium] › tests\elemental-fusion-model.spec.ts:91:66 › bubblesalamander simultaneous recipes coexist in every volley and reset deterministically
+[25/134] [chromium] › tests\flame-sweep-ui.spec.ts:26:1 › selected retimed frames render with a stable low root, no render damage and clean lifecycle
+[26/134] [chromium] › tests\elemental-fusion-model.spec.ts:91:66 › sproutspike simultaneous recipes coexist in every volley and reset deterministically
+[27/134] [chromium] › tests\elemental-fusion-model.spec.ts:105:1 › cover blocks elemental impacts and chain targets; full pools degrade safely without dropping direct damage
+[28/134] [chromium] › tests\elemental-fusion-model.spec.ts:111:1 › death, choice and zero time freeze elemental clocks; reset clears slow, recipes, hits and projectiles
+[29/134] [chromium] › tests\elemental-fusion-model.spec.ts:120:1 › elemental deaths use the shared kill and XP path exactly once and snapshots do not change in flight
+[30/134] [chromium] › tests\elemental-fusion-model.spec.ts:126:1 › water chain ledger includes splash victims, excludes them from future primary hits and repeat splashes
+[31/134] [chromium] › tests\elemental-fusion-model.spec.ts:135:65 › bubblesalamander reselects a dead hop target and terminates if none remain
+[32/134] [chromium] › tests\flame-sweep-visual.spec.ts:5:1 › visual presets keep bounded scale, use short windup and fast tails, and finish before the unchanged combat clock
+[33/134] [chromium] › tests\elemental-fusion-model.spec.ts:135:65 › sproutspike reselects a dead hop target and terminates if none remain
+[34/134] [chromium] › tests\flame-sweep-visual.spec.ts:20:1 › preset query falls back safely, and the balanced tail rapidly fades instead of lingering
+[35/134] [chromium] › tests\elemental-fusion-model.spec.ts:142:1 › deep AoE respects cover and scatter angles, range and single-hit children are independent of animations
+[36/134] [chromium] › tests\elemental-fusion-model.spec.ts:151:1 › staggered multi-shot keeps compatible recipes on every shot in its volley
+[37/134] [chromium] › tests\flame-sweep.spec.ts:20:1 › supplied originals remain byte-identical; eight equal cells have one common root and no black removal
+[38/134] [chromium] › tests\flame-sweep.spec.ts:32:1 › finite 220 degree sector respects back, radial limit and circle edges
+[39/134] [chromium] › tests\leaf-rename.spec.ts:5:1 › leaf weapon acquisition, strengthening and fusion previews use the projectile name
+[40/134] [chromium] › tests\flame-sweep.spec.ts:41:1 › sweep really clears a cluster with a full projectile pool and settles kills, coins and XP once
+[41/134] [chromium] › tests\leaf-rename.spec.ts:23:1 › grass selection and combat HUD show 飞叶弹 on both phone sizes
+[42/134] [chromium] › tests\flame-sweep.spec.ts:54:1 › cover, warnings, back-facing targets and targets outside the arc are not damaged
+[43/134] [chromium] › tests\flame-sweep.spec.ts:63:1 › automatic melee waits for a target and repeats on its own cooldown after the animation ends
+[44/134] [chromium] › tests\flame-sweep.spec.ts:76:1 › direction locks per swing; upgrades/death freeze animation and reset or wave boundary clears it
+[45/134] [chromium] › tests\flame-sweep.spec.ts:87:1 › shared three slots, five upgrades, modifier compatibility and legacy card pools remain explicit
+[46/134] [chromium] › tests\flame-sweep.spec.ts:101:1 › melee uses the Boss death gate and cannot override same-frame player death
+[47/134] [chromium] › tests\progression.spec.ts:24:1 › exact XP boundaries and overflow preserve every earned level and choice
+[48/134] [chromium] › tests\progression.spec.ts:42:1 › all cards are unique, below their cap and selectable; max level never deadlocks
+[49/134] [chromium] › tests\progression.spec.ts:69:1 › invalid XP, stale choices and unoffered skills do not change progression
+[50/134] [chromium] › tests\progression.spec.ts:86:1 › data-driven stacks use additive base bonuses and independent spell ranks
+[51/134] [chromium] › tests\progression.spec.ts:100:1 › damage, multishot and range upgrades affect real projectiles and pool limits
+[52/134] [chromium] › tests\progression.spec.ts:119:1 › haste increases actual volleys per second; vitality increases max HP and heals
+[53/134] [chromium] › tests\progression.spec.ts:136:1 › orbit damages enemies, uses seconds-based hit immunity and resets cleanly
+[54/134] [chromium] › tests\progression.spec.ts:151:1 › shockwave expands, hits each enemy once, repeats and freezes throughout upgrade choice
+[55/134] [chromium] › tests\progression.spec.ts:177:1 › reset clears level, accumulated XP, choices, stats and both learned skills
+[56/134] [chromium] › tests\three-weapon.spec.ts:34:1 › all three creatures acquire all weapons and five fusions through real upgrades
+[57/134] [chromium] › tests\three-weapon.spec.ts:50:1 › upgrade pool filters irrelevant modifiers and acquisition keeps side cooldowns staggered
+[58/134] [chromium] › tests\three-weapon.spec.ts:74:1 › water expansion and two chain hops coexist with one damage ledger
+[59/134] [chromium] › tests\three-weapon.spec.ts:90:1 › leaf scatters only once while its main shot chains, never recursively deriving children
+[60/134] [chromium] › tests\three-weapon.spec.ts:102:1 › 24-slot saturation preserves direct damage and main priority; death/restart clear all weapons and effects
+[61/134] [chromium] › tests\weapon-balance.spec.ts:4:1 › four weapons retain distinct jobs at levels one, three and five
+
+(node:57488) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[62/134] [webkit] › tests\build-depth.spec.ts:37:1 › weapon upgrades use real cards, cap at five and do not duplicate slots
+[63/134] [webkit] › tests\build-depth.spec.ts:48:1 › single-weapon specialization loses its bonus when a side weapon is equipped
+[64/134] [webkit] › tests\build-depth.spec.ts:57:1 › overload and berserk expand real splash while slowing fire, and evolution is exclusive
+[65/134] [webkit] › tests\build-depth.spec.ts:70:1 › hunter and shattered core change child motion/count with real damage costs and bounded generation
+[66/134] [webkit] › tests\build-depth.spec.ts:83:1 › pursuit route creates homing fire children at the cost of explosion radius
+[67/134] [webkit] › tests\build-depth.spec.ts:91:1 › tidal pearl extends water control and reduces direct hits without reducing splash
+[68/134] [webkit] › tests\build-depth.spec.ts:99:1 › echo extends leaf chain reach and increases damage decay at each extra hop
+[69/134] [webkit] › tests\build-depth.spec.ts:110:1 › reset clears levels/relics/evolution; legacy card pools never receive build rewards
+[70/134] [webkit] › tests\build-depth.spec.ts:120:1 › large experience queues keep rare offers bounded and finish without an empty upgrade trap
+[71/134] [webkit] › tests\elemental-fusion-model.spec.ts:19:1 › only four new recipes exist, modifiers form independent water/grass fusions and do not leak to legacy pools
+[72/134] [webkit] › tests\elemental-fusion-model.spec.ts:28:1 › base water slow expires, refreshes without stacking, and legacy bubbles do not acquire it
+[73/134] [webkit] › tests\elemental-fusion-model.spec.ts:35:1 › water impact visuals move into the victim and follow it without moving the damaging contact point
+[74/134] [webkit] › tests\elemental-fusion-model.spec.ts:56:1 › deep bubble damages and slows neighbors once per impact, excludes the direct victim and spawned enemies
+[75/134] [webkit] › tests\elemental-fusion-model.spec.ts:63:1 › leaf sweep pierces one additional enemy in the same tick, never hits the same victim twice
+[76/134] [webkit] › tests\elemental-fusion-model.spec.ts:70:66 › bubblesalamander chain flies to two fresh targets, respects cap and uses fixed subsequent damage
+[77/134] [webkit] › tests\elemental-fusion-model.spec.ts:70:66 › sproutspike chain flies to two fresh targets, respects cap and uses fixed subsequent damage
+[78/134] [webkit] › tests\elemental-fusion-model.spec.ts:83:1 › scatter spawns three weaker children next tick, ignores original and never recursively splits
+[79/134] [webkit] › tests\elemental-fusion-model.spec.ts:91:66 › bubblesalamander simultaneous recipes coexist in every volley and reset deterministically
+[80/134] [webkit] › tests\elemental-fusion-model.spec.ts:91:66 › sproutspike simultaneous recipes coexist in every volley and reset deterministically
+[81/134] [webkit] › tests\elemental-fusion-model.spec.ts:105:1 › cover blocks elemental impacts and chain targets; full pools degrade safely without dropping direct damage
+[82/134] [webkit] › tests\elemental-fusion-model.spec.ts:111:1 › death, choice and zero time freeze elemental clocks; reset clears slow, recipes, hits and projectiles
+[83/134] [webkit] › tests\elemental-fusion-model.spec.ts:120:1 › elemental deaths use the shared kill and XP path exactly once and snapshots do not change in flight
+[84/134] [webkit] › tests\elemental-fusion-model.spec.ts:126:1 › water chain ledger includes splash victims, excludes them from future primary hits and repeat splashes
+[85/134] [webkit] › tests\elemental-fusion-model.spec.ts:135:65 › bubblesalamander reselects a dead hop target and terminates if none remain
+[86/134] [webkit] › tests\elemental-fusion-model.spec.ts:135:65 › sproutspike reselects a dead hop target and terminates if none remain
+[87/134] [webkit] › tests\elemental-fusion-model.spec.ts:142:1 › deep AoE respects cover and scatter angles, range and single-hit children are independent of animations
+[88/134] [webkit] › tests\elemental-fusion-model.spec.ts:151:1 › staggered multi-shot keeps compatible recipes on every shot in its volley
+[89/134] [webkit] › tests\flame-sweep-growth.spec.ts:18:1 › upgrades grow actual range and angle, and cap relic/range stacking at close range
+[90/134] [webkit] › tests\flame-sweep-growth.spec.ts:33:1 › periodic fire ring hits all directions once even with a saturated bolt pool and no sweep
+[91/134] [webkit] › tests\flame-sweep-growth.spec.ts:48:1 › ring protects walls and spawn warnings; its unlocked area follows the current player position
+[92/134] [webkit] › tests\flame-sweep-growth.spec.ts:58:1 › ring timing pauses for upgrades and death, clears on wave boundaries and resets on restart
+[93/134] [webkit] › tests\flame-sweep-growth.spec.ts:68:1 › upgrading level four to five preserves ring cooldown progress and exposes the next reward
+[94/134] [webkit] › tests\flame-sweep-growth.spec.ts:78:1 › elite and boss resistance preserves remote single-target roles; ring respects Boss death gating
+[95/134] [webkit] › tests\flame-sweep-ui.spec.ts:26:1 › selected retimed frames render with a stable low root, no render damage and clean lifecycle
+(node:59908) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[96/134] [webkit] › tests\flame-sweep-visual.spec.ts:5:1 › visual presets keep bounded scale, use short windup and fast tails, and finish before the unchanged combat clock
+[97/134] [webkit] › tests\flame-sweep-visual.spec.ts:20:1 › preset query falls back safely, and the balanced tail rapidly fades instead of lingering
+[98/134] [webkit] › tests\flame-sweep.spec.ts:20:1 › supplied originals remain byte-identical; eight equal cells have one common root and no black removal
+[99/134] [webkit] › tests\flame-sweep.spec.ts:32:1 › finite 220 degree sector respects back, radial limit and circle edges
+[100/134] [webkit] › tests\flame-sweep.spec.ts:41:1 › sweep really clears a cluster with a full projectile pool and settles kills, coins and XP once
+[101/134] [webkit] › tests\flame-sweep.spec.ts:54:1 › cover, warnings, back-facing targets and targets outside the arc are not damaged
+[102/134] [webkit] › tests\flame-sweep.spec.ts:63:1 › automatic melee waits for a target and repeats on its own cooldown after the animation ends
+[103/134] [webkit] › tests\flame-sweep.spec.ts:76:1 › direction locks per swing; upgrades/death freeze animation and reset or wave boundary clears it
+[104/134] [webkit] › tests\flame-sweep.spec.ts:87:1 › shared three slots, five upgrades, modifier compatibility and legacy card pools remain explicit
+[105/134] [webkit] › tests\flame-sweep.spec.ts:101:1 › melee uses the Boss death gate and cannot override same-frame player death
+[106/134] [webkit] › tests\leaf-rename.spec.ts:5:1 › leaf weapon acquisition, strengthening and fusion previews use the projectile name
+[107/134] [webkit] › tests\leaf-rename.spec.ts:23:1 › grass selection and combat HUD show 飞叶弹 on both phone sizes
+[108/134] [chromium] › tests\flame-sweep-ui.spec.ts:59:1 › three preset peaks compare the same scene without changing combat and stay readable at phone size
+[109/134] [chromium] › tests\flame-sweep-ui.spec.ts:84:1 › GPU core attenuation reduces actual scene highlights while keeping the attack intact
+[110/134] [webkit] › tests\progression.spec.ts:24:1 › exact XP boundaries and overflow preserve every earned level and choice
+[111/134] [webkit] › tests\progression.spec.ts:42:1 › all cards are unique, below their cap and selectable; max level never deadlocks
+[112/134] [webkit] › tests\progression.spec.ts:69:1 › invalid XP, stale choices and unoffered skills do not change progression
+[113/134] [webkit] › tests\progression.spec.ts:86:1 › data-driven stacks use additive base bonuses and independent spell ranks
+[114/134] [webkit] › tests\progression.spec.ts:100:1 › damage, multishot and range upgrades affect real projectiles and pool limits
+[115/134] [webkit] › tests\progression.spec.ts:119:1 › haste increases actual volleys per second; vitality increases max HP and heals
+[116/134] [webkit] › tests\progression.spec.ts:136:1 › orbit damages enemies, uses seconds-based hit immunity and resets cleanly
+[117/134] [webkit] › tests\progression.spec.ts:151:1 › shockwave expands, hits each enemy once, repeats and freezes throughout upgrade choice
+[118/134] [webkit] › tests\progression.spec.ts:177:1 › reset clears level, accumulated XP, choices, stats and both learned skills
+[119/134] [webkit] › tests\three-weapon.spec.ts:34:1 › all three creatures acquire all weapons and five fusions through real upgrades
+[120/134] [webkit] › tests\three-weapon.spec.ts:50:1 › upgrade pool filters irrelevant modifiers and acquisition keeps side cooldowns staggered
+[121/134] [webkit] › tests\three-weapon.spec.ts:74:1 › water expansion and two chain hops coexist with one damage ledger
+[122/134] [webkit] › tests\three-weapon.spec.ts:90:1 › leaf scatters only once while its main shot chains, never recursively deriving children
+[123/134] [webkit] › tests\three-weapon.spec.ts:102:1 › 24-slot saturation preserves direct damage and main priority; death/restart clear all weapons and effects
+[124/134] [webkit] › tests\flame-sweep-ui.spec.ts:59:1 › three preset peaks compare the same scene without changing combat and stay readable at phone size
+[125/134] [webkit] › tests\weapon-balance.spec.ts:4:1 › four weapons retain distinct jobs at levels one, three and five
+[126/134] [chromium] › tests\flame-sweep-ui.spec.ts:112:1 › missing sweep atlas keeps a bounded visible fallback and real melee damage
+[127/134] [webkit] › tests\flame-sweep-ui.spec.ts:84:1 › GPU core attenuation reduces actual scene highlights while keeping the attack intact
+[128/134] [chromium] › tests\flame-sweep-ui.spec.ts:117:1 › late-game sweep and independent fire ring render on both phones and pause cleanly
+[129/134] [webkit] › tests\flame-sweep-ui.spec.ts:112:1 › missing sweep atlas keeps a bounded visible fallback and real melee damage
+[130/134] [chromium] › tests\flame-sweep-ui.spec.ts:151:1 › missing both fire atlases retains the ring fallback and real damage
+[131/134] [webkit] › tests\flame-sweep-ui.spec.ts:117:1 › late-game sweep and independent fire ring render on both phones and pause cleanly
+[132/134] [chromium] › tests\flame-sweep-ui.spec.ts:164:1 › all eight equal cells decode transparently and retain a luminous base at the shared pixel anchor
+[133/134] [webkit] › tests\flame-sweep-ui.spec.ts:151:1 › missing both fire atlases retains the ring fallback and real damage
+[134/134] [webkit] › tests\flame-sweep-ui.spec.ts:164:1 › all eight equal cells decode transparently and retain a luminous base at the shared pixel anchor
+  134 passed (33.6s)

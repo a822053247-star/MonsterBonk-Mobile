@@ -29,11 +29,11 @@ test('supplied originals remain byte-identical; eight equal cells have one commo
   expect(FLAME_SWEEP.frames/FLAME_SWEEP.fps).toBe(FLAME_SWEEP.duration);
 });
 
-test('finite 220 degree sector respects back, radial limit and circle edges', () => {
+test('finite 180 degree sector respects back, radial limit and circle edges', () => {
   expect(insideSweep(2,0,1,0,2.8,.1)).toBe(true);
   expect(insideSweep(-2,0,1,0,2.8,.1)).toBe(false);
   expect(insideSweep(3,0,1,0,2.8,.1)).toBe(false);
-  const angle=115*Math.PI/180;
+  const angle=95*Math.PI/180;
   expect(insideSweep(Math.cos(angle)*2,Math.sin(angle)*2,1,0,2.8,.2)).toBe(true);
   expect(insideSweep(Math.cos(angle)*2,Math.sin(angle)*2,1,0,2.8,.05)).toBe(false);
 });
@@ -41,13 +41,13 @@ test('finite 220 degree sector respects back, radial limit and circle edges', ()
 test('sweep really clears a cluster with a full projectile pool and settles kills, coins and XP once', () => {
   const c = fixture();
   for(const p of c.projectiles) Object.assign(p,{active:true,x:20,z:20,previousX:20,previousZ:20,vx:0,vz:0,life:100,damage:0});
-  const enemies = [[2,0],[2,.8],[2,-.8],[2.6,.5]].map(([x,z])=>c.spawn('normal',x,z,0)!);
+  const enemies = Array.from({length:9}, (_,i)=>c.spawn('normal',2+(i%3)*.25,(Math.floor(i/3)-1)*.5,0)!);
   for(const e of enemies) e.swarm = true;
-  tick(c); expect(c.kills).toBe(4); expect(c.goldEarned).toBe(1);
-  expect(c.orbs.reduce((s,o)=>s+(o.active?o.value:0),0)+c.xp).toBe(4);
+  tick(c); expect(c.kills).toBe(9); expect(c.goldEarned).toBe(1);
+  expect(c.orbs.reduce((s,o)=>s+(o.active?o.value:0),0)+c.xp).toBe(3);
   expect(c.shotsFired).toBe(0); expect(c.projectiles.filter(p=>p.active)).toHaveLength(24);
-  expect(c.melee.hitIds.filter(Boolean)).toHaveLength(4);
-  const id=c.melee.attackInstanceId; tick(c,.1); expect(c.kills).toBe(4); expect(c.goldEarned).toBe(1); expect(c.melee.attackInstanceId).toBe(id);
+  expect(c.melee.hitIds.filter(Boolean)).toHaveLength(9);
+  const id=c.melee.attackInstanceId; tick(c,.1); expect(c.kills).toBe(9); expect(c.goldEarned).toBe(1); expect(c.melee.attackInstanceId).toBe(id);
   expect(c.enemies).toHaveLength(COMBAT_LIMITS.enemies);
 });
 
@@ -64,11 +64,11 @@ test('automatic melee waits for a target and repeats on its own cooldown after t
   const c=fixture(); tick(c); expect(c.melee.attackInstanceId).toBe(0);
   const enemy=c.spawn('tank',2,0,0)!; tick(c);
   expect(enemy.hp).toBe(64); expect(c.melee.attackInstanceId).toBe(1);
-  for(let i=0;i<52;i++)tick(c);
+  for(let i=0;i<41;i++)tick(c);
   expect(enemy.hp).toBe(64); expect(c.melee.active).toBe(false);
   for(let i=0;i<3;i++)tick(c);
   expect(enemy.hp).toBe(28); expect(c.melee.attackInstanceId).toBe(2);
-  for(let i=0;i<54;i++)tick(c);
+  for(let i=0;i<44;i++)tick(c);
   expect(c.kills).toBe(1); expect(c.melee.attackInstanceId).toBe(3);
   expect(c.shotsFired).toBe(0);
 });

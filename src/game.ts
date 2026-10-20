@@ -716,7 +716,7 @@ export class Game {
     fusionStatus.classList.toggle('activated', fused);
     const title = document.getElementById('fusion-title')!, hint = document.getElementById('fusion-hint')!;
     const base = this.combat.baseAttack;
-    const titleText = this.combat.usesRunBuild && (this.combat.runBuild.attacks.length > 1 || this.combat.runBuild.attacks[0].level > 1) ? this.combat.runBuild.attacks.map(a => ATTACKS[a.attackId].title + (a.level > 1 ? ` ${a.level}级` : '')).join(' + ') + (fused ? ` · ${this.combat.fusions.length} 融合` : '') : fused ? this.combat.fusions.map(f => f.title).join(' / ')  : base === 'bubble' ? '水泡弹' : base === 'leaf' ? '叶刃' : '火花弹';
+    const titleText = this.combat.usesRunBuild && (this.combat.runBuild.attacks.length > 1 || this.combat.runBuild.attacks[0].level > 1) ? this.combat.runBuild.attacks.map(a => ATTACKS[a.attackId].title + (a.level > 1 ? ` ${a.level}级` : '')).join(' + ') + (fused ? ` · ${this.combat.fusions.length} 融合` : '') : fused ? this.combat.fusions.map(f => f.title).join(' / ')  : base === 'bubble' ? '水泡弹' : base === 'leaf' ? '飞叶弹' : '火花弹';
     const hintText = '';
     hint.hidden = true;
     fusionStatus.title = this.combat.fusions.map(f => f.title).join(' / ');

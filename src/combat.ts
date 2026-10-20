@@ -1,5 +1,5 @@
 import { COMBAT_CLARITY } from './combat-clarity';
-import { FLAME_SWEEP, insideSweep } from './flame-sweep';
+import { FLAME_SWEEP, flameSweepStats, insideSweep } from './flame-sweep';
 import { EnemyChallenge, ENCOUNTER_RULES, predictPosition } from './enemy-challenge';
 import { resolveAttackRules, type AttackRules } from './relics';
 import { ATTACKS, RunBuild } from './run-build';
@@ -46,7 +46,7 @@ export function segmentHit(ax: number, az: number, bx: number, bz: number, x: nu
 
 export class Combat {
   readonly encounters = new EnemyChallenge();
-  readonly melee = { active: false, attackInstanceId: 0, x: 0, z: 0, aimX: 0, aimZ: 1, age: 0, radius: 0, hitIds: new Int32Array(COMBAT_LIMITS.enemies) };
+  readonly melee = { active: false, attackInstanceId: 0, x: 0, z: 0, aimX: 0, aimZ: 1, age: 0, radius: 0, angle: FLAME_SWEEP.angle as number, hitIds: new Int32Array(COMBAT_LIMITS.enemies) };
   /** Enabled by the map prototype; preserved legacy modes keep their steering. */
   useNavigation = false;
   fusionEnabled = false;
@@ -130,11 +130,16 @@ export class Combat {
   private applyUpgrade(id: SkillId, fromChoice: boolean) {
     if (this.hp <= 0) return false;
     const previous = this.stats;
+    const previousSweep = flameSweepStats(this.runBuild.attacks.find(a => a.attackId === 'flame-sweep')?.level ?? 1);
     const intervals = new Map(this.runBuild.attacks.map(a => [a.attackId, this.runBuild.rules(a.attackId).intervalMultiplier]));
     if (!(fromChoice ? this.progression.pick(id) : this.progression.grant(id))) return false;
     for (const attack of this.runBuild.attacks) {
       const interval = this.runBuild.rules(attack.attackId).intervalMultiplier;
-      const ratio = previous.attackRateMultiplier / this.stats.attackRateMultiplier * interval / (intervals.get(attack.attackId) ?? interval);
+      let ratio = previous.attackRateMultiplier / this.stats.attackRateMultiplier * interval / (intervals.get(attack.attackId) ?? interval);
+      if (attack.attackId === 'flame-sweep') {
+        const nextSweep = flameSweepStats(attack.level);
+        ratio *= nextSweep.interval / previousSweep.interval;
+      }
       attack.cooldown *= ratio; attack.cooldownTotal *= ratio;
     }
     this.hp = Math.min(this.maxHp, this.hp + this.maxHp - previous.maxHp);
@@ -287,12 +292,12 @@ export class Combat {
     return undefined;
   }
 
-  findTarget(player: Point, range = WEAPON.range * this.stats.rangeMultiplier): Enemy | undefined {
-    let nearest: Enemy | undefined, best = range ** 2;
+  findTarget(player: Point, range = WEAPON.range * this.stats.rangeMultiplier, includeBodyRadius = false): Enemy | undefined {
+    let nearest: Enemy | undefined, best = Infinity;
     for (const enemy of this.enemies) {
       if (!enemy.active || enemy.spawnTime > 0 || enemy.hp <= 0) continue;
       const squared = (enemy.x - player.x) ** 2 + (enemy.z - player.z) ** 2;
-      if (squared >= best) continue;
+      if (squared >= best || squared >= (range + (includeBodyRadius ? this.enemyRadius(enemy) : 0)) ** 2) continue;
       // Trunks and rocks are cover; select the nearest enemy with a clear shot.
       if (this.obstacles.some((obstacle) => segmentHit(player.x, player.z, enemy.x, enemy.z, obstacle.x, obstacle.z, obstacle.radius + WEAPON.radius) !== Infinity)) continue;
       nearest = enemy;
@@ -426,27 +431,31 @@ export class Combat {
       for (const attack of attacks) attack.cooldown = Math.max(0, attack.cooldown - dt);
       // Independent melee cooldown: a full bolt pool or an ongoing salvo cannot suppress a sweep.
       for (const attack of attacks) {
-        if (ATTACKS[attack.attackId].kind !== 'melee_arc' || attack.cooldown > 1e-8) continue;
+        if (ATTACKS[attack.attackId].kind !== 'melee_arc') continue;
         const rules = this.runBuild.rules(attack.attackId);
-        const radius = FLAME_SWEEP.radius*this.stats.rangeMultiplier*rules.areaMultiplier;
-        const target = this.findTarget(member, radius+FLAME_SWEEP.bodyOffset);
+        const growth = flameSweepStats(attack.level, this.stats.rangeMultiplier, rules.areaMultiplier);
+        if (this.encounters.dying || attack.cooldown > 1e-8) continue;
+        const radius = growth.radius;
+        const offset = growth.degrees === 360 ? 0 : FLAME_SWEEP.bodyOffset;
+        const target = this.findTarget(member, radius+offset, true);
         if (!target) continue;
         const dx = target.x-member.x, dz = target.z-member.z, length = Math.max(.001, Math.hypot(dx,dz));
         const aimX = length > .001 ? dx/length : 0, aimZ = length > .001 ? dz/length : 1;
         Object.assign(this.melee, { active: true, attackInstanceId: this.melee.attackInstanceId+1,
-          x: member.x+aimX*FLAME_SWEEP.bodyOffset, z: member.z+aimZ*FLAME_SWEEP.bodyOffset, aimX, aimZ, age: 0, radius });
+          x: member.x+aimX*offset, z: member.z+aimZ*offset, aimX, aimZ, age: 0, radius, angle: growth.angle });
         this.melee.hitIds.fill(0);
         for (let i = 0; i < this.enemies.length; i++) {
           const enemy = this.enemies[i];
           if (!enemy.active || enemy.spawnTime > 0 || enemy.hp <= 0 || this.melee.hitIds[i] === enemy.id
-            || !insideSweep(enemy.x-this.melee.x, enemy.z-this.melee.z, aimX, aimZ, radius, this.enemyRadius(enemy))
+            || !insideSweep(enemy.x-this.melee.x, enemy.z-this.melee.z, aimX, aimZ, radius, this.enemyRadius(enemy), growth.angle)
             || this.covered(this.melee.x,this.melee.z,enemy.x,enemy.z) || this.covered(member.x,member.z,enemy.x,enemy.z)) continue;
           this.melee.hitIds[i] = enemy.id;
-          this.damageEnemy(enemy, FLAME_SWEEP.damage*this.stats.damageMultiplier*rules.damageMultiplier*rules.directMultiplier, aimX, aimZ);
+          this.damageEnemy(enemy, FLAME_SWEEP.damage*this.stats.damageMultiplier*rules.damageMultiplier*rules.directMultiplier
+            * (enemy.rank ? FLAME_SWEEP.eliteMultiplier : 1), aimX, aimZ);
           this.effect(enemy.x,enemy.z,'hit',enemy.kind);
           if (this.encounters.dying) { this.melee.active = false; break; }
         }
-        attack.cooldown = FLAME_SWEEP.interval*rules.intervalMultiplier/this.stats.attackRateMultiplier;
+        attack.cooldown = growth.interval*rules.intervalMultiplier/this.stats.attackRateMultiplier;
         attack.cooldownTotal = attack.cooldown; attack.shotsFired++;
       }
       member.targetId = this.findTarget(member, ATTACKS[attacks[0].attackId].range * this.stats.rangeMultiplier)?.id ?? 0;

@@ -9,7 +9,7 @@ export const MAX_WEAPON_LEVEL = 5;
 export const ATTACKS = {
   spark: { kind: 'projectile', title: '火花弹', damage: 18, interval: .44, range: 10.5, color: '#ff9849' },
   bubble: { kind: 'projectile', title: '水泡弹', damage: 15, interval: .62, range: 10.5, color: '#55c9ed' },
-  leaf: { kind: 'projectile', title: '叶刃', damage: 16, interval: .54, range: 10.5, color: '#70bc52' },
+  leaf: { kind: 'projectile', title: '飞叶弹', damage: 16, interval: .54, range: 10.5, color: '#70bc52' },
   'flame-sweep': { kind: 'melee_arc', title: '火焰横扫', damage: FLAME_SWEEP.damage, interval: FLAME_SWEEP.interval, range: FLAME_SWEEP.radius, color: '#ff8c35' },
 } as const;
 

@@ -1,0 +1,33 @@
+[WebServer] (node:35156) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 20 tests using 2 workers
+
+(node:60688) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:47356) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  2 [chromium] › tests\flame-sweep-effects.spec.ts:37:1 › existing fire ring frames, staggered tongues and embers render without touching combat (4.2s)
+  ok  1 [chromium] › tests\flame-sweep-ui.spec.ts:26:1 › selected retimed frames render with a stable low root, no render damage and clean lifecycle (5.1s)
+  ok  3 [chromium] › tests\flame-sweep-effects.spec.ts:80:1 › atlas layers are reusable, pause with combat and clear on restart (3.6s)
+  ok  4 [chromium] › tests\flame-sweep-ui.spec.ts:59:1 › three preset peaks compare the same scene without changing combat and stay readable at phone size (4.2s)
+  ok  5 [chromium] › tests\flame-sweep-effects.spec.ts:98:1 › missing all three atlases preserves procedural fallback and real melee and ring hits (2.6s)
+(node:58136) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  6 [chromium] › tests\flame-sweep-ui.spec.ts:84:1 › GPU core attenuation reduces actual scene highlights while keeping the attack intact (3.3s)
+  ok  7 [webkit] › tests\flame-sweep-effects.spec.ts:37:1 › existing fire ring frames, staggered tongues and embers render without touching combat (3.5s)
+  ok  8 [chromium] › tests\flame-sweep-ui.spec.ts:112:1 › missing sweep atlas keeps a bounded visible fallback and real melee damage (3.0s)
+  ok  9 [webkit] › tests\flame-sweep-effects.spec.ts:80:1 › atlas layers are reusable, pause with combat and clear on restart (3.4s)
+  ok 10 [chromium] › tests\flame-sweep-ui.spec.ts:117:1 › late-game sweep and independent fire ring render on both phones and pause cleanly (3.9s)
+  ok 11 [webkit] › tests\flame-sweep-effects.spec.ts:98:1 › missing all three atlases preserves procedural fallback and real melee and ring hits (2.7s)
+  ok 12 [chromium] › tests\flame-sweep-ui.spec.ts:151:1 › missing both fire atlases retains the ring fallback and real damage (3.0s)
+  ok 14 [chromium] › tests\flame-sweep-ui.spec.ts:164:1 › all eight equal cells decode transparently and retain a luminous base at the shared pixel anchor (2.0s)
+  ok 13 [webkit] › tests\flame-sweep-ui.spec.ts:26:1 › selected retimed frames render with a stable low root, no render damage and clean lifecycle (5.1s)
+  ok 15 [webkit] › tests\flame-sweep-ui.spec.ts:59:1 › three preset peaks compare the same scene without changing combat and stay readable at phone size (3.3s)
+  ok 16 [webkit] › tests\flame-sweep-ui.spec.ts:84:1 › GPU core attenuation reduces actual scene highlights while keeping the attack intact (3.0s)
+  ok 17 [webkit] › tests\flame-sweep-ui.spec.ts:112:1 › missing sweep atlas keeps a bounded visible fallback and real melee damage (2.7s)
+  ok 18 [webkit] › tests\flame-sweep-ui.spec.ts:117:1 › late-game sweep and independent fire ring render on both phones and pause cleanly (3.3s)
+  ok 19 [webkit] › tests\flame-sweep-ui.spec.ts:151:1 › missing both fire atlases retains the ring fallback and real damage (2.7s)
+  ok 20 [webkit] › tests\flame-sweep-ui.spec.ts:164:1 › all eight equal cells decode transparently and retain a luminous base at the shared pixel anchor (1.7s)
+
+  20 passed (47.6s)

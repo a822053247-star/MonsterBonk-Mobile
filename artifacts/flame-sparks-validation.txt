@@ -1,0 +1,91 @@
+
+[WebServer] (node:52520) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 60 tests using 3 workers
+
+(node:56440) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+(node:62096) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+(node:58564) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[1/60] [chromium] › tests\flame-sweep-effects.spec.ts:37:1 › fire ring stays clean with sparse point sparks and no upright flame or trace particles
+[2/60] [chromium] › tests\flame-sweep-ui.spec.ts:26:1 › selected retimed frames render with a stable low root, no render damage and clean lifecycle
+[3/60] [chromium] › tests\flame-sweep-growth.spec.ts:18:1 › upgrades grow actual range and angle, and cap relic/range stacking at close range
+[4/60] [chromium] › tests\flame-sweep-growth.spec.ts:33:1 › periodic fire ring hits all directions once even with a saturated bolt pool and no sweep
+[5/60] [chromium] › tests\flame-sweep-growth.spec.ts:48:1 › real upgraded swings reach distant and rear-side enemies that level one leaves untouched
+[6/60] [chromium] › tests\flame-sweep-growth.spec.ts:62:1 › ring protects walls and spawn warnings; its unlocked area follows the current player position
+[7/60] [chromium] › tests\flame-sweep-growth.spec.ts:72:1 › ring timing pauses for upgrades and death, clears on wave boundaries and resets on restart
+[8/60] [chromium] › tests\flame-sweep-growth.spec.ts:82:1 › upgrading level four to five preserves ring cooldown progress and exposes the next reward
+[9/60] [chromium] › tests\flame-sweep-growth.spec.ts:92:1 › elite and boss resistance preserves remote single-target roles; ring respects Boss death gating
+[10/60] [chromium] › tests\flame-sweep-visual.spec.ts:5:1 › visual presets keep bounded scale, use short windup and fast tails, and finish before the unchanged combat clock
+[11/60] [chromium] › tests\flame-sweep-visual.spec.ts:20:1 › preset query falls back safely, and the balanced tail rapidly fades instead of lingering
+[12/60] [chromium] › tests\flame-sweep.spec.ts:20:1 › supplied originals remain byte-identical; eight equal cells have one common root and no black removal
+[13/60] [chromium] › tests\flame-sweep.spec.ts:32:1 › finite 220 degree sector respects back, radial limit and circle edges
+[14/60] [chromium] › tests\flame-sweep.spec.ts:41:1 › sweep really clears a cluster with a full projectile pool and settles kills, coins and XP once
+[15/60] [chromium] › tests\flame-sweep.spec.ts:54:1 › cover, warnings, back-facing targets and targets outside the arc are not damaged
+[16/60] [chromium] › tests\flame-sweep.spec.ts:63:1 › automatic melee waits for a target and repeats on its own cooldown after the animation ends
+[17/60] [chromium] › tests\flame-sweep.spec.ts:76:1 › direction locks per swing; upgrades/death freeze animation and reset or wave boundary clears it
+[18/60] [chromium] › tests\flame-sweep.spec.ts:87:1 › shared three slots, five upgrades, modifier compatibility and legacy card pools remain explicit
+[19/60] [chromium] › tests\flame-sweep.spec.ts:101:1 › melee uses the Boss death gate and cannot override same-frame player death
+[20/60] [chromium] › tests\particle-feedback.spec.ts:31:1 › feedback uses real event clocks, one bounded GPU batch, preserves combat and stops with lifecycle
+[21/60] [chromium] › tests\flame-sweep-effects.spec.ts:89:1 › atlas layers are reusable, pause with combat and clear on restart
+[22/60] [chromium] › tests\particle-feedback.spec.ts:87:1 › missing feedback atlas retains existing trail and hit fallback and real damage
+[23/60] [chromium] › tests\flame-sweep-ui.spec.ts:59:1 › three preset peaks compare the same scene without changing combat and stay readable at phone size
+[24/60] [chromium] › tests\weapon-balance.spec.ts:4:1 › four weapons retain distinct jobs at levels one, three and five
+[25/60] [chromium] › tests\flame-sweep-effects.spec.ts:107:1 › missing all three atlases preserves procedural fallback and real melee and ring hits
+
+(node:31216) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[26/60] [webkit] › tests\flame-sweep-effects.spec.ts:37:1 › fire ring stays clean with sparse point sparks and no upright flame or trace particles
+[27/60] [chromium] › tests\flame-sweep-ui.spec.ts:84:1 › GPU core attenuation reduces actual scene highlights while keeping the attack intact
+
+(node:59568) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[28/60] [webkit] › tests\flame-sweep-growth.spec.ts:18:1 › upgrades grow actual range and angle, and cap relic/range stacking at close range
+[29/60] [webkit] › tests\flame-sweep-growth.spec.ts:33:1 › periodic fire ring hits all directions once even with a saturated bolt pool and no sweep
+[30/60] [webkit] › tests\flame-sweep-growth.spec.ts:48:1 › real upgraded swings reach distant and rear-side enemies that level one leaves untouched
+[31/60] [webkit] › tests\flame-sweep-growth.spec.ts:62:1 › ring protects walls and spawn warnings; its unlocked area follows the current player position
+[32/60] [webkit] › tests\flame-sweep-growth.spec.ts:72:1 › ring timing pauses for upgrades and death, clears on wave boundaries and resets on restart
+[33/60] [webkit] › tests\flame-sweep-growth.spec.ts:82:1 › upgrading level four to five preserves ring cooldown progress and exposes the next reward
+[34/60] [webkit] › tests\flame-sweep-growth.spec.ts:92:1 › elite and boss resistance preserves remote single-target roles; ring respects Boss death gating
+[35/60] [webkit] › tests\flame-sweep-ui.spec.ts:26:1 › selected retimed frames render with a stable low root, no render damage and clean lifecycle
+[36/60] [chromium] › tests\flame-sweep-ui.spec.ts:112:1 › missing sweep atlas keeps a bounded visible fallback and real melee damage
+[37/60] [webkit] › tests\flame-sweep-effects.spec.ts:89:1 › atlas layers are reusable, pause with combat and clear on restart
+[38/60] [chromium] › tests\flame-sweep-ui.spec.ts:117:1 › late-game sweep and independent fire ring render on both phones and pause cleanly
+[39/60] [webkit] › tests\flame-sweep-effects.spec.ts:107:1 › missing all three atlases preserves procedural fallback and real melee and ring hits
+[40/60] [webkit] › tests\flame-sweep-ui.spec.ts:59:1 › three preset peaks compare the same scene without changing combat and stay readable at phone size
+[41/60] [webkit] › tests\flame-sweep-visual.spec.ts:5:1 › visual presets keep bounded scale, use short windup and fast tails, and finish before the unchanged combat clock
+[42/60] [chromium] › tests\flame-sweep-ui.spec.ts:151:1 › missing both fire atlases retains ring particles and real damage
+[43/60] [webkit] › tests\flame-sweep-visual.spec.ts:20:1 › preset query falls back safely, and the balanced tail rapidly fades instead of lingering
+[44/60] [webkit] › tests\flame-sweep.spec.ts:20:1 › supplied originals remain byte-identical; eight equal cells have one common root and no black removal
+[45/60] [webkit] › tests\flame-sweep.spec.ts:32:1 › finite 220 degree sector respects back, radial limit and circle edges
+[46/60] [webkit] › tests\flame-sweep.spec.ts:41:1 › sweep really clears a cluster with a full projectile pool and settles kills, coins and XP once
+[47/60] [webkit] › tests\flame-sweep.spec.ts:54:1 › cover, warnings, back-facing targets and targets outside the arc are not damaged
+[48/60] [webkit] › tests\flame-sweep.spec.ts:63:1 › automatic melee waits for a target and repeats on its own cooldown after the animation ends
+[49/60] [webkit] › tests\flame-sweep.spec.ts:76:1 › direction locks per swing; upgrades/death freeze animation and reset or wave boundary clears it
+[50/60] [webkit] › tests\flame-sweep.spec.ts:87:1 › shared three slots, five upgrades, modifier compatibility and legacy card pools remain explicit
+[51/60] [webkit] › tests\flame-sweep.spec.ts:101:1 › melee uses the Boss death gate and cannot override same-frame player death
+[52/60] [webkit] › tests\particle-feedback.spec.ts:31:1 › feedback uses real event clocks, one bounded GPU batch, preserves combat and stops with lifecycle
+[53/60] [webkit] › tests\flame-sweep-ui.spec.ts:84:1 › GPU core attenuation reduces actual scene highlights while keeping the attack intact
+[54/60] [chromium] › tests\flame-sweep-ui.spec.ts:164:1 › all eight equal cells decode transparently and retain a luminous base at the shared pixel anchor
+[55/60] [webkit] › tests\particle-feedback.spec.ts:87:1 › missing feedback atlas retains existing trail and hit fallback and real damage
+[56/60] [webkit] › tests\flame-sweep-ui.spec.ts:112:1 › missing sweep atlas keeps a bounded visible fallback and real melee damage
+(node:29588) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[57/60] [webkit] › tests\weapon-balance.spec.ts:4:1 › four weapons retain distinct jobs at levels one, three and five
+[58/60] [webkit] › tests\flame-sweep-ui.spec.ts:117:1 › late-game sweep and independent fire ring render on both phones and pause cleanly
+[59/60] [webkit] › tests\flame-sweep-ui.spec.ts:151:1 › missing both fire atlases retains ring particles and real damage
+[60/60] [webkit] › tests\flame-sweep-ui.spec.ts:164:1 › all eight equal cells decode transparently and retain a luminous base at the shared pixel anchor
+  60 passed (45.1s)
