@@ -93,11 +93,11 @@ test('real depth buffer handles transparent cutouts, foreground cover and visibl
   expect(p.otherAfter).toEqual(p.otherBefore);
 });
 
-test('100 enemies reuse the same batches and textures, clear on reset and release on disposal', async ({ page }) => {
+test('101 enemies reuse the same batches and textures, clear on reset and release on disposal', async ({ page }) => {
   await open(page); await ready(page);
   await expect.poll(async () => (await state(page)).partyVisual.members.filter(m => m?.loaded).length).toBe(1);
   const p = await page.evaluate(() => (window as unknown as Fixture).pool());
-  expect(p.counts).toEqual([100, 0, 0]); expect(p.calls[1]).toBe(p.calls[0]); expect(p.stable).toBe(true);
+  expect(p.counts).toEqual([101, 0, 0]); expect(p.calls[1]).toBe(p.calls[0]); expect(p.stable).toBe(true);
   expect(p.cleared).toBe(0); expect(p.cache).toEqual({ textures: 3, references: 3 });
   expect(await page.evaluate(() => (window as unknown as Fixture).destroy())).toEqual({ cache: { textures: 0, references: 0 }, directionStates: 0, batches: [], children: 0 });
 });
