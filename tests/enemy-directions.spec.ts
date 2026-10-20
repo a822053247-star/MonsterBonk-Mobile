@@ -25,16 +25,16 @@ test('supplied images remain unchanged, individual directions match original she
  }
  expect(report.species['rock-armor-bug'].frames[4].sizeCorrection).toBeLessThan(1);
 });
-test('three runtime direction atlases decode with visible silhouettes and transparent safe gutters',async({page})=>{
+test('six runtime direction atlases decode with visible silhouettes and transparent safe gutters',async({page})=>{
  await page.goto('/');
  const cells=await page.evaluate(async()=>{
   const results=[];
-  for(const name of ['grass-monster','runner-bug','rock-armor-bug']){
+  for(const name of ['grass-monster','runner-bug','rock-armor-bug','draft-crystal-swarm','draft-spore-bomber','draft-treasure-runner']){
    const im=new Image();im.src='/assets/pixel/enemies/direction/'+name+'-directions/runtime.normalized.png';await im.decode();
    const c=document.createElement('canvas');c.width=1280;c.height=256;const ctx=c.getContext('2d')!;ctx.drawImage(im,0,0);
    for(let col=0;col<5;col++){const data=ctx.getImageData(col*256,0,256,256).data;let visible=0,edge=0;
     for(let y=0;y<256;y++)for(let x=0;x<256;x++)if(data[(y*256+x)*4+3]){visible++;if(x<16||x>=240||y<16||y>=240)edge++;}results.push({visible,edge});}
   }return results;
  });
- expect(cells).toHaveLength(15);for(const cell of cells){expect(cell.visible).toBeGreaterThan(3000);expect(cell.edge).toBe(0);}
+ expect(cells).toHaveLength(30);for(const cell of cells){expect(cell.visible).toBeGreaterThan(3000);expect(cell.edge).toBe(0);}
 });

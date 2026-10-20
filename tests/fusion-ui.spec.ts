@@ -134,7 +134,7 @@ test('new and preserved menu entries fit both phone safe areas with unobstructed
 test('fusion restarts reuse GPU resources and disposal releases the atlas batch', async ({ page }) => {
   await open(page);
   await expect.poll(() => page.evaluate(() => (window as any).game.combatView.inspect().feedback?.loaded)).toBe(true);
-  await expect.poll(async () => (await state(page)).enemyVisual.batches?.filter(b => b.loaded).length).toBe(3);
+  await expect.poll(async () => (await state(page)).enemyVisual.batches?.filter(b => b.loaded).length).toBe(6);
   let baseline: { geometries: number; textures: number } | undefined;
   for (let i=0;i<4;i++) {
     await learn(page); await page.evaluate(() => (window as unknown as Fixture).impact());

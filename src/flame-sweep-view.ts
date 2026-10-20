@@ -12,7 +12,6 @@ export class FlameSweepView {
   private texture: THREE.Texture;
   private mesh: THREE.Mesh<THREE.RingGeometry, THREE.MeshBasicMaterial>;
   private glow: THREE.Mesh<THREE.RingGeometry, THREE.MeshBasicMaterial>;
-  private edge: THREE.Mesh<THREE.RingGeometry, THREE.MeshBasicMaterial>;
   private disposed = false;
   private angle: number = FLAME_SWEEP.angle;
   private radius = 0;
@@ -38,11 +37,9 @@ export class FlameSweepView {
     this.mesh=new THREE.Mesh(this.geometry(this.angle),material);this.mesh.name='FlameSectorWave';
     this.glow=new THREE.Mesh(new THREE.RingGeometry(.12,.96,80,2,-this.angle/2,this.angle),
       new THREE.MeshBasicMaterial({color:'#ff791c',transparent:true,opacity:0,depthWrite:false,side:THREE.DoubleSide}));
-    this.edge=new THREE.Mesh(new THREE.RingGeometry(.93,1,80,1,-this.angle/2,this.angle),
-      new THREE.MeshBasicMaterial({color:'#ffad4c',transparent:true,opacity:0,depthWrite:false,side:THREE.DoubleSide}));
-    for(const mesh of [this.mesh,this.glow,this.edge]){mesh.rotation.x=-Math.PI/2;mesh.frustumCulled=false;mesh.material.forceSinglePass=true;}
-    this.mesh.position.y=.04;this.edge.position.y=.02;
-    this.group.add(this.glow,this.edge,this.mesh);this.areaGroup.add(this.assets.group);
+    for(const mesh of [this.mesh,this.glow]){mesh.rotation.x=-Math.PI/2;mesh.frustumCulled=false;mesh.material.forceSinglePass=true;}
+    this.mesh.position.y=.04;
+    this.group.add(this.glow,this.mesh);this.areaGroup.add(this.assets.group);
     this.setPreset(sweepVisualPreset(typeof window==='undefined'?null:new URLSearchParams(window.location.search).get('sweepVisual')));
     this.clear();
     this.texture=new THREE.TextureLoader().load(FLAME_SWEEP.url,texture=>{
@@ -70,7 +67,6 @@ export class FlameSweepView {
       this.angle=sweep.angle;
       this.mesh.geometry.dispose();this.mesh.geometry=this.geometry(this.angle);
       this.glow.geometry.dispose();this.glow.geometry=new THREE.RingGeometry(.12,.96,80,2,-this.angle/2,this.angle);
-      this.edge.geometry.dispose();this.edge.geometry=new THREE.RingGeometry(.93,1,80,1,-this.angle/2,this.angle);
     }
     this.radius=sweep.radius;this.frame=FLAME_SWEEP.sourceFrames[sample.frame];
     this.texture.offset.set((this.frame%4)/4,1-(Math.floor(this.frame/4)+1)/4);
@@ -80,7 +76,6 @@ export class FlameSweepView {
     this.group.scale.set(size,1,size);
     this.mesh.visible=this.loaded;this.mesh.material.opacity=sample.opacity;
     this.glow.material.opacity=(this.loaded ? .07 : .22)*sample.opacity;
-    this.edge.material.opacity=(this.loaded ? .12 : .6)*sample.opacity;
   }
   clear(){this.group.visible=false;this.assets.clear();}
   inspect(){return {active:this.group.visible,loaded:this.loaded,failed:this.failed,fallback:this.group.visible&&!this.loaded,
@@ -90,7 +85,7 @@ export class FlameSweepView {
     capacity:1,assets:this.assets.inspect()};}
   dispose(){
     if(this.disposed)return;this.disposed=true;this.clear();this.texture.dispose();this.assets.dispose();
-    for(const mesh of [this.mesh,this.glow,this.edge]){mesh.geometry.dispose();mesh.material.dispose();}
+    for(const mesh of [this.mesh,this.glow]){mesh.geometry.dispose();mesh.material.dispose();}
     this.group.removeFromParent();this.areaGroup.removeFromParent();
   }
 }

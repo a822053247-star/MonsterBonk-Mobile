@@ -61,6 +61,7 @@ export class EnemyChallenge {
     if (this.bossState === 'dying') { this.bossTime += dt; if (this.bossTime >= 1) this.bossState = 'defeated'; }
   }
   killedBoss(combat: Combat) {
+    combat.clearSpecialEvents();
     this.bossState = 'dying'; this.bossTime = 0; this.clearShots();
     if(this.boss) { this.boss.previousX=this.boss.x; this.boss.previousZ=this.boss.z; this.boss.walkX=this.boss.walkZ=0; }
     // Victory presentation cannot be interrupted by leftover summons; no fake kills/rewards.

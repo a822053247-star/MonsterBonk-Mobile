@@ -128,7 +128,7 @@ test('30, 60 and 120 Hz frame schedules give identical fixed-step combat results
 
 test('all pools are bounded, full XP pool merges drops, and reset removes old entities', () => {
   const combat = new Combat([], 32.3, seededRandom());
-  for (let i = 0; i < 100; i++) combat.spawn('tank', 20, 20, 0);
+  for (let i = 0; i < COMBAT_LIMITS.enemies + 32; i++) combat.spawn('tank', 20, 20, 0);
   expect(combat.enemies.filter((enemy) => enemy.active)).toHaveLength(COMBAT_LIMITS.enemies);
   // Fill drops before a real kill: the new XP must merge, not be lost.
   for (const enemy of combat.enemies) enemy.active = false;

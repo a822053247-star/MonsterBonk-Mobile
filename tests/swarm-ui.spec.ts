@@ -20,7 +20,7 @@ test('browser renders first-wave groups and the dense fifth wave, and pause/rest
   </script></body></html>` }));
   await page.goto('/swarm-harness?world=fixed'); await page.waitForFunction(() => 'game' in window);
   await page.locator('#start-fusion').click(); await page.evaluate(() => (window as any).game.sleep());
-  await expect.poll(() => page.evaluate(() => (window as any).game.combatView.inspect().batches.filter((b: any) => b.loaded).length)).toBe(3);
+  await expect.poll(() => page.evaluate(() => (window as any).game.combatView.inspect().batches.filter((b: any) => b.loaded).length)).toBe(6);
   const first = await page.evaluate(() => (window as any).arrange(1));
   expect(first.active).toBeGreaterThanOrEqual(6); expect(first.active).toBeLessThanOrEqual(60);
   if (browserName === 'chromium') await page.screenshot({ path: 'artifacts/v6-1-a-wave-1.png' });

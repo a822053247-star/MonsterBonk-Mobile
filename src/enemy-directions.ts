@@ -5,6 +5,9 @@ export const ENEMY_DIRECTION_ASSETS = {
   'enemy-normal': 'enemies/direction/grass-monster-directions/runtime.normalized.png',
   'enemy-fast': 'enemies/direction/runner-bug-directions/runtime.normalized.png',
   'enemy-tank': 'enemies/direction/rock-armor-bug-directions/runtime.normalized.png',
+  'enemy-draft-crystal-swarm': 'enemies/direction/draft-crystal-swarm-directions/runtime.normalized.png',
+  'enemy-draft-spore-bomber': 'enemies/direction/draft-spore-bomber-directions/runtime.normalized.png',
+  'enemy-draft-treasure-runner': 'enemies/direction/draft-treasure-runner-directions/runtime.normalized.png',
 } as const;
 export const ENEMY_DIRECTION_FRAMES: Readonly<Record<Facing8, readonly [number, number]>> = {
   down: [0,0], 'down-right': [1,0], right: [2,0], 'up-right': [3,0], up: [4,0],

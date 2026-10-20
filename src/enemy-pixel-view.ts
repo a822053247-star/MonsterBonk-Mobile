@@ -5,7 +5,7 @@ import { ENEMY_DIRECTION_LAYOUT, ENEMY_DIRECTION_FRAMES, enemyFacing } from './e
 import type { Facing8, ScreenBasis } from './creature-animation';
 
 type PixelEnemyKind = EnemyKind;
-const HEIGHTS = { normal: 1.7, fast: 1.45, tank: 2.3 } as const;
+export const ENEMY_PIXEL_HEIGHTS = { normal: 1.7, fast: 1.45, tank: 2.3, 'draft-crystal-swarm': 1.3, 'draft-spore-bomber': 2, 'draft-treasure-runner': 2.4 } as const;
 type Batch = {
   mesh: THREE.InstancedMesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>;
   hurt: THREE.InstancedBufferAttribute;
@@ -14,7 +14,7 @@ type Batch = {
   lease: ReturnType<PixelTextureCache['acquire']>;
 };
 
-/** Three bounded billboard batches; no GPU allocations when enemies spawn or die. */
+/** Six bounded billboard batches; no GPU allocations when enemies spawn or die. */
 export class EnemyPixelView {
   readonly group = new THREE.Group();
   private cache = new PixelTextureCache();
@@ -48,7 +48,7 @@ export class EnemyPixelView {
     this.tankFallback.colorSpace = THREE.SRGBColorSpace;
     this.tankFallback.minFilter = this.tankFallback.magFilter = THREE.NearestFilter;
     this.tankFallback.generateMipmaps = false;
-    for (const kind of ['normal', 'fast', 'tank'] as const) {
+    for (const kind of Object.keys(ENEMY_PIXEL_HEIGHTS) as PixelEnemyKind[]) {
       // Bottom edge sits at the entity's ground anchor, like Sprite.center=(.5,0).
       const geometry = new THREE.PlaneGeometry(1, 1).translate(0, 0.5, 0);
       const hurt = new THREE.InstancedBufferAttribute(new Float32Array(COMBAT_LIMITS.enemies), 1);
@@ -102,12 +102,12 @@ export class EnemyPixelView {
     this.basis.rightX = this.right.x; this.basis.rightZ = this.right.z;
     this.basis.upX = this.up.x; this.basis.upZ = this.up.z;
     // Roughly 34px/29px on short phones; purely visual, never a collision radius.
-    this.displayScale = THREE.MathUtils.clamp(34 * frustumHeight / Math.max(1, viewportHeight) / HEIGHTS.normal, 1, 1.2);
+    this.displayScale = THREE.MathUtils.clamp(34 * frustumHeight / Math.max(1, viewportHeight) / ENEMY_PIXEL_HEIGHTS.normal, 1, 1.2);
   }
 
   ready(kind: EnemyKind): kind is PixelEnemyKind { return !this.disposed && (kind === 'tank' || !!this.batches.get(kind)?.lease.entry.ready); }
   enableBasics() { if (!this.disposed) for (const batch of this.batches.values()) batch.lease.start(); }
-  height(kind: PixelEnemyKind) { return HEIGHTS[kind] * this.displayScale; }
+  height(kind: PixelEnemyKind) { return ENEMY_PIXEL_HEIGHTS[kind] * this.displayScale; }
   begin() { this.renderSerial++; for (const { mesh } of this.batches.values()) mesh.count = 0; }
   resetDirections() { this.directions.clear(); }
 

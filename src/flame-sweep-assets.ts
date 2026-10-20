@@ -6,7 +6,7 @@ const FIRE_URL = '/assets/pixel/skills/yanrong/fire-effects-sheet.normalized.png
 const PARTICLE_URL = '/assets/particles/kenney-feedback.png';
 
 /** Atlas layers share frame/alpha data without creating per-spark meshes. */
-class FlameAtlasBatch {
+export class FlameAtlasBatch {
   readonly mesh: THREE.InstancedMesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>;
   private frames: THREE.InstancedBufferAttribute;
   private alpha: THREE.InstancedBufferAttribute;

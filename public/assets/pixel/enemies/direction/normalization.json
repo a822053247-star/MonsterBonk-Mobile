@@ -402,6 +402,402 @@
           "sizeCorrection": 0.7980769230769231
         }
       ]
+    },
+    "draft-crystal-swarm": {
+      "sourceSHA256": {
+        "draft-crystal-swarm-front.png": "773bcb5fc179f38d28531f67e34d10aaf67be9cd62e7295e4da96aacb6cf38f5",
+        "draft-crystal-swarm-front-right.png": "f5e845abf17fe2b8df3f46d32f93d020dfa7cd6d0bc3a126b968fdf966e26f3e",
+        "draft-crystal-swarm-right.png": "749fb4554a320e041bb6163012f0d26083d69883424e81c4dd4a59461a8fabf6",
+        "draft-crystal-swarm-back-right.png": "8265efe32e35b0588b9acc975801b1966bbd019b388a7a3f8377cff7febf314b",
+        "draft-crystal-swarm-back.png": "8d4c90265783345ebfe024a170a8576b004e33381d75cf9b1bda4d5deebe32cb",
+        "draft-crystal-swarm-directions.png": "a12095251e275d188407a84ceaaa36ed75fd747dfb93941cf7a60ef269b12155"
+      },
+      "matchesSheet": [
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "alpha": [
+        {
+          "zero": 39278,
+          "faint": 0
+        },
+        {
+          "zero": 40962,
+          "faint": 0
+        },
+        {
+          "zero": 38153,
+          "faint": 0
+        },
+        {
+          "zero": 40424,
+          "faint": 0
+        },
+        {
+          "zero": 39415,
+          "faint": 0
+        }
+      ],
+      "scale": 0.9523809523809523,
+      "frames": [
+        {
+          "direction": "front",
+          "sourceBounds": [
+            26,
+            20,
+            230,
+            230
+          ],
+          "offset": [
+            31,
+            40
+          ],
+          "size": [
+            194,
+            200
+          ],
+          "sizeCorrection": 1
+        },
+        {
+          "direction": "front-right",
+          "sourceBounds": [
+            22,
+            20,
+            234,
+            230
+          ],
+          "offset": [
+            27,
+            40
+          ],
+          "size": [
+            202,
+            200
+          ],
+          "sizeCorrection": 1
+        },
+        {
+          "direction": "right",
+          "sourceBounds": [
+            25,
+            20,
+            231,
+            230
+          ],
+          "offset": [
+            30,
+            40
+          ],
+          "size": [
+            196,
+            200
+          ],
+          "sizeCorrection": 1
+        },
+        {
+          "direction": "back-right",
+          "sourceBounds": [
+            29,
+            20,
+            227,
+            230
+          ],
+          "offset": [
+            34,
+            40
+          ],
+          "size": [
+            189,
+            200
+          ],
+          "sizeCorrection": 1
+        },
+        {
+          "direction": "back",
+          "sourceBounds": [
+            30,
+            20,
+            226,
+            230
+          ],
+          "offset": [
+            35,
+            40
+          ],
+          "size": [
+            187,
+            200
+          ],
+          "sizeCorrection": 1
+        }
+      ]
+    },
+    "draft-spore-bomber": {
+      "sourceSHA256": {
+        "draft-spore-bomber-front.png": "9a33ccffe0491d2536c870f8e242d5d5e82abdcc07bbf42188336efeba912a21",
+        "draft-spore-bomber-front-right.png": "8578d2fd195081b534dd829cb7e5469e19d41da35f0b2c29ee27403ccf77d1d9",
+        "draft-spore-bomber-right.png": "60830e72591c951e6238eb8ac10f952b8ec4b26d94ed0d8a73c438e3f54e48a8",
+        "draft-spore-bomber-back-right.png": "408f7d360165d2e88a93819455919e46c4bd24925bb3b323186312edb0e852e4",
+        "draft-spore-bomber-back.png": "6489d38095d57b1a0ab6c8c2ec4d021c9bd94f2acabc110644371db84f13b6ad",
+        "draft-spore-bomber-directions.png": "7ba75d90d2fc09ec15fa1aa24a71df00a6e5c4553ce10ff57a8eaaa3dd282fec"
+      },
+      "matchesSheet": [
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "alpha": [
+        {
+          "zero": 39736,
+          "faint": 0
+        },
+        {
+          "zero": 39852,
+          "faint": 0
+        },
+        {
+          "zero": 37496,
+          "faint": 0
+        },
+        {
+          "zero": 39143,
+          "faint": 0
+        },
+        {
+          "zero": 39971,
+          "faint": 0
+        }
+      ],
+      "scale": 0.9615384615384616,
+      "frames": [
+        {
+          "direction": "front",
+          "sourceBounds": [
+            34,
+            16,
+            221,
+            224
+          ],
+          "offset": [
+            38,
+            40
+          ],
+          "size": [
+            180,
+            200
+          ],
+          "sizeCorrection": 1
+        },
+        {
+          "direction": "front-right",
+          "sourceBounds": [
+            30,
+            16,
+            225,
+            224
+          ],
+          "offset": [
+            34,
+            40
+          ],
+          "size": [
+            188,
+            200
+          ],
+          "sizeCorrection": 1
+        },
+        {
+          "direction": "right",
+          "sourceBounds": [
+            18,
+            16,
+            237,
+            224
+          ],
+          "offset": [
+            23,
+            40
+          ],
+          "size": [
+            211,
+            200
+          ],
+          "sizeCorrection": 1
+        },
+        {
+          "direction": "back-right",
+          "sourceBounds": [
+            24,
+            16,
+            232,
+            224
+          ],
+          "offset": [
+            28,
+            40
+          ],
+          "size": [
+            200,
+            200
+          ],
+          "sizeCorrection": 1
+        },
+        {
+          "direction": "back",
+          "sourceBounds": [
+            33,
+            16,
+            222,
+            224
+          ],
+          "offset": [
+            37,
+            40
+          ],
+          "size": [
+            182,
+            200
+          ],
+          "sizeCorrection": 1
+        }
+      ]
+    },
+    "draft-treasure-runner": {
+      "sourceSHA256": {
+        "draft-treasure-runner-front.png": "17e817f1f66264b419a65cbc16fdf711f7251a1a397a88cd1e9e53e0c9b7f3d0",
+        "draft-treasure-runner-front-right.png": "099d02a3760723f115aa2e7b16d24b1fdb1cb3209d8db5f23a561dae061eaf09",
+        "draft-treasure-runner-right.png": "732eb97b8d7a617f6165be00126b392e54091f64241db7a622ede73d5e9ac227",
+        "draft-treasure-runner-back-right.png": "52efbaf9ede1ca8690f5d48bb4506a32c359575397f6f3f93d1bdc6d4855dd9a",
+        "draft-treasure-runner-back.png": "8508f6d9a12ccf3b657cd715adbce185f52434b1cd43fcab4c88d21e7943bfa8",
+        "draft-treasure-runner-directions.png": "e4a1557f0a6d04de84c4860200266698cac7c2295f62c0abf4e0a45c23eb8a7a"
+      },
+      "matchesSheet": [
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "alpha": [
+        {
+          "zero": 43052,
+          "faint": 0
+        },
+        {
+          "zero": 40284,
+          "faint": 0
+        },
+        {
+          "zero": 39255,
+          "faint": 0
+        },
+        {
+          "zero": 43129,
+          "faint": 0
+        },
+        {
+          "zero": 45089,
+          "faint": 0
+        }
+      ],
+      "scale": 0.9900990099009901,
+      "frames": [
+        {
+          "direction": "front",
+          "sourceBounds": [
+            48,
+            22,
+            208,
+            224
+          ],
+          "offset": [
+            49,
+            40
+          ],
+          "size": [
+            158,
+            200
+          ],
+          "sizeCorrection": 1
+        },
+        {
+          "direction": "front-right",
+          "sourceBounds": [
+            24,
+            24,
+            231,
+            224
+          ],
+          "offset": [
+            26,
+            42
+          ],
+          "size": [
+            205,
+            198
+          ],
+          "sizeCorrection": 1
+        },
+        {
+          "direction": "right",
+          "sourceBounds": [
+            16,
+            36,
+            240,
+            224
+          ],
+          "offset": [
+            17,
+            54
+          ],
+          "size": [
+            222,
+            186
+          ],
+          "sizeCorrection": 1
+        },
+        {
+          "direction": "back-right",
+          "sourceBounds": [
+            37,
+            33,
+            218,
+            224
+          ],
+          "offset": [
+            39,
+            51
+          ],
+          "size": [
+            179,
+            189
+          ],
+          "sizeCorrection": 1
+        },
+        {
+          "direction": "back",
+          "sourceBounds": [
+            51,
+            38,
+            204,
+            224
+          ],
+          "offset": [
+            53,
+            56
+          ],
+          "size": [
+            151,
+            184
+          ],
+          "sizeCorrection": 1
+        }
+      ]
     }
   }
 }

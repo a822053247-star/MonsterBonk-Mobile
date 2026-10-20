@@ -5,6 +5,7 @@ import { resolveAttackRules, type AttackRules } from './relics';
 import { ATTACKS, RunBuild } from './run-build';
 import type { BaseAttackId } from './fusion';
 import { ENEMY_MOTION } from './enemy-motion';
+import { CRYSTAL_SWARM, SPORE_BOMBER, TREASURE_RUNNER, type SporeExplosion, type TreasureReward } from './special-enemies';
 import { Progression, SKILL_RULES, type SkillId } from './progression';
 import { HORN, POUNCE, type DashStep, type EnemyIntent, type Ruleset } from './trial';
 import { CREATURES, type PartySystem, type SpeciesId } from './party';
@@ -13,11 +14,14 @@ import { BURST_SEED, resolveFusions, DEEP_BUBBLE, CHAIN_BUBBLE, THORN_SCATTER, J
 
 /** Combat owns no DOM/GPU state. Every clock and movement is measured in seconds. */
 export const COMBAT_LIMITS = { enemies: 256, projectiles: 24, orbs: 96, effects: 48, shockwaves: 2 } as const;
-export type EnemyKind = 'normal' | 'fast' | 'tank';
+export type EnemyKind = 'normal' | 'fast' | 'tank' | 'draft-crystal-swarm' | 'draft-spore-bomber' | 'draft-treasure-runner';
 export const ENEMY_TYPES = {
   normal: { name: '赤团', hp: 30, speed: 1.25, radius: 0.55, damage: 8, xp: 3, color: '#e59472' },
   fast: { name: '疾芽', hp: 18, speed: 2.7, radius: 0.4, damage: 6, xp: 2, color: '#edd779' },
   tank: { name: '岩甲', hp: 100, speed: 0.75, radius: 0.85, damage: 16, xp: 8, color: '#a58b6e' },
+  'draft-crystal-swarm': { name: '晶屑虫', hp: 8, speed: 1.65, radius: .3, damage: 3, xp: 0, color: '#ba83d5' },
+  'draft-spore-bomber': { name: '爆孢怪', hp: 28, speed: 1.05, radius: .6, damage: 6, xp: 2, color: '#e97a73' },
+  'draft-treasure-runner': { name: '携宝兽', hp: 65, speed: 3.5, radius: .48, damage: 0, xp: TREASURE_RUNNER.xp, color: '#f1cd68' },
 } as const;
 export const WEAPON = { range: 10.5, interval: 0.44, speed: 18, damage: 18, lifetime: 0.8, radius: 0.2 } as const;
 export const FORMAL_POUNCE = { ...POUNCE, range: 6, windup: .85, speed: 13, duration: .5, recovery: 1.1, cooldown: 2 } as const;
@@ -25,7 +29,7 @@ export const SWARM_RULES = { health: [12, 14, 16, 18, 20, 22], minDistance: 7.5,
 type Point = { x: number; z: number };
 type Obstacle = Point & { radius: number };
 type Moving = Point & { previousX: number; previousZ: number; active: boolean };
-export interface Enemy extends Moving { swarm?: boolean; rank?: 'elite' | 'boss'; maxHp?: number; radius?: number; id: number; kind: EnemyKind; hp: number; age: number; spawnTime: number; flash: number; knockX: number; knockZ: number; facing: number; orbitCooldown: number; intent: EnemyIntent; intentTime: number; intentCooldown: number; aimX: number; aimZ: number; stagger: number; hornDash: number; slowTime?: number; walkPhase?: number; walkAmount?: number; steerX?: number; steerZ?: number; walkX?: number; walkZ?: number }
+export interface Enemy extends Moving { specialTime?: number; swarm?: boolean; rank?: 'elite' | 'boss'; maxHp?: number; radius?: number; id: number; kind: EnemyKind; hp: number; age: number; spawnTime: number; flash: number; knockX: number; knockZ: number; facing: number; orbitCooldown: number; intent: EnemyIntent; intentTime: number; intentCooldown: number; aimX: number; aimZ: number; stagger: number; hornDash: number; slowTime?: number; walkPhase?: number; walkAmount?: number; steerX?: number; steerZ?: number; walkX?: number; walkZ?: number }
 export interface Projectile extends Moving { vx: number; vz: number; life: number; damage: number; distance: number; sourceId?: number; species?: SpeciesId; attackId?: BaseAttackId; attackRules?: AttackRules; homing?: boolean; generation?: number; bornTick?: number; ignoreEnemyId?: number; burst?: boolean; age?: number; elemental?: boolean; fusionIds?: FusionId[]; hitIds?: number[]; pierces?: number; bounces?: number; scatter?: boolean; baseDamage?: number; damageIds?: number[]; hopTargetId?: number; hopDelay?: number; hopElapsed?: number; hopDuration?: number; hopFromX?: number; hopFromZ?: number }
 export interface Shockwave { active: boolean; x: number; z: number; age: number; radius: number; previousRadius: number; maxRadius: number; damage: number; hitIds: Int32Array }
 export interface ExperienceOrb extends Moving { value: number; magnetized: boolean }
@@ -54,6 +58,13 @@ export class Combat {
   goldEarned = 0;
   private swarmCoinRemainder = 0;
   private swarmExperienceRemainder = 0;
+  private crystalCoinRemainder = 0;
+  private crystalExperienceRemainder = 0;
+  sporeKills = 0;
+  treasureEscapes = 0;
+  readonly sporeExplosions: SporeExplosion[] = Array.from({ length: SPORE_BOMBER.capacity }, () => ({ active: false, x: 0, z: 0, createdAt: 0, age: 0, detonated: false, sourceEnemyId: 0, origin: 'player' }));
+  readonly treasureRewards: TreasureReward[] = Array.from({ length: TREASURE_RUNNER.rewardCapacity }, () => ({ active: false, x: 0, z: 0, age: 0, coins: 0 }));
+  private fleeGoal = { x: 0, z: 0 };
   readonly runBuild = new RunBuild();
   get usesRunBuild() { return this.fusionEnabled && !!this.party; }
   private tick = 0;
@@ -156,6 +167,7 @@ export class Combat {
     this.tick = this.bursts = this.childShots = this.goldEarned = 0;
     this.swarmCoinRemainder = 0;
     this.swarmExperienceRemainder = 0;
+    this.crystalCoinRemainder = this.crystalExperienceRemainder = this.sporeKills = this.treasureEscapes = 0;
     this.melee.attackInstanceId = 0; this.melee.age = 0; this.melee.hitIds.fill(0);
     this.nextWeapon = this.launchClock = this.childrenThisTick = this.childWindow = this.childrenInWindow = 0;
     this.salvo = undefined;
@@ -184,10 +196,13 @@ export class Combat {
 
   /** Also used by deterministic simulation tests to arrange encounter positions. */
   spawn(kind: EnemyKind, x: number, z: number, spawnTime = 0.75): Enemy | undefined {
+    // Reserve one future explosion slot per live bomber, including its burst tail.
+    if (kind === 'draft-spore-bomber' && this.sporeExplosions.filter(e => e.active).length + this.enemies.filter(e => e.active && e.kind === kind).length >= SPORE_BOMBER.capacity) return;
     const enemy = this.enemies.find((candidate) => !candidate.active && candidate !== this.encounters.boss && candidate !== this.encounters.elite);
     if (!enemy) return;
     Object.assign(enemy, { active: true, id: this.nextId++, kind, x, z, previousX: x, previousZ: z, hp: this.enemyMaxHp(kind), age: 0, spawnTime, flash: 0, knockX: 0, knockZ: 0, facing: 0, orbitCooldown: 0, intent: 'chase', intentTime: 0, intentCooldown: 0, aimX: 0, aimZ: 1, stagger: 0, hornDash: 0, slowTime: 0, walkPhase: (this.nextId * 2.399963) % (Math.PI * 2), walkAmount: 0, walkX: 0, walkZ: 0, steerX: undefined, steerZ: undefined });
     enemy.rank = undefined; enemy.maxHp = enemy.radius = undefined; enemy.swarm = false;
+    enemy.specialTime = 0;
     if (this.encounters.enabled) enemy.hp = enemy.maxHp = (kind==='fast'?40:ENEMY_TYPES[kind].hp)*(ENCOUNTER_RULES.waveHealth[this.encounters.wave-1]??1);
     this.spawned++;
     return enemy;
@@ -269,6 +284,39 @@ export class Combat {
     return spawned;
   }
 
+  /** A compact group is committed only when at least five safe positions exist. */
+  spawnCrystalSwarm(player: Point, cap: number) {
+    if (!this.encounters.enabled || !Number.isFinite(cap)) return 0;
+    const free = Math.min(Math.floor(cap) - this.enemies.filter(e => e.active).length, this.enemies.filter(e => !e.active && e !== this.encounters.boss && e !== this.encounters.elite).length);
+    if (free < CRYSTAL_SWARM.minGroup) return 0;
+    const count = Math.min(free, CRYSTAL_SWARM.minGroup + Math.floor(Math.min(.999999, Math.max(0, this.random())) * (CRYSTAL_SWARM.maxGroup-CRYSTAL_SWARM.minGroup+1)));
+    const radius = ENEMY_TYPES['draft-crystal-swarm'].radius;
+    const anchor = this.spawnPosition(player, 8, 11, radius);
+    if (!anchor) return 0;
+    const group: Enemy[] = [];
+    for (let i = 0; i < count; i++) {
+      let point: Point | undefined;
+      for (let attempt = 0; attempt < 24; attempt++) {
+        const angle = attempt * 2.399963 + i, distance = attempt === 0 && i === 0 ? 0 : .95 + Math.floor(attempt / 8) * .48;
+        const x = anchor.x + Math.cos(angle) * distance, z = anchor.z + Math.sin(angle) * distance;
+        if (Math.hypot(x, z) > this.boundary - radius - .2 || Math.hypot(x-player.x, z-player.z) < 6) continue;
+        if (this.obstacles.some(o => Math.hypot(x-o.x,z-o.z) < o.radius+radius+.3)) continue;
+        if (this.enemies.some(e => e.active && Math.hypot(x-e.x,z-e.z) < radius+this.enemyRadius(e)+.3)) continue;
+        if (!this.navigation.reachable({x,z},player)) continue;
+        point = {x,z}; break;
+      }
+      if (!point) continue;
+      const enemy = this.spawn('draft-crystal-swarm',point.x,point.z);
+      if (enemy) group.push(enemy);
+    }
+    if (group.length < CRYSTAL_SWARM.minGroup) {
+      for (const enemy of group) enemy.active = false;
+      this.spawned -= group.length;
+      return 0;
+    }
+    return group.length;
+  }
+
   private spawnPosition(player: Point, min: number, max: number, radius: number, heading?: number): Point | undefined {
     const candidate = (angle: number, distance: number) => {
       const x = player.x + Math.sin(angle) * distance, z = player.z + Math.cos(angle) * distance;
@@ -339,6 +387,9 @@ export class Combat {
     for (const effect of this.effects) {
       if (effect.active) { effect.time -= dt; effect.active = effect.time > 0; }
     }
+    for (const reward of this.treasureRewards) if (reward.active) {
+      reward.age += dt; reward.active = reward.age < TREASURE_RUNNER.rewardDuration;
+    }
     for (const enemy of this.enemies) {
       if (!enemy.active) continue;
       enemy.previousX = enemy.x;
@@ -347,13 +398,32 @@ export class Combat {
       enemy.age += dt;
       enemy.flash = Math.max(0, enemy.flash - dt);
       enemy.orbitCooldown = Math.max(0, enemy.orbitCooldown - dt);
-      if (!enemy.rank && Math.hypot(enemy.x - player.x, enemy.z - player.z) > 29) { enemy.active = false; continue; }
+      if (!enemy.rank && Math.hypot(enemy.x - player.x, enemy.z - player.z) > 29) {
+        enemy.active = false;
+        if (enemy.kind === 'draft-treasure-runner') this.treasureEscapes++;
+        continue;
+      }
       if (enemy.spawnTime > 0) { enemy.spawnTime = Math.max(0, enemy.spawnTime - dt); continue; }
+      const runner = enemy.kind === 'draft-treasure-runner';
+      if (runner) {
+        enemy.specialTime = (enemy.specialTime ?? 0) + dt;
+        if (enemy.specialTime >= TREASURE_RUNNER.lifetime) { enemy.active = false; this.treasureEscapes++; continue; }
+      }
       const type = ENEMY_TYPES[enemy.kind], radius = this.enemyRadius(enemy);
       const dx = player.x - enemy.x, dz = player.z - enemy.z;
       const length = Math.max(0.001, Math.hypot(dx, dz));
       let steerX = dx / length, steerZ = dz / length;
-      const guided = this.useNavigation && this.navigation.guide(enemy, player, radius, this.navigationGoal);
+      let goal: Point = player;
+      if (runner) {
+        // Flee away from the player through the same obstacle-safe navigation.
+        steerX = length > .01 ? -dx / length : Math.sin(enemy.id * 2.399963);
+        steerZ = length > .01 ? -dz / length : Math.cos(enemy.id * 2.399963);
+        this.fleeGoal.x = enemy.x + steerX * 5; this.fleeGoal.z = enemy.z + steerZ * 5;
+        const distance = Math.hypot(this.fleeGoal.x,this.fleeGoal.z), limit = this.boundary-radius-.2;
+        if (distance > limit) { this.fleeGoal.x *= limit/distance; this.fleeGoal.z *= limit/distance; }
+        goal = this.fleeGoal;
+      }
+      const guided = this.useNavigation && this.navigation.guide(enemy, goal, radius, this.navigationGoal);
       if (guided) {
         const gx = this.navigationGoal.x - enemy.x, gz = this.navigationGoal.z - enemy.z;
         const distance = Math.max(.001, Math.hypot(gx, gz));
@@ -389,7 +459,8 @@ export class Combat {
       enemy.steerZ = (enemy.steerZ ?? desiredZ) + (desiredZ - (enemy.steerZ ?? desiredZ)) * smoothing;
       const smoothLength = Math.max(1, Math.hypot(enemy.steerX, enemy.steerZ));
       let moveX = enemy.steerX / smoothLength * type.speed, moveZ = enemy.steerZ / smoothLength * type.speed;
-      if (this.hasAttackIntents && !enemy.rank) {
+      if (runner && (enemy.specialTime ?? 0) < TREASURE_RUNNER.linger) moveX = moveZ = 0;
+      if (this.hasAttackIntents && !enemy.rank && !runner) {
         enemy.stagger = Math.max(0, enemy.stagger - dt);
         if (enemy.stagger > 0) { moveX = moveZ = 0; }
         else if (enemy.kind === 'fast') {
@@ -547,6 +618,7 @@ export class Combat {
     }
 
     this.updateSkills(dt, player);
+    if (!this.encounters.dying) this.updateSporeExplosions(player);
     if (this.encounters.enabled) this.encounters.advanceHazards(dt,this,player,{x:this.previousAnchorX,z:this.previousAnchorZ});
     // Resolve hits after magic: an enemy killed on this tick cannot bite.
     if (this.invulnerability === 0) {
@@ -704,12 +776,38 @@ export class Combat {
   }
 
   clearTransientEffects() {
+    this.clearSpecialEvents();
     this.melee.active = false;
     this.encounters.clearShots();
     this.salvo = undefined; this.launchClock = 0;
     for (const shot of this.projectiles) { shot.active = false; shot.hitIds = []; shot.damageIds = []; shot.hopTargetId = 0; shot.hopDelay = shot.hopElapsed = 0; shot.fusionIds = []; }
     for (const effect of this.effects) { effect.active = false; effect.fusionId = undefined; }
     for (const wave of this.shockwaves) wave.active = false;
+  }
+
+  clearSpecialEvents() {
+    for (const explosion of this.sporeExplosions) explosion.active = false;
+    for (const reward of this.treasureRewards) reward.active = false;
+  }
+
+  private updateSporeExplosions(player: Point) {
+    for (const explosion of this.sporeExplosions) {
+      if (!explosion.active) continue;
+      explosion.age = this.elapsed - explosion.createdAt;
+      if (explosion.age + 1e-8 >= SPORE_BOMBER.warning && !explosion.detonated) {
+        explosion.detonated = true; // Mark before damage can schedule another death.
+        const {x,z} = explosion;
+        if (Math.hypot(player.x-x,player.z-z) <= SPORE_BOMBER.radius+.62 && !this.covered(x,z,player.x,player.z)) this.hitPlayer(SPORE_BOMBER.playerDamage);
+        for (const enemy of this.enemies) {
+          if (!enemy.active || enemy.spawnTime > 0) continue;
+          const dx = enemy.x-x, dz = enemy.z-z, distance = Math.hypot(dx,dz);
+          if (distance > SPORE_BOMBER.radius+this.enemyRadius(enemy) || this.covered(x,z,enemy.x,enemy.z)) continue;
+          this.damageEnemy(enemy,SPORE_BOMBER.enemyDamage,dx/Math.max(.001,distance),dz/Math.max(.001,distance),'spore');
+          if (this.encounters.dying) return;
+        }
+      }
+      if (explosion.age >= SPORE_BOMBER.warning+SPORE_BOMBER.burst) explosion.active = false;
+    }
   }
 
   private nextHop(shot: Projectile, x: number, z: number) {
@@ -880,7 +978,7 @@ export class Combat {
     }
   }
 
-  private damageEnemy(enemy: Enemy, damage: number, dx: number, dz: number) {
+  private damageEnemy(enemy: Enemy, damage: number, dx: number, dz: number, origin: 'player' | 'spore' = 'player') {
     if (!enemy.active || enemy.spawnTime > 0 || enemy.hp <= 0) return;
     this.hits++;
     enemy.hp = Math.max(0, enemy.hp - damage);
@@ -891,16 +989,31 @@ export class Combat {
     if (enemy.hp === 0) {
       enemy.active = false;
       this.kills++;
+      if (origin === 'spore') this.sporeKills++;
+      if (enemy.kind === 'draft-spore-bomber') {
+        const explosion = this.sporeExplosions.find(e => !e.active);
+        if (explosion) Object.assign(explosion, { active: true, x: enemy.x, z: enemy.z, createdAt: this.elapsed, age: 0, detonated: false, sourceEnemyId: enemy.id, origin });
+      }
+      const crystal = enemy.kind === 'draft-crystal-swarm', treasure = enemy.kind === 'draft-treasure-runner';
       if (this.usesRunBuild) {
-        if (enemy.swarm) {
+        if (crystal) {
+          if (++this.crystalCoinRemainder === CRYSTAL_SWARM.killsPerCoin) { this.goldEarned++; this.crystalCoinRemainder = 0; }
+        } else if (enemy.swarm) {
           this.swarmCoinRemainder++;
           if (this.swarmCoinRemainder === SWARM_RULES.killsPerCoin) { this.goldEarned++; this.swarmCoinRemainder = 0; }
-        } else this.goldEarned += enemy.rank === 'boss' ? 0 : enemy.rank === 'elite' ? 18 : enemy.kind === 'tank' ? 2 : 1;
+        } else this.goldEarned += treasure ? TREASURE_RUNNER.coins : enemy.rank === 'boss' ? 0 : enemy.rank === 'elite' ? 18 : enemy.kind === 'tank' ? 2 : 1;
+        if (treasure) {
+          const reward = this.treasureRewards.find(e => !e.active) ?? this.treasureRewards.reduce((oldest,e) => e.age > oldest.age ? e : oldest);
+          Object.assign(reward, { active: true, x: enemy.x, z: enemy.z, age: 0, coins: TREASURE_RUNNER.coins });
+        }
       }
       if (enemy.rank === 'boss') this.encounters.killedBoss(this);
       else {
         let experience = enemy.rank === 'elite' ? 24 : ENEMY_TYPES[enemy.kind].xp;
-        if (enemy.swarm) {
+        if (crystal) {
+          experience = ++this.crystalExperienceRemainder === CRYSTAL_SWARM.killsPerXp ? 1 : 0;
+          if (experience) this.crystalExperienceRemainder = 0;
+        } else if (enemy.swarm) {
           this.swarmExperienceRemainder++;
           experience = this.swarmExperienceRemainder === SWARM_RULES.killsPerXp ? SWARM_RULES.xp : 0;
           if (experience) this.swarmExperienceRemainder = 0;
@@ -980,6 +1093,7 @@ export class Combat {
 
   inspect() {
     return {
+      specialEnemies: { sporeKills: this.sporeKills, treasureEscapes: this.treasureEscapes, explosions: this.sporeExplosions.filter(e => e.active).map(e => ({...e})), rewards: this.treasureRewards.filter(e => e.active).map(e => ({...e})) },
       build: { enabled: this.usesRunBuild, species: this.runBuild.species, relics: [...this.runBuild.relics], evolution: this.runBuild.evolution ?? null, attacks: this.runBuild.attacks.map(attack => ({ ...attack })) },
       melee: { ...this.melee, hitIds: Array.from(this.melee.hitIds).filter(Boolean) },
       firing: { weapon: this.salvo?.attackId ?? null, remaining: this.salvo ? this.salvo.total - this.salvo.index : 0, gap: this.launchClock },

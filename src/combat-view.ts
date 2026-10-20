@@ -7,11 +7,12 @@ import { SKILL_RULES } from './progression';
 import { POUNCE } from './trial';
 import { CREATURES } from './party';
 import { ATTACKS } from './run-build';
-import { EnemyPixelView } from './enemy-pixel-view';
+import { EnemyPixelView, ENEMY_PIXEL_HEIGHTS } from './enemy-pixel-view';
 import { FirePixelView } from './fire-pixel-view';
 import { ParticleFeedbackView } from './particle-feedback';
 import { ShockwaveView } from './shockwave-view';
 import { FlameSweepView } from './flame-sweep-view';
+import { SpecialEnemyView } from './special-enemy-view';
 import { BURST_SEED } from './fusion';
 import { FUSION_ASSET_ROOT, elementalClip, clipFrame } from './fusion-pixels';
 
@@ -54,9 +55,11 @@ export class CombatView {
   private feedback?: ParticleFeedbackView;
   private encounters: EncounterView;
   private flameSweep?: FlameSweepView;
+  private specialEnemies: SpecialEnemyView;
 
   constructor(private combat: Combat) {
     this.group.add(this.shockwaveView.group);
+    this.specialEnemies = new SpecialEnemyView(combat,kind=>this.pixelEnemies?.height(kind)??ENEMY_PIXEL_HEIGHTS[kind]); this.group.add(this.specialEnemies.group);
     this.encounters=new EncounterView(combat); this.group.add(this.encounters.group);
     const lambert = (color: string) => new THREE.MeshLambertMaterial({ color, flatShading: true });
     const basic = (color: string) => new THREE.MeshBasicMaterial({ color });
@@ -118,7 +121,7 @@ export class CombatView {
     if (this.pixelEnemies) { this.pixelEnemies.group.visible = true; this.pixelEnemies.begin(); }
   }
 
-  updateView(camera: THREE.Camera, viewportHeight: number, frustumHeight: number) { this.flameSweep?.setView(camera); this.shockwaveView.setView(camera); this.encounters.setView(camera); this.pixelEnemies?.setView(camera, viewportHeight, frustumHeight); this.firePixels?.setView(camera); this.fusionPixels?.setView(camera); this.feedback?.setView(camera); }
+  updateView(camera: THREE.Camera, viewportHeight: number, frustumHeight: number) { this.specialEnemies.setView(camera,viewportHeight,frustumHeight); this.flameSweep?.setView(camera); this.shockwaveView.setView(camera); this.encounters.setView(camera); this.pixelEnemies?.setView(camera, viewportHeight, frustumHeight); this.firePixels?.setView(camera); this.fusionPixels?.setView(camera); this.feedback?.setView(camera); }
 
   setFusion(enabled: boolean, _elemental = false) {
     if (enabled && !this.flameSweep) { this.flameSweep = new FlameSweepView(); this.group.add(this.flameSweep.group, this.flameSweep.areaGroup); }
@@ -134,6 +137,7 @@ export class CombatView {
   render(alpha: number, time: number, player: { x: number; z: number } = { x: this.combat.anchorX, z: this.combat.anchorZ }) {
     this.flameSweep?.render(this.combat,player);
     this.encounters.render(alpha);
+    this.specialEnemies.render(alpha);
     for (const mesh of this.batches) mesh.count = 0;
     this.pixelEnemies?.begin();
     this.firePixels?.begin();
@@ -315,9 +319,9 @@ export class CombatView {
     this.feedback?.finish();
   }
 
-  clear() { this.flameSweep?.clear(); this.shockwaveView.clear(); this.encounters.clear(); for (const mesh of this.batches) mesh.count = 0; this.pixelEnemies?.begin(); this.pixelEnemies?.resetDirections(); this.firePixels?.begin(); this.fusionPixels?.begin(); this.feedback?.begin(); }
+  clear() { this.specialEnemies.clear(); this.flameSweep?.clear(); this.shockwaveView.clear(); this.encounters.clear(); for (const mesh of this.batches) mesh.count = 0; this.pixelEnemies?.begin(); this.pixelEnemies?.resetDirections(); this.firePixels?.begin(); this.fusionPixels?.begin(); this.feedback?.begin(); }
   inspectElemental() { return this.fusionPixels?.inspect(); }
   inspectFusion() { return this.firePixels?.inspect(); }
-  inspect() { return { enabled: this.pixelsEnabled, ...this.pixelEnemies?.inspect(), melee:this.flameSweep?.inspect(), encounters:this.encounters.inspect(), feedback:this.feedback?.inspect() }; }
-  dispose() { this.flameSweep?.dispose(); this.flameSweep = undefined; this.shockwaveView.dispose(); this.encounters.dispose(); this.pixelEnemies?.dispose(); this.pixelEnemies = undefined; this.firePixels?.dispose(); this.firePixels = undefined; this.fusionPixels?.dispose(); this.fusionPixels = undefined; this.feedback?.dispose(); this.feedback = undefined; }
+  inspect() { return { enabled: this.pixelsEnabled, ...this.pixelEnemies?.inspect(), specialEnemies:this.specialEnemies.inspect(), melee:this.flameSweep?.inspect(), encounters:this.encounters.inspect(), feedback:this.feedback?.inspect() }; }
+  dispose() { this.specialEnemies.dispose(); this.flameSweep?.dispose(); this.flameSweep = undefined; this.shockwaveView.dispose(); this.encounters.dispose(); this.pixelEnemies?.dispose(); this.pixelEnemies = undefined; this.firePixels?.dispose(); this.firePixels = undefined; this.fusionPixels?.dispose(); this.fusionPixels = undefined; this.feedback?.dispose(); this.feedback = undefined; }
 }

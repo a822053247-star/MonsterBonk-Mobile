@@ -9,7 +9,7 @@ export const PIXEL_CREATURE_ASSETS: Readonly<Record<SpeciesId, string>> = {
   bubblesalamander: 'creatures/paopaoyuan.png',
   sproutspike: 'creatures/yacishou.png',
 };
-export const PIXEL_ENEMY_ASSETS = { 'enemy-normal': 'enemies/grass-monster.png', 'enemy-fast': 'enemies/runner-bug.png', 'enemy-tank': 'enemies/rock-armor-bug.png' } as const;
+export const PIXEL_ENEMY_ASSETS = { 'enemy-normal': 'enemies/grass-monster.png', 'enemy-fast': 'enemies/runner-bug.png', 'enemy-tank': 'enemies/rock-armor-bug.png', 'enemy-draft-crystal-swarm': 'enemies/draft-crystal-swarm.png', 'enemy-draft-spore-bomber': 'enemies/draft-spore-bomber.png', 'enemy-draft-treasure-runner': 'enemies/draft-treasure-runner.png' } as const;
 export const PIXEL_ANIMATION_ASSETS = {
   'yanrong-walk': 'creatures/animation/yanrong-animation-sheet.normalized.png',
   'yanrong-diagonal': 'creatures/animation/yanrong-diagonal-walk.normalized.png',

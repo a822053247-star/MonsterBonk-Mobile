@@ -41,9 +41,9 @@ test.beforeEach(async ({ page }) => {
   </script></body></html>` })) ;
 });
 async function open(page: Page, query = '') { await page.goto('/enemy-pixel-harness' + (query ? query + '&world=fixed' : '?world=fixed')); await page.waitForFunction(() => 'game' in window); await page.locator('#start-party').tap(); }
-async function ready(page: Page) { const enabled = (await state(page)).enemyVisual.enabled; await expect.poll(async () => (await state(page)).enemyVisual.batches?.filter(b => b.loaded).length).toBe(enabled ? 3 : 1); }
+async function ready(page: Page) { const enabled = (await state(page)).enemyVisual.enabled; await expect.poll(async () => (await state(page)).enemyVisual.batches?.filter(b => b.loaded).length).toBe(enabled ? 6 : 1); }
 
-test('three fixed-capacity pixel batches preserve proportions, anchors and all existing enemy cues', async ({ page }, info) => {
+test('six fixed-capacity pixel batches preserve proportions, anchors and all existing enemy cues', async ({ page }, info) => {
   await open(page); await ready(page);
   await expect.poll(async () => (await state(page)).partyVisual.members.filter(m => m?.loaded).length).toBe(1);
   await page.waitForTimeout(100);
@@ -53,9 +53,9 @@ test('three fixed-capacity pixel batches preserve proportions, anchors and all e
     const { shapes, ...cues } = probe;
     expect(cues).toEqual({ unchanged: true, body: 0, eyes: 0, horns: 0, armor: 0, shadows: 3, warnings: 1, bars: 1, target: 1, lanes: 1, arrows: 1 });
     const visual = (await state(page)).enemyVisual;
-    expect(visual.cache).toEqual({ textures: 3, references: 3 });
-    expect(visual.batches!.map(b => b.count)).toEqual([1, 1, 1]);
-    for (const b of visual.batches!) {
+    expect(visual.cache).toEqual({ textures: 6, references: 6 });
+    expect(visual.batches!.slice(0,3).map(b => b.count)).toEqual([1, 1, 1]);
+    for (const b of visual.batches!.slice(0,3)) {
       expect(b.capacity).toBe(256); expect(b.nearest).toBe(true); expect(b.mipmaps).toBe(false);
       expect(b.depthTest && b.depthWrite).toBe(true); expect(b.alphaTest).toBeGreaterThan(0);
       expect(b.aspect).toBeCloseTo(b.crop[2] / b.crop[3], 8);
@@ -80,7 +80,7 @@ test('one missing enemy texture only falls back that kind and retains original b
   await expect.poll(async () => (await state(page)).enemyVisual.batches?.find(b => b.kind === 'normal')?.failed).toBe(true);
   await expect.poll(async () => (await state(page)).enemyVisual.batches?.find(b => b.kind === 'fast')?.loaded).toBe(true);
   expect(await page.evaluate(() => (window as unknown as Fixture).arrange())).toMatchObject({ body: 1, eyes: 2, horns: 2, armor: 0 });
-  expect((await state(page)).enemyVisual.batches!.map(b => b.count)).toEqual([0, 1, 1]);
+  expect((await state(page)).enemyVisual.batches!.slice(0,3).map(b => b.count)).toEqual([0, 1, 1]);
 });
 
 test('real depth buffer handles transparent cutouts, foreground cover and visible per-instance hit flash', async ({ page }) => {
@@ -97,8 +97,8 @@ test('101 enemies reuse the same batches and textures, clear on reset and releas
   await open(page); await ready(page);
   await expect.poll(async () => (await state(page)).partyVisual.members.filter(m => m?.loaded).length).toBe(1);
   const p = await page.evaluate(() => (window as unknown as Fixture).pool());
-  expect(p.counts).toEqual([101, 0, 0]); expect(p.calls[1]).toBe(p.calls[0]); expect(p.stable).toBe(true);
-  expect(p.cleared).toBe(0); expect(p.cache).toEqual({ textures: 3, references: 3 });
+  expect(p.counts).toEqual([101, 0, 0, 0, 0, 0]); expect(p.calls[1]).toBe(p.calls[0]); expect(p.stable).toBe(true);
+  expect(p.cleared).toBe(0); expect(p.cache).toEqual({ textures: 6, references: 6 });
   expect(await page.evaluate(() => (window as unknown as Fixture).destroy())).toEqual({ cache: { textures: 0, references: 0 }, directionStates: 0, batches: [], children: 0 });
 });
 
@@ -114,13 +114,13 @@ test('disposing during enemy PNG loading prevents late resource attachment', asy
 test('tank never uses removed blue geometry in legacy mode or after PNG failure', async ({ page }) => {
   await open(page, '?enemyVisual=legacy'); await ready(page);
   expect(await page.evaluate(() => (window as unknown as Fixture).arrange())).toMatchObject({ body: 2, eyes: 4, horns: 4, armor: 0 });
-  expect((await state(page)).enemyVisual.batches!.map(b => b.count)).toEqual([0, 0, 1]);
+  expect((await state(page)).enemyVisual.batches!.slice(0,3).map(b => b.count)).toEqual([0, 0, 1]);
   expect(await page.evaluate(() => 'armor' in (window as unknown as { game: any }).game.combatView)).toBe(false);
   await page.route('**/enemies/rock-armor-bug.png', route => route.abort());
   await page.route('**/enemies/direction/rock-armor-bug-directions/runtime.normalized.png', route => route.abort());
   await open(page);
   await expect.poll(async () => (await state(page)).enemyVisual.batches?.find(b => b.kind === 'tank')?.failed).toBe(true);
-  await expect.poll(async () => (await state(page)).enemyVisual.batches?.filter(b => b.loaded).length).toBe(2);
+  await expect.poll(async () => (await state(page)).enemyVisual.batches?.filter(b => b.loaded).length).toBe(5);
   expect(await page.evaluate(() => (window as unknown as Fixture).arrange())).toMatchObject({ body: 0, eyes: 0, horns: 0, armor: 0 });
-  expect((await state(page)).enemyVisual.batches!.map(b => b.count)).toEqual([1, 1, 1]);
+  expect((await state(page)).enemyVisual.batches!.slice(0,3).map(b => b.count)).toEqual([1, 1, 1]);
 });

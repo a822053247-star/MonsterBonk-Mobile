@@ -1,0 +1,86 @@
+{
+  "image": "draft-treasure-runner-directions.png",
+  "frameWidth": 256,
+  "frameHeight": 256,
+  "columns": 5,
+  "rows": 1,
+  "order": [
+    "front",
+    "front-right",
+    "right",
+    "back-right",
+    "back"
+  ],
+  "frames": [
+    {
+      "name": "draft-treasure-runner-front",
+      "file": "draft-treasure-runner-front.png",
+      "x": 0,
+      "y": 0,
+      "width": 256,
+      "height": 256,
+      "source_bbox": [
+        48,
+        22,
+        208,
+        224
+      ]
+    },
+    {
+      "name": "draft-treasure-runner-front-right",
+      "file": "draft-treasure-runner-front-right.png",
+      "x": 256,
+      "y": 0,
+      "width": 256,
+      "height": 256,
+      "source_bbox": [
+        24,
+        24,
+        231,
+        224
+      ]
+    },
+    {
+      "name": "draft-treasure-runner-right",
+      "file": "draft-treasure-runner-right.png",
+      "x": 512,
+      "y": 0,
+      "width": 256,
+      "height": 256,
+      "source_bbox": [
+        16,
+        36,
+        240,
+        224
+      ]
+    },
+    {
+      "name": "draft-treasure-runner-back-right",
+      "file": "draft-treasure-runner-back-right.png",
+      "x": 768,
+      "y": 0,
+      "width": 256,
+      "height": 256,
+      "source_bbox": [
+        37,
+        33,
+        218,
+        224
+      ]
+    },
+    {
+      "name": "draft-treasure-runner-back",
+      "file": "draft-treasure-runner-back.png",
+      "x": 1024,
+      "y": 0,
+      "width": 256,
+      "height": 256,
+      "source_bbox": [
+        51,
+        38,
+        204,
+        224
+      ]
+    }
+  ]
+}
