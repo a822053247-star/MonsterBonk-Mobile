@@ -1,0 +1,227 @@
+{
+  "version": "monsterbonk-batch-11-20-v1",
+  "source": "User-provided 6776-line Gigapack filename tree; frames/spritesheet.txt/license.txt bytes were not provided",
+  "goal": "Ten divergent relic mechanics matched to ten verified Gigapack sprite families; preserve stage 1-10 relics",
+  "rules": {
+    "max_rank": 1,
+    "category": "relic",
+    "scope": "formal-run",
+    "all_derived_attacks": "must not recursively trigger source effect",
+    "combat_budget": "reuse existing pools, event caps and timers",
+    "vfx": "gameplay logic separate from animation; parse real spritesheet.txt; never assume uniform grid or FPS"
+  },
+  "relics": [
+    {
+      "id": "storm-relay",
+      "title": "雷鸣中继",
+      "tags": [
+        "chain",
+        "multiweapon"
+      ],
+      "eligible": "At least one active projectile weapon",
+      "effect": "Within 2.5 s, 2 primary hits from different weapon IDs OR 4 primary hits from the same weapon trigger 2 non-recursive lightning hits on 2 other distinct enemies within 3.2 units; each 45% of triggering primary hit damage. Global cooldown 4 s. Reset counters after proc.",
+      "vfx": [
+        {
+          "clip": "lightning_strike_001_small_violet",
+          "spritesheet": "effects/spritesheet/Lightning/lightning_strike_001/lightning_strike_001_small_violet/spritesheet.png",
+          "metadata": "effects/spritesheet/Lightning/lightning_strike_001/lightning_strike_001_small_violet/spritesheet.txt"
+        }
+      ],
+      "synergy": [
+        "multi-weapon build",
+        "mirror-prism"
+      ]
+    },
+    {
+      "id": "void-vessel",
+      "title": "虚空收纳匣",
+      "tags": [
+        "defense",
+        "retaliation"
+      ],
+      "eligible": "Any equipped weapon",
+      "effect": "Once per 16 s negate one incoming valid player damage event; store one charge. On next primary hit consume charge for non-recursive 1.6 radius pulse dealing 60% of that primary hit damage. Maximum stored charge 1.",
+      "vfx": [
+        {
+          "clip": "spell_absorb_001_small_violet",
+          "spritesheet": "effects/spritesheet/Fantasy Spells/spell_absorb_001/spell_absorb_001_small_violet/spritesheet.png",
+          "metadata": "effects/spritesheet/Fantasy Spells/spell_absorb_001/spell_absorb_001_small_violet/spritesheet.txt"
+        }
+      ],
+      "synergy": [
+        "blood-pact"
+      ]
+    },
+    {
+      "id": "warp-eye",
+      "title": "折跃之瞳",
+      "tags": [
+        "projectile",
+        "position"
+      ],
+      "eligible": "Equipped ranged projectile weapon",
+      "effect": "Every 6th primary ranged projectile cast relocate that SAME shot via portal to 1.1 units in front of the farthest legal living enemy within 9 units; aim at enemy and reset projectile interpolation to exit position. No duplicate damage, extra projectile, or collision along teleport segment. If no legal target, fire normally and retain count progression.",
+      "vfx": [
+        {
+          "clip": "scifi_warp_003_small_blue",
+          "spritesheet": "effects/spritesheet/Sci-fi/scifi_warp_003/scifi_warp_003_small_blue/spritesheet.png",
+          "metadata": "effects/spritesheet/Sci-fi/scifi_warp_003/scifi_warp_003_small_blue/spritesheet.txt"
+        }
+      ],
+      "synergy": [
+        "projectile builds"
+      ]
+    },
+    {
+      "id": "reaper-decree",
+      "title": "死神点名",
+      "tags": [
+        "on-kill",
+        "execute"
+      ],
+      "eligible": "Any equipped weapon",
+      "effect": "After 8 credited kills from primary/normal weapon lineage, and no more often than once every 6 s, select highest-HP valid visible normal enemy within 6 units; telegraph 0.6 s then execute that normal enemy if alive. If no normal target, instead hit one visible elite/boss for 75% of current primary weapon base damage. Execution kills do not count toward this relic or retrigger it.",
+      "vfx": [
+        {
+          "clip": "stylized_skull_smoke_burst_001_small_white",
+          "spritesheet": "effects/spritesheet/Smoke Bursts/stylized_skull_smoke_burst_001/stylized_skull_smoke_burst_001_small_white/spritesheet.png",
+          "metadata": "effects/spritesheet/Smoke Bursts/stylized_skull_smoke_burst_001/stylized_skull_smoke_burst_001_small_white/spritesheet.txt"
+        }
+      ],
+      "synergy": [
+        "mass-kill builds"
+      ]
+    },
+    {
+      "id": "rhythm-seal",
+      "title": "律动破阵",
+      "tags": [
+        "on-cast",
+        "cone"
+      ],
+      "eligible": "Any equipped weapon",
+      "effect": "Every 7th primary cast, if global cooldown 4.5 s elapsed, fire a 90-degree cone wave length 3 toward nearest enemy, dealing 55% of that casting weapon snapshot damage once per target. Derived cone cannot trigger cast/hit chains.",
+      "vfx": [
+        {
+          "clip": "directional_music_burst_002_small_yellow",
+          "spritesheet": "effects/spritesheet/Magic Bursts/directional_music_burst_002/directional_music_burst_002_small_yellow/spritesheet.png",
+          "metadata": "effects/spritesheet/Magic Bursts/directional_music_burst_002/directional_music_burst_002_small_yellow/spritesheet.txt"
+        }
+      ],
+      "synergy": [
+        "haste",
+        "three-weapon build"
+      ]
+    },
+    {
+      "id": "alchemist-ledger",
+      "title": "点金秘典",
+      "tags": [
+        "economy",
+        "experience"
+      ],
+      "eligible": "Any equipped weapon",
+      "effect": "For each 6 newly-earned coins, grant 5 experience through existing progression mechanism; at most 3 awards per wave. Coin spending never reduces accumulated earned count. Extra awards beyond per-wave cap are not banked.",
+      "vfx": [
+        {
+          "clip": "directional_coin_burst_001_small_yellow",
+          "spritesheet": "effects/spritesheet/Magic Bursts/directional_coin_burst_001/directional_coin_burst_001_small_yellow/spritesheet.png",
+          "metadata": "effects/spritesheet/Magic Bursts/directional_coin_burst_001/directional_coin_burst_001_small_yellow/spritesheet.txt"
+        }
+      ],
+      "synergy": [
+        "fast-kill builds",
+        "fast fusion"
+      ]
+    },
+    {
+      "id": "venom-insignia",
+      "title": "蚀毒棱印",
+      "tags": [
+        "grass",
+        "cross-element"
+      ],
+      "eligible": "Equipped leaf AND at least one of spark/bubble/flame-sweep",
+      "effect": "Primary leaf hit marks enemy for 3 s. A LATER primary hit from spark, bubble, or flame-sweep consumes mark and deals non-recursive splash radius 1.4 for 50% of consuming primary hit damage. Per-target proc cooldown 1.2 s; mark cannot be set and consumed by same hit.",
+      "vfx": [
+        {
+          "clip": "spell_poison_001_small_green",
+          "spritesheet": "effects/spritesheet/Fantasy Spells/spell_poison_001/spell_poison_001_small_green/spritesheet.png",
+          "metadata": "effects/spritesheet/Fantasy Spells/spell_poison_001/spell_poison_001_small_green/spritesheet.txt"
+        },
+        {
+          "clip": "status_poison_001_small_green",
+          "spritesheet": "effects/spritesheet/Fantasy Spells/status_poison_001/status_poison_001_small_green/spritesheet.png",
+          "metadata": "effects/spritesheet/Fantasy Spells/status_poison_001/status_poison_001_small_green/spritesheet.txt"
+        }
+      ],
+      "synergy": [
+        "fire+grass",
+        "water+grass"
+      ]
+    },
+    {
+      "id": "heart-keeper",
+      "title": "无伤心铃",
+      "tags": [
+        "kill-streak",
+        "healing"
+      ],
+      "eligible": "Any equipped weapon",
+      "effect": "After 10 credited kills without taking damage, gain one stored heart petal (max 3). On next actual HP-loss event consume one petal to heal 4 HP after damage, capped by max HP. Taking damage resets current kill streak. Heart animation plays only on real healing, not at full HP.",
+      "vfx": [
+        {
+          "clip": "round_heart_burst_001_small_red",
+          "spritesheet": "effects/spritesheet/Magic Bursts/round_heart_burst_001/round_heart_burst_001_small_red/spritesheet.png",
+          "metadata": "effects/spritesheet/Magic Bursts/round_heart_burst_001/round_heart_burst_001_small_red/spritesheet.txt"
+        }
+      ],
+      "synergy": [
+        "survival",
+        "risk/reward"
+      ]
+    },
+    {
+      "id": "smokescreen-feather",
+      "title": "烟幕羽坠",
+      "tags": [
+        "dash",
+        "control"
+      ],
+      "eligible": "Available dash skill",
+      "effect": "After player dash, leave 1.5 s stationary smoke at dash origin, radius 1.6. Enemies in smoke are slowed 40% for 0.5 s (elite 20%; boss immune); smoke spawn cooldown 7 s. Does not interrupt attack windups or deal damage. Only one smoke field active.",
+      "vfx": [
+        {
+          "clip": "looping_smoke_burst_001_small_gray",
+          "spritesheet": "effects/spritesheet/Smoke Bursts/looping_smoke_burst_001/looping_smoke_burst_001_small_gray/spritesheet.png",
+          "metadata": "effects/spritesheet/Smoke Bursts/looping_smoke_burst_001/looping_smoke_burst_001_small_gray/spritesheet.txt"
+        }
+      ],
+      "synergy": [
+        "hive-fuse",
+        "melee survival"
+      ]
+    },
+    {
+      "id": "levelup-salute",
+      "title": "升阶礼炮",
+      "tags": [
+        "level-up",
+        "multi-target"
+      ],
+      "eligible": "Any equipped weapon",
+      "effect": "When a level-up choice is confirmed, queue one salute to fire after unpausing: hit up to 4 distinct visible enemies within 8 units, each for 70% of equipped primary weapon base damage; no additional proc chains. Max 1 pending salute and none on gameover/menu. If no enemy, expire after 3 s without spawning FX.",
+      "vfx": [
+        {
+          "clip": "round_firework_burst_001_small_green",
+          "spritesheet": "effects/spritesheet/Magic Bursts/round_firework_burst_001/round_firework_burst_001_small_green/spritesheet.png",
+          "metadata": "effects/spritesheet/Magic Bursts/round_firework_burst_001/round_firework_burst_001_small_green/spritesheet.txt"
+        }
+      ],
+      "synergy": [
+        "alchemist-ledger",
+        "experience-heavy builds"
+      ]
+    }
+  ]
+}

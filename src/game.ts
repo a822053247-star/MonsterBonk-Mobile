@@ -369,7 +369,7 @@ export class Game {
     document.getElementById('creature-picker')!.hidden = true;
     document.getElementById('menu')!.inert = false;
     this.party.reset(partyPrototype && variant === 'legacy-party' ? ['yanrong', 'bubblesalamander', 'sproutspike'] : [species]);
-    this.input.setMovementOnly(partyPrototype);
+    this.input.setMovementOnly(partyPrototype && !this.combat.fusionEnabled);
     document.getElementById('hud')!.classList.toggle('party-prototype', partyPrototype);
     document.getElementById('hud')!.classList.toggle('fusion-prototype', this.combat.fusionEnabled);
     document.getElementById('game-canvas')!.classList.toggle('pixel-party', partyPrototype && this.pixelPartyEnabled);
@@ -543,7 +543,7 @@ export class Game {
     this.elapsed += dt;
     this.cooldown = Math.max(0, this.cooldown - dt);
     this.dashRemaining = Math.max(0, this.dashRemaining - dt);
-    if (this.input.consumeDash() && !this.partyPrototype && this.cooldown === 0) {
+    if (this.input.consumeDash() && (!this.partyPrototype || this.combat.usesRunBuild) && this.cooldown === 0) {
       this.dashDirection.set(movement.x, movement.y);
       if (magnitude < 0.05) this.dashDirection.set(Math.sin(this.facing), Math.cos(this.facing));
       this.dashDirection.normalize();
