@@ -9,6 +9,8 @@ on:
       - src/combat.ts
       - src/game.ts
       - src/ui.ts
+      - src/style.css
+      - src/run-flow.ts
       - tests/infinite-world.spec.ts
       - tests/infinite-world-ui.spec.ts
       - .github/workflows/infinite-meadow.yml
@@ -33,3 +35,10 @@ jobs:
       - run: npm run build
       - run: npx playwright install --with-deps chromium
       - run: npx playwright test tests/infinite-world.spec.ts tests/infinite-world-ui.spec.ts tests/random-world-ui.spec.ts tests/navigation-model.spec.ts --project=chromium
+      - name: Upload treasure screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: treasure-ui-screenshots
+          path: test-results/treasure-*.png
+          if-no-files-found: ignore
