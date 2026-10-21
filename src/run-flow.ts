@@ -7,6 +7,15 @@ import { WAVE_DIRECTOR, directorStage, type DirectorStage, type DirectorEscort }
 export const WAVE_INTERMISSION_SECONDS = 3.5;
 export const SHOP_AFTER_WAVE = 5;
 
+/** Exploration rewards stay useful without allowing an infinite map to print infinite power. */
+export const TREASURE_REWARDS = {
+  coinsBase: 30,
+  coinsPerWave: 5,
+  maxCoinsPerRun: 100,
+  healPerChest: 35,
+  maxHealingPerRun: 70,
+} as const;
+
 export const RUN_WAVES: readonly { seconds: number; reward: number; cap: number }[] = [
   { seconds: 65, reward: 35, cap: FORMAL_SPAWN_CAPS[0] },
   { seconds: 70, reward: 40, cap: FORMAL_SPAWN_CAPS[1] },
@@ -33,6 +42,9 @@ export class RunFlow {
   private collectedGold = 0;
   private settledTreasureCaught = 0;
   private settledSporeChains = 0;
+  private treasureCoinsEarned = 0;
+  private treasureHealingEarned = 0;
+  treasureUpgradeClaimed = false;
   /** Per-wave reward summary, useful for the existing shop status text. */
   lastWaveGrowth = { treasureCaught: 0, sporeBonus: 0 };
   private spawnClock = 1.2;
@@ -95,6 +107,12 @@ export class RunFlow {
   get definition() { return RUN_WAVES[this.waveIndex]; }
   get remaining() { return Math.max(0, this.definition.seconds - this.waveElapsed); }
   get totalElapsed() { return this.combatElapsed + this.restElapsed; }
+  get treasureCoinReward() {
+    return Math.min(TREASURE_REWARDS.coinsBase + (this.wave - 1) * TREASURE_REWARDS.coinsPerWave,
+      Math.max(0, TREASURE_REWARDS.maxCoinsPerRun - this.treasureCoinsEarned));
+  }
+  get treasureHealRemaining() { return Math.max(0, TREASURE_REWARDS.maxHealingPerRun - this.treasureHealingEarned); }
+  get canClaimTreasureUpgrade() { return this.phase === 'fighting' && !this.treasureUpgradeClaimed; }
 
   constructor(private random: () => number = Math.random) {}
 
@@ -112,10 +130,28 @@ export class RunFlow {
     this.coins += amount; this.earned += amount;
   }
 
-  /** Exploration chests add to the same run-only wallet used by the shop. */
+  /** Exploration chests share the shop wallet, with a run-wide cap against infinite-map farming. */
   grantTreasureCoins(amount: number) {
-    if (this.phase !== 'fighting' || !Number.isSafeInteger(amount) || amount <= 0) return false;
-    this.coins += amount; this.earned += amount;
+    if (this.phase !== 'fighting' || !Number.isSafeInteger(amount) || amount <= 0) return 0;
+    const granted = Math.min(amount, this.treasureCoinReward);
+    if (granted <= 0) return 0;
+    this.treasureCoinsEarned += granted;
+    this.coins += granted; this.earned += granted;
+    return granted;
+  }
+
+  /** Chest healing is capped across the run, not merely per chest. */
+  grantTreasureHealing(amount: number) {
+    if (this.phase !== 'fighting' || !Number.isSafeInteger(amount) || amount <= 0) return 0;
+    const healed = Math.min(amount, this.treasureHealRemaining);
+    if (healed <= 0) return 0;
+    this.treasureHealingEarned += healed;
+    return healed;
+  }
+
+  claimTreasureUpgrade() {
+    if (!this.canClaimTreasureUpgrade) return false;
+    this.treasureUpgradeClaimed = true;
     return true;
   }
 
