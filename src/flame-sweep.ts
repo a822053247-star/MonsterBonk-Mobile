@@ -3,7 +3,7 @@ export const FLAME_SWEEP = {
   angle: Math.PI, bodyOffset: .55, duration: .3,
   eliteMultiplier: .70, maxRadius: 6,
   frames: 3, fps: 10, frameSize: 128,
-  url: '/assets/pixel/skills/yanrong/fire-effects-sheet.normalized.png',
+  url: `${import.meta.env.BASE_URL}assets/pixel/skills/yanrong/fire-effects-sheet.normalized.png`,
   sourceFrames: [12,13,14],
 } as const;
 

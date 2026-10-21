@@ -146,7 +146,7 @@ function curvedTitle(title: string, pathId: string, className: string) {
 }
 
 function fireIcon(index: 0 | 1 | 2) {
-  return `<span class="fire-icon" data-icon="${index}">${icon('spark')}<img src="/assets/pixel/skills/yanrong/fire-skill-icons.normalized.png" alt="" style="left:-${index * 100}%" draggable="false"/></span>`;
+  return `<span class="fire-icon" data-icon="${index}">${icon('spark')}<img src="${import.meta.env.BASE_URL}assets/pixel/skills/yanrong/fire-skill-icons.normalized.png" alt="" style="left:-${index * 100}%" draggable="false"/></span>`;
 }
 
 function bindFireIcons(root: HTMLElement) {

@@ -2,8 +2,8 @@ import * as THREE from 'three';
 import type { Combat } from './combat';
 import { sampleSweepVisual, type SweepVisualPresetId } from './flame-sweep-visual';
 
-const FIRE_URL = '/assets/pixel/skills/yanrong/fire-effects-sheet.normalized.png';
-const PARTICLE_URL = '/assets/particles/kenney-feedback.png';
+const FIRE_URL = `${import.meta.env.BASE_URL}assets/pixel/skills/yanrong/fire-effects-sheet.normalized.png`;
+const PARTICLE_URL = `${import.meta.env.BASE_URL}assets/particles/kenney-feedback.png`;
 
 /** Atlas layers share frame/alpha data without creating per-spark meshes. */
 export class FlameAtlasBatch {

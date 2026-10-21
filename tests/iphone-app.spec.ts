@@ -1,0 +1,28 @@
+import { test, expect } from '@playwright/test';
+import { mkdirSync } from 'node:fs';
+test('iPhone package: WebGL battle, landscape, installation and offline reload',async({page,context},info)=>{
+ mkdirSync('artifacts/iphone',{recursive:true});
+ const errors:string[]=[],missing:string[]=[];
+ page.on('pageerror',error=>errors.push(error.message));
+ page.on('response',response=>{if(response.status()>=400)missing.push(`${response.status()} ${response.url()}`);});
+ await page.goto('/MonsterBonk-Mobile/');
+ await expect(page.locator('#start-fusion')).toBeVisible();
+ await expect(page.locator('a[href="./install.html"]')).toBeVisible();
+ expect(await page.locator('link[rel="apple-touch-icon"]').getAttribute('href')).toContain('yanrong-base.png');
+ const manifest=await (await page.request.get('/MonsterBonk-Mobile/manifest.webmanifest')).json();
+ expect(manifest.display).toBe('standalone');expect(manifest.orientation).toBe('landscape');
+ await page.waitForFunction(()=>document.querySelector('#offline-status')?.textContent?.includes('已就绪'),{},{timeout:75000});
+ await page.locator('#start-fusion').click();
+ await expect(page.locator('#timer')).not.toHaveText('00:00',{timeout:15000});
+ await page.locator('#pause').click();await expect(page.locator('#resume')).toBeVisible();
+ await page.locator('#resume').click();
+ await page.screenshot({path:`artifacts/iphone/${info.project.name}-battle.png`});
+ await page.setViewportSize({width:390,height:844});await expect(page.locator('#rotate-screen')).toBeVisible();
+ await page.waitForFunction(()=>!(document.querySelector('#pause-screen') as HTMLElement).hidden);
+ await page.setViewportSize({width:844,height:390});await page.locator('#resume').click();
+ await context.setOffline(true);await page.reload();
+ await expect(page.locator('#start-fusion')).toBeVisible();await page.locator('#start-fusion').click();
+ await expect(page.locator('#timer')).not.toHaveText('00:00',{timeout:15000});
+ await page.screenshot({path:`artifacts/iphone/${info.project.name}-offline.png`});
+ expect(errors).toEqual([]);expect(missing).toEqual([]);
+});

@@ -1,6 +1,6 @@
 import type { FusionId } from './fusion';
 
-export const FUSION_ASSET_ROOT = '/assets/pixel/skills/fusions/';
+export const FUSION_ASSET_ROOT = `${import.meta.env.BASE_URL}assets/pixel/skills/fusions/`;
 // Authored stages are unevenly spaced in the source. Only audited atlas slots play.
 // FPS belongs to rendering, never projectile lifetime, damage, or status clocks.
 export const FUSION_CLIPS = {

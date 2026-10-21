@@ -15,7 +15,7 @@ export class TreasureTrackerView {
   readonly group = new THREE.Group();
   private resources: (THREE.Texture | THREE.Material | THREE.BufferGeometry)[] = [];
   private slots: Slot[] = [];
-  private stars = new FlameAtlasBatch('/assets/particles/kenney-feedback.png',TREASURE_RUNNER.rewardCapacity*8,4,2);
+  private stars = new FlameAtlasBatch(`${import.meta.env.BASE_URL}assets/particles/kenney-feedback.png`,TREASURE_RUNNER.rewardCapacity*8,4,2);
   private orientation = new THREE.Quaternion();
   private up = new THREE.Vector3(0,1,0);
   private right = new THREE.Vector3(1,0,0);

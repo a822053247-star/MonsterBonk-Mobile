@@ -3,9 +3,9 @@ import type { SporeExplosion } from './special-enemies';
 import { SPORE_BOMBER } from './special-enemies';
 import { FlameAtlasBatch } from './flame-sweep-assets';
 
-const FIRE_URL = '/assets/pixel/skills/yanrong/fire-effects-sheet.normalized.png';
-const SMOKE_URL = '/assets/kenney_particle-pack/PNG%20(Transparent)/smoke_08.png';
-const WARNING_URL = '/assets/kenney_particle-pack/PNG%20(Transparent)/magic_02.png';
+const FIRE_URL = `${import.meta.env.BASE_URL}assets/pixel/skills/yanrong/fire-effects-sheet.normalized.png`;
+const SMOKE_URL = `${import.meta.env.BASE_URL}assets/kenney_particle-pack/PNG%20(Transparent)/smoke_08.png`;
+const WARNING_URL = `${import.meta.env.BASE_URL}assets/kenney_particle-pack/PNG%20(Transparent)/magic_02.png`;
 
 /** Reuses authored fire frames and smoke. Never advances a clock or deals damage. */
 export class SporeExplosionView {

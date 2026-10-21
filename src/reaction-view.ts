@@ -9,7 +9,7 @@ import { instanceOpacity } from './visuals/instance-opacity';
 /** Shared smoke asset; bounded batches, no clocks, damage or random draws. */
 export class ReactionView {
   readonly group = new THREE.Group();
-  private mist = new FlameAtlasBatch('/assets/kenney_particle-pack/PNG%20(Transparent)/smoke_08.png', 48, 1, 1);
+  private mist = new FlameAtlasBatch(`${import.meta.env.BASE_URL}assets/kenney_particle-pack/PNG%20(Transparent)/smoke_08.png`, 48, 1, 1);
   private orientation = new THREE.Quaternion();
   private rings = new THREE.InstancedMesh(new THREE.RingGeometry(.92, 1, 24),
     new THREE.MeshBasicMaterial({ transparent: true, depthWrite: false, side: THREE.DoubleSide, toneMapped: false }), COMBAT_LIMITS.effects);
