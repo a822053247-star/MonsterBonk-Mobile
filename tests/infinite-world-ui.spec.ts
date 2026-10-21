@@ -274,6 +274,12 @@ test('treasure chest rewards are one-time, survive chunk recycling, and reset on
     return { id: chest.id, x: chest.x, z: chest.z };
   });
   await expect(page.locator('#chest-interact')).toBeVisible();
+  const promptLayout = await page.evaluate(() => {
+    const prompt = document.getElementById('chest-interact')!.getBoundingClientRect();
+    const location = document.querySelector('.location-label')!.getBoundingClientRect();
+    return { promptBottom: prompt.bottom, locationTop: location.top };
+  });
+  expect(promptLayout.promptBottom).toBeLessThanOrEqual(promptLayout.locationTop - 4);
   await page.locator('#chest-interact').click();
   await expect(page.locator('#treasure-screen')).toBeVisible();
   const before = await page.evaluate(() => (window as any).game.run.coins);
