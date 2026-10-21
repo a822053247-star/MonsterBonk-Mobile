@@ -1,14 +1,14 @@
 ---
 title: 幻兽幸存者｜游戏系统与内容总档案
 file_id: monsterbonk-game-system-catalog
-catalog_version: 1.9.3
-updated_at: 2026-10-21
+catalog_version: 1.10.0
+updated_at: 2026-10-22
 repository: https://github.com/a822053247-star/MonsterBonk-Mobile
-baseline_branch: main
-baseline_commit: 6aff0f57c668372cc39ace2a7f4bb8c4920ae1c6
+baseline_branch: feature/endless-survival-loop
+baseline_commit: 172ba92d7e489217b3a5740fdc02555de5efe207
 special_enemies_base_commit: ef5494a85c68ab39f23f7f470c961fce56ad9963
 source_of_truth: TypeScript runtime implementation
-scope: 正式六波挑战；历史试炼模式仅作为兼容边界
+scope: 正式六波闯关与无尽生存循环；历史试炼模式仅作为兼容边界
 language: zh-CN
 ---
 
@@ -16,11 +16,11 @@ language: zh-CN
 
 > **文档定位：** 集中记录“现有实现”和“未来设计”，是 ChatGPT、Codex、策划和开发者共同阅读的**持续维护型机制索引**，仓库内规范路径为 `docs/GAME_SYSTEM_CATALOG.md`。
 >
-> **真实性说明：** 本文基于 2026-10-20 获取的仓库 `main`，基线提交 `6aff0f57c668372cc39ace2a7f4bb8c4920ae1c6`。**代码是已实现行为的最终准绳**；本文的 `DESIGN_LOCKED`、`PROPOSED`、`OPEN` 都不是已实现功能，更不代表已批准开发。若代码更新，应重新核对、更新此文档。
+> **真实性说明：** 本次无尽生存条目基于分支 `feature/endless-survival-loop`、提交 `172ba92d7e489217b3a5740fdc02555de5efe207` 的实现与自动化测试；合并后应将基线提交更新为合并后的 `main`。**代码是已实现行为的最终准绳**；本文的 `DESIGN_LOCKED`、`PROPOSED`、`OPEN` 都不是已实现功能，更不代表已批准开发。若代码更新，应重新核对、更新此文档。
 
 ## 0. 给 ChatGPT 和 Codex 的阅读说明（优先阅读）
 
-**项目一句话：** 《幻兽幸存者》（MonsterBonk-Mobile）是 TypeScript + Vite + Three.js 的移动端 2.5D 幸存者游戏。正式模式为**单幻兽、单虚拟摇杆移动、自动攻击、三武器构筑、升级融合、六波挑战（最终 Boss 必须击败）**。未来希望发展为**极致割草 + 技能协同 + 可失败 + 风险/奖励选择**的短局 Roguelike。
+**项目一句话：** 《幻兽幸存者》（MonsterBonk-Mobile）是 TypeScript + Vite + Three.js 的移动端 2.5D 幸存者游戏，现有两种正式战斗入口：**闯关挑战**（单幻兽、单虚拟摇杆、自动攻击、三武器构筑、升级融合、六波通关）与**无尽挑战**（无限地图、循环六波、第五波旗帜大波/商店、第六波重复 Boss、轮次难度和特殊规则）。历史试炼继续隔离；死亡仍是真实失败。
 
 **严格区分状态：**
 
@@ -56,15 +56,15 @@ language: zh-CN
 
 | 系统 | 当前规则 | 主要源文件 |
 |---|---|---|
-| 模式 | 正式六波挑战：前五波生存；第六波击杀荆冠兽王才通关 | `src/run-flow.ts`, `src/enemy-challenge.ts` |
+| 模式 | 闯关挑战：前五波生存、第六波击杀荆冠兽王通关；无尽挑战：循环六波、第五波旗帜大波/商店、第六波 Boss 重复出现 | `src/run-flow.ts`, `src/wave-director.ts`, `src/enemy-challenge.ts` |
 | 幻兽 | 焰绒（火）、泡泡螈（水）、芽刺兽（草），正式模式单角色上场 | `src/party.ts`, `src/game.ts` |
 | 操作 | 单摇杆移动，武器自动索敌与攻击；正式模式无独立主动技能按钮 | `src/game.ts`, `src/combat.ts` |
 | 武器 | 三种远程与火焰横扫近战可选，起始武器按幻兽决定；共用最多 3 槽，每种可强化至 5 级，满槽过滤未装备武器 | `src/run-build.ts`, `src/progression.ts` |
 | 成长 | 击杀 → 经验 → 升级三选一；普通基础属性、武器、融合卡、稀有遗物/进化共用现有卡片系统 | `src/progression.ts` |
 | 遗物 | 13 件稀有遗物（原 6 件 + 六件触发遗物 + 沸腾核心）：本局持续，不可重复取得 | `src/relics.ts`, `src/run-build.ts` |
 | 进化 | 爆裂火种狂暴 / 追猎两条互斥路线 | `src/relics.ts` |
-| 商店 | 每波结束进入 4 商品商店，可购买和随金币代价刷新；恢复生命的补给 | `src/shop.ts` |
-| 胜败 | 生命归零失败；第六波 90 秒未击败 Boss 失败；真正击败 Boss 胜利 | `src/run-flow.ts` |
+| 商店 | 闯关/无尽模式均只在每轮第五波后开放 4 商品商店；可购买、金币刷新与生命补给 | `src/shop.ts`, `src/run-flow.ts` |
+| 胜败 | 闯关挑战：生命归零或 Boss 90 秒超时失败；无尽挑战：生命归零失败，Boss 超时强制狂暴加时，击败后进入下一轮 | `src/run-flow.ts`, `src/enemy-challenge.ts` |
 | 视觉/性能 | Three.js 实例化渲染、固定对象池、自适应画质；无须依赖新逐帧贴图实现全部技能 | `src/combat-view.ts`, `src/quality.ts` |
 | 旧模式 | 历史编队、犄角试炼等仍在项目中，其专用规则不应被正式模式改动波及 | `README.md`, `src/game.ts` |
 
@@ -185,7 +185,21 @@ language: zh-CN
 
 实现：`src/ui.ts`、`src/style.css`、`src/game.ts`。预览：`artifacts/home-background-desktop.png`、`artifacts/home-background-phone.png`。原图与入库文件SHA-256一致；浏览器探针覆盖首次加载/返回菜单隐藏模型、旧模式角色仍可见及两种横屏尺寸。Chromium/WebKit角色选择及重开/返回菜单回归10项通过，构建与差异检查通过。测试中的旧HUD角色名节点断言替换为当前头像的物种标识，未恢复已移除的旧HUD文字。
 
-## 2. 现有武器、技能与融合（`IMPLEMENTED`）
+
+### 1.9 无尽生存循环（`IMPLEMENTED`，2026-10-22）
+
+无尽入口将无限地图与独立的 `RunFlow` 规则绑定；地图生成、角色移动、自动攻击、武器构筑、技能融合、升级卡片、敌人对象池与商店复用现有实现。正式「闯关挑战」继续使用固定六波和原本的 Boss 超时失败规则。
+
+- **六波循环：** 每轮第 1–4 波无缝衔接；第 5 波使用 Endless 专属旗帜大波导演，随后经过 3.5 秒波间进入商店；第 6 波是荆冠兽王。Boss 击败后结算并进入下一轮，不出现最终胜利终局。全局波数持续增加，波次模板以轮内 1–6 索引读取，避免访问固定数组越界。
+- **Boss 加时：** 90 秒为目标时限。无尽 Boss 到时未败时冻结波次计时、强制进入狂暴并继续战斗；生命归零仍立即失败。Boss 击败后发放 60 金币并推进下一轮。若边界经验触发升级选择，先完成选择再结算，防止丢失升级或重复奖励。
+- **轮次难度：** 普通敌人生命每轮 +10%，封顶 1.6 倍；接触伤害每轮 +5%，封顶 1.25 倍；背景刷怪速率和波次人口上限每轮 +4%，倍率封顶 1.35；Boss 生命每轮 +18%，封顶 2.2 倍。无尽普通波人口上限不超过 128，仍受 Combat 256 敌人槽上限及其他投射物/特效池限制。
+- **轮次规则：** 第 2–3 轮各随机选择一项，第 4 轮起选择两项，最多两项。规则包括疾芽先锋（增加快速怪护卫）、岩甲列阵（增加重甲护卫）、孢子连锁（增加爆孢护卫）、晶屑狂潮（提高晶屑虫出现频率）和携宝诱饵（每波额外尝试出现携宝兽）。新轮第一波预告规则标题与说明。
+- **经济与结算：** 第五波商店沿用现有购买、治疗和刷新机制；免费刷新资格按当前轮累计的携宝兽捕获统计，Boss 结束时清零。HUD 显示全局波数和轮次，Boss 超时显示加时秒数，结算显示完成波数、Boss 击败数和金币。
+- **兼容性：** `RunFlow` 默认模式仍是 `campaign`；正式六波的波次导演与终局保持原配置。无尽专属第五波阶段、数值倍率、Boss 加时和商店循环均由 `RunFlow.mode` 控制。
+
+实现：`src/run-flow.ts`、`src/wave-director.ts`、`src/combat.ts`、`src/enemy-challenge.ts`、`src/game.ts`、`src/ui.ts`。验收：`tests/endless-survival.spec.ts`、`tests/wave-director.spec.ts`、`tests/infinite-world-ui.spec.ts`、`tests/run-flow.spec.ts`；CI 入口更新于 `.github/workflows/wave-director.yml`。
+
+## 2. 现有武器、技能与融合（`IMPLEMENTED`)
 
 ### 2.1 三种远程与一种近战武器
 
