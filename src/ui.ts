@@ -42,12 +42,13 @@ export function createUI(root: HTMLElement) {
         <div class="eyebrow"><span></span> 小小怪兽，大大冒险</div>
         <h1>幻兽<br/><span>幸存者</span></h1>
         <p class="menu-description">一只焰绒，从火花到爆裂火种。<br/>自动迎战，升级组合你的魔法。</p>
-        <div class="menu-actions"><button id="start-fusion" class="primary">开始挑战 ${icon('arrow')}</button><button id="choose-creature" class="secondary creature-select-entry" aria-label="选择出战幻兽">选择幻兽</button><button id="help" class="secondary" aria-label="操作指南">${icon('help')}<span>操作指南</span></button><button id="menu-settings" class="secondary settings-entry" aria-label="画质与声音设置">${icon('settings')}</button></div>
-        <div class="prototype-entries"><button id="start-infinite" class="text-button">无尽草场 · 无限探索</button><button id="start-party" class="text-button">随机草场冒险</button><button id="start-legacy-party" class="text-button">三兽编队原型 <small>兼容</small></button></div>
-        <div class="menu-hint"><span>摇杆或方向键移动 · 自动攻击</span></div>
+        <div class="main-modes" aria-label="选择挑战玩法"><button id="start-fusion" class="mode-card campaign-mode">${icon('battle')}<span><strong>闯关挑战</strong></span>${icon('arrow')}</button><button id="start-infinite" class="mode-card infinite-mode">${icon('spark')}<span><strong>无尽挑战</strong></span>${icon('arrow')}</button></div>
+        <div class="menu-actions menu-utilities"><button id="choose-creature" class="secondary creature-select-entry" aria-label="选择出战幻兽">选择幻兽</button><button id="help" class="secondary" aria-label="操作指南">${icon('help')}<span>操作指南</span></button><button id="menu-settings" class="secondary settings-entry" aria-label="画质与声音设置">${icon('settings')}</button></div>
+        
       </div>
-      <footer class="menu-footer" aria-label="旧版兼容回归入口"><button id="start" class="trial-entry practice-entry">单兽回归 <small>旧版</small></button><div class="mode-entries"><button id="start-trial" class="trial-entry practice-entry">${icon('dash')} 犄角试炼 <small>旧版 · 自由练习</small></button><button id="start-challenge" class="trial-entry">${icon('battle')} 三波闯关 <small>旧版 · 赢取星级</small></button></div></footer>
+      <footer class="menu-footer" aria-label="旧版模式入口"><button id="open-legacy" class="trial-entry practice-entry" aria-haspopup="dialog">旧版模式</button></footer>
     </section>
+    <section id="legacy-picker" class="modal-screen" role="dialog" aria-modal="true" aria-labelledby="legacy-title" hidden><div class="modal legacy-card"><button id="close-legacy" class="icon-button close-button" aria-label="关闭旧版玩法">${icon('close')}</button><h2 id="legacy-title">旧版模式</h2><div class="legacy-options"><button id="start" class="secondary">${icon('leaf')} 单兽冒险</button><button id="start-trial" class="secondary">${icon('dash')} 犄角试炼</button><button id="start-challenge" class="secondary">${icon('battle')} 三波闯关</button></div></div></section>
     <section id="creature-picker" class="modal-screen" role="dialog" aria-modal="true" aria-labelledby="creature-picker-title" hidden>
       <div class="creature-picker-card"><header><div><small>每局一只 · 自动攻击</small><h2 id="creature-picker-title">选择出战幻兽</h2></div><button id="close-creature-picker" class="icon-button" aria-label="关闭幻兽选择">${icon('close')}</button></header>
         <div class="creature-options" role="group" aria-label="可选幻兽">
@@ -55,7 +56,7 @@ export function createUI(root: HTMLElement) {
           <button type="button" class="creature-option" data-creature="bubblesalamander" aria-pressed="false"><img data-creature-src="${import.meta.env.BASE_URL}assets/pixel/creatures/paopaoyuan.png" alt=""/><strong>泡泡螈</strong><span>水泡弹 · 减速扩散</span></button>
           <button type="button" class="creature-option" data-creature="sproutspike" aria-pressed="false"><img data-creature-src="${import.meta.env.BASE_URL}assets/pixel/creatures/yacishou.png" alt=""/><strong>芽刺兽</strong><span>飞叶弹 · 穿透连锁</span></button>
         </div>
-        <button id="start-selected-creature" class="primary">焰绒 · 开始挑战 ${icon('arrow')}</button>
+        <button id="start-selected-creature" class="primary">焰绒 · 闯关挑战 ${icon('arrow')}</button>
       </div>
     </section>
     <section id="hud" class="hud screen" aria-label="游戏操作与状态" hidden>
