@@ -1190,7 +1190,7 @@ h1>em{font-size:12px;line-height:1;letter-spacing:4px;display:inline-block;backg
 
 /* Infinite meadow treasure chests: a small contextual action, never a permanent HUD control. */
 .chest-interact{
-  position:absolute;left:50%;bottom:calc(32px + var(--safe-bottom));z-index:9;
+  position:absolute;left:50%;bottom:calc(84px + var(--safe-bottom));z-index:9;
   transform:translateX(-50%);min-height:48px;padding:0 22px;
   display:flex;align-items:center;justify-content:center;gap:8px;
   border:1px solid #f6df9c;border-radius:13px;
@@ -1217,7 +1217,7 @@ h1>em{font-size:12px;line-height:1;letter-spacing:4px;display:inline-block;backg
 .treasure-reward:disabled{opacity:.52;filter:saturate(.55);cursor:default}
 .treasure-card>#treasure-close{min-height:42px;margin-top:12px;padding:8px 14px}
 @media(max-width:650px){
-  .chest-interact{bottom:calc(22px + var(--safe-bottom));min-height:44px;padding:0 15px;font-size:11px}
+  .chest-interact{bottom:calc(78px + var(--safe-bottom));min-height:44px;padding:0 15px;font-size:11px}
   .treasure-card{padding:18px 16px}
   .treasure-rewards{gap:8px;margin-top:16px}
   .treasure-reward{min-height:82px;padding:12px}
