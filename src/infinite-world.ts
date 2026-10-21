@@ -15,10 +15,12 @@ type Surface = 'grass' | 'soil' | 'sand';
 const SURFACE_COLORS: Record<Surface, string> = { grass: GRASS, soil: SOIL, sand: SAND };
 
 export interface MeadowProp { x: number; z: number; variant: number; scale: number }
+export interface MeadowTreasureChest { id: string; x: number; z: number }
+export interface InfiniteTreasureChest { id: string; x: number; z: number; opened: boolean }
 export interface InfiniteChunkLayout {
   cx: number; cz: number; seed: string; obstacles: Obstacle[];
   trees: MeadowProp[]; rocks: MeadowProp[]; cacti: MeadowProp[];
-  flowers: MeadowProp[]; grass: MeadowProp[];
+  flowers: MeadowProp[]; grass: MeadowProp[]; chests: MeadowTreasureChest[];
 }
 
 export function chunkCoordinates(x: number, z: number) {
@@ -146,7 +148,7 @@ export function sampleInfiniteSurface(seed: string, x: number, z: number): Surfa
 
 /** Sparse, seeded scenery. Only trunks and rocks participate in collision. */
 export function generateInfiniteChunk(seed: string, cx: number, cz: number): InfiniteChunkLayout {
-  const layout: InfiniteChunkLayout = { cx, cz, seed, obstacles: [], trees: [], rocks: [], cacti: [], flowers: [], grass: [] };
+  const layout: InfiniteChunkLayout = { cx, cz, seed, obstacles: [], trees: [], rocks: [], cacti: [], flowers: [], grass: [], chests: [] };
   const hash = seedHash(seed), left = cx * CHUNK_SIZE - HALF, top = cz * CHUNK_SIZE - HALF;
   for (let z = 4; z < CHUNK_SIZE; z += 8) for (let x = 4; x < CHUNK_SIZE; x += 8) {
     const gx = Math.floor((left + x) / 8), gz = Math.floor((top + z) / 8);
@@ -180,6 +182,18 @@ export function generateInfiniteChunk(seed: string, cx: number, cz: number): Inf
     const prop = { x: px, z: pz, variant: 0, scale: .8 + hashAt(hash ^ 0x2459, gx, gz) * .4 };
     if (chance >= .12 && chance < .28) layout.flowers.push(prop);
     else if (chance >= .28 && chance < .48) layout.grass.push(prop);
+  }
+  // Sparse, deterministic treasure: at most one chest per chunk, placed on walkable ground.
+  if (hashAt(hash ^ 0x7d91, cx, cz) < .4) {
+    for (let attempt = 0; attempt < 16; attempt++) {
+      const px = 9 + hashAt(hash ^ 0x4e21, cx * 17 + attempt, cz * 31 - attempt) * 46;
+      const pz = 9 + hashAt(hash ^ 0x7ac9, cx * 29 - attempt, cz * 13 + attempt) * 46;
+      const wx = left + px, wz = top + pz;
+      if (Math.hypot(wx, wz) < 12 || sampleInfiniteSurface(seed, wx, wz) === 'sand') continue;
+      if (layout.obstacles.some(o => Math.hypot(o.x - wx, o.z - wz) < o.radius + 2.8)) continue;
+      layout.chests.push({ id: `${seed}:${cx}:${cz}:chest-0`, x: px, z: pz });
+      break;
+    }
   }
   return layout;
 }
@@ -293,7 +307,7 @@ function bakeChunkGround(layout: InfiniteChunkLayout, reused?: THREE.Texture) {
 }
 
 type Chunk = { group: THREE.Group; groundTexture: THREE.Texture; material: THREE.MeshBasicMaterial;
-  instances: THREE.InstancedMesh[]; layout: InfiniteChunkLayout };
+  instances: THREE.InstancedMesh[]; layout: InfiniteChunkLayout; chestMesh: THREE.Mesh };
 
 /** Tiny native pixel sprites complement the challenge-map tree and rock atlas. */
 function meadowDetail(kind: 'flower' | 'grass') {
@@ -320,15 +334,78 @@ function meadowDetail(kind: 'flower' | 'grass') {
   return { texture: pixelTexture(canvas), aspect: 1 };
 }
 
+/** Small native pixel-art chests avoid adding another external asset dependency. */
+function treasureChestTexture(opened: boolean) {
+  const canvas = document.createElement('canvas');
+  canvas.width = 24; canvas.height = 20;
+  const ctx = canvas.getContext('2d')!;
+  const rect = (color: string, x: number, y: number, w: number, h: number) => {
+    ctx.fillStyle = color; ctx.fillRect(x, y, w, h);
+  };
+  ctx.imageSmoothingEnabled = false;
+  rect('#26392d', 3, 16, 18, 2);
+  if (opened) {
+    rect('#3a2929', 3, 2, 18, 6);
+    rect('#a95f35', 4, 3, 16, 4);
+    rect('#df9b48', 5, 3, 14, 2);
+    rect('#f3c46a', 7, 4, 10, 1);
+    rect('#3a2929', 3, 8, 18, 9);
+    rect('#1e2926', 5, 9, 14, 5);
+    rect('#a95f35', 4, 11, 16, 5);
+    rect('#dfad53', 6, 11, 2, 4);
+    rect('#dfad53', 16, 11, 2, 4);
+    rect('#dfad53', 10, 9, 4, 2);
+    rect('#f5d77f', 7, 7, 2, 2);
+    rect('#f5d77f', 11, 6, 3, 2);
+    rect('#f5d77f', 16, 8, 2, 2);
+    rect('#e3b85c', 4, 15, 16, 2);
+    rect('#fff0ad', 2, 5, 2, 1);
+    rect('#fff0ad', 20, 4, 2, 1);
+  } else {
+    rect('#39282a', 3, 5, 18, 11);
+    rect('#a95f35', 4, 6, 16, 9);
+    rect('#d17c3d', 5, 7, 14, 3);
+    rect('#8c482d', 4, 12, 16, 3);
+    rect('#f0bd60', 6, 6, 2, 10);
+    rect('#f0bd60', 16, 6, 2, 10);
+    rect('#39282a', 3, 4, 18, 3);
+    rect('#a95f35', 4, 5, 16, 2);
+    rect('#e8a34e', 5, 5, 14, 1);
+    rect('#f5d77f', 10, 8, 4, 4);
+    rect('#b87939', 11, 9, 2, 3);
+    rect('#fff0ad', 11, 9, 1, 1);
+    rect('#f0bd60', 5, 14, 14, 1);
+  }
+  const texture = pixelTexture(canvas);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  texture.magFilter = THREE.NearestFilter;
+  texture.minFilter = THREE.NearestFilter;
+  texture.generateMipmaps = false;
+  texture.needsUpdate = true;
+  return texture;
+}
+
 /** Nine persistent GPU slots stream in every direction without growing memory. */
 export function createInfiniteWorld(initialSeed: string) {
   const group = new THREE.Group();
   group.name = '无尽草场'; group.visible = false;
   const obstacles: Obstacle[] = [];
+  const treasureChests: InfiniteTreasureChest[] = [];
+  const openedChests = new Set<string>();
   const chunks = new Map<string, Chunk>(), recycled: Chunk[] = [];
   const groundGeometry = new THREE.PlaneGeometry(CHUNK_SIZE, CHUNK_SIZE);
   const spriteGeometry = new THREE.PlaneGeometry(1, 1);
   spriteGeometry.translate(0, .5, 0);
+  const chestGeometry = new THREE.PlaneGeometry(1.6, 1.35);
+  chestGeometry.translate(0, .675, 0);
+  const closedChestTexture = treasureChestTexture(false);
+  const openedChestTexture = treasureChestTexture(true);
+  const closedChestMaterial = new THREE.MeshBasicMaterial({
+    map: closedChestTexture, transparent: true, alphaTest: .1, toneMapped: false, fog: false,
+  });
+  const openedChestMaterial = new THREE.MeshBasicMaterial({
+    map: openedChestTexture, transparent: true, alphaTest: .1, toneMapped: false, fog: false,
+  });
   const dummy = new THREE.Object3D();
   let art: { texture: THREE.Texture; aspect: number }[] = [];
   let spriteMaterials: THREE.MeshBasicMaterial[] = [];
@@ -338,6 +415,7 @@ export function createInfiniteWorld(initialSeed: string) {
     for (const chunk of chunks.values()) { group.remove(chunk.group); recycled.push(chunk); }
     chunks.clear();
     obstacles.length = 0;
+    treasureChests.length = 0;
   };
   const place = (chunk: Chunk, cx: number, cz: number) => {
     chunk.group.name = 'chunk:' + cx + ':' + cz;
@@ -358,6 +436,13 @@ export function createInfiniteWorld(initialSeed: string) {
       });
       mesh.instanceMatrix.needsUpdate = true; mesh.computeBoundingSphere();
     }
+    const chest = layout.chests[0];
+    chunk.chestMesh.visible = !!chest;
+    if (chest) {
+      chunk.chestMesh.position.set(chest.x, .025, chest.z);
+      chunk.chestMesh.rotation.set(-Math.PI / 4, 0, 0);
+      chunk.chestMesh.material = openedChests.has(chest.id) ? openedChestMaterial : closedChestMaterial;
+    }
     return chunk;
   };
   const build = (cx: number, cz: number) => {
@@ -373,7 +458,9 @@ export function createInfiniteWorld(initialSeed: string) {
       mesh.name = ['像素树-阔叶', '像素树-圆冠', '像素树-松树', '小石头', '小花', '小草', '仙人掌'][type];
       mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage); tile.add(mesh); return mesh;
     });
-    return place({ group: tile, groundTexture, material, layout, instances }, cx, cz);
+    const chestMesh = new THREE.Mesh(chestGeometry, closedChestMaterial);
+    chestMesh.name = '像素宝箱'; chestMesh.visible = false; tile.add(chestMesh);
+    return place({ group: tile, groundTexture, material, layout, instances, chestMesh }, cx, cz);
   };
   const update = (x: number, z: number) => {
     if (disposed || !artReady) return false;
@@ -399,6 +486,13 @@ export function createInfiniteWorld(initialSeed: string) {
       chunks.set(key, chunk); group.add(chunk.group);
     }
     obstacles.splice(0, obstacles.length, ...Array.from(chunks.values()).flatMap(chunk => chunk.layout.obstacles));
+    treasureChests.splice(0, treasureChests.length, ...Array.from(chunks.values()).flatMap(chunk =>
+      chunk.layout.chests.map(chest => ({
+        id: chest.id,
+        x: chunk.layout.cx * CHUNK_SIZE - HALF + chest.x,
+        z: chunk.layout.cz * CHUNK_SIZE - HALF + chest.z,
+        opened: openedChests.has(chest.id),
+      }))));
     return true;
   };
   // Scenery shares the challenge-map atlas; tiny ground decorations are local.
@@ -415,12 +509,28 @@ export function createInfiniteWorld(initialSeed: string) {
     artReady = true; update(0, 0);
   });
   return {
-    group, obstacles, ready,
+    group, obstacles, ready, treasureChests,
     get seed() { return seed; },
     get chunkCount() { return chunks.size; },
     setSeed(nextSeed: string) {
       if (disposed || seed === nextSeed) return;
-      seed = nextSeed; release(); centerX = centerZ = NaN; update(0, 0);
+      seed = nextSeed; openedChests.clear(); release(); centerX = centerZ = NaN; update(0, 0);
+    },
+    openTreasureChest(id: string) {
+      const chest = treasureChests.find(candidate => candidate.id === id);
+      if (!chest || chest.opened || openedChests.has(id)) return false;
+      openedChests.add(id); chest.opened = true;
+      for (const chunk of chunks.values()) {
+        if (!chunk.layout.chests.some(candidate => candidate.id === id)) continue;
+        chunk.chestMesh.material = openedChestMaterial;
+        break;
+      }
+      return true;
+    },
+    resetTreasureChests() {
+      openedChests.clear();
+      for (const chest of treasureChests) chest.opened = false;
+      for (const chunk of chunks.values()) if (chunk.layout.chests.length) chunk.chestMesh.material = closedChestMaterial;
     },
     update,
     dispose() {
@@ -431,6 +541,8 @@ export function createInfiniteWorld(initialSeed: string) {
         chunk.groundTexture.dispose(); chunk.material.dispose(); chunk.group.clear();
       }
       spriteMaterials.forEach(material => material.dispose()); art.forEach(a => a.texture.dispose());
+      closedChestMaterial.dispose(); openedChestMaterial.dispose();
+      closedChestTexture.dispose(); openedChestTexture.dispose(); chestGeometry.dispose();
       recycled.length = 0; groundGeometry.dispose(); spriteGeometry.dispose();
     },
   };
