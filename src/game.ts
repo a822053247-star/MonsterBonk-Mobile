@@ -18,7 +18,7 @@ import { PartySystem, CREATURES, type SpeciesId } from './party';
 import { PIXEL_CREATURE_ASSETS } from './pixel-sprite';
 import { PartyView } from './party-view';
 
-type Mode = 'menu' | 'playing' | 'paused' | 'gameover' | 'upgrading' | 'settings' | 'shop';
+type Mode = 'menu' | 'playing' | 'paused' | 'gameover' | 'upgrading' | 'settings' | 'shop' | 'treasure';
 const STEP = 1 / 60;
 const DASH_COOLDOWN = 1.4;
 
@@ -75,6 +75,8 @@ export class Game {
   private contextLost = false;
   private portrait = false;
   private toastTimeout = 0;
+  private nearbyTreasureChestId: string | null = null;
+  private pendingTreasureChestId: string | null = null;
   private choiceTimer = 0;
   private offerVersion = 0;
   private cardDown: { pointer: number; skill: SkillId; version: number } | null = null;
@@ -178,6 +180,15 @@ export class Game {
     click('start-challenge', () => this.start('horn-challenge', false));
     click('pause', () => this.pause('草原会在这里等你。'));
     click('resume', () => this.resume());
+    click('chest-interact', () => this.openNearbyTreasureChest());
+    click('treasure-coins', () => this.claimTreasureReward('coins'));
+    click('treasure-heal', () => this.claimTreasureReward('heal'));
+    click('treasure-close', () => this.closeTreasure());
+    window.addEventListener('keydown', event => {
+      if (event.code !== 'KeyE' || event.repeat || this.mode !== 'playing' || !this.nearbyTreasureChestId) return;
+      event.preventDefault();
+      this.openNearbyTreasureChest();
+    }, options);
     click('back-menu', () => this.showMenu());
     click('restart', () => this.start());
     click('gameover-restart', () => this.start());
@@ -417,6 +428,10 @@ export class Game {
     document.getElementById('pause-screen')!.hidden = true;
     document.getElementById('help-screen')!.hidden = true;
     document.getElementById('gameover-screen')!.hidden = true;
+    document.getElementById('treasure-screen')!.hidden = true;
+    document.getElementById('chest-interact')!.hidden = true;
+    document.getElementById('hud')!.inert = false;
+    this.nearbyTreasureChestId = this.pendingTreasureChestId = null;
     (document.activeElement as HTMLElement | null)?.blur();
     this.welcome.classList.remove('faded');
     this.welcome.querySelector('h2')!.textContent = endless ? '无尽草场，向远方出发。' : this.combat.fusionEnabled && species !== 'yanrong' ? `${CREATURES[species].name}，准备出发。` : this.combat.fusionEnabled ? '一簇火花，生长成烈焰。' : partyPrototype ? '草场已就绪，出发吧。' : this.challenge ? '三波迎战，冲出一条路。' : this.combat.isTrial ? '犄角已就绪，冲出一条路。' : '小小魔法，准备就绪。';
@@ -448,6 +463,7 @@ export class Game {
     this.input.setEnabled(true);
     document.getElementById('pause-screen')!.hidden = true;
     (document.activeElement as HTMLElement | null)?.blur();
+    this.updateTreasurePrompt();
     this.wake();
   }
 
@@ -475,6 +491,10 @@ export class Game {
     this.trialHornMounted = false;
     this.monster.resetVisual();
     this.mode = 'menu';
+    this.pendingTreasureChestId = this.nearbyTreasureChestId = null;
+    document.getElementById('treasure-screen')!.hidden = true;
+    document.getElementById('chest-interact')!.hidden = true;
+    document.getElementById('hud')!.inert = false;
     this.jumpHeight = this.previousJump = this.jumpVelocity = 0;
     this.input.setEnabled(false);
     this.position.set(0, 0, 0);
@@ -630,9 +650,103 @@ export class Game {
       }
       if (this.mode === 'playing' && this.combat.progression.awaitingChoice && !this.combat.encounters.dying) this.openUpgrade();
     }
+    this.updateTreasurePrompt();
   }
 
   private canShop() { return this.mode === 'shop' && !document.hidden && !this.portrait && !this.contextLost; }
+
+  private updateTreasurePrompt() {
+    const button = document.getElementById('chest-interact') as HTMLButtonElement;
+    if (this.mode !== 'playing' || !this.world.infiniteActive || this.run?.phase !== 'fighting') {
+      button.hidden = true;
+      this.nearbyTreasureChestId = null;
+      return;
+    }
+    let nearest: { id: string; distance: number } | undefined;
+    for (const chest of this.world.treasureChests) {
+      if (chest.opened) continue;
+      const distance = Math.hypot(chest.x - this.position.x, chest.z - this.position.z);
+      if (distance <= 2.6 && (!nearest || distance < nearest.distance)) nearest = { id: chest.id, distance };
+    }
+    this.nearbyTreasureChestId = nearest?.id ?? null;
+    button.hidden = !nearest;
+    if (nearest) {
+      button.textContent = '打开宝箱 · E';
+      button.setAttribute('aria-label', '打开附近的宝箱');
+    }
+  }
+
+  private openNearbyTreasureChest() {
+    if (this.mode !== 'playing' || !this.world.infiniteActive || !this.nearbyTreasureChestId) return;
+    const chest = this.world.treasureChests.find(candidate => candidate.id === this.nearbyTreasureChestId && !candidate.opened);
+    if (!chest) { this.updateTreasurePrompt(); return; }
+    this.pendingTreasureChestId = chest.id;
+    this.nearbyTreasureChestId = null;
+    document.getElementById('chest-interact')!.hidden = true;
+    const coinsButton = document.getElementById('treasure-coins') as HTMLButtonElement;
+    coinsButton.disabled = !this.run || this.run.phase !== 'fighting';
+    const healAmount = Math.min(35, Math.max(0, Math.floor(this.combat.maxHp - this.combat.hp)));
+    const healButton = document.getElementById('treasure-heal') as HTMLButtonElement;
+    healButton.disabled = healAmount <= 0;
+    document.getElementById('treasure-heal-title')!.textContent = healAmount > 0 ? `恢复 ${healAmount} 生命` : '生命值已满';
+    document.getElementById('treasure-heal-description')!.textContent = healAmount > 0
+      ? '立即恢复生命值，不超过上限。' : '当前生命值已满，可以选择金币奖励。';
+    document.getElementById('treasure-screen')!.hidden = false;
+    document.getElementById('hud')!.inert = true;
+    this.mode = 'treasure';
+    this.input.setEnabled(false);
+    this.velocity.set(0, 0);
+    this.previousPosition.copy(this.position);
+    this.monster.root.position.copy(this.position);
+    this.accumulator = 0;
+    this.sleep();
+    coinsButton.focus({ preventScroll: true });
+  }
+
+  private claimTreasureReward(reward: 'coins' | 'heal') {
+    if (this.mode !== 'treasure' || !this.pendingTreasureChestId) return;
+    const id = this.pendingTreasureChestId;
+    const chest = this.world.treasureChests.find(candidate => candidate.id === id);
+    if (!chest || chest.opened) { this.closeTreasure(); return; }
+    if (reward === 'coins' && (!this.run || this.run.phase !== 'fighting')) return;
+    const healed = Math.min(35, Math.max(0, Math.floor(this.combat.maxHp - this.combat.hp)));
+    if (reward === 'heal' && healed <= 0) return;
+    if (!this.world.openTreasureChest(id)) { this.closeTreasure(); return; }
+    let message: string;
+    if (reward === 'coins') {
+      this.run!.grantTreasureCoins(20);
+      message = '宝箱开启：获得 20 金币';
+    } else {
+      this.combat.hp = Math.min(this.combat.maxHp, this.combat.hp + healed);
+      message = `宝箱开启：恢复 ${healed} 点生命`;
+    }
+    this.closeTreasure();
+    this.showTreasureToast(message);
+  }
+
+  private closeTreasure() {
+    if (this.mode !== 'treasure') return;
+    document.getElementById('treasure-screen')!.hidden = true;
+    document.getElementById('hud')!.inert = false;
+    this.pendingTreasureChestId = null;
+    this.mode = 'playing';
+    this.input.setEnabled(true);
+    this.previousPosition.copy(this.position);
+    this.accumulator = 0;
+    (document.activeElement as HTMLElement | null)?.blur();
+    this.audio.setActive(true); this.audio.unlock();
+    this.updateHUD();
+    this.updateTreasurePrompt();
+    this.wake();
+  }
+
+  private showTreasureToast(message: string) {
+    const toast = document.getElementById('toast')!;
+    toast.textContent = message;
+    toast.hidden = false;
+    clearTimeout(this.toastTimeout);
+    this.toastTimeout = window.setTimeout(() => { toast.hidden = true; }, 2400);
+  }
 
   private syncRunPhase() {
     this.audio.setWave(this.run?.wave);
@@ -931,6 +1045,7 @@ export class Game {
         this.accumulator -= STEP; this.step(STEP);
       }
     }
+    if (this.mode === 'playing') this.updateTreasurePrompt();
     const draw = !this.renderTime || time - this.renderTime >= 1000 / this.quality.targetFps - 1 || (this.mode !== 'playing' && this.mode !== 'menu');
     if (draw) {
       const renderDt = this.renderTime ? Math.min((time - this.renderTime) / 1000, STEP * 5) : dt;
