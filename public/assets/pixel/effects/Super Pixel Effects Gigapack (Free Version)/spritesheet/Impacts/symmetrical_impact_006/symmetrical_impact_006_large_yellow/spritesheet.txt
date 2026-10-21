@@ -1,0 +1,8 @@
+PNG/Impacts/symmetrical_impact_006/symmetrical_impact_006_large_yellow/frame0000.png = 0 0 160 160
+PNG/Impacts/symmetrical_impact_006/symmetrical_impact_006_large_yellow/frame0001.png = 160 0 160 160
+PNG/Impacts/symmetrical_impact_006/symmetrical_impact_006_large_yellow/frame0002.png = 320 0 160 160
+PNG/Impacts/symmetrical_impact_006/symmetrical_impact_006_large_yellow/frame0003.png = 480 0 160 160
+PNG/Impacts/symmetrical_impact_006/symmetrical_impact_006_large_yellow/frame0004.png = 640 0 160 160
+PNG/Impacts/symmetrical_impact_006/symmetrical_impact_006_large_yellow/frame0005.png = 800 0 160 160
+PNG/Impacts/symmetrical_impact_006/symmetrical_impact_006_large_yellow/frame0006.png = 960 0 160 160
+PNG/Impacts/symmetrical_impact_006/symmetrical_impact_006_large_yellow/frame0007.png = 1120 0 160 160

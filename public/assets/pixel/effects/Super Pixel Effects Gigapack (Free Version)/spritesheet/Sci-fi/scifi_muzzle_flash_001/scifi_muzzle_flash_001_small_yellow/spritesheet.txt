@@ -1,0 +1,6 @@
+PNG/Sci-fi/scifi_muzzle_flash_001/scifi_muzzle_flash_001_small_yellow/frame0000.png = 0 0 16 16
+PNG/Sci-fi/scifi_muzzle_flash_001/scifi_muzzle_flash_001_small_yellow/frame0001.png = 16 0 16 16
+PNG/Sci-fi/scifi_muzzle_flash_001/scifi_muzzle_flash_001_small_yellow/frame0002.png = 32 0 16 16
+PNG/Sci-fi/scifi_muzzle_flash_001/scifi_muzzle_flash_001_small_yellow/frame0003.png = 48 0 16 16
+PNG/Sci-fi/scifi_muzzle_flash_001/scifi_muzzle_flash_001_small_yellow/frame0004.png = 0 16 16 16
+PNG/Sci-fi/scifi_muzzle_flash_001/scifi_muzzle_flash_001_small_yellow/frame0005.png = 16 16 16 16

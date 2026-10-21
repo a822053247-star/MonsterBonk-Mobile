@@ -1,9 +1,11 @@
+import { factoryRelic } from './content/relic-registry';
+import { meetsRequirements, type ContentSkillId } from './content/content-types';
 import type { RunBuild } from './run-build';
 import type { BaseAttackId } from './fusion';
 import { flameSweepStats } from './flame-sweep';
-import { RELICS, EVOLUTIONS, WEAPON_DAMAGE_PER_LEVEL, type RelicId, type EvolutionId } from './relics';
+import { RELICS, EVOLUTIONS, isRelicId, isEvolutionId, WEAPON_DAMAGE_PER_LEVEL, type RelicId, type EvolutionId } from './relics';
 
-export type SkillId = 'damage' | 'haste' | 'multishot' | 'vitality' | 'movement' | 'range' | 'orbit' | 'shockwave' | 'split-on-hit' | 'area' | 'chain' | 'bubble-weapon' | 'spark-weapon' | 'leaf-weapon' | 'flame-sweep-weapon' | RelicId | EvolutionId;
+export type SkillId = ContentSkillId | RelicId | EvolutionId;
 export type SkillRanks = Record<SkillId, number>;
 export interface SkillStats {
   damageMultiplier: number; attackRateMultiplier: number; projectileCount: number;
@@ -114,7 +116,12 @@ export class Progression {
   private fusionSkills = false;
   private purchasedRanks = 0;
   private rollsWithoutCore = 0;
-  build?: RunBuild;
+  private runBuild?: RunBuild;
+  get build() { return this.runBuild; }
+  set build(value: RunBuild | undefined) {
+    this.runBuild = value;
+    if (value) value.skillRanks = this.ranks;
+  }
   fusionBase: 'spark' | 'bubble' | 'leaf' = 'spark';
 
   constructor(private random: () => number = Math.random) {}
@@ -126,6 +133,8 @@ export class Progression {
   get skills() {
     if (!this.build || !this.fusionSkills) return this.pool;
     return this.pool.filter(skill => {
+      const definition = factoryRelic(skill.id);
+      if (definition && !meetsRequirements(definition.requirements, { weapons: this.build!.attacks.map(a => a.attackId), ranks: this.ranks })) return false;
       const weapon = WEAPON_CARDS[skill.id];
       if (weapon && !this.build!.has(weapon) && this.build!.attacks.length >= 3) return false;
       if (skill.category === 'evolution') return this.build!.has('spark') && this.ranks['split-on-hit'] > 0 && !this.build!.evolution;
@@ -208,15 +217,15 @@ export class Progression {
     const id = skill.id;
     const weapon = WEAPON_CARDS[id];
     if (weapon && (!this.build || !(this.build.has(weapon) ? this.build.upgrade(weapon) : this.build.acquire(weapon)))) return false;
-    if (skill.category === 'relic' && !this.build?.addRelic(id as RelicId)) return false;
-    if (skill.category === 'evolution' && !this.build?.evolve(id as EvolutionId)) return false;
+    if (skill.category === 'relic' && (!isRelicId(id) || !this.build?.addRelic(id))) return false;
+    if (skill.category === 'evolution' && (!isEvolutionId(id) || !this.build?.evolve(id))) return false;
     if (this.coreReward(id)) this.rollsWithoutCore = 0;
     this.ranks[id]++;
     return true;
   }
 
   private rollOffers() {
-    const candidates = this.skills.filter((skill) => this.ranks[skill.id] < skill.maxRank).map((skill) => skill.id);
+    const candidates = this.skills.filter((skill) => this.ranks[skill.id] < skill.maxRank && (factoryRelic(skill.id)?.rewards.upgrade ?? true)).map((skill) => skill.id);
     if (!candidates.length) { this.pendingChoices = 0; this.currentOffers = []; return; }
     for (let i = candidates.length - 1; i > 0; i--) {
       const j = Math.floor(this.random() * (i + 1));
@@ -258,6 +267,7 @@ export class Progression {
 
   reset(fusionSkills = this.fusionSkills) {
     this.fusionSkills = fusionSkills;
+    if (this.build) this.build.skillRanks = this.ranks;
     this.level = 1;
     this.purchasedRanks = 0;
     this.rollsWithoutCore = 0;

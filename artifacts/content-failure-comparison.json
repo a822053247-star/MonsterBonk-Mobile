@@ -1,0 +1,149 @@
+{
+  "baselineFailed": 28,
+  "currentFailedSoFar": 27,
+  "common": [
+    [
+      "chromium",
+      "combat-clarity-ui.spec.ts",
+      "fully fused three-weapon build stays readable with CD indicators and pooled impact visuals"
+    ],
+    [
+      "chromium",
+      "creature-animation-ui.spec.ts",
+      "actual collision displacement controls animation and animated/static visuals have identical combat and positions"
+    ],
+    [
+      "chromium",
+      "elemental-fusion-ui.spec.ts",
+      "deep atlas loads, plays flight and one-shot impact, damages and slows in actual game"
+    ],
+    [
+      "chromium",
+      "elemental-fusion-ui.spec.ts",
+      "missing elemental textures and icons preserve procedural effects, readable cards and damage"
+    ],
+    [
+      "chromium",
+      "elemental-fusion-ui.spec.ts",
+      "paopaoyuan development entry uses one animated creature, real cards, automatic fusions and bounded colored effects"
+    ],
+    [
+      "chromium",
+      "elemental-fusion-ui.spec.ts",
+      "yacishou development entry uses one animated creature, real cards, automatic fusions and bounded colored effects"
+    ],
+    [
+      "chromium",
+      "fusion-ui.spec.ts",
+      "missing atlas and icons keep procedural attack/explosion and readable cards"
+    ],
+    [
+      "chromium",
+      "fusion-ui.spec.ts",
+      "real fusion cards and impacts render child/explosion frames without duplicate hit flashes on both phone layouts"
+    ],
+    [
+      "chromium",
+      "game.spec.ts",
+      "main menu renders a real 3D world and starts exploration without errors"
+    ],
+    [
+      "chromium",
+      "hud-art.spec.ts",
+      "forest HUD keeps live values, weapon artwork and safe touch targets on landscape phones"
+    ],
+    [
+      "chromium",
+      "random-world-ui.spec.ts",
+      "different seeds render different regions and fit phone replay controls"
+    ],
+    [
+      "chromium",
+      "upgrades.spec.ts",
+      "new spells coexist, max HP updates HUD and a fresh run clears all skills"
+    ],
+    [
+      "chromium",
+      "upgrades.spec.ts",
+      "the last remaining skill is valid and full mastery stops creating empty dialogs"
+    ],
+    [
+      "webkit",
+      "combat-clarity-ui.spec.ts",
+      "fully fused three-weapon build stays readable with CD indicators and pooled impact visuals"
+    ],
+    [
+      "webkit",
+      "creature-animation-ui.spec.ts",
+      "actual collision displacement controls animation and animated/static visuals have identical combat and positions"
+    ],
+    [
+      "webkit",
+      "elemental-fusion-ui.spec.ts",
+      "deep atlas loads, plays flight and one-shot impact, damages and slows in actual game"
+    ],
+    [
+      "webkit",
+      "elemental-fusion-ui.spec.ts",
+      "missing elemental textures and icons preserve procedural effects, readable cards and damage"
+    ],
+    [
+      "webkit",
+      "elemental-fusion-ui.spec.ts",
+      "paopaoyuan development entry uses one animated creature, real cards, automatic fusions and bounded colored effects"
+    ],
+    [
+      "webkit",
+      "elemental-fusion-ui.spec.ts",
+      "yacishou development entry uses one animated creature, real cards, automatic fusions and bounded colored effects"
+    ],
+    [
+      "webkit",
+      "fusion-ui.spec.ts",
+      "missing atlas and icons keep procedural attack/explosion and readable cards"
+    ],
+    [
+      "webkit",
+      "fusion-ui.spec.ts",
+      "real fusion cards and impacts render child/explosion frames without duplicate hit flashes on both phone layouts"
+    ],
+    [
+      "webkit",
+      "game.spec.ts",
+      "main menu renders a real 3D world and starts exploration without errors"
+    ],
+    [
+      "webkit",
+      "hud-art.spec.ts",
+      "forest HUD keeps live values, weapon artwork and safe touch targets on landscape phones"
+    ],
+    [
+      "webkit",
+      "infinite-world-ui.spec.ts",
+      "teleporting across many chunks does not accumulate chunk groups or materials"
+    ],
+    [
+      "webkit",
+      "random-world-ui.spec.ts",
+      "different seeds render different regions and fit phone replay controls"
+    ],
+    [
+      "webkit",
+      "upgrades.spec.ts",
+      "new spells coexist, max HP updates HUD and a fresh run clears all skills"
+    ],
+    [
+      "webkit",
+      "upgrades.spec.ts",
+      "the last remaining skill is valid and full mastery stops creating empty dialogs"
+    ]
+  ],
+  "additionalToInvestigate": [],
+  "baselineNotFailedSoFar": [
+    [
+      "chromium",
+      "infinite-world-ui.spec.ts",
+      "teleporting across many chunks does not accumulate chunk groups or materials"
+    ]
+  ]
+}

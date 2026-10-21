@@ -1,0 +1,31 @@
+The license which applies to the material in this zip file is found at http://untiedgames.com/files/license.txt.
+Here's a brief summary:
+
+1. You may not publicly distribute the contents of the asset pack zip file in whole or in part, unless as part of a game or application product in accordance with the license document.
+   For example:
+       Bundle the assets with your game: OK!
+       Pack the assets into your game's executable: OK!
+       However you need to make it work with your game: OK!
+       Reupload the assets to an asset store: Not permitted.
+
+2. If you use the contents of the asset pack zip file in a game or application product, please give attribution in the credits or wherever appropriate.
+   For example:
+       "(Name of asset pack) - Will Tice / unTied Games"
+       -- or --
+       "Pixel Art Assets - Will Tice / unTied Games"
+   Feel free to make it match the style of your other credits.
+
+3. Commercial use and non-commercial use are both OK!
+
+4. Bundling the assets with a game-making tool/engine (programs which have the primary function of creating games or applications) and distributing them together is not permitted.
+   Waivers to this restriction may be granted, see license for details.
+   For example:
+       Games with level editors including the assets: OK!
+       Use tool or engine (Unity/Godot/GameMaker/Unreal/etc) to make game including the assets: OK!
+       LARGE tool or engine maker (Unity/Godot/GameMaker/Unreal/etc) includes the assets with their tool/engine: Not permitted.
+       SMALL indie dev making a special tool / game creator / etc and not sure: Probably OK- get in touch.
+
+5. Use of the asset packs as AI training material is forbidden.
+
+6. That's it!
+   Feel free to give me a shoutout on Mastadon at @untiedgames@mastodon.gamedev.place if you want, or contact me at contact@untiedgames.com if you have any questions. Thanks and happy game dev!

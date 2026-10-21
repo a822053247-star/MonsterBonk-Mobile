@@ -1,0 +1,31 @@
+
+Running 18 tests using 2 workers
+
+(node:67100) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:64844) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  2 [chromium] › tests\content-factory.spec.ts:24:1 › production and synthetic relics register, generate cards/icons and reuse registered handlers (20ms)
+  ok  3 [chromium] › tests\content-factory.spec.ts:43:1 › invalid content reports duplicate IDs, references, metadata, copy, handlers, assets and mode leaks (10ms)
+  ok  4 [chromium] › tests\content-factory.spec.ts:60:1 › requirements, unique grants, reset and legacy pools use existing progression (12ms)
+  ok  5 [chromium] › tests\content-factory.spec.ts:71:1 › actual bubble area collision grows, base bubble gains no area, fire and grass stay identical (26ms)
+  ok  6 [chromium] › tests\content-factory.spec.ts:90:1 › automatic water cooldown increases by ten percent and in-flight snapshots remain stable (6ms)
+  ok  7 [chromium] › tests\content-factory.spec.ts:97:1 › fifth-wave shop uses the legal factory reward, same price, buy and duplicate guard (8ms)
+(node:54120) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  1 [chromium] › tests\content-factory-ui.spec.ts:6:31 › factory reward, fifth shop and actual radius lifecycle at 844 (6.9s)
+  ok  8 [webkit] › tests\content-factory-ui.spec.ts:6:31 › factory reward, fifth shop and actual radius lifecycle at 844 (11.9s)
+  ok  9 [chromium] › tests\content-factory-ui.spec.ts:6:31 › factory reward, fifth shop and actual radius lifecycle at 568 (7.8s)
+  ok 11 [chromium] › tests\content-factory-ui.spec.ts:81:1 › missing shared VFX textures retain battle input and bounded tidal outline (5.8s)
+(node:67920) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 12 [webkit] › tests\content-factory.spec.ts:24:1 › production and synthetic relics register, generate cards/icons and reuse registered handlers (19ms)
+  ok 13 [webkit] › tests\content-factory.spec.ts:43:1 › invalid content reports duplicate IDs, references, metadata, copy, handlers, assets and mode leaks (12ms)
+  ok 14 [webkit] › tests\content-factory.spec.ts:60:1 › requirements, unique grants, reset and legacy pools use existing progression (11ms)
+  ok 15 [webkit] › tests\content-factory.spec.ts:71:1 › actual bubble area collision grows, base bubble gains no area, fire and grass stay identical (30ms)
+  ok 16 [webkit] › tests\content-factory.spec.ts:90:1 › automatic water cooldown increases by ten percent and in-flight snapshots remain stable (6ms)
+  ok 17 [webkit] › tests\content-factory.spec.ts:97:1 › fifth-wave shop uses the legal factory reward, same price, buy and duplicate guard (10ms)
+  ok 10 [webkit] › tests\content-factory-ui.spec.ts:6:31 › factory reward, fifth shop and actual radius lifecycle at 568 (11.8s)
+  ok 18 [webkit] › tests\content-factory-ui.spec.ts:81:1 › missing shared VFX textures retain battle input and bounded tidal outline (5.6s)
+
+  18 passed (33.8s)

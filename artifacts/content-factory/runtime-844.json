@@ -1,0 +1,31 @@
+{
+  "width": 844,
+  "quality": "high",
+  "hit": {
+    "radius": 2.25,
+    "preset": "tidal-ring",
+    "edge": 9993.25,
+    "hits": 2
+  },
+  "pixels": {
+    "changed": 753,
+    "width": 64,
+    "height": 64
+  },
+  "reset": {
+    "relics": [],
+    "effects": 0,
+    "reactions": {
+      "loaded": true,
+      "failed": false,
+      "count": 0,
+      "capacity": 48,
+      "url": "/assets/kenney_particle-pack/PNG%20(Transparent)/smoke_08.png",
+      "frames": [],
+      "alpha": [],
+      "outlines": 0,
+      "outlineCapacity": 48
+    }
+  },
+  "errors": []
+}

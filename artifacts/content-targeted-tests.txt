@@ -1,0 +1,66 @@
+
+Running 26 tests using 2 workers
+
+(node:64616) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:66768) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  1 [chromium] › tests\trigger-relics.spec.ts:26:1 › six trigger relics enter compatible upgrade/shop pools and cannot be duplicated (21ms)
+  ok  2 [chromium] › tests\content-factory.spec.ts:24:1 › production and synthetic relics register, generate cards/icons and reuse registered handlers (22ms)
+  ok  3 [chromium] › tests\trigger-relics.spec.ts:41:1 › standalone fire kills propagate only two generations, with unique rewards (16ms)
+  ok  4 [chromium] › tests\content-factory.spec.ts:43:1 › invalid content reports duplicate IDs, references, metadata, copy, handlers, assets and mode leaks (11ms)
+  ok  5 [chromium] › tests\trigger-relics.spec.ts:53:1 › same-lineage explosions never double hit a surviving target (5ms)
+  ok  6 [chromium] › tests\content-factory.spec.ts:60:1 › requirements, unique grants, reset and legacy pools use existing progression (13ms)
+  ok  7 [chromium] › tests\trigger-relics.spec.ts:62:1 › water, grass, neutral skills and spore damage do not start martyr explosions (12ms)
+  ok  9 [chromium] › tests\trigger-relics.spec.ts:75:1 › burn ticks exactly four times over two seconds and burn kills cannot start martyr (7ms)
+  ok 10 [chromium] › tests\trigger-relics.spec.ts:86:1 › repeated hits cap kindling at three and burst seed consumes the bonus once (9ms)
+  x   8 [chromium] › tests\content-factory.spec.ts:71:1 › actual bubble area collision grows, base bubble gains no area, fire and grass stay identical (18ms)
+  ok 11 [chromium] › tests\trigger-relics.spec.ts:99:1 › martyr consumes kindling on death and overload scales its radius (3ms)
+  ok 12 [chromium] › tests\trigger-relics.spec.ts:109:1 › testament fires three low-damage thorns and their kills cannot trigger testament again (5ms)
+  ok 13 [chromium] › tests\trigger-relics.spec.ts:120:1 › shattered core modifies testament and full pools safely truncate derived thorns (9ms)
+  ok 14 [chromium] › tests\trigger-relics.spec.ts:133:1 › large sweep defers overflow explosion events and reset clears pending work (7ms)
+  ok 15 [chromium] › tests\trigger-relics.spec.ts:145:1 › cover and spawn immunity block relic explosions; deferred snapshots survive slot reuse (10ms)
+  ok 16 [chromium] › tests\trigger-relics.spec.ts:163:1 › choice/death pauses freeze burning, and a burn Boss kill uses the victory gate (12ms)
+(node:66032) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 18 [chromium] › tests\content-factory.spec.ts:90:1 › automatic water cooldown increases by ten percent and in-flight snapshots remain stable (28ms)
+  ok 19 [chromium] › tests\content-factory.spec.ts:97:1 › fifth-wave shop uses the legal factory reward, same price, buy and duplicate guard (11ms)
+  ok 17 [chromium] › tests\upgrade-art.spec.ts:34:1 › three supplied trigger-relic icons and their limits remain readable on mobile (2.2s)
+  ok 20 [chromium] › tests\upgrade-art.spec.ts:47:1 › remaining three supplied relic icons and their limits remain readable on mobile (1.5s)
+  ok 21 [chromium] › tests\upgrade-art.spec.ts:60:1 › card motion follows rarity, preserves pointer feedback and respects reduced motion (2.9s)
+  ok 22 [chromium] › tests\upgrade-art.spec.ts:93:1 › all 31 real IDs are covered, element variants follow equipped weapons, categories stay data-driven (4.3s)
+  ok 23 [chromium] › tests\upgrade-art.spec.ts:126:1 › real art loads and short landscape cards keep visible copy and safe-area bounds (1.6s)
+  ok 24 [chromium] › tests\upgrade-art.spec.ts:151:1 › failed illustrations, gems and frames keep an intact selectable fallback card (970ms)
+  ok 25 [chromium] › tests\upgrade-art.spec.ts:164:1 › all reward copy fits without overlapping effects, previews or costs at both phone sizes (4.2s)
+  ok 26 [chromium] › tests\upgrade-art.spec.ts:193:1 › mixed magic and weapon rewards share frame geometry and keep their title and illustration apart (1.3s)
+
+
+  1) [chromium] › tests\content-factory.spec.ts:71:1 › actual bubble area collision grows, base bubble gains no area, fire and grass stay identical 
+
+    Error: expect(received).toBeLessThan(expected)
+
+    Expected: < 1000
+    Received:   1000
+
+      82 |   };
+      83 |   const before=run(false,true),after=run(true,true),base=run(true,false);
+    > 84 |   expect(before.hp).toBe(1000);expect(after.hp).toBeLessThan(1000);expect(base.hp).toBe(1000);
+         |                                                 ^
+      85 |   expect(after.effect!.radius).toBeCloseTo(before.effect!.radius!*1.25);
+      86 |   expect(after.effect!.vfxPresetId).toBe('tidal-ring');expect(base.effect!.vfxPresetId).toBeUndefined();
+      87 |   for(const attack of ['spark','leaf','flame-sweep'] as const) expect(after.c.runBuild.rules(attack)).toEqual(before.c.runBuild.rules(attack));
+        at E:\study\game\MonsterBonk Mobile\tests\content-factory.spec.ts:84:49
+
+    Error Context: test-results\content-factory-actual-bub-b464b-re-and-grass-stay-identical-chromium\error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\content-factory-actual-bub-b464b-re-and-grass-stay-identical-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\content-factory-actual-bub-b464b-re-and-grass-stay-identical-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [chromium] › tests\content-factory.spec.ts:71:1 › actual bubble area collision grows, base bubble gains no area, fire and grass stay identical 
+  25 passed (22.6s)

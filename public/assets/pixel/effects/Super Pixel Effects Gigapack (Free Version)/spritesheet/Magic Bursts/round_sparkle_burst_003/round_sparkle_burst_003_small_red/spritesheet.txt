@@ -1,0 +1,17 @@
+PNG/Magic Bursts/round_sparkle_burst_003/round_sparkle_burst_003_small_red/frame0000.png = 0 0 32 32
+PNG/Magic Bursts/round_sparkle_burst_003/round_sparkle_burst_003_small_red/frame0001.png = 32 0 32 32
+PNG/Magic Bursts/round_sparkle_burst_003/round_sparkle_burst_003_small_red/frame0002.png = 64 0 32 32
+PNG/Magic Bursts/round_sparkle_burst_003/round_sparkle_burst_003_small_red/frame0003.png = 96 0 32 32
+PNG/Magic Bursts/round_sparkle_burst_003/round_sparkle_burst_003_small_red/frame0004.png = 128 0 32 32
+PNG/Magic Bursts/round_sparkle_burst_003/round_sparkle_burst_003_small_red/frame0005.png = 160 0 32 32
+PNG/Magic Bursts/round_sparkle_burst_003/round_sparkle_burst_003_small_red/frame0006.png = 192 0 32 32
+PNG/Magic Bursts/round_sparkle_burst_003/round_sparkle_burst_003_small_red/frame0007.png = 224 0 32 32
+PNG/Magic Bursts/round_sparkle_burst_003/round_sparkle_burst_003_small_red/frame0008.png = 256 0 32 32
+PNG/Magic Bursts/round_sparkle_burst_003/round_sparkle_burst_003_small_red/frame0009.png = 288 0 32 32
+PNG/Magic Bursts/round_sparkle_burst_003/round_sparkle_burst_003_small_red/frame0010.png = 320 0 32 32
+PNG/Magic Bursts/round_sparkle_burst_003/round_sparkle_burst_003_small_red/frame0011.png = 352 0 32 32
+PNG/Magic Bursts/round_sparkle_burst_003/round_sparkle_burst_003_small_red/frame0012.png = 384 0 32 32
+PNG/Magic Bursts/round_sparkle_burst_003/round_sparkle_burst_003_small_red/frame0013.png = 416 0 32 32
+PNG/Magic Bursts/round_sparkle_burst_003/round_sparkle_burst_003_small_red/frame0014.png = 448 0 32 32
+PNG/Magic Bursts/round_sparkle_burst_003/round_sparkle_burst_003_small_red/frame0015.png = 480 0 32 32
+PNG/Magic Bursts/round_sparkle_burst_003/round_sparkle_burst_003_small_red/frame0016.png = 512 0 32 32

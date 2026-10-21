@@ -1,0 +1,66 @@
+{
+  "source": "monsterbonk_relic_icons2.png",
+  "sha256": "f6234c9c2d6c3a91cb204a5e4b178ba7942365a31c26560bfedee324ab0cc36f",
+  "rectangles": {
+    "mirror-prism": [
+      0,
+      160,
+      209,
+      510
+    ],
+    "returning-crown": [
+      209,
+      160,
+      406,
+      510
+    ],
+    "tidal-magnet": [
+      406,
+      160,
+      601,
+      510
+    ],
+    "hive-fuse": [
+      601,
+      160,
+      788,
+      510
+    ],
+    "ember-sigil": [
+      788,
+      160,
+      989,
+      510
+    ],
+    "spore-crown": [
+      989,
+      160,
+      1197,
+      510
+    ],
+    "back-mirror": [
+      1197,
+      160,
+      1398,
+      510
+    ],
+    "slaughter-drum": [
+      1398,
+      160,
+      1625,
+      510
+    ],
+    "wet-vines": [
+      1625,
+      160,
+      1822,
+      510
+    ],
+    "blood-pact": [
+      1822,
+      160,
+      2030,
+      510
+    ]
+  }
+}

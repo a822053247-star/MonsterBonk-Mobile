@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import { Combat } from '../src/combat';
 import { PartySystem, type SpeciesId } from '../src/party';
 import type { BaseAttackId } from '../src/fusion';
-import { RELICS } from '../src/relics';
+import { RELICS, LEGACY_RELICS } from '../src/relics';
 
 const origin = { x: 0, z: 0 };
 function fixture(species: SpeciesId = 'yanrong') {
@@ -25,7 +25,8 @@ function hit(c: Combat, target: Combat['enemies'][number], attackId: BaseAttackI
 
 test('six trigger relics enter compatible upgrade/shop pools and cannot be duplicated', () => {
   const c = fixture();
-  expect(Object.keys(RELICS)).toHaveLength(13);
+  expect(Object.keys(LEGACY_RELICS)).toHaveLength(13);
+  expect(Object.keys(RELICS)).toHaveLength(24);
   expect(c.grantUpgrade('draft-martyr-core')).toBe(true);
   expect(c.grantUpgrade('draft-martyr-core')).toBe(false);
   expect(c.grantUpgrade('draft-kindling-flask')).toBe(true);

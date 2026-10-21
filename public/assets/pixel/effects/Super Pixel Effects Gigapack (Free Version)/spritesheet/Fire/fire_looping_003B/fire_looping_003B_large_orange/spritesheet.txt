@@ -1,0 +1,15 @@
+PNG/Fire/fire_looping_003B/fire_looping_003B_large_orange/frame0000.png = 0 0 96 128
+PNG/Fire/fire_looping_003B/fire_looping_003B_large_orange/frame0001.png = 96 0 96 128
+PNG/Fire/fire_looping_003B/fire_looping_003B_large_orange/frame0002.png = 192 0 96 128
+PNG/Fire/fire_looping_003B/fire_looping_003B_large_orange/frame0003.png = 288 0 96 128
+PNG/Fire/fire_looping_003B/fire_looping_003B_large_orange/frame0004.png = 384 0 96 128
+PNG/Fire/fire_looping_003B/fire_looping_003B_large_orange/frame0005.png = 0 128 96 128
+PNG/Fire/fire_looping_003B/fire_looping_003B_large_orange/frame0006.png = 96 128 96 128
+PNG/Fire/fire_looping_003B/fire_looping_003B_large_orange/frame0007.png = 192 128 96 128
+PNG/Fire/fire_looping_003B/fire_looping_003B_large_orange/frame0008.png = 288 128 96 128
+PNG/Fire/fire_looping_003B/fire_looping_003B_large_orange/frame0009.png = 384 128 96 128
+PNG/Fire/fire_looping_003B/fire_looping_003B_large_orange/frame0010.png = 0 256 96 128
+PNG/Fire/fire_looping_003B/fire_looping_003B_large_orange/frame0011.png = 96 256 96 128
+PNG/Fire/fire_looping_003B/fire_looping_003B_large_orange/frame0012.png = 192 256 96 128
+PNG/Fire/fire_looping_003B/fire_looping_003B_large_orange/frame0013.png = 288 256 96 128
+PNG/Fire/fire_looping_003B/fire_looping_003B_large_orange/frame0014.png = 384 256 96 128

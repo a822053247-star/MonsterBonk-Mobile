@@ -1,0 +1,1202 @@
+[
+  {
+    "weapon": "spark",
+    "level": 1,
+    "scenario": "boss-near",
+    "specialized": false,
+    "dps": 40.5,
+    "kills": 0,
+    "slowUptime": 0,
+    "sweeps": 0
+  },
+  {
+    "weapon": "bubble",
+    "level": 1,
+    "scenario": "boss-near",
+    "specialized": false,
+    "dps": 23.75,
+    "kills": 0,
+    "slowUptime": 0.998,
+    "sweeps": 0
+  },
+  {
+    "weapon": "leaf",
+    "level": 1,
+    "scenario": "boss-near",
+    "specialized": false,
+    "dps": 29.33,
+    "kills": 0,
+    "slowUptime": 0,
+    "sweeps": 0
+  },
+  {
+    "weapon": "flame-sweep",
+    "level": 1,
+    "scenario": "boss-near",
+    "specialized": false,
+    "dps": 34.65,
+    "kills": 0,
+    "slowUptime": 0,
+    "sweeps": 33
+  },
+  {
+    "weapon": "spark",
+    "level": 1,
+    "scenario": "boss-far",
+    "specialized": false,
+    "dps": 39.75,
+    "kills": 0,
+    "slowUptime": 0,
+    "sweeps": 0
+  },
+  {
+    "weapon": "bubble",
+    "level": 1,
+    "scenario": "boss-far",
+    "specialized": false,
+    "dps": 23.75,
+    "kills": 0,
+    "slowUptime": 0.984,
+    "sweeps": 0
+  },
+  {
+    "weapon": "leaf",
+    "level": 1,
+    "scenario": "boss-far",
+    "specialized": false,
+    "dps": 28.67,
+    "kills": 0,
+    "slowUptime": 0,
+    "sweeps": 0
+  },
+  {
+    "weapon": "flame-sweep",
+    "level": 1,
+    "scenario": "boss-far",
+    "specialized": false,
+    "dps": 0,
+    "kills": 0,
+    "slowUptime": 0,
+    "sweeps": 0
+  },
+  {
+    "weapon": "spark",
+    "level": 1,
+    "scenario": "cluster",
+    "specialized": false,
+    "dps": 40.5,
+    "kills": 0,
+    "slowUptime": 0,
+    "sweeps": 0
+  },
+  {
+    "weapon": "bubble",
+    "level": 1,
+    "scenario": "cluster",
+    "specialized": false,
+    "dps": 23.75,
+    "kills": 0,
+    "slowUptime": 0.195,
+    "sweeps": 0
+  },
+  {
+    "weapon": "leaf",
+    "level": 1,
+    "scenario": "cluster",
+    "specialized": false,
+    "dps": 29.33,
+    "kills": 0,
+    "slowUptime": 0,
+    "sweeps": 0
+  },
+  {
+    "weapon": "flame-sweep",
+    "level": 1,
+    "scenario": "cluster",
+    "specialized": false,
+    "dps": 297,
+    "kills": 0,
+    "slowUptime": 0,
+    "sweeps": 33
+  },
+  {
+    "weapon": "spark",
+    "level": 1,
+    "scenario": "line",
+    "specialized": false,
+    "dps": 39.75,
+    "kills": 0,
+    "slowUptime": 0,
+    "sweeps": 0
+  },
+  {
+    "weapon": "bubble",
+    "level": 1,
+    "scenario": "line",
+    "specialized": false,
+    "dps": 23.75,
+    "kills": 0,
+    "slowUptime": 0.165,
+    "sweeps": 0
+  },
+  {
+    "weapon": "leaf",
+    "level": 1,
+    "scenario": "line",
+    "specialized": false,
+    "dps": 58.67,
+    "kills": 0,
+    "slowUptime": 0,
+    "sweeps": 0
+  },
+  {
+    "weapon": "flame-sweep",
+    "level": 1,
+    "scenario": "line",
+    "specialized": false,
+    "dps": 0,
+    "kills": 0,
+    "slowUptime": 0,
+    "sweeps": 0
+  },
+  {
+    "weapon": "spark",
+    "level": 1,
+    "scenario": "mowing",
+    "specialized": false,
+    "dps": 24.75,
+    "kills": 27,
+    "slowUptime": 0,
+    "sweeps": 0
+  },
+  {
+    "weapon": "bubble",
+    "level": 1,
+    "scenario": "mowing",
+    "specialized": false,
+    "dps": 17.75,
+    "kills": 18,
+    "slowUptime": 0.052,
+    "sweeps": 0
+  },
+  {
+    "weapon": "leaf",
+    "level": 1,
+    "scenario": "mowing",
+    "specialized": false,
+    "dps": 40.75,
+    "kills": 43,
+    "slowUptime": 0,
+    "sweeps": 0
+  },
+  {
+    "weapon": "flame-sweep",
+    "level": 1,
+    "scenario": "mowing",
+    "specialized": false,
+    "dps": 363,
+    "kills": 396,
+    "slowUptime": 0,
+    "sweeps": 33
+  },
+  {
+    "weapon": "spark",
+    "level": 1,
+    "scenario": "boss-near",
+    "specialized": true,
+    "dps": 81,
+    "kills": 0,
+    "slowUptime": 0,
+    "sweeps": 0
+  },
+  {
+    "weapon": "bubble",
+    "level": 1,
+    "scenario": "boss-near",
+    "specialized": true,
+    "dps": 23.75,
+    "kills": 0,
+    "slowUptime": 0.998,
+    "sweeps": 0
+  },
+  {
+    "weapon": "leaf",
+    "level": 1,
+    "scenario": "boss-near",
+    "specialized": true,
+    "dps": 29.33,
+    "kills": 0,
+    "slowUptime": 0,
+    "sweeps": 0
+  },
+  {
+    "weapon": "flame-sweep",
+    "level": 1,
+    "scenario": "boss-near",
+    "specialized": true,
+    "dps": 47.88,
+    "kills": 0,
+    "slowUptime": 0,
+    "sweeps": 38
+  },
+  {
+    "weapon": "spark",
+    "level": 1,
+    "scenario": "boss-far",
+    "specialized": true,
+    "dps": 79.5,
+    "kills": 0,
+    "slowUptime": 0,
+    "sweeps": 0
+  },
+  {
+    "weapon": "bubble",
+    "level": 1,
+    "scenario": "boss-far",
+    "specialized": true,
+    "dps": 23.75,
+    "kills": 0,
+    "slowUptime": 0.984,
+    "sweeps": 0
+  },
+  {
+    "weapon": "leaf",
+    "level": 1,
+    "scenario": "boss-far",
+    "specialized": true,
+    "dps": 28.67,
+    "kills": 0,
+    "slowUptime": 0,
+    "sweeps": 0
+  },
+  {
+    "weapon": "flame-sweep",
+    "level": 1,
+    "scenario": "boss-far",
+    "specialized": true,
+    "dps": 0,
+    "kills": 0,
+    "slowUptime": 0,
+    "sweeps": 0
+  },
+  {
+    "weapon": "spark",
+    "level": 1,
+    "scenario": "cluster",
+    "specialized": true,
+    "dps": 184.05,
+    "kills": 0,
+    "slowUptime": 0,
+    "sweeps": 0
+  },
+  {
+    "weapon": "bubble",
+    "level": 1,
+    "scenario": "cluster",
+    "specialized": true,
+    "dps": 118.06,
+    "kills": 0,
+    "slowUptime": 0.938,
+    "sweeps": 0
+  },
+  {
+    "weapon": "leaf",
+    "level": 1,
+    "scenario": "cluster",
+    "specialized": true,
+    "dps": 69.93,
+    "kills": 0,
+    "slowUptime": 0,
+    "sweeps": 0
+  },
+  {
+    "weapon": "flame-sweep",
+    "level": 1,
+    "scenario": "cluster",
+    "specialized": true,
+    "dps": 410.4,
+    "kills": 0,
+    "slowUptime": 0,
+    "sweeps": 38
+  },
+  {
+    "weapon": "spark",
+    "level": 1,
+    "scenario": "line",
+    "specialized": true,
+    "dps": 79.5,
+    "kills": 0,
+    "slowUptime": 0,
+    "sweeps": 0
+  },
+  {
+    "weapon": "bubble",
+    "level": 1,
+    "scenario": "line",
+    "specialized": true,
+    "dps": 34.44,
+    "kills": 0,
+    "slowUptime": 0.331,
+    "sweeps": 0
+  },
+  {
+    "weapon": "leaf",
+    "level": 1,
+    "scenario": "line",
+    "specialized": true,
+    "dps": 80.2,
+    "kills": 0,
+    "slowUptime": 0,
+    "sweeps": 0
+  },
+  {
+    "weapon": "flame-sweep",
+    "level": 1,
+    "scenario": "line",
+    "specialized": true,
+    "dps": 0,
+    "kills": 0,
+    "slowUptime": 0,
+    "sweeps": 0
+  },
+  {
+    "weapon": "spark",
+    "level": 1,
+    "scenario": "mowing",
+    "specialized": true,
+    "dps": 207.16,
+    "kills": 221,
+    "slowUptime": 0,
+    "sweeps": 0
+  },
+  {
+    "weapon": "bubble",
+    "level": 1,
+    "scenario": "mowing",
+    "specialized": true,
+    "dps": 178.01,
+    "kills": 181,
+    "slowUptime": 0.734,
+    "sweeps": 0
+  },
+  {
+    "weapon": "leaf",
+    "level": 1,
+    "scenario": "mowing",
+    "specialized": true,
+    "dps": 85.5,
+    "kills": 92,
+    "slowUptime": 0,
+    "sweeps": 0
+  },
+  {
+    "weapon": "flame-sweep",
+    "level": 1,
+    "scenario": "mowing",
+    "specialized": true,
+    "dps": 418,
+    "kills": 456,
+    "slowUptime": 0,
+    "sweeps": 38
+  },
+  {
+    "weapon": "spark",
+    "level": 3,
+    "scenario": "boss-near",
+    "specialized": false,
+    "dps": 53.46,
+    "kills": 0,
+    "slowUptime": 0,
+    "sweeps": 0
+  },
+  {
+    "weapon": "bubble",
+    "level": 3,
+    "scenario": "boss-near",
+    "specialized": false,
+    "dps": 32.3,
+    "kills": 0,
+    "slowUptime": 0.998,
+    "sweeps": 0
+  },
+  {
+    "weapon": "leaf",
+    "level": 3,
+    "scenario": "boss-near",
+    "specialized": false,
+    "dps": 38.72,
+    "kills": 0,
+    "slowUptime": 0,
+    "sweeps": 0
+  },
+  {
+    "weapon": "flame-sweep",
+    "level": 3,
+    "scenario": "boss-near",
+    "specialized": false,
+    "dps": 46.87,
+    "kills": 0,
+    "slowUptime": 0,
+    "sweeps": 36
+  },
+  {
+    "weapon": "spark",
+    "level": 3,
+    "scenario": "boss-far",
+    "specialized": false,
+    "dps": 52.47,
+    "kills": 0,
+    "slowUptime": 0,
+    "sweeps": 0
+  },
+  {
+    "weapon": "bubble",
+    "level": 3,
+    "scenario": "boss-far",
+    "specialized": false,
+    "dps": 32.3,
+    "kills": 0,
+    "slowUptime": 0.984,
+    "sweeps": 0
+  },
+  {
+    "weapon": "leaf",
+    "level": 3,
+    "scenario": "boss-far",
+    "specialized": false,
+    "dps": 37.84,
+    "kills": 0,
+    "slowUptime": 0,
+    "sweeps": 0
+  },
+  {
+    "weapon": "flame-sweep",
+    "level": 3,
+    "scenario": "boss-far",
+    "specialized": false,
+    "dps": 0,
+    "kills": 0,
+    "slowUptime": 0,
+    "sweeps": 0
+  },
+  {
+    "weapon": "spark",
+    "level": 3,
+    "scenario": "cluster",
+    "specialized": false,
+    "dps": 53.46,
+    "kills": 0,
+    "slowUptime": 0,
+    "sweeps": 0
+  },
+  {
+    "weapon": "bubble",
+    "level": 3,
+    "scenario": "cluster",
+    "specialized": false,
+    "dps": 32.3,
+    "kills": 0,
+    "slowUptime": 0.22,
+    "sweeps": 0
+  },
+  {
+    "weapon": "leaf",
+    "level": 3,
+    "scenario": "cluster",
+    "specialized": false,
+    "dps": 38.72,
+    "kills": 0,
+    "slowUptime": 0,
+    "sweeps": 0
+  },
+  {
+    "weapon": "flame-sweep",
+    "level": 3,
+    "scenario": "cluster",
+    "specialized": false,
+    "dps": 602.64,
+    "kills": 0,
+    "slowUptime": 0,
+    "sweeps": 36
+  },
+  {
+    "weapon": "spark",
+    "level": 3,
+    "scenario": "line",
+    "specialized": false,
+    "dps": 52.47,
+    "kills": 0,
+    "slowUptime": 0,
+    "sweeps": 0
+  },
+  {
+    "weapon": "bubble",
+    "level": 3,
+    "scenario": "line",
+    "specialized": false,
+    "dps": 32.3,
+    "kills": 0,
+    "slowUptime": 0.165,
+    "sweeps": 0
+  },
+  {
+    "weapon": "leaf",
+    "level": 3,
+    "scenario": "line",
+    "specialized": false,
+    "dps": 115.28,
+    "kills": 0,
+    "slowUptime": 0,
+    "sweeps": 0
+  },
+  {
+    "weapon": "flame-sweep",
+    "level": 3,
+    "scenario": "line",
+    "specialized": false,
+    "dps": 66.96,
+    "kills": 0,
+    "slowUptime": 0,
+    "sweeps": 36
+  },
+  {
+    "weapon": "spark",
+    "level": 3,
+    "scenario": "mowing",
+    "specialized": false,
+    "dps": 49.5,
+    "kills": 54,
+    "slowUptime": 0,
+    "sweeps": 0
+  },
+  {
+    "weapon": "bubble",
+    "level": 3,
+    "scenario": "mowing",
+    "specialized": false,
+    "dps": 18.2,
+    "kills": 18,
+    "slowUptime": 0.059,
+    "sweeps": 0
+  },
+  {
+    "weapon": "leaf",
+    "level": 3,
+    "scenario": "mowing",
+    "specialized": false,
+    "dps": 61.34,
+    "kills": 65,
+    "slowUptime": 0,
+    "sweeps": 0
+  },
+  {
+    "weapon": "flame-sweep",
+    "level": 3,
+    "scenario": "mowing",
+    "specialized": false,
+    "dps": 561,
+    "kills": 612,
+    "slowUptime": 0,
+    "sweeps": 36
+  },
+  {
+    "weapon": "spark",
+    "level": 3,
+    "scenario": "boss-near",
+    "specialized": true,
+    "dps": 106.92,
+    "kills": 0,
+    "slowUptime": 0,
+    "sweeps": 0
+  },
+  {
+    "weapon": "bubble",
+    "level": 3,
+    "scenario": "boss-near",
+    "specialized": true,
+    "dps": 32.3,
+    "kills": 0,
+    "slowUptime": 0.998,
+    "sweeps": 0
+  },
+  {
+    "weapon": "leaf",
+    "level": 3,
+    "scenario": "boss-near",
+    "specialized": true,
+    "dps": 38.72,
+    "kills": 0,
+    "slowUptime": 0,
+    "sweeps": 0
+  },
+  {
+    "weapon": "flame-sweep",
+    "level": 3,
+    "scenario": "boss-near",
+    "specialized": true,
+    "dps": 62.5,
+    "kills": 0,
+    "slowUptime": 0,
+    "sweeps": 40
+  },
+  {
+    "weapon": "spark",
+    "level": 3,
+    "scenario": "boss-far",
+    "specialized": true,
+    "dps": 104.94,
+    "kills": 0,
+    "slowUptime": 0,
+    "sweeps": 0
+  },
+  {
+    "weapon": "bubble",
+    "level": 3,
+    "scenario": "boss-far",
+    "specialized": true,
+    "dps": 32.3,
+    "kills": 0,
+    "slowUptime": 0.984,
+    "sweeps": 0
+  },
+  {
+    "weapon": "leaf",
+    "level": 3,
+    "scenario": "boss-far",
+    "specialized": true,
+    "dps": 37.84,
+    "kills": 0,
+    "slowUptime": 0,
+    "sweeps": 0
+  },
+  {
+    "weapon": "flame-sweep",
+    "level": 3,
+    "scenario": "boss-far",
+    "specialized": true,
+    "dps": 0,
+    "kills": 0,
+    "slowUptime": 0,
+    "sweeps": 0
+  },
+  {
+    "weapon": "spark",
+    "level": 3,
+    "scenario": "cluster",
+    "specialized": true,
+    "dps": 242.95,
+    "kills": 0,
+    "slowUptime": 0,
+    "sweeps": 0
+  },
+  {
+    "weapon": "bubble",
+    "level": 3,
+    "scenario": "cluster",
+    "specialized": true,
+    "dps": 160.56,
+    "kills": 0,
+    "slowUptime": 0.963,
+    "sweeps": 0
+  },
+  {
+    "weapon": "leaf",
+    "level": 3,
+    "scenario": "cluster",
+    "specialized": true,
+    "dps": 92.31,
+    "kills": 0,
+    "slowUptime": 0,
+    "sweeps": 0
+  },
+  {
+    "weapon": "flame-sweep",
+    "level": 3,
+    "scenario": "cluster",
+    "specialized": true,
+    "dps": 803.52,
+    "kills": 0,
+    "slowUptime": 0,
+    "sweeps": 40
+  },
+  {
+    "weapon": "spark",
+    "level": 3,
+    "scenario": "line",
+    "specialized": true,
+    "dps": 120.68,
+    "kills": 0,
+    "slowUptime": 0,
+    "sweeps": 0
+  },
+  {
+    "weapon": "bubble",
+    "level": 3,
+    "scenario": "line",
+    "specialized": true,
+    "dps": 46.83,
+    "kills": 0,
+    "slowUptime": 0.331,
+    "sweeps": 0
+  },
+  {
+    "weapon": "leaf",
+    "level": 3,
+    "scenario": "line",
+    "specialized": true,
+    "dps": 105.86,
+    "kills": 0,
+    "slowUptime": 0,
+    "sweeps": 0
+  },
+  {
+    "weapon": "flame-sweep",
+    "level": 3,
+    "scenario": "line",
+    "specialized": true,
+    "dps": 89.28,
+    "kills": 0,
+    "slowUptime": 0,
+    "sweeps": 40
+  },
+  {
+    "weapon": "spark",
+    "level": 3,
+    "scenario": "mowing",
+    "specialized": true,
+    "dps": 247.12,
+    "kills": 263,
+    "slowUptime": 0,
+    "sweeps": 0
+  },
+  {
+    "weapon": "bubble",
+    "level": 3,
+    "scenario": "mowing",
+    "specialized": true,
+    "dps": 233.27,
+    "kills": 242,
+    "slowUptime": 0.692,
+    "sweeps": 0
+  },
+  {
+    "weapon": "leaf",
+    "level": 3,
+    "scenario": "mowing",
+    "specialized": true,
+    "dps": 100.54,
+    "kills": 108,
+    "slowUptime": 0,
+    "sweeps": 0
+  },
+  {
+    "weapon": "flame-sweep",
+    "level": 3,
+    "scenario": "mowing",
+    "specialized": true,
+    "dps": 623.33,
+    "kills": 680,
+    "slowUptime": 0,
+    "sweeps": 40
+  },
+  {
+    "weapon": "spark",
+    "level": 5,
+    "scenario": "boss-near",
+    "specialized": false,
+    "dps": 66.42,
+    "kills": 0,
+    "slowUptime": 0,
+    "sweeps": 0
+  },
+  {
+    "weapon": "bubble",
+    "level": 5,
+    "scenario": "boss-near",
+    "specialized": false,
+    "dps": 40.85,
+    "kills": 0,
+    "slowUptime": 0.998,
+    "sweeps": 0
+  },
+  {
+    "weapon": "leaf",
+    "level": 5,
+    "scenario": "boss-near",
+    "specialized": false,
+    "dps": 48.11,
+    "kills": 0,
+    "slowUptime": 0,
+    "sweeps": 0
+  },
+  {
+    "weapon": "flame-sweep",
+    "level": 5,
+    "scenario": "boss-near",
+    "specialized": false,
+    "dps": 57.5,
+    "kills": 0,
+    "slowUptime": 0,
+    "sweeps": 37
+  },
+  {
+    "weapon": "spark",
+    "level": 5,
+    "scenario": "boss-far",
+    "specialized": false,
+    "dps": 65.19,
+    "kills": 0,
+    "slowUptime": 0,
+    "sweeps": 0
+  },
+  {
+    "weapon": "bubble",
+    "level": 5,
+    "scenario": "boss-far",
+    "specialized": false,
+    "dps": 40.85,
+    "kills": 0,
+    "slowUptime": 0.984,
+    "sweeps": 0
+  },
+  {
+    "weapon": "leaf",
+    "level": 5,
+    "scenario": "boss-far",
+    "specialized": false,
+    "dps": 47.01,
+    "kills": 0,
+    "slowUptime": 0,
+    "sweeps": 0
+  },
+  {
+    "weapon": "flame-sweep",
+    "level": 5,
+    "scenario": "boss-far",
+    "specialized": false,
+    "dps": 0,
+    "kills": 0,
+    "slowUptime": 0,
+    "sweeps": 0
+  },
+  {
+    "weapon": "spark",
+    "level": 5,
+    "scenario": "cluster",
+    "specialized": false,
+    "dps": 66.42,
+    "kills": 0,
+    "slowUptime": 0,
+    "sweeps": 0
+  },
+  {
+    "weapon": "bubble",
+    "level": 5,
+    "scenario": "cluster",
+    "specialized": false,
+    "dps": 40.85,
+    "kills": 0,
+    "slowUptime": 0.244,
+    "sweeps": 0
+  },
+  {
+    "weapon": "leaf",
+    "level": 5,
+    "scenario": "cluster",
+    "specialized": false,
+    "dps": 48.11,
+    "kills": 0,
+    "slowUptime": 0,
+    "sweeps": 0
+  },
+  {
+    "weapon": "flame-sweep",
+    "level": 5,
+    "scenario": "cluster",
+    "specialized": false,
+    "dps": 985.68,
+    "kills": 0,
+    "slowUptime": 0,
+    "sweeps": 37
+  },
+  {
+    "weapon": "spark",
+    "level": 5,
+    "scenario": "line",
+    "specialized": false,
+    "dps": 65.19,
+    "kills": 0,
+    "slowUptime": 0,
+    "sweeps": 0
+  },
+  {
+    "weapon": "bubble",
+    "level": 5,
+    "scenario": "line",
+    "specialized": false,
+    "dps": 40.85,
+    "kills": 0,
+    "slowUptime": 0.165,
+    "sweeps": 0
+  },
+  {
+    "weapon": "leaf",
+    "level": 5,
+    "scenario": "line",
+    "specialized": false,
+    "dps": 143.23,
+    "kills": 0,
+    "slowUptime": 0,
+    "sweeps": 0
+  },
+  {
+    "weapon": "flame-sweep",
+    "level": 5,
+    "scenario": "line",
+    "specialized": false,
+    "dps": 82.14,
+    "kills": 0,
+    "slowUptime": 0,
+    "sweeps": 37
+  },
+  {
+    "weapon": "spark",
+    "level": 5,
+    "scenario": "mowing",
+    "specialized": false,
+    "dps": 49.5,
+    "kills": 54,
+    "slowUptime": 0,
+    "sweeps": 0
+  },
+  {
+    "weapon": "bubble",
+    "level": 5,
+    "scenario": "mowing",
+    "specialized": false,
+    "dps": 34.83,
+    "kills": 38,
+    "slowUptime": 0,
+    "sweeps": 0
+  },
+  {
+    "weapon": "leaf",
+    "level": 5,
+    "scenario": "mowing",
+    "specialized": false,
+    "dps": 121,
+    "kills": 132,
+    "slowUptime": 0,
+    "sweeps": 0
+  },
+  {
+    "weapon": "flame-sweep",
+    "level": 5,
+    "scenario": "mowing",
+    "specialized": false,
+    "dps": 814,
+    "kills": 888,
+    "slowUptime": 0,
+    "sweeps": 37
+  },
+  {
+    "weapon": "spark",
+    "level": 5,
+    "scenario": "boss-near",
+    "specialized": true,
+    "dps": 132.84,
+    "kills": 0,
+    "slowUptime": 0,
+    "sweeps": 0
+  },
+  {
+    "weapon": "bubble",
+    "level": 5,
+    "scenario": "boss-near",
+    "specialized": true,
+    "dps": 40.85,
+    "kills": 0,
+    "slowUptime": 0.998,
+    "sweeps": 0
+  },
+  {
+    "weapon": "leaf",
+    "level": 5,
+    "scenario": "boss-near",
+    "specialized": true,
+    "dps": 48.11,
+    "kills": 0,
+    "slowUptime": 0,
+    "sweeps": 0
+  },
+  {
+    "weapon": "flame-sweep",
+    "level": 5,
+    "scenario": "boss-near",
+    "specialized": true,
+    "dps": 80.19,
+    "kills": 0,
+    "slowUptime": 0,
+    "sweeps": 43
+  },
+  {
+    "weapon": "spark",
+    "level": 5,
+    "scenario": "boss-far",
+    "specialized": true,
+    "dps": 130.38,
+    "kills": 0,
+    "slowUptime": 0,
+    "sweeps": 0
+  },
+  {
+    "weapon": "bubble",
+    "level": 5,
+    "scenario": "boss-far",
+    "specialized": true,
+    "dps": 40.85,
+    "kills": 0,
+    "slowUptime": 0.984,
+    "sweeps": 0
+  },
+  {
+    "weapon": "leaf",
+    "level": 5,
+    "scenario": "boss-far",
+    "specialized": true,
+    "dps": 47.01,
+    "kills": 0,
+    "slowUptime": 0,
+    "sweeps": 0
+  },
+  {
+    "weapon": "flame-sweep",
+    "level": 5,
+    "scenario": "boss-far",
+    "specialized": true,
+    "dps": 0,
+    "kills": 0,
+    "slowUptime": 0,
+    "sweeps": 0
+  },
+  {
+    "weapon": "spark",
+    "level": 5,
+    "scenario": "cluster",
+    "specialized": true,
+    "dps": 321.4,
+    "kills": 0,
+    "slowUptime": 0,
+    "sweeps": 0
+  },
+  {
+    "weapon": "bubble",
+    "level": 5,
+    "scenario": "cluster",
+    "specialized": true,
+    "dps": 203.07,
+    "kills": 0,
+    "slowUptime": 0.928,
+    "sweeps": 0
+  },
+  {
+    "weapon": "leaf",
+    "level": 5,
+    "scenario": "cluster",
+    "specialized": true,
+    "dps": 114.69,
+    "kills": 0,
+    "slowUptime": 0,
+    "sweeps": 0
+  },
+  {
+    "weapon": "flame-sweep",
+    "level": 5,
+    "scenario": "cluster",
+    "specialized": true,
+    "dps": 1374.62,
+    "kills": 0,
+    "slowUptime": 0,
+    "sweeps": 43
+  },
+  {
+    "weapon": "spark",
+    "level": 5,
+    "scenario": "line",
+    "specialized": true,
+    "dps": 169.49,
+    "kills": 0,
+    "slowUptime": 0,
+    "sweeps": 0
+  },
+  {
+    "weapon": "bubble",
+    "level": 5,
+    "scenario": "line",
+    "specialized": true,
+    "dps": 59.23,
+    "kills": 0,
+    "slowUptime": 0.331,
+    "sweeps": 0
+  },
+  {
+    "weapon": "leaf",
+    "level": 5,
+    "scenario": "line",
+    "specialized": true,
+    "dps": 131.53,
+    "kills": 0,
+    "slowUptime": 0,
+    "sweeps": 0
+  },
+  {
+    "weapon": "flame-sweep",
+    "level": 5,
+    "scenario": "line",
+    "specialized": true,
+    "dps": 114.55,
+    "kills": 0,
+    "slowUptime": 0,
+    "sweeps": 43
+  },
+  {
+    "weapon": "spark",
+    "level": 5,
+    "scenario": "mowing",
+    "specialized": true,
+    "dps": 312.19,
+    "kills": 334,
+    "slowUptime": 0,
+    "sweeps": 0
+  },
+  {
+    "weapon": "bubble",
+    "level": 5,
+    "scenario": "mowing",
+    "specialized": true,
+    "dps": 356.4,
+    "kills": 383,
+    "slowUptime": 0.558,
+    "sweeps": 0
+  },
+  {
+    "weapon": "leaf",
+    "level": 5,
+    "scenario": "mowing",
+    "specialized": true,
+    "dps": 100.83,
+    "kills": 110,
+    "slowUptime": 0,
+    "sweeps": 0
+  },
+  {
+    "weapon": "flame-sweep",
+    "level": 5,
+    "scenario": "mowing",
+    "specialized": true,
+    "dps": 946,
+    "kills": 1032,
+    "slowUptime": 0,
+    "sweeps": 43
+  }
+]

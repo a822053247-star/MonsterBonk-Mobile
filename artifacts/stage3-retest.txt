@@ -1,0 +1,27 @@
+[WebServer] (node:10472) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 2 tests using 1 worker
+
+(node:56940) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 1 tests\behavior-relics.spec.ts:32:28 › mirror-prism: registry, prerequisites, real mechanic and bounded recursion (30ms)
+  x  2 tests\behavior-relics.spec.ts:106:1 › one real browser smoke: projectile, zone, status and automatic card/shop/build art (13.5s)
+
+
+  1) tests\behavior-relics.spec.ts:106:1 › one real browser smoke: projectile, zone, status and automatic card/shop/build art
+
+    Error: page.evaluate: TypeError: g.advanceRun is not a function
+        at eval (eval at evaluate (:370:30), <anonymous>:15:7)
+        at UtilityScript.evaluate (<anonymous>:372:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at eval (eval at evaluate (:370:30), <anonymous>:15:7)
+        at UtilityScript.evaluate (<anonymous>:372:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at E:\study\game\MonsterBonk-relics-stage3\tests\behavior-relics.spec.ts:139:26
+
+    Error Context: artifacts\stage3-test-output\behavior-relics-one-real-b-5cef5-tomatic-card-shop-build-art\error-context.md
+
+  1 failed
+    tests\behavior-relics.spec.ts:106:1 › one real browser smoke: projectile, zone, status and automatic card/shop/build art
+  1 passed (17.5s)

@@ -1,0 +1,1047 @@
+[WebServer] (node:39644) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 78 tests using 1 worker
+
+(node:65988) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  1 [chromium] › tests\25d.spec.ts:21:1 › mobile touches follow all screen directions with fixed orientation and ground height (12.6s)
+  ok  2 [chromium] › tests\build-depth-ui.spec.ts:3:1 › rare choices expose costs, and pause shows levels, all six relics and the exclusive route (8.4s)
+  ok  3 [chromium] › tests\challenge-ui.spec.ts:59:1 › new entry, wave HUD and victory controls fit two phone landscape safe areas (7.1s)
+  x   4 [chromium] › tests\combat-clarity-ui.spec.ts:3:1 › fully fused three-weapon build stays readable with CD indicators and pooled impact visuals (5.0s)
+(node:65628) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  5 [chromium] › tests\companion-animation.spec.ts:62:1 › actual companion GPU frames change independently with stable size and release every texture (2.9s)
+  ok  6 [chromium] › tests\companion-animation.spec.ts:85:1 › missing companion atlases keep original static PNGs visible without disabling movement (4.0s)
+  ok  7 [chromium] › tests\companion-animation.spec.ts:92:1 › legacy Yanrong leader visibly walks through frames, keeps heading when stopping (4.2s)
+  ok  8 [chromium] › tests\creature-animation-ui.spec.ts:63:1 › visible GPU pixels change across real walking/idle frames, with stable foot, size and frame sequence (5.9s)
+  x   9 [chromium] › tests\creature-animation-ui.spec.ts:77:1 › actual collision displacement controls animation and animated/static visuals have identical combat and positions (9.3s)
+(node:58300) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 10 [chromium] › tests\creature-animation-ui.spec.ts:115:1 › shared atlases render independent real frames/mirrors without shared UV mutations and release all leases (4.1s)
+  ok 11 [chromium] › tests\creature-selection.spec.ts:5:168 › choose bubblesalamander directly from menu and keep only that creature through restart (4.3s)
+  ok 12 [chromium] › tests\creature-selection.spec.ts:13:1 › selection dialog, cards and start targets fit both phone safe areas and closing does not start a run (8.9s)
+  ok 13 [chromium] › tests\elemental-assets.spec.ts:15:1 › all extracted cells and four icons decode with transparent safe margins (3.4s)
+  x  14 [chromium] › tests\elemental-fusion-ui.spec.ts:14:1 › deep atlas loads, plays flight and one-shot impact, damages and slows in actual game (5.8s)
+(node:58132) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  15 [chromium] › tests\elemental-fusion-ui.spec.ts:30:11 › paopaoyuan development entry uses one animated creature, real cards, automatic fusions and bounded colored effects (13.0s)
+(node:66172) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  16 [chromium] › tests\elemental-fusion-ui.spec.ts:30:11 › yacishou development entry uses one animated creature, real cards, automatic fusions and bounded colored effects (13.0s)
+(node:46984) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 17 [chromium] › tests\elemental-fusion-ui.spec.ts:44:1 › unknown developer value preserves Yanrong and old three-party ignores developer species and new cards (3.5s)
+  ok 18 [chromium] › tests\elemental-fusion-ui.spec.ts:53:11 › thorn-scatter individual skill renders audited pixels, icon and real damage; lifecycle clears batch (4.8s)
+  x  19 [chromium] › tests\elemental-fusion-ui.spec.ts:73:1 › missing elemental textures and icons preserve procedural effects, readable cards and damage (5.7s)
+(node:56792) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 20 [chromium] › tests\enemy-motion-ui.spec.ts:12:1 › PNG walk visibly changes at a fixed collision anchor and always faces the camera (3.8s)
+  ok 21 [chromium] › tests\enemy-motion-ui.spec.ts:32:119 › normal shows eight distinct GPU headings with independent mirrored UVs and holds direction at rest (3.5s)
+  ok 22 [chromium] › tests\enemy-motion-ui.spec.ts:32:119 › draft-crystal-swarm shows eight distinct GPU headings with independent mirrored UVs and holds direction at rest (3.4s)
+  ok 23 [chromium] › tests\enemy-motion-ui.spec.ts:92:1 › each new enemy independently falls back to its static PNG when its direction atlas is missing (11.4s)
+  ok 24 [chromium] › tests\enemy-motion-ui.spec.ts:116:71 › three species render every direction at 844 without per-enemy textures (4.2s)
+  ok 25 [chromium] › tests\enemy-pixel.spec.ts:86:1 › real depth buffer handles transparent cutouts, foreground cover and visible per-instance hit flash (3.9s)
+  ok 26 [chromium] › tests\enemy-pixel.spec.ts:114:1 › tank never uses removed blue geometry in legacy mode or after PNG failure (7.8s)
+  ok 27 [chromium] › tests\flame-sweep-ui.spec.ts:27:1 › reused source frames share a cast origin, freeze and reset without GPU growth (4.0s)
+  ok 28 [chromium] › tests\fox-model.spec.ts:38:1 › real game model has phone size, movement blending, pause and restart without resource growth (7.6s)
+  x  29 [chromium] › tests\fusion-ui.spec.ts:51:1 › real fusion cards and impacts render child/explosion frames without duplicate hit flashes on both phone layouts (13.0s)
+(node:58380) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  30 [chromium] › tests\fusion-ui.spec.ts:98:1 › missing atlas and icons keep procedural attack/explosion and readable cards (5.6s)
+(node:60020) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 31 [chromium] › tests\fusion-ui.spec.ts:119:1 › new and preserved menu entries fit both phone safe areas with unobstructed touch targets (9.4s)
+  x  32 [chromium] › tests\game.spec.ts:14:1 › main menu renders a real 3D world and starts exploration without errors (16.0s)
+(node:58384) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 33 [chromium] › tests\game.spec.ts:86:1 › pause freezes simulation and resets held input; menu can restart cleanly (7.8s)
+  ok 34 [chromium] › tests\game.spec.ts:157:1 › real multitouch keeps joystick and dash independent on mobile (15.5s)
+  ok 35 [chromium] › tests\horn-ui.spec.ts:48:1 › telegraph has real instanced geometry, trial upgrades freeze and resume without losing horns (4.2s)
+  x  36 [chromium] › tests\hud-art.spec.ts:3:1 › forest HUD keeps live values, weapon artwork and safe touch targets on landscape phones (6.0s)
+(node:41028) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 37 [chromium] › tests\infinite-world-ui.spec.ts:17:1 › endless exploration shares the EXACT six-wave build, species, upgrades and shop flow of start challenge (4.4s)
+  ok 38 [chromium] › tests\infinite-world-ui.spec.ts:111:1 › teleporting across many chunks does not accumulate chunk groups or materials (29.8s)
+  ok 39 [chromium] › tests\infinite-world-ui.spec.ts:232:1 › trees stones and cacti stop the player while flowers and grass remain walkable (3.1s)
+  ok 40 [chromium] › tests\pixel-party.spec.ts:63:1 › pixel view and original fallback produce identical party movement, collisions, attacks and XP (6.9s)
+  ok 41 [chromium] › tests\pixel-party.spec.ts:89:1 › same-species sprites share textures and disposal releases leases, materials and groups (4.1s)
+  ok 42 [chromium] › tests\presentation.spec.ts:22:1 › audio waits for a gesture; settings persist and gameplay remains paused on closing (6.3s)
+  ok 43 [chromium] › tests\presentation.spec.ts:109:1 › small landscape HUD and settings fit safe areas with thumb-size touch targets (3.2s)
+  ok 44 [chromium] › tests\random-world-ui.spec.ts:21:1 › a replay link reproduces the rendered terrain, collision map and seed across reloads (5.7s)
+  ok 45 [chromium] › tests\random-world-ui.spec.ts:67:1 › pinned seeds remain pinned on new adventures; fixed override still uses the curated sample (6.0s)
+  x  46 [chromium] › tests\random-world-ui.spec.ts:93:1 › different seeds render different regions and fit phone replay controls (13.3s)
+(node:39844) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 47 [chromium] › tests\result-art.spec.ts:30:1 › victory motion is one shot and reduced motion removes it without delaying actions (6.3s)
+  ok 48 [chromium] › tests\result-art.spec.ts:43:1 › real victory shows crown, exact current scores and complete build without invented reward (3.6s)
+  ok 49 [chromium] › tests\run-flow-ui.spec.ts:20:1 › complete six-wave UI with shopping, healing, refresh, victory, clean restart, defeat and legacy return (5.3s)
+  ok 50 [chromium] › tests\run-panels.spec.ts:27:66 › pause remains readable and operable at 4k (5.2s)
+  ok 51 [chromium] › tests\shockwave-art.spec.ts:3:1 › Kenney shockwave follows combat clocks, stays pooled and clears with the scene (3.7s)
+  ok 52 [chromium] › tests\shop-art.spec.ts:23:1 › new relics show supplied icons and can be bought from the actual shop (5.7s)
+  ok 53 [chromium] › tests\upgrade-art.spec.ts:47:1 › remaining three supplied relic icons and their limits remain readable on mobile (1.1s)
+  ok 54 [chromium] › tests\upgrade-art.spec.ts:93:1 › all 31 real IDs are covered, element variants follow equipped weapons, categories stay data-driven (11.2s)
+  ok 55 [chromium] › tests\upgrades.spec.ts:34:1 › XP opens three valid cards, freezes the entire simulation and touch picks once (4.7s)
+  x  56 [chromium] › tests\upgrades.spec.ts:124:1 › new spells coexist, max HP updates HUD and a fresh run clears all skills (15.5s)
+(node:55012) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  57 [chromium] › tests\upgrades.spec.ts:147:1 › the last remaining skill is valid and full mastery stops creating empty dialogs (13.0s)
+(node:8548) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 58 [chromium] › tests\vfx-lifecycle.spec.ts:86:1 › test-only preset changes atlas animation and geometry; bad presets retain identical pixels and bounded resources (4.7s)
+  ok 59 [chromium] › tests\vfx-lifecycle.spec.ts:129:1 › steam requires real wet hits and boiling core; failed assets still allow damage, pause, resume and clean restart (4.0s)
+  ok 60 [chromium] › tests\vfx-live-entry.spec.ts:4:3 › spark presets run from the shipped entry with natural auto attacks (10.3s)
+  ok 61 [chromium] › tests\vfx-presets-ui.spec.ts:39:1 › real spark, bubble and wet-fire steam render through presets and keep lifecycle/budgets (5.5s)
+  ok 62 [chromium] › tests\vfx-presets.spec.ts:22:1 › invalid authoring data fails registration, including nonfinite and out of atlas values (24ms)
+(node:56836) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  63 [webkit] › tests\combat-clarity-ui.spec.ts:3:1 › fully fused three-weapon build stays readable with CD indicators and pooled impact visuals (5.1s)
+(node:12196) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] 16:35:01 [vite] (client) [console.warn] THREE.WARNING: Multiple instances of Three.js being imported.
+[WebServer] 16:35:04 [vite] (client) [console.warn] THREE.WARNING: Multiple instances of Three.js being imported.
+  x  64 [webkit] › tests\creature-animation-ui.spec.ts:77:1 › actual collision displacement controls animation and animated/static visuals have identical combat and positions (9.0s)
+(node:65888) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  65 [webkit] › tests\elemental-fusion-ui.spec.ts:14:1 › deep atlas loads, plays flight and one-shot impact, damages and slows in actual game (5.8s)
+(node:57604) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  66 [webkit] › tests\elemental-fusion-ui.spec.ts:30:11 › paopaoyuan development entry uses one animated creature, real cards, automatic fusions and bounded colored effects (13.2s)
+(node:54940) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  67 [webkit] › tests\elemental-fusion-ui.spec.ts:30:11 › yacishou development entry uses one animated creature, real cards, automatic fusions and bounded colored effects (13.4s)
+(node:68560) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  68 [webkit] › tests\elemental-fusion-ui.spec.ts:73:1 › missing elemental textures and icons preserve procedural effects, readable cards and damage (6.4s)
+(node:61928) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  69 [webkit] › tests\fusion-ui.spec.ts:51:1 › real fusion cards and impacts render child/explosion frames without duplicate hit flashes on both phone layouts (14.0s)
+(node:60792) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  70 [webkit] › tests\fusion-ui.spec.ts:98:1 › missing atlas and icons keep procedural attack/explosion and readable cards (6.3s)
+(node:56672) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  71 [webkit] › tests\game.spec.ts:14:1 › main menu renders a real 3D world and starts exploration without errors (14.7s)
+(node:50260) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  72 [webkit] › tests\hud-art.spec.ts:3:1 › forest HUD keeps live values, weapon artwork and safe touch targets on landscape phones (5.7s)
+(node:68132) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  73 [webkit] › tests\infinite-world-ui.spec.ts:111:1 › teleporting across many chunks does not accumulate chunk groups or materials (41.3s)
+(node:45488) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  74 [webkit] › tests\random-world-ui.spec.ts:93:1 › different seeds render different regions and fit phone replay controls (15.2s)
+(node:68180) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  75 [webkit] › tests\upgrades.spec.ts:124:1 › new spells coexist, max HP updates HUD and a fresh run clears all skills (15.4s)
+(node:45348) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  76 [webkit] › tests\upgrades.spec.ts:147:1 › the last remaining skill is valid and full mastery stops creating empty dialogs (13.7s)
+(node:68492) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 77 [webkit] › tests\vfx-lifecycle.spec.ts:129:1 › steam requires real wet hits and boiling core; failed assets still allow damage, pause, resume and clean restart (4.9s)
+  ok 78 [webkit] › tests\vfx-presets.spec.ts:22:1 › invalid authoring data fails registration, including nonfinite and out of atlas values (26ms)
+
+
+  1) [chromium] › tests\combat-clarity-ui.spec.ts:3:1 › fully fused three-weapon build stays readable with CD indicators and pooled impact visuals 
+
+    Error: expect(received).toBeLessThanOrEqual(expected)
+
+    Expected: <= 1.551
+    Received:    2.799999952316284
+
+      39 |     }, steps);
+      40 |     expect(state.unchanged).toBe(true); expect(state.impacts).toBeLessThanOrEqual(6);
+    > 41 |     expect(state.largest).toBeLessThanOrEqual(1.551); expect(state.noDepthWrite).toBe(true); expect(state.maxHurt).toBeLessThanOrEqual(.301); expect(state.limits).toBe(24);
+         |                           ^
+      42 |     if (index === 1) expect(state.shots.every((count: number) => count > 0)).toBe(true);
+      43 |     await expect(page.locator('.weapon-charge')).toHaveCount(3);
+      44 |     await page.screenshot({ path: `artifacts/combat-clarity-${index === 0 ? 'volleys' : 'impacts'}.png` });
+        at E:\study\game\MonsterBonk Mobile\tests\combat-clarity-ui.spec.ts:41:27
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    artifacts\content-retry-output\combat-clarity-ui-fully-fu-ae086-s-and-pooled-impact-visuals-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: artifacts\content-retry-output\combat-clarity-ui-fully-fu-ae086-s-and-pooled-impact-visuals-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    artifacts\content-retry-output\combat-clarity-ui-fully-fu-ae086-s-and-pooled-impact-visuals-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace artifacts\content-retry-output\combat-clarity-ui-fully-fu-ae086-s-and-pooled-impact-visuals-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [chromium] › tests\creature-animation-ui.spec.ts:77:1 › actual collision displacement controls animation and animated/static visuals have identical combat and positions 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: "{\"position\":{\"x\":4.371788402398613,\"z\":-11.790155370716246},\"combat\":{\"balanceTelemetry\":{\"damageEvents\":0,\"projectileBlockedAttempts\":0,\"sporeChainKills\":0,\"derivedDenied\":0,\"queuePeak\":0},\"triggerRelics\":{\"explosions\":0,\"thorns\":0,\"maxGeneration\":0,\"bubbles\":0,\"echoes\":0,\"echoesSkipped\":0,\"hourglassProcs\":0,\"steamBursts\":0,\"chainKills\":0,\"maxNodes\":0,\"casts\":0,\"pendingEchoes\":0,\"hasteRemaining\":0,\"hasteCooldown\":0,\"bubbleCooldown\":0,\"pending\":0,\"wet\":0,\"burning\":0},\"specialEnemies\":{\"sporeKills\":0,\"treasureEscapes\":0,\"treasureCaught\":0,\"explosions\":[],\"rewards\":[]},\"build\":{\"enabled\":true,\"species\":\"yanrong\",\"relics\":[],\"evolution\":null,\"attacks\":[{\"attackId\":\"spark\",\"slot\":0,\"level\":1,\"cooldown\":0.15666666666666673,\"cooldownTotal\":0.44,\"shotsFired\":7}]},\"melee\":{\"active\":false,\"attackInstanceId\":0,\"x\":0,\"z\":0,\"aimX\":0,\"aimZ\":1,\"age\":0,\"radius\":0,\"angle\":3.141592653589793,\"hitIds\":[]},\"firing\":{\"weapon\":null,\"remaining\":0,\"gap\":0},\"hp\":100,\"kills\":2,\"goldEarned\":0,\"xp\":0,\"shotsFired\":7,\"hits\":6,\"fusion\":{\"enabled\":true,\"active\":null,\"recipes\":[],\"bursts\":0,\"childShots\":0,\"children\":0},\"spawned\":5,\"collected\":0,\"invulnerability\":0,\"enemies\":[{\"id\":1,\"kind\":\"tank\",\"x\":6.0869497631365554,\"z\":2.468766271412285,\"hp\":53,\"spawning\":false},{\"id\":5,\"kind\":\"normal\",\"x\":-9.98792037086376,\"z\":-15.220815280171308,\"hp\":12,\"spawning\":true},{\"id\":4,\"kind\":\"normal\",\"x\":22.655138723498965,\"z\":4.503371270472362,\"hp\":12,\"spawning\":false}],\"projectiles\":1,\"orbs\":[],\"effects\":2,\"targetId\":0,\"limits\":{\"enemies\":256,\"projectiles\":24,\"orbs\":96,\"effects\":48,\"shockwaves\":2},\"maxHp\":100,\"progression\":{\"level\":1,\"experience\":0,\"totalExperience\":0,\"threshold\":8,\"pendingChoices\":0,\"choiceLevel\":2,\"offers\":[],\"ranks\":{\"damage\":0,\"haste\":0,\"multishot\":0,\"vitality\":0,\"movement\":0,\"range\":0,\"orbit\":0,\"shockwave\":0,\"flame-sweep-weapon\":0,\"split-on-hit\":0,\"area\":0,\"chain\":0,\"bubble-weapon\":0,\"spark-weapon\":1,\"leaf-weapon\":0,\"draft-boiling-core\":0,\"overload-core\":0,\"hunter-eye\":0,\"shattered-core\":0,\"tidal-pearl\":0,\"specialist-badge\":0,\"echo-rune\":0,\"draft-martyr-core\":0,\"draft-kindling-flask\":0,\"draft-thorn-testament\":0,\"draft-bubble-spore\":0,\"draft-echo-bone-dice\":0,\"draft-slaughter-hourglass\":0,\"tide-prism\":0,\"berserk-route\":0,\"pursuit-route\":0},\"stats\":{\"damageMultiplier\":1,\"attackRateMultiplier\":1,\"projectileCount\":1,\"maxHp\":100,\"moveMultiplier\":1,\"rangeMultiplier\":1,\"orbitCount\":0,\"orbitDamage\":0,\"orbitRadius\":0,\"orbitSpeed\":0,\"shockDamage\":0,\"shockRadius\":0,\"shockInterval\":0,\"splitOnHit\":0},\"maxLevel\":72},\"encounters\":{\"enabled\":true,\"wave\":1,\"boss\":null,\"elite\":null,\"shots\":[],\"limit\":16},\"orbitAngle\":0,\"shockwaves\":[]},\"party\":[{\"id\":1,\"species\":\"yanrong\",\"x\":4.371788402398613,\"z\":-11.790155370716246,\"previousX\":4.3471087910956525,\"previousZ\":-11.723597608773526,\"facing\":2.786509340024015,\"attackCooldown\":0,\"targetId\":0,\"shotsFired\":7,\"rank\":1,\"evolution\":\"base\",\"blockedTime\":0}]}"
+    Received: "{\"position\":{\"x\":4.371788402398613,\"z\":-11.790155370716246},\"combat\":{\"balanceTelemetry\":{\"damageEvents\":0,\"projectileBlockedAttempts\":0,\"sporeChainKills\":0,\"derivedDenied\":0,\"queuePeak\":0},\"triggerRelics\":{\"explosions\":0,\"thorns\":0,\"maxGeneration\":0,\"bubbles\":0,\"echoes\":0,\"echoesSkipped\":0,\"hourglassProcs\":0,\"steamBursts\":0,\"chainKills\":0,\"maxNodes\":0,\"casts\":0,\"pendingEchoes\":0,\"hasteRemaining\":0,\"hasteCooldown\":0,\"bubbleCooldown\":0,\"pending\":0,\"wet\":0,\"burning\":0},\"specialEnemies\":{\"sporeKills\":0,\"treasureEscapes\":0,\"treasureCaught\":0,\"explosions\":[],\"rewards\":[]},\"build\":{\"enabled\":true,\"species\":\"yanrong\",\"relics\":[],\"evolution\":null,\"attacks\":[{\"attackId\":\"spark\",\"slot\":0,\"level\":1,\"cooldown\":0,\"cooldownTotal\":0.44,\"shotsFired\":4}]},\"melee\":{\"active\":false,\"attackInstanceId\":0,\"x\":0,\"z\":0,\"aimX\":0,\"aimZ\":1,\"age\":0,\"radius\":0,\"angle\":3.141592653589793,\"hitIds\":[]},\"firing\":{\"weapon\":null,\"remaining\":0,\"gap\":0},\"hp\":100,\"kills\":0,\"goldEarned\":0,\"xp\":0,\"shotsFired\":4,\"hits\":4,\"fusion\":{\"enabled\":true,\"active\":null,\"recipes\":[],\"bursts\":0,\"childShots\":0,\"children\":0},\"spawned\":5,\"collected\":0,\"invulnerability\":0,\"enemies\":[{\"id\":1,\"kind\":\"tank\",\"x\":6.0869497631365554,\"z\":2.468766271412285,\"hp\":53,\"spawning\":false},{\"id\":2,\"kind\":\"normal\",\"x\":19.895521228383405,\"z\":5.841268875849655,\"hp\":12,\"spawning\":false},{\"id\":4,\"kind\":\"normal\",\"x\":22.227350175409214,\"z\":7.403652253082965,\"hp\":12,\"spawning\":false},{\"id\":5,\"kind\":\"normal\",\"x\":22.79613886663461,\"z\":5.47803134189682,\"hp\":12,\"spawning\":true}],\"projectiles\":0,\"orbs\":[],\"effects\":0,\"targetId\":0,\"limits\":{\"enemies\":256,\"projectiles\":24,\"orbs\":96,\"effects\":48,\"shockwaves\":2},\"maxHp\":100,\"progression\":{\"level\":1,\"experience\":0,\"totalExperience\":0,\"threshold\":8,\"pendingChoices\":0,\"choiceLevel\":2,\"offers\":[],\"ranks\":{\"damage\":0,\"haste\":0,\"multishot\":0,\"vitality\":0,\"movement\":0,\"range\":0,\"orbit\":0,\"shockwave\":0,\"flame-sweep-weapon\":0,\"split-on-hit\":0,\"area\":0,\"chain\":0,\"bubble-weapon\":0,\"spark-weapon\":1,\"leaf-weapon\":0,\"draft-boiling-core\":0,\"overload-core\":0,\"hunter-eye\":0,\"shattered-core\":0,\"tidal-pearl\":0,\"specialist-badge\":0,\"echo-rune\":0,\"draft-martyr-core\":0,\"draft-kindling-flask\":0,\"draft-thorn-testament\":0,\"draft-bubble-spore\":0,\"draft-echo-bone-dice\":0,\"draft-slaughter-hourglass\":0,\"tide-prism\":0,\"berserk-route\":0,\"pursuit-route\":0},\"stats\":{\"damageMultiplier\":1,\"attackRateMultiplier\":1,\"projectileCount\":1,\"maxHp\":100,\"moveMultiplier\":1,\"rangeMultiplier\":1,\"orbitCount\":0,\"orbitDamage\":0,\"orbitRadius\":0,\"orbitSpeed\":0,\"shockDamage\":0,\"shockRadius\":0,\"shockInterval\":0,\"splitOnHit\":0},\"maxLevel\":72},\"encounters\":{\"enabled\":true,\"wave\":1,\"boss\":null,\"elite\":null,\"shots\":[],\"limit\":16},\"orbitAngle\":0,\"shockwaves\":[]},\"party\":[{\"id\":1,\"species\":\"yanrong\",\"x\":4.371788402398613,\"z\":-11.790155370716246,\"previousX\":4.3471087910956525,\"previousZ\":-11.723597608773526,\"facing\":2.786509340024015,\"attackCooldown\":0,\"targetId\":0,\"shotsFired\":4,\"rank\":1,\"evolution\":\"base\",\"blockedTime\":0}]}"
+
+      82 |   await page.goto('/animation-harness?world=fixed&creatureAnimation=static');await page.waitForFunction(()=>'game'in window);await page.locator('#start-fusion').tap();
+      83 |   // Static override intentionally requests no atlases; compare through the same actual Game steps.
+    > 84 |   expect(await page.evaluate(()=>(window as any).parity())).toBe(animated);
+         |                                                             ^
+      85 |   await page.goto('/animation-harness?world=fixed');await page.waitForFunction(()=>'game'in window);await page.locator('#start-fusion').tap();
+      86 |   await expect.poll(async ()=>(await animation(page)).atlases.filter(a=>a.loaded).length).toBe(2);
+      87 |   await page.evaluate(()=>{const g=(window as any).game;g.world.obstacles.splice(0,g.world.obstacles.length,{x:2,z:0,radius:1});});
+        at E:\study\game\MonsterBonk Mobile\tests\creature-animation-ui.spec.ts:84:61
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    artifacts\content-retry-output\creature-animation-ui-actu-676ef-ntical-combat-and-positions-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: artifacts\content-retry-output\creature-animation-ui-actu-676ef-ntical-combat-and-positions-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    artifacts\content-retry-output\creature-animation-ui-actu-676ef-ntical-combat-and-positions-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace artifacts\content-retry-output\creature-animation-ui-actu-676ef-ntical-combat-and-positions-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) [chromium] › tests\elemental-fusion-ui.spec.ts:14:1 › deep atlas loads, plays flight and one-shot impact, damages and slows in actual game 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      17 |  await learn(page,'area');await page.evaluate(()=>(window as any).impact());
+      18 |  const result=await page.evaluate(()=>{const g=(window as any).game;return {hp:g.combat.enemies.filter((e:any)=>e.active).map((e:any)=>e.hp),slow:g.combat.enemies.filter((e:any)=>e.active).map((e:any)=>e.slowTime),pixels:g.combatView.inspectElemental()}});
+    > 19 |  expect(result.hp.some((hp:number)=>hp<100)).toBe(true);expect(result.slow.some((s:number)=>s>0)).toBe(true);
+         |                                              ^
+      20 |  expect(result.pixels).toMatchObject({loaded:true,nearest:true,count:1});expect(result.pixels.frames).toEqual([3]);
+      21 |  await page.evaluate(()=>{const w=window as any;w.game.combat.update(.14,w.game.position);w.draw()});
+      22 |  expect(await page.evaluate(()=>(window as any).game.combatView.inspectElemental().frames)).toEqual([4]);
+        at E:\study\game\MonsterBonk Mobile\tests\elemental-fusion-ui.spec.ts:19:46
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    artifacts\content-retry-output\elemental-fusion-ui-deep-a-8c9d6-es-and-slows-in-actual-game-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: artifacts\content-retry-output\elemental-fusion-ui-deep-a-8c9d6-es-and-slows-in-actual-game-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    artifacts\content-retry-output\elemental-fusion-ui-deep-a-8c9d6-es-and-slows-in-actual-game-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace artifacts\content-retry-output\elemental-fusion-ui-deep-a-8c9d6-es-and-slows-in-actual-game-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  4) [chromium] › tests\elemental-fusion-ui.spec.ts:30:11 › paopaoyuan development entry uses one animated creature, real cards, automatic fusions and bounded colored effects 
+
+    Error: expect(locator).toHaveText(expected) failed
+
+    Locator: locator('#creature-name')
+    Expected: "泡泡螈"
+    Timeout: 8000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toHaveText" locator('#creature-name') with timeout 8000ms
+      - waiting for locator('#creature-name')
+
+
+      30 | ]as const)test(dev+' development entry uses one animated creature, real cards, automatic fusions and bounded colored effects',async({page})=>{
+      31 |  const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));await open(page,dev);
+    > 32 |  expect(await page.evaluate(()=>(window as any).game.party.members.map((m:any)=>m.species))).toEqual([species]);await expect(page.locator('#creature-name')).toHaveText(name);await expect(page.locator('.dash-control')).toBeHidden();
+         |                                                                                                                                                              ^
+      33 |  for(let i=0;i<cards.length;i++){await learn(page,cards[i]);await expect(page.locator('#fusion-title')).toContainText(titles[i]);}
+      34 |  await page.evaluate(()=>(window as any).impact());
+      35 |  const state=await page.evaluate(()=>{const g=(window as any).game;return {c:g.combat.inspect(),rings:g.combatView.burstRings.count+(g.combatView.inspectElemental()?.count??0),fire:g.combatView.firePixels?.mesh.count??0,children:g.combat.projectiles.filter((s:any)=>s.active&&s.generation===1).length}});
+        at E:\study\game\MonsterBonk Mobile\tests\elemental-fusion-ui.spec.ts:32:158
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    artifacts\content-retry-output\elemental-fusion-ui-paopao-625ea-and-bounded-colored-effects-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: artifacts\content-retry-output\elemental-fusion-ui-paopao-625ea-and-bounded-colored-effects-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    artifacts\content-retry-output\elemental-fusion-ui-paopao-625ea-and-bounded-colored-effects-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace artifacts\content-retry-output\elemental-fusion-ui-paopao-625ea-and-bounded-colored-effects-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  5) [chromium] › tests\elemental-fusion-ui.spec.ts:30:11 › yacishou development entry uses one animated creature, real cards, automatic fusions and bounded colored effects 
+
+    Error: expect(locator).toHaveText(expected) failed
+
+    Locator: locator('#creature-name')
+    Expected: "芽刺兽"
+    Timeout: 8000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toHaveText" locator('#creature-name') with timeout 8000ms
+      - waiting for locator('#creature-name')
+
+
+      30 | ]as const)test(dev+' development entry uses one animated creature, real cards, automatic fusions and bounded colored effects',async({page})=>{
+      31 |  const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));await open(page,dev);
+    > 32 |  expect(await page.evaluate(()=>(window as any).game.party.members.map((m:any)=>m.species))).toEqual([species]);await expect(page.locator('#creature-name')).toHaveText(name);await expect(page.locator('.dash-control')).toBeHidden();
+         |                                                                                                                                                              ^
+      33 |  for(let i=0;i<cards.length;i++){await learn(page,cards[i]);await expect(page.locator('#fusion-title')).toContainText(titles[i]);}
+      34 |  await page.evaluate(()=>(window as any).impact());
+      35 |  const state=await page.evaluate(()=>{const g=(window as any).game;return {c:g.combat.inspect(),rings:g.combatView.burstRings.count+(g.combatView.inspectElemental()?.count??0),fire:g.combatView.firePixels?.mesh.count??0,children:g.combat.projectiles.filter((s:any)=>s.active&&s.generation===1).length}});
+        at E:\study\game\MonsterBonk Mobile\tests\elemental-fusion-ui.spec.ts:32:158
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    artifacts\content-retry-output\elemental-fusion-ui-yacish-1fef3-and-bounded-colored-effects-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: artifacts\content-retry-output\elemental-fusion-ui-yacish-1fef3-and-bounded-colored-effects-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    artifacts\content-retry-output\elemental-fusion-ui-yacish-1fef3-and-bounded-colored-effects-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace artifacts\content-retry-output\elemental-fusion-ui-yacish-1fef3-and-bounded-colored-effects-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  6) [chromium] › tests\elemental-fusion-ui.spec.ts:73:1 › missing elemental textures and icons preserve procedural effects, readable cards and damage 
+
+    Error: page.evaluate: TypeError: Cannot read properties of undefined (reading 'count')
+        at eval (eval at evaluate (:370:30), <anonymous>:1:41)
+        at UtilityScript.evaluate (<anonymous>:372:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at eval (eval at evaluate (:370:30), <anonymous>:1:41)
+        at UtilityScript.evaluate (<anonymous>:372:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at E:\study\game\MonsterBonk Mobile\tests\elemental-fusion-ui.spec.ts:76:105
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    artifacts\content-retry-output\elemental-fusion-ui-missin-e8229-s-readable-cards-and-damage-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: artifacts\content-retry-output\elemental-fusion-ui-missin-e8229-s-readable-cards-and-damage-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    artifacts\content-retry-output\elemental-fusion-ui-missin-e8229-s-readable-cards-and-damage-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace artifacts\content-retry-output\elemental-fusion-ui-missin-e8229-s-readable-cards-and-damage-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  7) [chromium] › tests\fusion-ui.spec.ts:51:1 › real fusion cards and impacts render child/explosion frames without duplicate hit flashes on both phone layouts 
+
+    Error: expect(locator).toHaveClass(expected) failed
+
+    Locator: locator('[data-skill="split-on-hit"]').locator('.fire-icon')
+    Expected pattern: /ready/
+    Timeout: 8000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toHaveClass" locator('[data-skill="split-on-hit"]').locator('.fire-icon') with timeout 8000ms
+      - waiting for locator('[data-skill="split-on-hit"]').locator('.fire-icon')
+
+
+      53 |   await page.evaluate(() => (window as unknown as Fixture).offer());
+      54 |   const card = page.locator('[data-skill="split-on-hit"]'); await expect(card).toBeEnabled();
+    > 55 |   await expect(card.locator('.fire-icon')).toHaveClass(/ready/);
+         |                                            ^
+      56 |   await page.screenshot({ path: 'artifacts/v5-fusion-card-844.png' });
+      57 |   await page.setViewportSize({ width: 568, height: 320 });
+      58 |   await page.screenshot({ path: 'artifacts/v5-fusion-card-568.png' });
+        at E:\study\game\MonsterBonk Mobile\tests\fusion-ui.spec.ts:55:44
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    artifacts\content-retry-output\fusion-ui-real-fusion-card-e5c41-ashes-on-both-phone-layouts-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: artifacts\content-retry-output\fusion-ui-real-fusion-card-e5c41-ashes-on-both-phone-layouts-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    artifacts\content-retry-output\fusion-ui-real-fusion-card-e5c41-ashes-on-both-phone-layouts-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace artifacts\content-retry-output\fusion-ui-real-fusion-card-e5c41-ashes-on-both-phone-layouts-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  8) [chromium] › tests\fusion-ui.spec.ts:98:1 › missing atlas and icons keep procedural attack/explosion and readable cards 
+
+    Error: page.evaluate: TypeError: Cannot read properties of undefined (reading 'count')
+        at eval (eval at evaluate (:370:30), <anonymous>:5:27)
+        at UtilityScript.evaluate (<anonymous>:372:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at eval (eval at evaluate (:370:30), <anonymous>:5:27)
+        at UtilityScript.evaluate (<anonymous>:372:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at E:\study\game\MonsterBonk Mobile\tests\fusion-ui.spec.ts:104:21
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    artifacts\content-retry-output\fusion-ui-missing-atlas-an-4f1a2-xplosion-and-readable-cards-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: artifacts\content-retry-output\fusion-ui-missing-atlas-an-4f1a2-xplosion-and-readable-cards-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    artifacts\content-retry-output\fusion-ui-missing-atlas-an-4f1a2-xplosion-and-readable-cards-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace artifacts\content-retry-output\fusion-ui-missing-atlas-an-4f1a2-xplosion-and-readable-cards-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  9) [chromium] › tests\game.spec.ts:14:1 › main menu renders a real 3D world and starts exploration without errors 
+
+    Error: expect(locator).toHaveAttribute(expected) failed
+
+    Locator: getByRole('progressbar', { name: '生命值', exact: true })
+    Expected: "100"
+    Timeout: 8000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toHaveAttribute" getByRole('progressbar', { name: '生命值', exact: true }) with timeout 8000ms
+      - waiting for getByRole('progressbar', { name: '生命值', exact: true })
+
+
+      28 |   await expect(page.locator('#hud')).toBeVisible();
+      29 |   await expect(page.locator('#menu')).toBeHidden();
+    > 30 |   await expect(page.getByRole('progressbar', { name: '生命值', exact: true })).toHaveAttribute('aria-valuenow', '100');
+         |                                                                             ^
+      31 |   await expect.poll(async () => (await inspect(page)).elapsed).toBeGreaterThan(0.5);
+      32 |   const state = await inspect(page);
+      33 |   expect(state.drawCalls).toBeLessThan(100);
+        at E:\study\game\MonsterBonk Mobile\tests\game.spec.ts:30:77
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    artifacts\content-retry-output\game-main-menu-renders-a-r-10d93--exploration-without-errors-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: artifacts\content-retry-output\game-main-menu-renders-a-r-10d93--exploration-without-errors-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    artifacts\content-retry-output\game-main-menu-renders-a-r-10d93--exploration-without-errors-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace artifacts\content-retry-output\game-main-menu-renders-a-r-10d93--exploration-without-errors-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  10) [chromium] › tests\hud-art.spec.ts:3:1 › forest HUD keeps live values, weapon artwork and safe touch targets on landscape phones 
+
+    Error: expect(received).toBeGreaterThanOrEqual(expected)
+
+    Expected: >= 48
+    Received:    44
+
+      45 |     for(const selector of ['#pause','#settings']) {
+      46 |       const rect=(await page.locator(selector).boundingBox())!;
+    > 47 |       expect(rect.width).toBeGreaterThanOrEqual(width === 568 ? 44 : 48);expect(rect.height).toBeGreaterThanOrEqual(width === 568 ? 44 : 48);
+         |                          ^
+      48 |     }
+      49 |   }
+      50 |   if(browserName==='chromium') await page.screenshot({path:'artifacts/hud-boss-small-chromium.png'});
+        at E:\study\game\MonsterBonk Mobile\tests\hud-art.spec.ts:47:26
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    artifacts\content-retry-output\hud-art-forest-HUD-keeps-l-0a44a-targets-on-landscape-phones-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: artifacts\content-retry-output\hud-art-forest-HUD-keeps-l-0a44a-targets-on-landscape-phones-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    artifacts\content-retry-output\hud-art-forest-HUD-keeps-l-0a44a-targets-on-landscape-phones-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace artifacts\content-retry-output\hud-art-forest-HUD-keeps-l-0a44a-targets-on-landscape-phones-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  11) [chromium] › tests\random-world-ui.spec.ts:93:1 › different seeds render different regions and fit phone replay controls 
+
+    Error: expect(received).toBeLessThanOrEqual(expected)
+
+    Expected: <= 320
+    Received:    326.59375
+
+      117 |   await page.locator('#pause').click();
+      118 |   const short = (await page.locator('#map-replay').boundingBox())!;
+    > 119 |   expect(short.y).toBeGreaterThanOrEqual(0); expect(short.y + short.height).toBeLessThanOrEqual(320);
+          |                                                                             ^
+      120 |   expect(invalidAtlasRequests).toEqual([]);
+      121 | });
+      122 |
+        at E:\study\game\MonsterBonk Mobile\tests\random-world-ui.spec.ts:119:77
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    artifacts\content-retry-output\random-world-ui-different--4d918-d-fit-phone-replay-controls-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: artifacts\content-retry-output\random-world-ui-different--4d918-d-fit-phone-replay-controls-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    artifacts\content-retry-output\random-world-ui-different--4d918-d-fit-phone-replay-controls-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace artifacts\content-retry-output\random-world-ui-different--4d918-d-fit-phone-replay-controls-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  12) [chromium] › tests\upgrades.spec.ts:124:1 › new spells coexist, max HP updates HUD and a fresh run clears all skills 
+
+    Error: expect(locator).toHaveAttribute(expected) failed
+
+    Locator: getByRole('progressbar', { name: '生命值', exact: true })
+    Expected: "120"
+    Timeout: 8000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toHaveAttribute" getByRole('progressbar', { name: '生命值', exact: true }) with timeout 8000ms
+      - waiting for getByRole('progressbar', { name: '生命值', exact: true })
+
+
+      132 |   expect(upgraded.combat.progression.stats).toMatchObject({ orbitCount: 1, shockDamage: 24, maxHp: 120, moveMultiplier: 1.1 });
+      133 |   await expect(page.locator('#health-value')).toHaveText('120 / 120');
+    > 134 |   await expect(page.getByRole('progressbar', { name: '生命值', exact: true })).toHaveAttribute('aria-valuemax', '120');
+          |                                                                             ^
+      135 |   await expect.poll(async () => (await state(page)).combat.orbitAngle).toBeGreaterThan(0);
+      136 |   if (testInfo.project.name === 'chromium') {
+      137 |     await expect.poll(async () => (await state(page)).combat.shockwaves.some((wave) => wave.radius > 1.5), { timeout: 7_000, intervals: [50] }).toBe(true);
+        at E:\study\game\MonsterBonk Mobile\tests\upgrades.spec.ts:134:77
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    artifacts\content-retry-output\upgrades-new-spells-coexis-8c811-fresh-run-clears-all-skills-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: artifacts\content-retry-output\upgrades-new-spells-coexis-8c811-fresh-run-clears-all-skills-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    artifacts\content-retry-output\upgrades-new-spells-coexis-8c811-fresh-run-clears-all-skills-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace artifacts\content-retry-output\upgrades-new-spells-coexis-8c811-fresh-run-clears-all-skills-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  13) [chromium] › tests\upgrades.spec.ts:147:1 › the last remaining skill is valid and full mastery stops creating empty dialogs 
+
+    Error: expect(locator).toHaveText(expected) failed
+
+    Locator: locator('#xp-progress')
+    Expected: "满级"
+    Timeout: 8000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toHaveText" locator('#xp-progress') with timeout 8000ms
+      - waiting for locator('#xp-progress')
+
+
+      155 |   await page.locator('.skill-card').tap();
+      156 |   await expect(page.locator('#upgrade-screen')).toBeHidden();
+    > 157 |   await expect(page.locator('#xp-progress')).toHaveText('满级');
+          |                                              ^
+      158 |   await page.evaluate(() => (window as unknown as Harness).testGame.combat.progression.gainExperience(500));
+      159 |   await page.waitForTimeout(200);
+      160 |   expect((await state(page)).mode).toBe('playing');
+        at E:\study\game\MonsterBonk Mobile\tests\upgrades.spec.ts:157:46
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    artifacts\content-retry-output\upgrades-the-last-remainin-0cb5f-tops-creating-empty-dialogs-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: artifacts\content-retry-output\upgrades-the-last-remainin-0cb5f-tops-creating-empty-dialogs-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    artifacts\content-retry-output\upgrades-the-last-remainin-0cb5f-tops-creating-empty-dialogs-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace artifacts\content-retry-output\upgrades-the-last-remainin-0cb5f-tops-creating-empty-dialogs-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  14) [webkit] › tests\combat-clarity-ui.spec.ts:3:1 › fully fused three-weapon build stays readable with CD indicators and pooled impact visuals 
+
+    Error: expect(received).toBeLessThanOrEqual(expected)
+
+    Expected: <= 1.551
+    Received:    2.799999952316284
+
+      39 |     }, steps);
+      40 |     expect(state.unchanged).toBe(true); expect(state.impacts).toBeLessThanOrEqual(6);
+    > 41 |     expect(state.largest).toBeLessThanOrEqual(1.551); expect(state.noDepthWrite).toBe(true); expect(state.maxHurt).toBeLessThanOrEqual(.301); expect(state.limits).toBe(24);
+         |                           ^
+      42 |     if (index === 1) expect(state.shots.every((count: number) => count > 0)).toBe(true);
+      43 |     await expect(page.locator('.weapon-charge')).toHaveCount(3);
+      44 |     await page.screenshot({ path: `artifacts/combat-clarity-${index === 0 ? 'volleys' : 'impacts'}.png` });
+        at E:\study\game\MonsterBonk Mobile\tests\combat-clarity-ui.spec.ts:41:27
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    artifacts\content-retry-output\combat-clarity-ui-fully-fu-ae086-s-and-pooled-impact-visuals-webkit\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: artifacts\content-retry-output\combat-clarity-ui-fully-fu-ae086-s-and-pooled-impact-visuals-webkit\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    artifacts\content-retry-output\combat-clarity-ui-fully-fu-ae086-s-and-pooled-impact-visuals-webkit\trace.zip
+    Usage:
+
+        npx playwright show-trace artifacts\content-retry-output\combat-clarity-ui-fully-fu-ae086-s-and-pooled-impact-visuals-webkit\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  15) [webkit] › tests\creature-animation-ui.spec.ts:77:1 › actual collision displacement controls animation and animated/static visuals have identical combat and positions 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: "{\"position\":{\"x\":4.371788402398613,\"z\":-11.790155370716246},\"combat\":{\"balanceTelemetry\":{\"damageEvents\":0,\"projectileBlockedAttempts\":0,\"sporeChainKills\":0,\"derivedDenied\":0,\"queuePeak\":0},\"triggerRelics\":{\"explosions\":0,\"thorns\":0,\"maxGeneration\":0,\"bubbles\":0,\"echoes\":0,\"echoesSkipped\":0,\"hourglassProcs\":0,\"steamBursts\":0,\"chainKills\":0,\"maxNodes\":0,\"casts\":0,\"pendingEchoes\":0,\"hasteRemaining\":0,\"hasteCooldown\":0,\"bubbleCooldown\":0,\"pending\":0,\"wet\":0,\"burning\":0},\"specialEnemies\":{\"sporeKills\":0,\"treasureEscapes\":0,\"treasureCaught\":0,\"explosions\":[],\"rewards\":[]},\"build\":{\"enabled\":true,\"species\":\"yanrong\",\"relics\":[],\"evolution\":null,\"attacks\":[{\"attackId\":\"spark\",\"slot\":0,\"level\":1,\"cooldown\":0,\"cooldownTotal\":0.44,\"shotsFired\":4}]},\"melee\":{\"active\":false,\"attackInstanceId\":0,\"x\":0,\"z\":0,\"aimX\":0,\"aimZ\":1,\"age\":0,\"radius\":0,\"angle\":3.141592653589793,\"hitIds\":[]},\"firing\":{\"weapon\":null,\"remaining\":0,\"gap\":0},\"hp\":100,\"kills\":0,\"goldEarned\":0,\"xp\":0,\"shotsFired\":4,\"hits\":4,\"fusion\":{\"enabled\":true,\"active\":null,\"recipes\":[],\"bursts\":0,\"childShots\":0,\"children\":0},\"spawned\":5,\"collected\":0,\"invulnerability\":0,\"enemies\":[{\"id\":1,\"kind\":\"tank\",\"x\":6.0869497631365554,\"z\":2.468766271412285,\"hp\":53,\"spawning\":false},{\"id\":4,\"kind\":\"normal\",\"x\":-21.631873169073177,\"z\":0.6965368474007856,\"hp\":12,\"spawning\":false},{\"id\":3,\"kind\":\"normal\",\"x\":-20.3677347218454,\"z\":3.0245786342078183,\"hp\":12,\"spawning\":false},{\"id\":5,\"kind\":\"normal\",\"x\":21.9228157225629,\"z\":8.205562243261054,\"hp\":12,\"spawning\":true}],\"projectiles\":0,\"orbs\":[],\"effects\":0,\"targetId\":0,\"limits\":{\"enemies\":256,\"projectiles\":24,\"orbs\":96,\"effects\":48,\"shockwaves\":2},\"maxHp\":100,\"progression\":{\"level\":1,\"experience\":0,\"totalExperience\":0,\"threshold\":8,\"pendingChoices\":0,\"choiceLevel\":2,\"offers\":[],\"ranks\":{\"damage\":0,\"haste\":0,\"multishot\":0,\"vitality\":0,\"movement\":0,\"range\":0,\"orbit\":0,\"shockwave\":0,\"flame-sweep-weapon\":0,\"split-on-hit\":0,\"area\":0,\"chain\":0,\"bubble-weapon\":0,\"spark-weapon\":1,\"leaf-weapon\":0,\"draft-boiling-core\":0,\"overload-core\":0,\"hunter-eye\":0,\"shattered-core\":0,\"tidal-pearl\":0,\"specialist-badge\":0,\"echo-rune\":0,\"draft-martyr-core\":0,\"draft-kindling-flask\":0,\"draft-thorn-testament\":0,\"draft-bubble-spore\":0,\"draft-echo-bone-dice\":0,\"draft-slaughter-hourglass\":0,\"tide-prism\":0,\"berserk-route\":0,\"pursuit-route\":0},\"stats\":{\"damageMultiplier\":1,\"attackRateMultiplier\":1,\"projectileCount\":1,\"maxHp\":100,\"moveMultiplier\":1,\"rangeMultiplier\":1,\"orbitCount\":0,\"orbitDamage\":0,\"orbitRadius\":0,\"orbitSpeed\":0,\"shockDamage\":0,\"shockRadius\":0,\"shockInterval\":0,\"splitOnHit\":0},\"maxLevel\":72},\"encounters\":{\"enabled\":true,\"wave\":1,\"boss\":null,\"elite\":null,\"shots\":[],\"limit\":16},\"orbitAngle\":0,\"shockwaves\":[]},\"party\":[{\"id\":1,\"species\":\"yanrong\",\"x\":4.371788402398613,\"z\":-11.790155370716246,\"previousX\":4.3471087910956525,\"previousZ\":-11.723597608773526,\"facing\":2.786509340024015,\"attackCooldown\":0,\"targetId\":0,\"shotsFired\":4,\"rank\":1,\"evolution\":\"base\",\"blockedTime\":0}]}"
+    Received: "{\"position\":{\"x\":4.371788402398613,\"z\":-11.790155370716246},\"combat\":{\"balanceTelemetry\":{\"damageEvents\":0,\"projectileBlockedAttempts\":0,\"sporeChainKills\":0,\"derivedDenied\":0,\"queuePeak\":0},\"triggerRelics\":{\"explosions\":0,\"thorns\":0,\"maxGeneration\":0,\"bubbles\":0,\"echoes\":0,\"echoesSkipped\":0,\"hourglassProcs\":0,\"steamBursts\":0,\"chainKills\":0,\"maxNodes\":0,\"casts\":0,\"pendingEchoes\":0,\"hasteRemaining\":0,\"hasteCooldown\":0,\"bubbleCooldown\":0,\"pending\":0,\"wet\":0,\"burning\":0},\"specialEnemies\":{\"sporeKills\":0,\"treasureEscapes\":0,\"treasureCaught\":0,\"explosions\":[],\"rewards\":[]},\"build\":{\"enabled\":true,\"species\":\"yanrong\",\"relics\":[],\"evolution\":null,\"attacks\":[{\"attackId\":\"spark\",\"slot\":0,\"level\":1,\"cooldown\":0,\"cooldownTotal\":0.44,\"shotsFired\":4}]},\"melee\":{\"active\":false,\"attackInstanceId\":0,\"x\":0,\"z\":0,\"aimX\":0,\"aimZ\":1,\"age\":0,\"radius\":0,\"angle\":3.141592653589793,\"hitIds\":[]},\"firing\":{\"weapon\":null,\"remaining\":0,\"gap\":0},\"hp\":100,\"kills\":0,\"goldEarned\":0,\"xp\":0,\"shotsFired\":4,\"hits\":4,\"fusion\":{\"enabled\":true,\"active\":null,\"recipes\":[],\"bursts\":0,\"childShots\":0,\"children\":0},\"spawned\":5,\"collected\":0,\"invulnerability\":0,\"enemies\":[{\"id\":1,\"kind\":\"tank\",\"x\":6.0869497631365554,\"z\":2.468766271412285,\"hp\":53,\"spawning\":false},{\"id\":2,\"kind\":\"normal\",\"x\":5.649774142102442,\"z\":12.554711047309683,\"hp\":12,\"spawning\":false},{\"id\":3,\"kind\":\"normal\",\"x\":1.1661002198950996,\"z\":13.250645547293,\"hp\":12,\"spawning\":false},{\"id\":4,\"kind\":\"normal\",\"x\":6.10298439534607,\"z\":15.118803449351178,\"hp\":12,\"spawning\":false},{\"id\":5,\"kind\":\"normal\",\"x\":-0.743018233054792,\"z\":14.875955020476571,\"hp\":12,\"spawning\":true}],\"projectiles\":0,\"orbs\":[],\"effects\":0,\"targetId\":0,\"limits\":{\"enemies\":256,\"projectiles\":24,\"orbs\":96,\"effects\":48,\"shockwaves\":2},\"maxHp\":100,\"progression\":{\"level\":1,\"experience\":0,\"totalExperience\":0,\"threshold\":8,\"pendingChoices\":0,\"choiceLevel\":2,\"offers\":[],\"ranks\":{\"damage\":0,\"haste\":0,\"multishot\":0,\"vitality\":0,\"movement\":0,\"range\":0,\"orbit\":0,\"shockwave\":0,\"flame-sweep-weapon\":0,\"split-on-hit\":0,\"area\":0,\"chain\":0,\"bubble-weapon\":0,\"spark-weapon\":1,\"leaf-weapon\":0,\"draft-boiling-core\":0,\"overload-core\":0,\"hunter-eye\":0,\"shattered-core\":0,\"tidal-pearl\":0,\"specialist-badge\":0,\"echo-rune\":0,\"draft-martyr-core\":0,\"draft-kindling-flask\":0,\"draft-thorn-testament\":0,\"draft-bubble-spore\":0,\"draft-echo-bone-dice\":0,\"draft-slaughter-hourglass\":0,\"tide-prism\":0,\"berserk-route\":0,\"pursuit-route\":0},\"stats\":{\"damageMultiplier\":1,\"attackRateMultiplier\":1,\"projectileCount\":1,\"maxHp\":100,\"moveMultiplier\":1,\"rangeMultiplier\":1,\"orbitCount\":0,\"orbitDamage\":0,\"orbitRadius\":0,\"orbitSpeed\":0,\"shockDamage\":0,\"shockRadius\":0,\"shockInterval\":0,\"splitOnHit\":0},\"maxLevel\":72},\"encounters\":{\"enabled\":true,\"wave\":1,\"boss\":null,\"elite\":null,\"shots\":[],\"limit\":16},\"orbitAngle\":0,\"shockwaves\":[]},\"party\":[{\"id\":1,\"species\":\"yanrong\",\"x\":4.371788402398613,\"z\":-11.790155370716246,\"previousX\":4.3471087910956525,\"previousZ\":-11.723597608773526,\"facing\":2.786509340024015,\"attackCooldown\":0,\"targetId\":0,\"shotsFired\":4,\"rank\":1,\"evolution\":\"base\",\"blockedTime\":0}]}"
+
+      82 |   await page.goto('/animation-harness?world=fixed&creatureAnimation=static');await page.waitForFunction(()=>'game'in window);await page.locator('#start-fusion').tap();
+      83 |   // Static override intentionally requests no atlases; compare through the same actual Game steps.
+    > 84 |   expect(await page.evaluate(()=>(window as any).parity())).toBe(animated);
+         |                                                             ^
+      85 |   await page.goto('/animation-harness?world=fixed');await page.waitForFunction(()=>'game'in window);await page.locator('#start-fusion').tap();
+      86 |   await expect.poll(async ()=>(await animation(page)).atlases.filter(a=>a.loaded).length).toBe(2);
+      87 |   await page.evaluate(()=>{const g=(window as any).game;g.world.obstacles.splice(0,g.world.obstacles.length,{x:2,z:0,radius:1});});
+        at E:\study\game\MonsterBonk Mobile\tests\creature-animation-ui.spec.ts:84:61
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    artifacts\content-retry-output\creature-animation-ui-actu-676ef-ntical-combat-and-positions-webkit\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: artifacts\content-retry-output\creature-animation-ui-actu-676ef-ntical-combat-and-positions-webkit\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    artifacts\content-retry-output\creature-animation-ui-actu-676ef-ntical-combat-and-positions-webkit\trace.zip
+    Usage:
+
+        npx playwright show-trace artifacts\content-retry-output\creature-animation-ui-actu-676ef-ntical-combat-and-positions-webkit\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  16) [webkit] › tests\elemental-fusion-ui.spec.ts:14:1 › deep atlas loads, plays flight and one-shot impact, damages and slows in actual game 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      17 |  await learn(page,'area');await page.evaluate(()=>(window as any).impact());
+      18 |  const result=await page.evaluate(()=>{const g=(window as any).game;return {hp:g.combat.enemies.filter((e:any)=>e.active).map((e:any)=>e.hp),slow:g.combat.enemies.filter((e:any)=>e.active).map((e:any)=>e.slowTime),pixels:g.combatView.inspectElemental()}});
+    > 19 |  expect(result.hp.some((hp:number)=>hp<100)).toBe(true);expect(result.slow.some((s:number)=>s>0)).toBe(true);
+         |                                              ^
+      20 |  expect(result.pixels).toMatchObject({loaded:true,nearest:true,count:1});expect(result.pixels.frames).toEqual([3]);
+      21 |  await page.evaluate(()=>{const w=window as any;w.game.combat.update(.14,w.game.position);w.draw()});
+      22 |  expect(await page.evaluate(()=>(window as any).game.combatView.inspectElemental().frames)).toEqual([4]);
+        at E:\study\game\MonsterBonk Mobile\tests\elemental-fusion-ui.spec.ts:19:46
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    artifacts\content-retry-output\elemental-fusion-ui-deep-a-8c9d6-es-and-slows-in-actual-game-webkit\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: artifacts\content-retry-output\elemental-fusion-ui-deep-a-8c9d6-es-and-slows-in-actual-game-webkit\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    artifacts\content-retry-output\elemental-fusion-ui-deep-a-8c9d6-es-and-slows-in-actual-game-webkit\trace.zip
+    Usage:
+
+        npx playwright show-trace artifacts\content-retry-output\elemental-fusion-ui-deep-a-8c9d6-es-and-slows-in-actual-game-webkit\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  17) [webkit] › tests\elemental-fusion-ui.spec.ts:30:11 › paopaoyuan development entry uses one animated creature, real cards, automatic fusions and bounded colored effects 
+
+    Error: expect(locator).toHaveText(expected) failed
+
+    Locator: locator('#creature-name')
+    Expected: "泡泡螈"
+    Timeout: 8000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toHaveText" locator('#creature-name') with timeout 8000ms
+      - waiting for locator('#creature-name')
+
+
+      30 | ]as const)test(dev+' development entry uses one animated creature, real cards, automatic fusions and bounded colored effects',async({page})=>{
+      31 |  const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));await open(page,dev);
+    > 32 |  expect(await page.evaluate(()=>(window as any).game.party.members.map((m:any)=>m.species))).toEqual([species]);await expect(page.locator('#creature-name')).toHaveText(name);await expect(page.locator('.dash-control')).toBeHidden();
+         |                                                                                                                                                              ^
+      33 |  for(let i=0;i<cards.length;i++){await learn(page,cards[i]);await expect(page.locator('#fusion-title')).toContainText(titles[i]);}
+      34 |  await page.evaluate(()=>(window as any).impact());
+      35 |  const state=await page.evaluate(()=>{const g=(window as any).game;return {c:g.combat.inspect(),rings:g.combatView.burstRings.count+(g.combatView.inspectElemental()?.count??0),fire:g.combatView.firePixels?.mesh.count??0,children:g.combat.projectiles.filter((s:any)=>s.active&&s.generation===1).length}});
+        at E:\study\game\MonsterBonk Mobile\tests\elemental-fusion-ui.spec.ts:32:158
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    artifacts\content-retry-output\elemental-fusion-ui-paopao-625ea-and-bounded-colored-effects-webkit\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: artifacts\content-retry-output\elemental-fusion-ui-paopao-625ea-and-bounded-colored-effects-webkit\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    artifacts\content-retry-output\elemental-fusion-ui-paopao-625ea-and-bounded-colored-effects-webkit\trace.zip
+    Usage:
+
+        npx playwright show-trace artifacts\content-retry-output\elemental-fusion-ui-paopao-625ea-and-bounded-colored-effects-webkit\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  18) [webkit] › tests\elemental-fusion-ui.spec.ts:30:11 › yacishou development entry uses one animated creature, real cards, automatic fusions and bounded colored effects 
+
+    Error: expect(locator).toHaveText(expected) failed
+
+    Locator: locator('#creature-name')
+    Expected: "芽刺兽"
+    Timeout: 8000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toHaveText" locator('#creature-name') with timeout 8000ms
+      - waiting for locator('#creature-name')
+
+
+      30 | ]as const)test(dev+' development entry uses one animated creature, real cards, automatic fusions and bounded colored effects',async({page})=>{
+      31 |  const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));await open(page,dev);
+    > 32 |  expect(await page.evaluate(()=>(window as any).game.party.members.map((m:any)=>m.species))).toEqual([species]);await expect(page.locator('#creature-name')).toHaveText(name);await expect(page.locator('.dash-control')).toBeHidden();
+         |                                                                                                                                                              ^
+      33 |  for(let i=0;i<cards.length;i++){await learn(page,cards[i]);await expect(page.locator('#fusion-title')).toContainText(titles[i]);}
+      34 |  await page.evaluate(()=>(window as any).impact());
+      35 |  const state=await page.evaluate(()=>{const g=(window as any).game;return {c:g.combat.inspect(),rings:g.combatView.burstRings.count+(g.combatView.inspectElemental()?.count??0),fire:g.combatView.firePixels?.mesh.count??0,children:g.combat.projectiles.filter((s:any)=>s.active&&s.generation===1).length}});
+        at E:\study\game\MonsterBonk Mobile\tests\elemental-fusion-ui.spec.ts:32:158
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    artifacts\content-retry-output\elemental-fusion-ui-yacish-1fef3-and-bounded-colored-effects-webkit\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: artifacts\content-retry-output\elemental-fusion-ui-yacish-1fef3-and-bounded-colored-effects-webkit\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    artifacts\content-retry-output\elemental-fusion-ui-yacish-1fef3-and-bounded-colored-effects-webkit\trace.zip
+    Usage:
+
+        npx playwright show-trace artifacts\content-retry-output\elemental-fusion-ui-yacish-1fef3-and-bounded-colored-effects-webkit\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  19) [webkit] › tests\elemental-fusion-ui.spec.ts:73:1 › missing elemental textures and icons preserve procedural effects, readable cards and damage 
+
+    Error: page.evaluate: TypeError: undefined is not an object (evaluating 'window.game.combatView.burstRings.count')
+
+      74 |  await page.route('**/assets/pixel/skills/fusions/*.png',r=>r.abort());await open(page,'paopaoyuan');await page.evaluate(()=>(window as any).game.sleep());
+      75 |  await expect.poll(()=>page.evaluate(()=>(window as any).game.combatView.inspectElemental()?.failed)).toBe(true);await learn(page,'area');await page.evaluate(()=>(window as any).impact());
+    > 76 |  expect(await page.evaluate(()=>(window as any).game.combat.hits)).toBeGreaterThan(0);expect(await page.evaluate(()=>(window as any).game.combatView.burstRings.count)).toBeGreaterThan(0);
+         |                                                                                                         ^
+      77 |  expect(await page.evaluate(()=>(window as any).game.combatView.inspectElemental().count)).toBe(0);await expect(page.locator('#fusion-title')).toContainText('深海泡影');
+      78 | });
+      79 |
+        at E:\study\game\MonsterBonk Mobile\tests\elemental-fusion-ui.spec.ts:76:105
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    artifacts\content-retry-output\elemental-fusion-ui-missin-e8229-s-readable-cards-and-damage-webkit\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: artifacts\content-retry-output\elemental-fusion-ui-missin-e8229-s-readable-cards-and-damage-webkit\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    artifacts\content-retry-output\elemental-fusion-ui-missin-e8229-s-readable-cards-and-damage-webkit\trace.zip
+    Usage:
+
+        npx playwright show-trace artifacts\content-retry-output\elemental-fusion-ui-missin-e8229-s-readable-cards-and-damage-webkit\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  20) [webkit] › tests\fusion-ui.spec.ts:51:1 › real fusion cards and impacts render child/explosion frames without duplicate hit flashes on both phone layouts 
+
+    Error: expect(locator).toHaveClass(expected) failed
+
+    Locator: locator('[data-skill="split-on-hit"]').locator('.fire-icon')
+    Expected pattern: /ready/
+    Timeout: 8000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toHaveClass" locator('[data-skill="split-on-hit"]').locator('.fire-icon') with timeout 8000ms
+      - waiting for locator('[data-skill="split-on-hit"]').locator('.fire-icon')
+
+
+      53 |   await page.evaluate(() => (window as unknown as Fixture).offer());
+      54 |   const card = page.locator('[data-skill="split-on-hit"]'); await expect(card).toBeEnabled();
+    > 55 |   await expect(card.locator('.fire-icon')).toHaveClass(/ready/);
+         |                                            ^
+      56 |   await page.screenshot({ path: 'artifacts/v5-fusion-card-844.png' });
+      57 |   await page.setViewportSize({ width: 568, height: 320 });
+      58 |   await page.screenshot({ path: 'artifacts/v5-fusion-card-568.png' });
+        at E:\study\game\MonsterBonk Mobile\tests\fusion-ui.spec.ts:55:44
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    artifacts\content-retry-output\fusion-ui-real-fusion-card-e5c41-ashes-on-both-phone-layouts-webkit\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: artifacts\content-retry-output\fusion-ui-real-fusion-card-e5c41-ashes-on-both-phone-layouts-webkit\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    artifacts\content-retry-output\fusion-ui-real-fusion-card-e5c41-ashes-on-both-phone-layouts-webkit\trace.zip
+    Usage:
+
+        npx playwright show-trace artifacts\content-retry-output\fusion-ui-real-fusion-card-e5c41-ashes-on-both-phone-layouts-webkit\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  21) [webkit] › tests\fusion-ui.spec.ts:98:1 › missing atlas and icons keep procedural attack/explosion and readable cards 
+
+    Error: page.evaluate: TypeError: undefined is not an object (evaluating 'v.burstRings.count')
+
+      102 |   await page.evaluate(() => (window as unknown as Fixture).impact());
+      103 |   expect((await state(page)).combat.fusion.bursts).toBe(1); expect((await state(page)).combat.fusion.children).toBe(2);
+    > 104 |   expect(await page.evaluate(() => { const v=(window as any).game.combatView;return {bolts:v.bolts.count,rings:v.burstRings.count}; })).toEqual({bolts:2,rings:1});
+          |                     ^
+      105 |   expect((await state(page)).fusionVisual!.count).toBe(0);
+      106 | });
+      107 |
+        at E:\study\game\MonsterBonk Mobile\tests\fusion-ui.spec.ts:104:21
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    artifacts\content-retry-output\fusion-ui-missing-atlas-an-4f1a2-xplosion-and-readable-cards-webkit\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: artifacts\content-retry-output\fusion-ui-missing-atlas-an-4f1a2-xplosion-and-readable-cards-webkit\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    artifacts\content-retry-output\fusion-ui-missing-atlas-an-4f1a2-xplosion-and-readable-cards-webkit\trace.zip
+    Usage:
+
+        npx playwright show-trace artifacts\content-retry-output\fusion-ui-missing-atlas-an-4f1a2-xplosion-and-readable-cards-webkit\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  22) [webkit] › tests\game.spec.ts:14:1 › main menu renders a real 3D world and starts exploration without errors 
+
+    Error: expect(locator).toHaveAttribute(expected) failed
+
+    Locator: getByRole('progressbar', { name: '生命值', exact: true })
+    Expected: "100"
+    Timeout: 8000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toHaveAttribute" getByRole('progressbar', { name: '生命值', exact: true }) with timeout 8000ms
+      - waiting for getByRole('progressbar', { name: '生命值', exact: true })
+
+
+      28 |   await expect(page.locator('#hud')).toBeVisible();
+      29 |   await expect(page.locator('#menu')).toBeHidden();
+    > 30 |   await expect(page.getByRole('progressbar', { name: '生命值', exact: true })).toHaveAttribute('aria-valuenow', '100');
+         |                                                                             ^
+      31 |   await expect.poll(async () => (await inspect(page)).elapsed).toBeGreaterThan(0.5);
+      32 |   const state = await inspect(page);
+      33 |   expect(state.drawCalls).toBeLessThan(100);
+        at E:\study\game\MonsterBonk Mobile\tests\game.spec.ts:30:77
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    artifacts\content-retry-output\game-main-menu-renders-a-r-10d93--exploration-without-errors-webkit\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: artifacts\content-retry-output\game-main-menu-renders-a-r-10d93--exploration-without-errors-webkit\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    artifacts\content-retry-output\game-main-menu-renders-a-r-10d93--exploration-without-errors-webkit\trace.zip
+    Usage:
+
+        npx playwright show-trace artifacts\content-retry-output\game-main-menu-renders-a-r-10d93--exploration-without-errors-webkit\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  23) [webkit] › tests\hud-art.spec.ts:3:1 › forest HUD keeps live values, weapon artwork and safe touch targets on landscape phones 
+
+    Error: expect(received).toBeGreaterThanOrEqual(expected)
+
+    Expected: >= 48
+    Received:    44
+
+      45 |     for(const selector of ['#pause','#settings']) {
+      46 |       const rect=(await page.locator(selector).boundingBox())!;
+    > 47 |       expect(rect.width).toBeGreaterThanOrEqual(width === 568 ? 44 : 48);expect(rect.height).toBeGreaterThanOrEqual(width === 568 ? 44 : 48);
+         |                          ^
+      48 |     }
+      49 |   }
+      50 |   if(browserName==='chromium') await page.screenshot({path:'artifacts/hud-boss-small-chromium.png'});
+        at E:\study\game\MonsterBonk Mobile\tests\hud-art.spec.ts:47:26
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    artifacts\content-retry-output\hud-art-forest-HUD-keeps-l-0a44a-targets-on-landscape-phones-webkit\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: artifacts\content-retry-output\hud-art-forest-HUD-keeps-l-0a44a-targets-on-landscape-phones-webkit\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    artifacts\content-retry-output\hud-art-forest-HUD-keeps-l-0a44a-targets-on-landscape-phones-webkit\trace.zip
+    Usage:
+
+        npx playwright show-trace artifacts\content-retry-output\hud-art-forest-HUD-keeps-l-0a44a-targets-on-landscape-phones-webkit\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  24) [webkit] › tests\infinite-world-ui.spec.ts:111:1 › teleporting across many chunks does not accumulate chunk groups or materials 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: page.evaluate: Test timeout of 30000ms exceeded.
+
+      111 | test('teleporting across many chunks does not accumulate chunk groups or materials', async ({ page }) => {
+      112 |   await start(page);
+    > 113 |   const result = await page.evaluate(() => {
+          |                             ^
+      114 |     const g = (window as any).game; g.sleep();
+      115 |     const captures: number[] = [];
+      116 |     for (let i = 0; i < 80; i++) {
+        at E:\study\game\MonsterBonk Mobile\tests\infinite-world-ui.spec.ts:113:29
+
+    Error Context: artifacts\content-retry-output\infinite-world-ui-teleport-14084-e-chunk-groups-or-materials-webkit\error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    artifacts\content-retry-output\infinite-world-ui-teleport-14084-e-chunk-groups-or-materials-webkit\trace.zip
+    Usage:
+
+        npx playwright show-trace artifacts\content-retry-output\infinite-world-ui-teleport-14084-e-chunk-groups-or-materials-webkit\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  25) [webkit] › tests\random-world-ui.spec.ts:93:1 › different seeds render different regions and fit phone replay controls 
+
+    Error: expect(received).toBeLessThanOrEqual(expected)
+
+    Expected: <= 320
+    Received:    326.59375
+
+      117 |   await page.locator('#pause').click();
+      118 |   const short = (await page.locator('#map-replay').boundingBox())!;
+    > 119 |   expect(short.y).toBeGreaterThanOrEqual(0); expect(short.y + short.height).toBeLessThanOrEqual(320);
+          |                                                                             ^
+      120 |   expect(invalidAtlasRequests).toEqual([]);
+      121 | });
+      122 |
+        at E:\study\game\MonsterBonk Mobile\tests\random-world-ui.spec.ts:119:77
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    artifacts\content-retry-output\random-world-ui-different--4d918-d-fit-phone-replay-controls-webkit\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: artifacts\content-retry-output\random-world-ui-different--4d918-d-fit-phone-replay-controls-webkit\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    artifacts\content-retry-output\random-world-ui-different--4d918-d-fit-phone-replay-controls-webkit\trace.zip
+    Usage:
+
+        npx playwright show-trace artifacts\content-retry-output\random-world-ui-different--4d918-d-fit-phone-replay-controls-webkit\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  26) [webkit] › tests\upgrades.spec.ts:124:1 › new spells coexist, max HP updates HUD and a fresh run clears all skills 
+
+    Error: expect(locator).toHaveAttribute(expected) failed
+
+    Locator: getByRole('progressbar', { name: '生命值', exact: true })
+    Expected: "120"
+    Timeout: 8000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toHaveAttribute" getByRole('progressbar', { name: '生命值', exact: true }) with timeout 8000ms
+      - waiting for getByRole('progressbar', { name: '生命值', exact: true })
+
+
+      132 |   expect(upgraded.combat.progression.stats).toMatchObject({ orbitCount: 1, shockDamage: 24, maxHp: 120, moveMultiplier: 1.1 });
+      133 |   await expect(page.locator('#health-value')).toHaveText('120 / 120');
+    > 134 |   await expect(page.getByRole('progressbar', { name: '生命值', exact: true })).toHaveAttribute('aria-valuemax', '120');
+          |                                                                             ^
+      135 |   await expect.poll(async () => (await state(page)).combat.orbitAngle).toBeGreaterThan(0);
+      136 |   if (testInfo.project.name === 'chromium') {
+      137 |     await expect.poll(async () => (await state(page)).combat.shockwaves.some((wave) => wave.radius > 1.5), { timeout: 7_000, intervals: [50] }).toBe(true);
+        at E:\study\game\MonsterBonk Mobile\tests\upgrades.spec.ts:134:77
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    artifacts\content-retry-output\upgrades-new-spells-coexis-8c811-fresh-run-clears-all-skills-webkit\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: artifacts\content-retry-output\upgrades-new-spells-coexis-8c811-fresh-run-clears-all-skills-webkit\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    artifacts\content-retry-output\upgrades-new-spells-coexis-8c811-fresh-run-clears-all-skills-webkit\trace.zip
+    Usage:
+
+        npx playwright show-trace artifacts\content-retry-output\upgrades-new-spells-coexis-8c811-fresh-run-clears-all-skills-webkit\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  27) [webkit] › tests\upgrades.spec.ts:147:1 › the last remaining skill is valid and full mastery stops creating empty dialogs 
+
+    Error: expect(locator).toHaveText(expected) failed
+
+    Locator: locator('#xp-progress')
+    Expected: "满级"
+    Timeout: 8000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toHaveText" locator('#xp-progress') with timeout 8000ms
+      - waiting for locator('#xp-progress')
+
+
+      155 |   await page.locator('.skill-card').tap();
+      156 |   await expect(page.locator('#upgrade-screen')).toBeHidden();
+    > 157 |   await expect(page.locator('#xp-progress')).toHaveText('满级');
+          |                                              ^
+      158 |   await page.evaluate(() => (window as unknown as Harness).testGame.combat.progression.gainExperience(500));
+      159 |   await page.waitForTimeout(200);
+      160 |   expect((await state(page)).mode).toBe('playing');
+        at E:\study\game\MonsterBonk Mobile\tests\upgrades.spec.ts:157:46
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    artifacts\content-retry-output\upgrades-the-last-remainin-0cb5f-tops-creating-empty-dialogs-webkit\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: artifacts\content-retry-output\upgrades-the-last-remainin-0cb5f-tops-creating-empty-dialogs-webkit\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    artifacts\content-retry-output\upgrades-the-last-remainin-0cb5f-tops-creating-empty-dialogs-webkit\trace.zip
+    Usage:
+
+        npx playwright show-trace artifacts\content-retry-output\upgrades-the-last-remainin-0cb5f-tops-creating-empty-dialogs-webkit\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  27 failed
+    [chromium] › tests\combat-clarity-ui.spec.ts:3:1 › fully fused three-weapon build stays readable with CD indicators and pooled impact visuals 
+    [chromium] › tests\creature-animation-ui.spec.ts:77:1 › actual collision displacement controls animation and animated/static visuals have identical combat and positions 
+    [chromium] › tests\elemental-fusion-ui.spec.ts:14:1 › deep atlas loads, plays flight and one-shot impact, damages and slows in actual game 
+    [chromium] › tests\elemental-fusion-ui.spec.ts:30:11 › paopaoyuan development entry uses one animated creature, real cards, automatic fusions and bounded colored effects 
+    [chromium] › tests\elemental-fusion-ui.spec.ts:30:11 › yacishou development entry uses one animated creature, real cards, automatic fusions and bounded colored effects 
+    [chromium] › tests\elemental-fusion-ui.spec.ts:73:1 › missing elemental textures and icons preserve procedural effects, readable cards and damage 
+    [chromium] › tests\fusion-ui.spec.ts:51:1 › real fusion cards and impacts render child/explosion frames without duplicate hit flashes on both phone layouts 
+    [chromium] › tests\fusion-ui.spec.ts:98:1 › missing atlas and icons keep procedural attack/explosion and readable cards 
+    [chromium] › tests\game.spec.ts:14:1 › main menu renders a real 3D world and starts exploration without errors 
+    [chromium] › tests\hud-art.spec.ts:3:1 › forest HUD keeps live values, weapon artwork and safe touch targets on landscape phones 
+    [chromium] › tests\random-world-ui.spec.ts:93:1 › different seeds render different regions and fit phone replay controls 
+    [chromium] › tests\upgrades.spec.ts:124:1 › new spells coexist, max HP updates HUD and a fresh run clears all skills 
+    [chromium] › tests\upgrades.spec.ts:147:1 › the last remaining skill is valid and full mastery stops creating empty dialogs 
+    [webkit] › tests\combat-clarity-ui.spec.ts:3:1 › fully fused three-weapon build stays readable with CD indicators and pooled impact visuals 
+    [webkit] › tests\creature-animation-ui.spec.ts:77:1 › actual collision displacement controls animation and animated/static visuals have identical combat and positions 
+    [webkit] › tests\elemental-fusion-ui.spec.ts:14:1 › deep atlas loads, plays flight and one-shot impact, damages and slows in actual game 
+    [webkit] › tests\elemental-fusion-ui.spec.ts:30:11 › paopaoyuan development entry uses one animated creature, real cards, automatic fusions and bounded colored effects 
+    [webkit] › tests\elemental-fusion-ui.spec.ts:30:11 › yacishou development entry uses one animated creature, real cards, automatic fusions and bounded colored effects 
+    [webkit] › tests\elemental-fusion-ui.spec.ts:73:1 › missing elemental textures and icons preserve procedural effects, readable cards and damage 
+    [webkit] › tests\fusion-ui.spec.ts:51:1 › real fusion cards and impacts render child/explosion frames without duplicate hit flashes on both phone layouts 
+    [webkit] › tests\fusion-ui.spec.ts:98:1 › missing atlas and icons keep procedural attack/explosion and readable cards 
+    [webkit] › tests\game.spec.ts:14:1 › main menu renders a real 3D world and starts exploration without errors 
+    [webkit] › tests\hud-art.spec.ts:3:1 › forest HUD keeps live values, weapon artwork and safe touch targets on landscape phones 
+    [webkit] › tests\infinite-world-ui.spec.ts:111:1 › teleporting across many chunks does not accumulate chunk groups or materials 
+    [webkit] › tests\random-world-ui.spec.ts:93:1 › different seeds render different regions and fit phone replay controls 
+    [webkit] › tests\upgrades.spec.ts:124:1 › new spells coexist, max HP updates HUD and a fresh run clears all skills 
+    [webkit] › tests\upgrades.spec.ts:147:1 › the last remaining skill is valid and full mastery stops creating empty dialogs 
+  51 passed (12.0m)

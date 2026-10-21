@@ -1,0 +1,84 @@
+Legacy-catalogue control {
+  species: 'yanrong',
+  policy: 'chain',
+  movement: 'forager',
+  seed: 42,
+  equal: true
+}
+Legacy-catalogue control {
+  species: 'bubblesalamander',
+  policy: 'focused',
+  movement: 'forager',
+  seed: 42,
+  equal: true
+}
+Legacy-catalogue control {
+  species: 'bubblesalamander',
+  policy: 'chain',
+  movement: 'forager',
+  seed: 42,
+  equal: true
+}
+Legacy-catalogue control {
+  species: 'bubblesalamander',
+  policy: 'survival',
+  movement: 'forager',
+  seed: 42,
+  equal: true
+}
+Legacy-catalogue control {
+  species: 'yanrong',
+  policy: 'chain',
+  movement: 'forager',
+  seed: 901,
+  equal: true
+}
+Legacy-catalogue control {
+  species: 'bubblesalamander',
+  policy: 'focused',
+  movement: 'stationary',
+  seed: 901,
+  equal: true
+}
+Legacy-catalogue control {
+  species: 'bubblesalamander',
+  policy: 'focused',
+  movement: 'forager',
+  seed: 901,
+  equal: true
+}
+Legacy-catalogue control {
+  species: 'bubblesalamander',
+  policy: 'chain',
+  movement: 'forager',
+  seed: 901,
+  equal: true
+}
+Legacy-catalogue control {
+  species: 'yanrong',
+  policy: 'focused',
+  movement: 'forager',
+  seed: 20261021,
+  equal: true
+}
+Legacy-catalogue control {
+  species: 'bubblesalamander',
+  policy: 'focused',
+  movement: 'forager',
+  seed: 20261021,
+  equal: true
+}
+Legacy-catalogue control {
+  species: 'bubblesalamander',
+  policy: 'chain',
+  movement: 'forager',
+  seed: 20261021,
+  equal: true
+}
+Legacy-catalogue control {
+  species: 'bubblesalamander',
+  policy: 'survival',
+  movement: 'forager',
+  seed: 20261021,
+  equal: true
+}

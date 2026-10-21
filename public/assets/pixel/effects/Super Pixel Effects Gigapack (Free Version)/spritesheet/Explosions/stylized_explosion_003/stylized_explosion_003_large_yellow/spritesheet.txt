@@ -1,0 +1,14 @@
+PNG/Explosions/stylized_explosion_003/stylized_explosion_003_large_yellow/frame0000.png = 0 0 128 96
+PNG/Explosions/stylized_explosion_003/stylized_explosion_003_large_yellow/frame0001.png = 128 0 128 96
+PNG/Explosions/stylized_explosion_003/stylized_explosion_003_large_yellow/frame0002.png = 256 0 128 96
+PNG/Explosions/stylized_explosion_003/stylized_explosion_003_large_yellow/frame0003.png = 384 0 128 96
+PNG/Explosions/stylized_explosion_003/stylized_explosion_003_large_yellow/frame0004.png = 512 0 128 96
+PNG/Explosions/stylized_explosion_003/stylized_explosion_003_large_yellow/frame0005.png = 640 0 128 96
+PNG/Explosions/stylized_explosion_003/stylized_explosion_003_large_yellow/frame0006.png = 768 0 128 96
+PNG/Explosions/stylized_explosion_003/stylized_explosion_003_large_yellow/frame0007.png = 896 0 128 96
+PNG/Explosions/stylized_explosion_003/stylized_explosion_003_large_yellow/frame0008.png = 1024 0 128 96
+PNG/Explosions/stylized_explosion_003/stylized_explosion_003_large_yellow/frame0009.png = 1152 0 128 96
+PNG/Explosions/stylized_explosion_003/stylized_explosion_003_large_yellow/frame0010.png = 1280 0 128 96
+PNG/Explosions/stylized_explosion_003/stylized_explosion_003_large_yellow/frame0011.png = 1408 0 128 96
+PNG/Explosions/stylized_explosion_003/stylized_explosion_003_large_yellow/frame0012.png = 1536 0 128 96
+PNG/Explosions/stylized_explosion_003/stylized_explosion_003_large_yellow/frame0013.png = 1664 0 128 96

@@ -1,0 +1,674 @@
+[
+  {
+    "browser": "chromium",
+    "file": "combat-clarity-ui.spec.ts",
+    "test": "fully fused three-weapon build stays readable with CD indicators and pooled impact visuals ",
+    "sameBaselineAssertion": true,
+    "baseline": {
+      "assertions": [
+        "> 41 |     expect(state.largest).toBeLessThanOrEqual(1.551); expect(state.noDepthWrite).toBe(true); expect(state.maxHurt).toBeLessThanOrEqual(.301); expect(state.limits).toBe(24);"
+      ],
+      "errors": [
+        "Error: expect(received).toBeLessThanOrEqual(expected)",
+        "Expected: <= 1.551",
+        "Received:    2.799999952316284"
+      ]
+    },
+    "current": {
+      "assertions": [
+        "> 41 |     expect(state.largest).toBeLessThanOrEqual(1.551); expect(state.noDepthWrite).toBe(true); expect(state.maxHurt).toBeLessThanOrEqual(.301); expect(state.limits).toBe(24);"
+      ],
+      "errors": [
+        "Error: expect(received).toBeLessThanOrEqual(expected)",
+        "Expected: <= 1.551",
+        "Received:    2.799999952316284"
+      ]
+    }
+  },
+  {
+    "browser": "chromium",
+    "file": "creature-animation-ui.spec.ts",
+    "test": "actual collision displacement controls animation and animated/static visuals have identical combat and positions ",
+    "sameBaselineAssertion": true,
+    "baseline": {
+      "assertions": [
+        "> 84 |   expect(await page.evaluate(()=>(window as any).parity())).toBe(animated);"
+      ],
+      "errors": [
+        "Error: expect(received).toBe(expected) // Object.is equality",
+        "Expected: \"{\\\"position\\\":{\\\"x\\\":4.371788402398613,\\\"z\\\":-11.790155370716246},\\\"combat\\\":{\\\"balanceTelemetry\\\":{\\\"damageEvents\\\":0,\\\"projectileBlockedAttempts\\\":0,\\\"sporeChainKills\\\":0,\\\"derivedDenied\\\":0,\\\"queuePeak\\\":0},\\\"triggerRelics\\\":{\\\"explosions\\\":0,\\\"thorns\\\":0,\\\"maxGeneration\\\":0,\\\"bubbles\\\":0,\\\"echoes\\\":0,\\\"echoesSkipped\\\":0,\\\"hourglassProcs\\\":0,\\\"steamBursts\\\":0,\\\"chainKills\\\":0,\\\"maxNodes\\\":0,\\\"casts\\\":0,\\\"pendingEchoes\\\":0,\\\"hasteRemaining\\\":0,\\\"hasteCooldown\\\":0,\\\"bubbleCooldown\\\":0,\\\"pending\\\":0,\\\"wet\\\":0,\\\"burning\\\":0},\\\"specialEnemies\\\":{\\\"sporeKills\\\":0,\\\"treasureEscapes\\\":0,\\\"treasureCaught\\\":0,\\\"explosions\\\":[],\\\"rewards\\\":[]},\\\"build\\\":{\\\"enabled\\\":true,\\\"species\\\":\\\"yanrong\\\",\\\"relics\\\":[],\\\"evolution\\\":null,\\\"attacks\\\":[{\\\"attackId\\\":\\\"spark\\\",\\\"slot\\\":0,\\\"level\\\":1,\\\"cooldown\\\":0,\\\"cooldownTotal\\\":0.44,\\\"shotsFired\\\":4}]},\\\"melee\\\":{\\\"active\\\":false,\\\"attackInstanceId\\\":0,\\\"x\\\":0,\\\"z\\\":0,\\\"aimX\\\":0,\\\"aimZ\\\":1,\\\"age\\\":0,\\\"radius\\\":0,\\\"angle\\\":3.141592653589793,\\\"hitIds\\\":[]},\\\"firing\\\":{\\\"weapon\\\":null,\\\"remaining\\\":0,\\\"gap\\\":0},\\\"hp\\\":100,\\\"kills\\\":0,\\\"goldEarned\\\":0,\\\"xp\\\":0,\\\"shotsFired\\\":4,\\\"hits\\\":4,\\\"fusion\\\":{\\\"enabled\\\":true,\\\"active\\\":null,\\\"recipes\\\":[],\\\"bursts\\\":0,\\\"childShots\\\":0,\\\"children\\\":0},\\\"spawned\\\":5,\\\"collected\\\":0,\\\"invulnerability\\\":0,\\\"enemies\\\":[{\\\"id\\\":1,\\\"kind\\\":\\\"tank\\\",\\\"x\\\":6.0869497631365554,\\\"z\\\":2.468766271412285,\\\"hp\\\":53,\\\"spawning\\\":false},{\\\"id\\\":2,\\\"kind\\\":\\\"normal\\\",\\\"x\\\":-3.7420104321559755,\\\"z\\\":12.634332102644494,\\\"hp\\\":12,\\\"spawning\\\":false},{\\\"id\\\":3,\\\"kind\\\":\\\"normal\\\",\\\"x\\\":-9.341409684425953,\\\"z\\\":13.336242575871951,\\\"hp\\\":12,\\\"spawning\\\":false},{\\\"id\\\":4,\\\"kind\\\":\\\"normal\\\",\\\"x\\\":-4.746330685563063,\\\"z\\\":15.174365431897748,\\\"hp\\\":12,\\\"spawning\\\":false},{\\\"id\\\":5,\\\"kind\\\":\\\"normal\\\",\\\"x\\\":-2.688846310363186,\\\"z\\\":14.927948536687856,\\\"hp\\\":12,\\\"spawning\\\":true}],\\\"projectiles\\\":0,\\\"orbs\\\":[],\\\"effects\\\":0,\\\"targetId\\\":0,\\\"limits\\\":{\\\"enemies\\\":256,\\\"projectiles\\\":24,\\\"orbs\\\":96,\\\"effects\\\":48,\\\"shockwaves\\\":2},\\\"maxHp\\\":100,\\\"progression\\\":{\\\"level\\\":1,\\\"experience\\\":0,\\\"totalExperience\\\":0,\\\"threshold\\\":8,\\\"pendingChoices\\\":0,\\\"choiceLevel\\\":2,\\\"offers\\\":[],\\\"ranks\\\":{\\\"damage\\\":0,\\\"haste\\\":0,\\\"multishot\\\":0,\\\"vitality\\\":0,\\\"movement\\\":0,\\\"range\\\":0,\\\"orbit\\\":0,\\\"shockwave\\\":0,\\\"flame-sweep-weapon\\\":0,\\\"split-on-hit\\\":0,\\\"area\\\":0,\\\"chain\\\":0,\\\"bubble-weapon\\\":0,\\\"spark-weapon\\\":1,\\\"leaf-weapon\\\":0,\\\"draft-boiling-core\\\":0,\\\"overload-core\\\":0,\\\"hunter-eye\\\":0,\\\"shattered-core\\\":0,\\\"tidal-pearl\\\":0,\\\"specialist-badge\\\":0,\\\"echo-rune\\\":0,\\\"draft-martyr-core\\\":0,\\\"draft-kindling-flask\\\":0,\\\"draft-thorn-testament\\\":0,\\\"draft-bubble-spore\\\":0,\\\"draft-echo-bone-dice\\\":0,\\\"draft-slaughter-hourglass\\\":0,\\\"berserk-route\\\":0,\\\"pursuit-route\\\":0},\\\"stats\\\":{\\\"damageMultiplier\\\":1,\\\"attackRateMultiplier\\\":1,\\\"projectileCount\\\":1,\\\"maxHp\\\":100,\\\"moveMultiplier\\\":1,\\\"rangeMultiplier\\\":1,\\\"orbitCount\\\":0,\\\"orbitDamage\\\":0,\\\"orbitRadius\\\":0,\\\"orbitSpeed\\\":0,\\\"shockDamage\\\":0,\\\"shockRadius\\\":0,\\\"shockInterval\\\":0,\\\"splitOnHit\\\":0},\\\"maxLevel\\\":71},\\\"encounters\\\":{\\\"enabled\\\":true,\\\"wave\\\":1,\\\"boss\\\":null,\\\"elite\\\":null,\\\"shots\\\":[],\\\"limit\\\":16},\\\"orbitAngle\\\":0,\\\"shockwaves\\\":[]},\\\"party\\\":[{\\\"id\\\":1,\\\"species\\\":\\\"yanrong\\\",\\\"x\\\":4.371788402398613,\\\"z\\\":-11.790155370716246,\\\"previousX\\\":4.3471087910956525,\\\"previousZ\\\":-11.723597608773526,\\\"facing\\\":2.786509340024015,\\\"attackCooldown\\\":0,\\\"targetId\\\":0,\\\"shotsFired\\\":4,\\\"rank\\\":1,\\\"evolution\\\":\\\"base\\\",\\\"blockedTime\\\":0}]}\"",
+        "Received: \"{\\\"position\\\":{\\\"x\\\":4.371788402398613,\\\"z\\\":-11.790155370716246},\\\"combat\\\":{\\\"balanceTelemetry\\\":{\\\"damageEvents\\\":0,\\\"projectileBlockedAttempts\\\":0,\\\"sporeChainKills\\\":0,\\\"derivedDenied\\\":0,\\\"queuePeak\\\":0},\\\"triggerRelics\\\":{\\\"explosions\\\":0,\\\"thorns\\\":0,\\\"maxGeneration\\\":0,\\\"bubbles\\\":0,\\\"echoes\\\":0,\\\"echoesSkipped\\\":0,\\\"hourglassProcs\\\":0,\\\"steamBursts\\\":0,\\\"chainKills\\\":0,\\\"maxNodes\\\":0,\\\"casts\\\":0,\\\"pendingEchoes\\\":0,\\\"hasteRemaining\\\":0,\\\"hasteCooldown\\\":0,\\\"bubbleCooldown\\\":0,\\\"pending\\\":0,\\\"wet\\\":0,\\\"burning\\\":0},\\\"specialEnemies\\\":{\\\"sporeKills\\\":0,\\\"treasureEscapes\\\":0,\\\"treasureCaught\\\":0,\\\"explosions\\\":[],\\\"rewards\\\":[]},\\\"build\\\":{\\\"enabled\\\":true,\\\"species\\\":\\\"yanrong\\\",\\\"relics\\\":[],\\\"evolution\\\":null,\\\"attacks\\\":[{\\\"attackId\\\":\\\"spark\\\",\\\"slot\\\":0,\\\"level\\\":1,\\\"cooldown\\\":0,\\\"cooldownTotal\\\":0.44,\\\"shotsFired\\\":4}]},\\\"melee\\\":{\\\"active\\\":false,\\\"attackInstanceId\\\":0,\\\"x\\\":0,\\\"z\\\":0,\\\"aimX\\\":0,\\\"aimZ\\\":1,\\\"age\\\":0,\\\"radius\\\":0,\\\"angle\\\":3.141592653589793,\\\"hitIds\\\":[]},\\\"firing\\\":{\\\"weapon\\\":null,\\\"remaining\\\":0,\\\"gap\\\":0},\\\"hp\\\":100,\\\"kills\\\":0,\\\"goldEarned\\\":0,\\\"xp\\\":0,\\\"shotsFired\\\":4,\\\"hits\\\":4,\\\"fusion\\\":{\\\"enabled\\\":true,\\\"active\\\":null,\\\"recipes\\\":[],\\\"bursts\\\":0,\\\"childShots\\\":0,\\\"children\\\":0},\\\"spawned\\\":5,\\\"collected\\\":0,\\\"invulnerability\\\":0,\\\"enemies\\\":[{\\\"id\\\":1,\\\"kind\\\":\\\"tank\\\",\\\"x\\\":6.0869497631365554,\\\"z\\\":2.468766271412285,\\\"hp\\\":53,\\\"spawning\\\":false},{\\\"id\\\":2,\\\"kind\\\":\\\"normal\\\",\\\"x\\\":-20.435018971817897,\\\"z\\\":-11.675649067491104,\\\"hp\\\":12,\\\"spawning\\\":false},{\\\"id\\\":3,\\\"kind\\\":\\\"normal\\\",\\\"x\\\":-15.7782699818829,\\\"z\\\":-15.092485558909498,\\\"hp\\\":12,\\\"spawning\\\":false},{\\\"id\\\":4,\\\"kind\\\":\\\"normal\\\",\\\"x\\\":-13.258696292112619,\\\"z\\\":-15.752792302540172,\\\"hp\\\":12,\\\"spawning\\\":false},{\\\"id\\\":5,\\\"kind\\\":\\\"normal\\\",\\\"x\\\":-22.24800464420213,\\\"z\\\":-9.63453631949444,\\\"hp\\\":12,\\\"spawning\\\":true}],\\\"projectiles\\\":0,\\\"orbs\\\":[],\\\"effects\\\":0,\\\"targetId\\\":0,\\\"limits\\\":{\\\"enemies\\\":256,\\\"projectiles\\\":24,\\\"orbs\\\":96,\\\"effects\\\":48,\\\"shockwaves\\\":2},\\\"maxHp\\\":100,\\\"progression\\\":{\\\"level\\\":1,\\\"experience\\\":0,\\\"totalExperience\\\":0,\\\"threshold\\\":8,\\\"pendingChoices\\\":0,\\\"choiceLevel\\\":2,\\\"offers\\\":[],\\\"ranks\\\":{\\\"damage\\\":0,\\\"haste\\\":0,\\\"multishot\\\":0,\\\"vitality\\\":0,\\\"movement\\\":0,\\\"range\\\":0,\\\"orbit\\\":0,\\\"shockwave\\\":0,\\\"flame-sweep-weapon\\\":0,\\\"split-on-hit\\\":0,\\\"area\\\":0,\\\"chain\\\":0,\\\"bubble-weapon\\\":0,\\\"spark-weapon\\\":1,\\\"leaf-weapon\\\":0,\\\"draft-boiling-core\\\":0,\\\"overload-core\\\":0,\\\"hunter-eye\\\":0,\\\"shattered-core\\\":0,\\\"tidal-pearl\\\":0,\\\"specialist-badge\\\":0,\\\"echo-rune\\\":0,\\\"draft-martyr-core\\\":0,\\\"draft-kindling-flask\\\":0,\\\"draft-thorn-testament\\\":0,\\\"draft-bubble-spore\\\":0,\\\"draft-echo-bone-dice\\\":0,\\\"draft-slaughter-hourglass\\\":0,\\\"berserk-route\\\":0,\\\"pursuit-route\\\":0},\\\"stats\\\":{\\\"damageMultiplier\\\":1,\\\"attackRateMultiplier\\\":1,\\\"projectileCount\\\":1,\\\"maxHp\\\":100,\\\"moveMultiplier\\\":1,\\\"rangeMultiplier\\\":1,\\\"orbitCount\\\":0,\\\"orbitDamage\\\":0,\\\"orbitRadius\\\":0,\\\"orbitSpeed\\\":0,\\\"shockDamage\\\":0,\\\"shockRadius\\\":0,\\\"shockInterval\\\":0,\\\"splitOnHit\\\":0},\\\"maxLevel\\\":71},\\\"encounters\\\":{\\\"enabled\\\":true,\\\"wave\\\":1,\\\"boss\\\":null,\\\"elite\\\":null,\\\"shots\\\":[],\\\"limit\\\":16},\\\"orbitAngle\\\":0,\\\"shockwaves\\\":[]},\\\"party\\\":[{\\\"id\\\":1,\\\"species\\\":\\\"yanrong\\\",\\\"x\\\":4.371788402398613,\\\"z\\\":-11.790155370716246,\\\"previousX\\\":4.3471087910956525,\\\"previousZ\\\":-11.723597608773526,\\\"facing\\\":2.786509340024015,\\\"attackCooldown\\\":0,\\\"targetId\\\":0,\\\"shotsFired\\\":4,\\\"rank\\\":1,\\\"evolution\\\":\\\"base\\\",\\\"blockedTime\\\":0}]}\""
+      ]
+    },
+    "current": {
+      "assertions": [
+        "> 84 |   expect(await page.evaluate(()=>(window as any).parity())).toBe(animated);"
+      ],
+      "errors": [
+        "Error: expect(received).toBe(expected) // Object.is equality",
+        "Expected: \"{\\\"position\\\":{\\\"x\\\":4.371788402398613,\\\"z\\\":-11.790155370716246},\\\"combat\\\":{\\\"balanceTelemetry\\\":{\\\"damageEvents\\\":0,\\\"projectileBlockedAttempts\\\":0,\\\"sporeChainKills\\\":0,\\\"derivedDenied\\\":0,\\\"queuePeak\\\":0},\\\"triggerRelics\\\":{\\\"explosions\\\":0,\\\"thorns\\\":0,\\\"maxGeneration\\\":0,\\\"bubbles\\\":0,\\\"echoes\\\":0,\\\"echoesSkipped\\\":0,\\\"hourglassProcs\\\":0,\\\"steamBursts\\\":0,\\\"chainKills\\\":0,\\\"maxNodes\\\":0,\\\"casts\\\":0,\\\"pendingEchoes\\\":0,\\\"hasteRemaining\\\":0,\\\"hasteCooldown\\\":0,\\\"bubbleCooldown\\\":0,\\\"pending\\\":0,\\\"wet\\\":0,\\\"burning\\\":0},\\\"specialEnemies\\\":{\\\"sporeKills\\\":0,\\\"treasureEscapes\\\":0,\\\"treasureCaught\\\":0,\\\"explosions\\\":[],\\\"rewards\\\":[]},\\\"build\\\":{\\\"enabled\\\":true,\\\"species\\\":\\\"yanrong\\\",\\\"relics\\\":[],\\\"evolution\\\":null,\\\"attacks\\\":[{\\\"attackId\\\":\\\"spark\\\",\\\"slot\\\":0,\\\"level\\\":1,\\\"cooldown\\\":0.15666666666666673,\\\"cooldownTotal\\\":0.44,\\\"shotsFired\\\":7}]},\\\"melee\\\":{\\\"active\\\":false,\\\"attackInstanceId\\\":0,\\\"x\\\":0,\\\"z\\\":0,\\\"aimX\\\":0,\\\"aimZ\\\":1,\\\"age\\\":0,\\\"radius\\\":0,\\\"angle\\\":3.141592653589793,\\\"hitIds\\\":[]},\\\"firing\\\":{\\\"weapon\\\":null,\\\"remaining\\\":0,\\\"gap\\\":0},\\\"hp\\\":100,\\\"kills\\\":2,\\\"goldEarned\\\":0,\\\"xp\\\":0,\\\"shotsFired\\\":7,\\\"hits\\\":6,\\\"fusion\\\":{\\\"enabled\\\":true,\\\"active\\\":null,\\\"recipes\\\":[],\\\"bursts\\\":0,\\\"childShots\\\":0,\\\"children\\\":0},\\\"spawned\\\":5,\\\"collected\\\":0,\\\"invulnerability\\\":0,\\\"enemies\\\":[{\\\"id\\\":1,\\\"kind\\\":\\\"tank\\\",\\\"x\\\":6.0869497631365554,\\\"z\\\":2.468766271412285,\\\"hp\\\":53,\\\"spawning\\\":false},{\\\"id\\\":5,\\\"kind\\\":\\\"normal\\\",\\\"x\\\":-9.98792037086376,\\\"z\\\":-15.220815280171308,\\\"hp\\\":12,\\\"spawning\\\":true},{\\\"id\\\":4,\\\"kind\\\":\\\"normal\\\",\\\"x\\\":22.655138723498965,\\\"z\\\":4.503371270472362,\\\"hp\\\":12,\\\"spawning\\\":false}],\\\"projectiles\\\":1,\\\"orbs\\\":[],\\\"effects\\\":2,\\\"targetId\\\":0,\\\"limits\\\":{\\\"enemies\\\":256,\\\"projectiles\\\":24,\\\"orbs\\\":96,\\\"effects\\\":48,\\\"shockwaves\\\":2},\\\"maxHp\\\":100,\\\"progression\\\":{\\\"level\\\":1,\\\"experience\\\":0,\\\"totalExperience\\\":0,\\\"threshold\\\":8,\\\"pendingChoices\\\":0,\\\"choiceLevel\\\":2,\\\"offers\\\":[],\\\"ranks\\\":{\\\"damage\\\":0,\\\"haste\\\":0,\\\"multishot\\\":0,\\\"vitality\\\":0,\\\"movement\\\":0,\\\"range\\\":0,\\\"orbit\\\":0,\\\"shockwave\\\":0,\\\"flame-sweep-weapon\\\":0,\\\"split-on-hit\\\":0,\\\"area\\\":0,\\\"chain\\\":0,\\\"bubble-weapon\\\":0,\\\"spark-weapon\\\":1,\\\"leaf-weapon\\\":0,\\\"draft-boiling-core\\\":0,\\\"overload-core\\\":0,\\\"hunter-eye\\\":0,\\\"shattered-core\\\":0,\\\"tidal-pearl\\\":0,\\\"specialist-badge\\\":0,\\\"echo-rune\\\":0,\\\"draft-martyr-core\\\":0,\\\"draft-kindling-flask\\\":0,\\\"draft-thorn-testament\\\":0,\\\"draft-bubble-spore\\\":0,\\\"draft-echo-bone-dice\\\":0,\\\"draft-slaughter-hourglass\\\":0,\\\"tide-prism\\\":0,\\\"berserk-route\\\":0,\\\"pursuit-route\\\":0},\\\"stats\\\":{\\\"damageMultiplier\\\":1,\\\"attackRateMultiplier\\\":1,\\\"projectileCount\\\":1,\\\"maxHp\\\":100,\\\"moveMultiplier\\\":1,\\\"rangeMultiplier\\\":1,\\\"orbitCount\\\":0,\\\"orbitDamage\\\":0,\\\"orbitRadius\\\":0,\\\"orbitSpeed\\\":0,\\\"shockDamage\\\":0,\\\"shockRadius\\\":0,\\\"shockInterval\\\":0,\\\"splitOnHit\\\":0},\\\"maxLevel\\\":72},\\\"encounters\\\":{\\\"enabled\\\":true,\\\"wave\\\":1,\\\"boss\\\":null,\\\"elite\\\":null,\\\"shots\\\":[],\\\"limit\\\":16},\\\"orbitAngle\\\":0,\\\"shockwaves\\\":[]},\\\"party\\\":[{\\\"id\\\":1,\\\"species\\\":\\\"yanrong\\\",\\\"x\\\":4.371788402398613,\\\"z\\\":-11.790155370716246,\\\"previousX\\\":4.3471087910956525,\\\"previousZ\\\":-11.723597608773526,\\\"facing\\\":2.786509340024015,\\\"attackCooldown\\\":0,\\\"targetId\\\":0,\\\"shotsFired\\\":7,\\\"rank\\\":1,\\\"evolution\\\":\\\"base\\\",\\\"blockedTime\\\":0}]}\"",
+        "Received: \"{\\\"position\\\":{\\\"x\\\":4.371788402398613,\\\"z\\\":-11.790155370716246},\\\"combat\\\":{\\\"balanceTelemetry\\\":{\\\"damageEvents\\\":0,\\\"projectileBlockedAttempts\\\":0,\\\"sporeChainKills\\\":0,\\\"derivedDenied\\\":0,\\\"queuePeak\\\":0},\\\"triggerRelics\\\":{\\\"explosions\\\":0,\\\"thorns\\\":0,\\\"maxGeneration\\\":0,\\\"bubbles\\\":0,\\\"echoes\\\":0,\\\"echoesSkipped\\\":0,\\\"hourglassProcs\\\":0,\\\"steamBursts\\\":0,\\\"chainKills\\\":0,\\\"maxNodes\\\":0,\\\"casts\\\":0,\\\"pendingEchoes\\\":0,\\\"hasteRemaining\\\":0,\\\"hasteCooldown\\\":0,\\\"bubbleCooldown\\\":0,\\\"pending\\\":0,\\\"wet\\\":0,\\\"burning\\\":0},\\\"specialEnemies\\\":{\\\"sporeKills\\\":0,\\\"treasureEscapes\\\":0,\\\"treasureCaught\\\":0,\\\"explosions\\\":[],\\\"rewards\\\":[]},\\\"build\\\":{\\\"enabled\\\":true,\\\"species\\\":\\\"yanrong\\\",\\\"relics\\\":[],\\\"evolution\\\":null,\\\"attacks\\\":[{\\\"attackId\\\":\\\"spark\\\",\\\"slot\\\":0,\\\"level\\\":1,\\\"cooldown\\\":0,\\\"cooldownTotal\\\":0.44,\\\"shotsFired\\\":4}]},\\\"melee\\\":{\\\"active\\\":false,\\\"attackInstanceId\\\":0,\\\"x\\\":0,\\\"z\\\":0,\\\"aimX\\\":0,\\\"aimZ\\\":1,\\\"age\\\":0,\\\"radius\\\":0,\\\"angle\\\":3.141592653589793,\\\"hitIds\\\":[]},\\\"firing\\\":{\\\"weapon\\\":null,\\\"remaining\\\":0,\\\"gap\\\":0},\\\"hp\\\":100,\\\"kills\\\":0,\\\"goldEarned\\\":0,\\\"xp\\\":0,\\\"shotsFired\\\":4,\\\"hits\\\":4,\\\"fusion\\\":{\\\"enabled\\\":true,\\\"active\\\":null,\\\"recipes\\\":[],\\\"bursts\\\":0,\\\"childShots\\\":0,\\\"children\\\":0},\\\"spawned\\\":5,\\\"collected\\\":0,\\\"invulnerability\\\":0,\\\"enemies\\\":[{\\\"id\\\":1,\\\"kind\\\":\\\"tank\\\",\\\"x\\\":6.0869497631365554,\\\"z\\\":2.468766271412285,\\\"hp\\\":53,\\\"spawning\\\":false},{\\\"id\\\":2,\\\"kind\\\":\\\"normal\\\",\\\"x\\\":19.895521228383405,\\\"z\\\":5.841268875849655,\\\"hp\\\":12,\\\"spawning\\\":false},{\\\"id\\\":4,\\\"kind\\\":\\\"normal\\\",\\\"x\\\":22.227350175409214,\\\"z\\\":7.403652253082965,\\\"hp\\\":12,\\\"spawning\\\":false},{\\\"id\\\":5,\\\"kind\\\":\\\"normal\\\",\\\"x\\\":22.79613886663461,\\\"z\\\":5.47803134189682,\\\"hp\\\":12,\\\"spawning\\\":true}],\\\"projectiles\\\":0,\\\"orbs\\\":[],\\\"effects\\\":0,\\\"targetId\\\":0,\\\"limits\\\":{\\\"enemies\\\":256,\\\"projectiles\\\":24,\\\"orbs\\\":96,\\\"effects\\\":48,\\\"shockwaves\\\":2},\\\"maxHp\\\":100,\\\"progression\\\":{\\\"level\\\":1,\\\"experience\\\":0,\\\"totalExperience\\\":0,\\\"threshold\\\":8,\\\"pendingChoices\\\":0,\\\"choiceLevel\\\":2,\\\"offers\\\":[],\\\"ranks\\\":{\\\"damage\\\":0,\\\"haste\\\":0,\\\"multishot\\\":0,\\\"vitality\\\":0,\\\"movement\\\":0,\\\"range\\\":0,\\\"orbit\\\":0,\\\"shockwave\\\":0,\\\"flame-sweep-weapon\\\":0,\\\"split-on-hit\\\":0,\\\"area\\\":0,\\\"chain\\\":0,\\\"bubble-weapon\\\":0,\\\"spark-weapon\\\":1,\\\"leaf-weapon\\\":0,\\\"draft-boiling-core\\\":0,\\\"overload-core\\\":0,\\\"hunter-eye\\\":0,\\\"shattered-core\\\":0,\\\"tidal-pearl\\\":0,\\\"specialist-badge\\\":0,\\\"echo-rune\\\":0,\\\"draft-martyr-core\\\":0,\\\"draft-kindling-flask\\\":0,\\\"draft-thorn-testament\\\":0,\\\"draft-bubble-spore\\\":0,\\\"draft-echo-bone-dice\\\":0,\\\"draft-slaughter-hourglass\\\":0,\\\"tide-prism\\\":0,\\\"berserk-route\\\":0,\\\"pursuit-route\\\":0},\\\"stats\\\":{\\\"damageMultiplier\\\":1,\\\"attackRateMultiplier\\\":1,\\\"projectileCount\\\":1,\\\"maxHp\\\":100,\\\"moveMultiplier\\\":1,\\\"rangeMultiplier\\\":1,\\\"orbitCount\\\":0,\\\"orbitDamage\\\":0,\\\"orbitRadius\\\":0,\\\"orbitSpeed\\\":0,\\\"shockDamage\\\":0,\\\"shockRadius\\\":0,\\\"shockInterval\\\":0,\\\"splitOnHit\\\":0},\\\"maxLevel\\\":72},\\\"encounters\\\":{\\\"enabled\\\":true,\\\"wave\\\":1,\\\"boss\\\":null,\\\"elite\\\":null,\\\"shots\\\":[],\\\"limit\\\":16},\\\"orbitAngle\\\":0,\\\"shockwaves\\\":[]},\\\"party\\\":[{\\\"id\\\":1,\\\"species\\\":\\\"yanrong\\\",\\\"x\\\":4.371788402398613,\\\"z\\\":-11.790155370716246,\\\"previousX\\\":4.3471087910956525,\\\"previousZ\\\":-11.723597608773526,\\\"facing\\\":2.786509340024015,\\\"attackCooldown\\\":0,\\\"targetId\\\":0,\\\"shotsFired\\\":4,\\\"rank\\\":1,\\\"evolution\\\":\\\"base\\\",\\\"blockedTime\\\":0}]}\""
+      ]
+    }
+  },
+  {
+    "browser": "chromium",
+    "file": "elemental-fusion-ui.spec.ts",
+    "test": "deep atlas loads, plays flight and one-shot impact, damages and slows in actual game ",
+    "sameBaselineAssertion": true,
+    "baseline": {
+      "assertions": [
+        "> 19 |  expect(result.hp.some((hp:number)=>hp<100)).toBe(true);expect(result.slow.some((s:number)=>s>0)).toBe(true);"
+      ],
+      "errors": [
+        "Error: expect(received).toBe(expected) // Object.is equality",
+        "Expected: true",
+        "Received: false"
+      ]
+    },
+    "current": {
+      "assertions": [
+        "> 19 |  expect(result.hp.some((hp:number)=>hp<100)).toBe(true);expect(result.slow.some((s:number)=>s>0)).toBe(true);"
+      ],
+      "errors": [
+        "Error: expect(received).toBe(expected) // Object.is equality",
+        "Expected: true",
+        "Received: false"
+      ]
+    }
+  },
+  {
+    "browser": "chromium",
+    "file": "elemental-fusion-ui.spec.ts",
+    "test": "paopaoyuan development entry uses one animated creature, real cards, automatic fusions and bounded colored effects ",
+    "sameBaselineAssertion": true,
+    "baseline": {
+      "assertions": [
+        "> 32 |  expect(await page.evaluate(()=>(window as any).game.party.members.map((m:any)=>m.species))).toEqual([species]);await expect(page.locator('#creature-name')).toHaveText(name);await expect(page.locator('.dash-control')).toBeHidden();"
+      ],
+      "errors": [
+        "Error: expect(locator).toHaveText(expected) failed",
+        "Expected: \"泡泡螈\"",
+        "Error: element(s) not found"
+      ]
+    },
+    "current": {
+      "assertions": [
+        "> 32 |  expect(await page.evaluate(()=>(window as any).game.party.members.map((m:any)=>m.species))).toEqual([species]);await expect(page.locator('#creature-name')).toHaveText(name);await expect(page.locator('.dash-control')).toBeHidden();"
+      ],
+      "errors": [
+        "Error: expect(locator).toHaveText(expected) failed",
+        "Expected: \"泡泡螈\"",
+        "Error: element(s) not found"
+      ]
+    }
+  },
+  {
+    "browser": "chromium",
+    "file": "elemental-fusion-ui.spec.ts",
+    "test": "yacishou development entry uses one animated creature, real cards, automatic fusions and bounded colored effects ",
+    "sameBaselineAssertion": true,
+    "baseline": {
+      "assertions": [
+        "> 32 |  expect(await page.evaluate(()=>(window as any).game.party.members.map((m:any)=>m.species))).toEqual([species]);await expect(page.locator('#creature-name')).toHaveText(name);await expect(page.locator('.dash-control')).toBeHidden();"
+      ],
+      "errors": [
+        "Error: expect(locator).toHaveText(expected) failed",
+        "Expected: \"芽刺兽\"",
+        "Error: element(s) not found"
+      ]
+    },
+    "current": {
+      "assertions": [
+        "> 32 |  expect(await page.evaluate(()=>(window as any).game.party.members.map((m:any)=>m.species))).toEqual([species]);await expect(page.locator('#creature-name')).toHaveText(name);await expect(page.locator('.dash-control')).toBeHidden();"
+      ],
+      "errors": [
+        "Error: expect(locator).toHaveText(expected) failed",
+        "Expected: \"芽刺兽\"",
+        "Error: element(s) not found"
+      ]
+    }
+  },
+  {
+    "browser": "chromium",
+    "file": "elemental-fusion-ui.spec.ts",
+    "test": "missing elemental textures and icons preserve procedural effects, readable cards and damage ",
+    "sameBaselineAssertion": true,
+    "baseline": {
+      "assertions": [],
+      "errors": [
+        "Error: page.evaluate: TypeError: Cannot read properties of undefined (reading 'count')"
+      ]
+    },
+    "current": {
+      "assertions": [],
+      "errors": [
+        "Error: page.evaluate: TypeError: Cannot read properties of undefined (reading 'count')"
+      ]
+    }
+  },
+  {
+    "browser": "chromium",
+    "file": "fusion-ui.spec.ts",
+    "test": "real fusion cards and impacts render child/explosion frames without duplicate hit flashes on both phone layouts ",
+    "sameBaselineAssertion": true,
+    "baseline": {
+      "assertions": [
+        "> 55 |   await expect(card.locator('.fire-icon')).toHaveClass(/ready/);"
+      ],
+      "errors": [
+        "Error: expect(locator).toHaveClass(expected) failed",
+        "Error: element(s) not found"
+      ]
+    },
+    "current": {
+      "assertions": [
+        "> 55 |   await expect(card.locator('.fire-icon')).toHaveClass(/ready/);"
+      ],
+      "errors": [
+        "Error: expect(locator).toHaveClass(expected) failed",
+        "Error: element(s) not found"
+      ]
+    }
+  },
+  {
+    "browser": "chromium",
+    "file": "fusion-ui.spec.ts",
+    "test": "missing atlas and icons keep procedural attack/explosion and readable cards ",
+    "sameBaselineAssertion": true,
+    "baseline": {
+      "assertions": [],
+      "errors": [
+        "Error: page.evaluate: TypeError: Cannot read properties of undefined (reading 'count')"
+      ]
+    },
+    "current": {
+      "assertions": [],
+      "errors": [
+        "Error: page.evaluate: TypeError: Cannot read properties of undefined (reading 'count')"
+      ]
+    }
+  },
+  {
+    "browser": "chromium",
+    "file": "game.spec.ts",
+    "test": "main menu renders a real 3D world and starts exploration without errors ",
+    "sameBaselineAssertion": true,
+    "baseline": {
+      "assertions": [
+        "> 30 |   await expect(page.getByRole('progressbar', { name: '生命值', exact: true })).toHaveAttribute('aria-valuenow', '100');"
+      ],
+      "errors": [
+        "Error: expect(locator).toHaveAttribute(expected) failed",
+        "Expected: \"100\"",
+        "Error: element(s) not found"
+      ]
+    },
+    "current": {
+      "assertions": [
+        "> 30 |   await expect(page.getByRole('progressbar', { name: '生命值', exact: true })).toHaveAttribute('aria-valuenow', '100');"
+      ],
+      "errors": [
+        "Error: expect(locator).toHaveAttribute(expected) failed",
+        "Expected: \"100\"",
+        "Error: element(s) not found"
+      ]
+    }
+  },
+  {
+    "browser": "chromium",
+    "file": "hud-art.spec.ts",
+    "test": "forest HUD keeps live values, weapon artwork and safe touch targets on landscape phones ",
+    "sameBaselineAssertion": true,
+    "baseline": {
+      "assertions": [
+        "> 47 |       expect(rect.width).toBeGreaterThanOrEqual(width === 568 ? 44 : 48);expect(rect.height).toBeGreaterThanOrEqual(width === 568 ? 44 : 48);"
+      ],
+      "errors": [
+        "Error: expect(received).toBeGreaterThanOrEqual(expected)",
+        "Expected: >= 48",
+        "Received:    44"
+      ]
+    },
+    "current": {
+      "assertions": [
+        "> 47 |       expect(rect.width).toBeGreaterThanOrEqual(width === 568 ? 44 : 48);expect(rect.height).toBeGreaterThanOrEqual(width === 568 ? 44 : 48);"
+      ],
+      "errors": [
+        "Error: expect(received).toBeGreaterThanOrEqual(expected)",
+        "Expected: >= 48",
+        "Received:    44"
+      ]
+    }
+  },
+  {
+    "browser": "chromium",
+    "file": "random-world-ui.spec.ts",
+    "test": "different seeds render different regions and fit phone replay controls ",
+    "sameBaselineAssertion": true,
+    "baseline": {
+      "assertions": [
+        "> 119 |   expect(short.y).toBeGreaterThanOrEqual(0); expect(short.y + short.height).toBeLessThanOrEqual(320);"
+      ],
+      "errors": [
+        "Error: expect(received).toBeLessThanOrEqual(expected)",
+        "Expected: <= 320",
+        "Received:    326.59375"
+      ]
+    },
+    "current": {
+      "assertions": [
+        "> 119 |   expect(short.y).toBeGreaterThanOrEqual(0); expect(short.y + short.height).toBeLessThanOrEqual(320);"
+      ],
+      "errors": [
+        "Error: expect(received).toBeLessThanOrEqual(expected)",
+        "Expected: <= 320",
+        "Received:    326.59375"
+      ]
+    }
+  },
+  {
+    "browser": "chromium",
+    "file": "upgrades.spec.ts",
+    "test": "new spells coexist, max HP updates HUD and a fresh run clears all skills ",
+    "sameBaselineAssertion": true,
+    "baseline": {
+      "assertions": [
+        "> 134 |   await expect(page.getByRole('progressbar', { name: '生命值', exact: true })).toHaveAttribute('aria-valuemax', '120');"
+      ],
+      "errors": [
+        "Error: expect(locator).toHaveAttribute(expected) failed",
+        "Expected: \"120\"",
+        "Error: element(s) not found"
+      ]
+    },
+    "current": {
+      "assertions": [
+        "> 134 |   await expect(page.getByRole('progressbar', { name: '生命值', exact: true })).toHaveAttribute('aria-valuemax', '120');"
+      ],
+      "errors": [
+        "Error: expect(locator).toHaveAttribute(expected) failed",
+        "Expected: \"120\"",
+        "Error: element(s) not found"
+      ]
+    }
+  },
+  {
+    "browser": "chromium",
+    "file": "upgrades.spec.ts",
+    "test": "the last remaining skill is valid and full mastery stops creating empty dialogs ",
+    "sameBaselineAssertion": true,
+    "baseline": {
+      "assertions": [
+        "> 157 |   await expect(page.locator('#xp-progress')).toHaveText('满级');"
+      ],
+      "errors": [
+        "Error: expect(locator).toHaveText(expected) failed",
+        "Expected: \"满级\"",
+        "Error: element(s) not found"
+      ]
+    },
+    "current": {
+      "assertions": [
+        "> 157 |   await expect(page.locator('#xp-progress')).toHaveText('满级');"
+      ],
+      "errors": [
+        "Error: expect(locator).toHaveText(expected) failed",
+        "Expected: \"满级\"",
+        "Error: element(s) not found"
+      ]
+    }
+  },
+  {
+    "browser": "webkit",
+    "file": "combat-clarity-ui.spec.ts",
+    "test": "fully fused three-weapon build stays readable with CD indicators and pooled impact visuals ",
+    "sameBaselineAssertion": true,
+    "baseline": {
+      "assertions": [
+        "> 41 |     expect(state.largest).toBeLessThanOrEqual(1.551); expect(state.noDepthWrite).toBe(true); expect(state.maxHurt).toBeLessThanOrEqual(.301); expect(state.limits).toBe(24);"
+      ],
+      "errors": [
+        "Error: expect(received).toBeLessThanOrEqual(expected)",
+        "Expected: <= 1.551",
+        "Received:    2.799999952316284"
+      ]
+    },
+    "current": {
+      "assertions": [
+        "> 41 |     expect(state.largest).toBeLessThanOrEqual(1.551); expect(state.noDepthWrite).toBe(true); expect(state.maxHurt).toBeLessThanOrEqual(.301); expect(state.limits).toBe(24);"
+      ],
+      "errors": [
+        "Error: expect(received).toBeLessThanOrEqual(expected)",
+        "Expected: <= 1.551",
+        "Received:    2.799999952316284"
+      ]
+    }
+  },
+  {
+    "browser": "webkit",
+    "file": "creature-animation-ui.spec.ts",
+    "test": "actual collision displacement controls animation and animated/static visuals have identical combat and positions ",
+    "sameBaselineAssertion": true,
+    "baseline": {
+      "assertions": [
+        "> 84 |   expect(await page.evaluate(()=>(window as any).parity())).toBe(animated);"
+      ],
+      "errors": [
+        "Error: expect(received).toBe(expected) // Object.is equality",
+        "Expected: \"{\\\"position\\\":{\\\"x\\\":4.371788402398613,\\\"z\\\":-11.790155370716246},\\\"combat\\\":{\\\"balanceTelemetry\\\":{\\\"damageEvents\\\":0,\\\"projectileBlockedAttempts\\\":0,\\\"sporeChainKills\\\":0,\\\"derivedDenied\\\":0,\\\"queuePeak\\\":0},\\\"triggerRelics\\\":{\\\"explosions\\\":0,\\\"thorns\\\":0,\\\"maxGeneration\\\":0,\\\"bubbles\\\":0,\\\"echoes\\\":0,\\\"echoesSkipped\\\":0,\\\"hourglassProcs\\\":0,\\\"steamBursts\\\":0,\\\"chainKills\\\":0,\\\"maxNodes\\\":0,\\\"casts\\\":0,\\\"pendingEchoes\\\":0,\\\"hasteRemaining\\\":0,\\\"hasteCooldown\\\":0,\\\"bubbleCooldown\\\":0,\\\"pending\\\":0,\\\"wet\\\":0,\\\"burning\\\":0},\\\"specialEnemies\\\":{\\\"sporeKills\\\":0,\\\"treasureEscapes\\\":0,\\\"treasureCaught\\\":0,\\\"explosions\\\":[],\\\"rewards\\\":[]},\\\"build\\\":{\\\"enabled\\\":true,\\\"species\\\":\\\"yanrong\\\",\\\"relics\\\":[],\\\"evolution\\\":null,\\\"attacks\\\":[{\\\"attackId\\\":\\\"spark\\\",\\\"slot\\\":0,\\\"level\\\":1,\\\"cooldown\\\":0.15666666666666673,\\\"cooldownTotal\\\":0.44,\\\"shotsFired\\\":7}]},\\\"melee\\\":{\\\"active\\\":false,\\\"attackInstanceId\\\":0,\\\"x\\\":0,\\\"z\\\":0,\\\"aimX\\\":0,\\\"aimZ\\\":1,\\\"age\\\":0,\\\"radius\\\":0,\\\"angle\\\":3.141592653589793,\\\"hitIds\\\":[]},\\\"firing\\\":{\\\"weapon\\\":null,\\\"remaining\\\":0,\\\"gap\\\":0},\\\"hp\\\":100,\\\"kills\\\":2,\\\"goldEarned\\\":0,\\\"xp\\\":0,\\\"shotsFired\\\":7,\\\"hits\\\":6,\\\"fusion\\\":{\\\"enabled\\\":true,\\\"active\\\":null,\\\"recipes\\\":[],\\\"bursts\\\":0,\\\"childShots\\\":0,\\\"children\\\":0},\\\"spawned\\\":5,\\\"collected\\\":0,\\\"invulnerability\\\":0,\\\"enemies\\\":[{\\\"id\\\":1,\\\"kind\\\":\\\"tank\\\",\\\"x\\\":6.0869497631365554,\\\"z\\\":2.468766271412285,\\\"hp\\\":53,\\\"spawning\\\":false},{\\\"id\\\":5,\\\"kind\\\":\\\"normal\\\",\\\"x\\\":-10.29160655058275,\\\"z\\\":-15.220815280171308,\\\"hp\\\":12,\\\"spawning\\\":true},{\\\"id\\\":4,\\\"kind\\\":\\\"normal\\\",\\\"x\\\":22.638963950637912,\\\"z\\\":4.192959834402949,\\\"hp\\\":12,\\\"spawning\\\":false}],\\\"projectiles\\\":1,\\\"orbs\\\":[],\\\"effects\\\":2,\\\"targetId\\\":0,\\\"limits\\\":{\\\"enemies\\\":256,\\\"projectiles\\\":24,\\\"orbs\\\":96,\\\"effects\\\":48,\\\"shockwaves\\\":2},\\\"maxHp\\\":100,\\\"progression\\\":{\\\"level\\\":1,\\\"experience\\\":0,\\\"totalExperience\\\":0,\\\"threshold\\\":8,\\\"pendingChoices\\\":0,\\\"choiceLevel\\\":2,\\\"offers\\\":[],\\\"ranks\\\":{\\\"damage\\\":0,\\\"haste\\\":0,\\\"multishot\\\":0,\\\"vitality\\\":0,\\\"movement\\\":0,\\\"range\\\":0,\\\"orbit\\\":0,\\\"shockwave\\\":0,\\\"flame-sweep-weapon\\\":0,\\\"split-on-hit\\\":0,\\\"area\\\":0,\\\"chain\\\":0,\\\"bubble-weapon\\\":0,\\\"spark-weapon\\\":1,\\\"leaf-weapon\\\":0,\\\"draft-boiling-core\\\":0,\\\"overload-core\\\":0,\\\"hunter-eye\\\":0,\\\"shattered-core\\\":0,\\\"tidal-pearl\\\":0,\\\"specialist-badge\\\":0,\\\"echo-rune\\\":0,\\\"draft-martyr-core\\\":0,\\\"draft-kindling-flask\\\":0,\\\"draft-thorn-testament\\\":0,\\\"draft-bubble-spore\\\":0,\\\"draft-echo-bone-dice\\\":0,\\\"draft-slaughter-hourglass\\\":0,\\\"berserk-route\\\":0,\\\"pursuit-route\\\":0},\\\"stats\\\":{\\\"damageMultiplier\\\":1,\\\"attackRateMultiplier\\\":1,\\\"projectileCount\\\":1,\\\"maxHp\\\":100,\\\"moveMultiplier\\\":1,\\\"rangeMultiplier\\\":1,\\\"orbitCount\\\":0,\\\"orbitDamage\\\":0,\\\"orbitRadius\\\":0,\\\"orbitSpeed\\\":0,\\\"shockDamage\\\":0,\\\"shockRadius\\\":0,\\\"shockInterval\\\":0,\\\"splitOnHit\\\":0},\\\"maxLevel\\\":71},\\\"encounters\\\":{\\\"enabled\\\":true,\\\"wave\\\":1,\\\"boss\\\":null,\\\"elite\\\":null,\\\"shots\\\":[],\\\"limit\\\":16},\\\"orbitAngle\\\":0,\\\"shockwaves\\\":[]},\\\"party\\\":[{\\\"id\\\":1,\\\"species\\\":\\\"yanrong\\\",\\\"x\\\":4.371788402398613,\\\"z\\\":-11.790155370716246,\\\"previousX\\\":4.3471087910956525,\\\"previousZ\\\":-11.723597608773526,\\\"facing\\\":2.786509340024015,\\\"attackCooldown\\\":0,\\\"targetId\\\":0,\\\"shotsFired\\\":7,\\\"rank\\\":1,\\\"evolution\\\":\\\"base\\\",\\\"blockedTime\\\":0}]}\"",
+        "Received: \"{\\\"position\\\":{\\\"x\\\":4.371788402398613,\\\"z\\\":-11.790155370716246},\\\"combat\\\":{\\\"balanceTelemetry\\\":{\\\"damageEvents\\\":0,\\\"projectileBlockedAttempts\\\":0,\\\"sporeChainKills\\\":0,\\\"derivedDenied\\\":0,\\\"queuePeak\\\":0},\\\"triggerRelics\\\":{\\\"explosions\\\":0,\\\"thorns\\\":0,\\\"maxGeneration\\\":0,\\\"bubbles\\\":0,\\\"echoes\\\":0,\\\"echoesSkipped\\\":0,\\\"hourglassProcs\\\":0,\\\"steamBursts\\\":0,\\\"chainKills\\\":0,\\\"maxNodes\\\":0,\\\"casts\\\":0,\\\"pendingEchoes\\\":0,\\\"hasteRemaining\\\":0,\\\"hasteCooldown\\\":0,\\\"bubbleCooldown\\\":0,\\\"pending\\\":0,\\\"wet\\\":0,\\\"burning\\\":0},\\\"specialEnemies\\\":{\\\"sporeKills\\\":0,\\\"treasureEscapes\\\":0,\\\"treasureCaught\\\":0,\\\"explosions\\\":[],\\\"rewards\\\":[]},\\\"build\\\":{\\\"enabled\\\":true,\\\"species\\\":\\\"yanrong\\\",\\\"relics\\\":[],\\\"evolution\\\":null,\\\"attacks\\\":[{\\\"attackId\\\":\\\"spark\\\",\\\"slot\\\":0,\\\"level\\\":1,\\\"cooldown\\\":0,\\\"cooldownTotal\\\":0.44,\\\"shotsFired\\\":6}]},\\\"melee\\\":{\\\"active\\\":false,\\\"attackInstanceId\\\":0,\\\"x\\\":0,\\\"z\\\":0,\\\"aimX\\\":0,\\\"aimZ\\\":1,\\\"age\\\":0,\\\"radius\\\":0,\\\"angle\\\":3.141592653589793,\\\"hitIds\\\":[]},\\\"firing\\\":{\\\"weapon\\\":null,\\\"remaining\\\":0,\\\"gap\\\":0},\\\"hp\\\":100,\\\"kills\\\":2,\\\"goldEarned\\\":0,\\\"xp\\\":0,\\\"shotsFired\\\":6,\\\"hits\\\":6,\\\"fusion\\\":{\\\"enabled\\\":true,\\\"active\\\":null,\\\"recipes\\\":[],\\\"bursts\\\":0,\\\"childShots\\\":0,\\\"children\\\":0},\\\"spawned\\\":5,\\\"collected\\\":0,\\\"invulnerability\\\":0,\\\"enemies\\\":[{\\\"id\\\":1,\\\"kind\\\":\\\"tank\\\",\\\"x\\\":6.0869497631365554,\\\"z\\\":2.468766271412285,\\\"hp\\\":53,\\\"spawning\\\":false},{\\\"id\\\":5,\\\"kind\\\":\\\"normal\\\",\\\"x\\\":22.938611381650947,\\\"z\\\":-6.15884568157847,\\\"hp\\\":12,\\\"spawning\\\":true}],\\\"projectiles\\\":0,\\\"orbs\\\":[],\\\"effects\\\":2,\\\"targetId\\\":0,\\\"limits\\\":{\\\"enemies\\\":256,\\\"projectiles\\\":24,\\\"orbs\\\":96,\\\"effects\\\":48,\\\"shockwaves\\\":2},\\\"maxHp\\\":100,\\\"progression\\\":{\\\"level\\\":1,\\\"experience\\\":0,\\\"totalExperience\\\":0,\\\"threshold\\\":8,\\\"pendingChoices\\\":0,\\\"choiceLevel\\\":2,\\\"offers\\\":[],\\\"ranks\\\":{\\\"damage\\\":0,\\\"haste\\\":0,\\\"multishot\\\":0,\\\"vitality\\\":0,\\\"movement\\\":0,\\\"range\\\":0,\\\"orbit\\\":0,\\\"shockwave\\\":0,\\\"flame-sweep-weapon\\\":0,\\\"split-on-hit\\\":0,\\\"area\\\":0,\\\"chain\\\":0,\\\"bubble-weapon\\\":0,\\\"spark-weapon\\\":1,\\\"leaf-weapon\\\":0,\\\"draft-boiling-core\\\":0,\\\"overload-core\\\":0,\\\"hunter-eye\\\":0,\\\"shattered-core\\\":0,\\\"tidal-pearl\\\":0,\\\"specialist-badge\\\":0,\\\"echo-rune\\\":0,\\\"draft-martyr-core\\\":0,\\\"draft-kindling-flask\\\":0,\\\"draft-thorn-testament\\\":0,\\\"draft-bubble-spore\\\":0,\\\"draft-echo-bone-dice\\\":0,\\\"draft-slaughter-hourglass\\\":0,\\\"berserk-route\\\":0,\\\"pursuit-route\\\":0},\\\"stats\\\":{\\\"damageMultiplier\\\":1,\\\"attackRateMultiplier\\\":1,\\\"projectileCount\\\":1,\\\"maxHp\\\":100,\\\"moveMultiplier\\\":1,\\\"rangeMultiplier\\\":1,\\\"orbitCount\\\":0,\\\"orbitDamage\\\":0,\\\"orbitRadius\\\":0,\\\"orbitSpeed\\\":0,\\\"shockDamage\\\":0,\\\"shockRadius\\\":0,\\\"shockInterval\\\":0,\\\"splitOnHit\\\":0},\\\"maxLevel\\\":71},\\\"encounters\\\":{\\\"enabled\\\":true,\\\"wave\\\":1,\\\"boss\\\":null,\\\"elite\\\":null,\\\"shots\\\":[],\\\"limit\\\":16},\\\"orbitAngle\\\":0,\\\"shockwaves\\\":[]},\\\"party\\\":[{\\\"id\\\":1,\\\"species\\\":\\\"yanrong\\\",\\\"x\\\":4.371788402398613,\\\"z\\\":-11.790155370716246,\\\"previousX\\\":4.3471087910956525,\\\"previousZ\\\":-11.723597608773526,\\\"facing\\\":2.786509340024015,\\\"attackCooldown\\\":0,\\\"targetId\\\":0,\\\"shotsFired\\\":6,\\\"rank\\\":1,\\\"evolution\\\":\\\"base\\\",\\\"blockedTime\\\":0}]}\""
+      ]
+    },
+    "current": {
+      "assertions": [
+        "> 84 |   expect(await page.evaluate(()=>(window as any).parity())).toBe(animated);"
+      ],
+      "errors": [
+        "Error: expect(received).toBe(expected) // Object.is equality",
+        "Expected: \"{\\\"position\\\":{\\\"x\\\":4.371788402398613,\\\"z\\\":-11.790155370716246},\\\"combat\\\":{\\\"balanceTelemetry\\\":{\\\"damageEvents\\\":0,\\\"projectileBlockedAttempts\\\":0,\\\"sporeChainKills\\\":0,\\\"derivedDenied\\\":0,\\\"queuePeak\\\":0},\\\"triggerRelics\\\":{\\\"explosions\\\":0,\\\"thorns\\\":0,\\\"maxGeneration\\\":0,\\\"bubbles\\\":0,\\\"echoes\\\":0,\\\"echoesSkipped\\\":0,\\\"hourglassProcs\\\":0,\\\"steamBursts\\\":0,\\\"chainKills\\\":0,\\\"maxNodes\\\":0,\\\"casts\\\":0,\\\"pendingEchoes\\\":0,\\\"hasteRemaining\\\":0,\\\"hasteCooldown\\\":0,\\\"bubbleCooldown\\\":0,\\\"pending\\\":0,\\\"wet\\\":0,\\\"burning\\\":0},\\\"specialEnemies\\\":{\\\"sporeKills\\\":0,\\\"treasureEscapes\\\":0,\\\"treasureCaught\\\":0,\\\"explosions\\\":[],\\\"rewards\\\":[]},\\\"build\\\":{\\\"enabled\\\":true,\\\"species\\\":\\\"yanrong\\\",\\\"relics\\\":[],\\\"evolution\\\":null,\\\"attacks\\\":[{\\\"attackId\\\":\\\"spark\\\",\\\"slot\\\":0,\\\"level\\\":1,\\\"cooldown\\\":0,\\\"cooldownTotal\\\":0.44,\\\"shotsFired\\\":4}]},\\\"melee\\\":{\\\"active\\\":false,\\\"attackInstanceId\\\":0,\\\"x\\\":0,\\\"z\\\":0,\\\"aimX\\\":0,\\\"aimZ\\\":1,\\\"age\\\":0,\\\"radius\\\":0,\\\"angle\\\":3.141592653589793,\\\"hitIds\\\":[]},\\\"firing\\\":{\\\"weapon\\\":null,\\\"remaining\\\":0,\\\"gap\\\":0},\\\"hp\\\":100,\\\"kills\\\":0,\\\"goldEarned\\\":0,\\\"xp\\\":0,\\\"shotsFired\\\":4,\\\"hits\\\":4,\\\"fusion\\\":{\\\"enabled\\\":true,\\\"active\\\":null,\\\"recipes\\\":[],\\\"bursts\\\":0,\\\"childShots\\\":0,\\\"children\\\":0},\\\"spawned\\\":5,\\\"collected\\\":0,\\\"invulnerability\\\":0,\\\"enemies\\\":[{\\\"id\\\":1,\\\"kind\\\":\\\"tank\\\",\\\"x\\\":6.0869497631365554,\\\"z\\\":2.468766271412285,\\\"hp\\\":53,\\\"spawning\\\":false},{\\\"id\\\":4,\\\"kind\\\":\\\"normal\\\",\\\"x\\\":-21.631873169073177,\\\"z\\\":0.6965368474007856,\\\"hp\\\":12,\\\"spawning\\\":false},{\\\"id\\\":3,\\\"kind\\\":\\\"normal\\\",\\\"x\\\":-20.3677347218454,\\\"z\\\":3.0245786342078183,\\\"hp\\\":12,\\\"spawning\\\":false},{\\\"id\\\":5,\\\"kind\\\":\\\"normal\\\",\\\"x\\\":21.9228157225629,\\\"z\\\":8.205562243261054,\\\"hp\\\":12,\\\"spawning\\\":true}],\\\"projectiles\\\":0,\\\"orbs\\\":[],\\\"effects\\\":0,\\\"targetId\\\":0,\\\"limits\\\":{\\\"enemies\\\":256,\\\"projectiles\\\":24,\\\"orbs\\\":96,\\\"effects\\\":48,\\\"shockwaves\\\":2},\\\"maxHp\\\":100,\\\"progression\\\":{\\\"level\\\":1,\\\"experience\\\":0,\\\"totalExperience\\\":0,\\\"threshold\\\":8,\\\"pendingChoices\\\":0,\\\"choiceLevel\\\":2,\\\"offers\\\":[],\\\"ranks\\\":{\\\"damage\\\":0,\\\"haste\\\":0,\\\"multishot\\\":0,\\\"vitality\\\":0,\\\"movement\\\":0,\\\"range\\\":0,\\\"orbit\\\":0,\\\"shockwave\\\":0,\\\"flame-sweep-weapon\\\":0,\\\"split-on-hit\\\":0,\\\"area\\\":0,\\\"chain\\\":0,\\\"bubble-weapon\\\":0,\\\"spark-weapon\\\":1,\\\"leaf-weapon\\\":0,\\\"draft-boiling-core\\\":0,\\\"overload-core\\\":0,\\\"hunter-eye\\\":0,\\\"shattered-core\\\":0,\\\"tidal-pearl\\\":0,\\\"specialist-badge\\\":0,\\\"echo-rune\\\":0,\\\"draft-martyr-core\\\":0,\\\"draft-kindling-flask\\\":0,\\\"draft-thorn-testament\\\":0,\\\"draft-bubble-spore\\\":0,\\\"draft-echo-bone-dice\\\":0,\\\"draft-slaughter-hourglass\\\":0,\\\"tide-prism\\\":0,\\\"berserk-route\\\":0,\\\"pursuit-route\\\":0},\\\"stats\\\":{\\\"damageMultiplier\\\":1,\\\"attackRateMultiplier\\\":1,\\\"projectileCount\\\":1,\\\"maxHp\\\":100,\\\"moveMultiplier\\\":1,\\\"rangeMultiplier\\\":1,\\\"orbitCount\\\":0,\\\"orbitDamage\\\":0,\\\"orbitRadius\\\":0,\\\"orbitSpeed\\\":0,\\\"shockDamage\\\":0,\\\"shockRadius\\\":0,\\\"shockInterval\\\":0,\\\"splitOnHit\\\":0},\\\"maxLevel\\\":72},\\\"encounters\\\":{\\\"enabled\\\":true,\\\"wave\\\":1,\\\"boss\\\":null,\\\"elite\\\":null,\\\"shots\\\":[],\\\"limit\\\":16},\\\"orbitAngle\\\":0,\\\"shockwaves\\\":[]},\\\"party\\\":[{\\\"id\\\":1,\\\"species\\\":\\\"yanrong\\\",\\\"x\\\":4.371788402398613,\\\"z\\\":-11.790155370716246,\\\"previousX\\\":4.3471087910956525,\\\"previousZ\\\":-11.723597608773526,\\\"facing\\\":2.786509340024015,\\\"attackCooldown\\\":0,\\\"targetId\\\":0,\\\"shotsFired\\\":4,\\\"rank\\\":1,\\\"evolution\\\":\\\"base\\\",\\\"blockedTime\\\":0}]}\"",
+        "Received: \"{\\\"position\\\":{\\\"x\\\":4.371788402398613,\\\"z\\\":-11.790155370716246},\\\"combat\\\":{\\\"balanceTelemetry\\\":{\\\"damageEvents\\\":0,\\\"projectileBlockedAttempts\\\":0,\\\"sporeChainKills\\\":0,\\\"derivedDenied\\\":0,\\\"queuePeak\\\":0},\\\"triggerRelics\\\":{\\\"explosions\\\":0,\\\"thorns\\\":0,\\\"maxGeneration\\\":0,\\\"bubbles\\\":0,\\\"echoes\\\":0,\\\"echoesSkipped\\\":0,\\\"hourglassProcs\\\":0,\\\"steamBursts\\\":0,\\\"chainKills\\\":0,\\\"maxNodes\\\":0,\\\"casts\\\":0,\\\"pendingEchoes\\\":0,\\\"hasteRemaining\\\":0,\\\"hasteCooldown\\\":0,\\\"bubbleCooldown\\\":0,\\\"pending\\\":0,\\\"wet\\\":0,\\\"burning\\\":0},\\\"specialEnemies\\\":{\\\"sporeKills\\\":0,\\\"treasureEscapes\\\":0,\\\"treasureCaught\\\":0,\\\"explosions\\\":[],\\\"rewards\\\":[]},\\\"build\\\":{\\\"enabled\\\":true,\\\"species\\\":\\\"yanrong\\\",\\\"relics\\\":[],\\\"evolution\\\":null,\\\"attacks\\\":[{\\\"attackId\\\":\\\"spark\\\",\\\"slot\\\":0,\\\"level\\\":1,\\\"cooldown\\\":0,\\\"cooldownTotal\\\":0.44,\\\"shotsFired\\\":4}]},\\\"melee\\\":{\\\"active\\\":false,\\\"attackInstanceId\\\":0,\\\"x\\\":0,\\\"z\\\":0,\\\"aimX\\\":0,\\\"aimZ\\\":1,\\\"age\\\":0,\\\"radius\\\":0,\\\"angle\\\":3.141592653589793,\\\"hitIds\\\":[]},\\\"firing\\\":{\\\"weapon\\\":null,\\\"remaining\\\":0,\\\"gap\\\":0},\\\"hp\\\":100,\\\"kills\\\":0,\\\"goldEarned\\\":0,\\\"xp\\\":0,\\\"shotsFired\\\":4,\\\"hits\\\":4,\\\"fusion\\\":{\\\"enabled\\\":true,\\\"active\\\":null,\\\"recipes\\\":[],\\\"bursts\\\":0,\\\"childShots\\\":0,\\\"children\\\":0},\\\"spawned\\\":5,\\\"collected\\\":0,\\\"invulnerability\\\":0,\\\"enemies\\\":[{\\\"id\\\":1,\\\"kind\\\":\\\"tank\\\",\\\"x\\\":6.0869497631365554,\\\"z\\\":2.468766271412285,\\\"hp\\\":53,\\\"spawning\\\":false},{\\\"id\\\":2,\\\"kind\\\":\\\"normal\\\",\\\"x\\\":5.649774142102442,\\\"z\\\":12.554711047309683,\\\"hp\\\":12,\\\"spawning\\\":false},{\\\"id\\\":3,\\\"kind\\\":\\\"normal\\\",\\\"x\\\":1.1661002198950996,\\\"z\\\":13.250645547293,\\\"hp\\\":12,\\\"spawning\\\":false},{\\\"id\\\":4,\\\"kind\\\":\\\"normal\\\",\\\"x\\\":6.10298439534607,\\\"z\\\":15.118803449351178,\\\"hp\\\":12,\\\"spawning\\\":false},{\\\"id\\\":5,\\\"kind\\\":\\\"normal\\\",\\\"x\\\":-0.743018233054792,\\\"z\\\":14.875955020476571,\\\"hp\\\":12,\\\"spawning\\\":true}],\\\"projectiles\\\":0,\\\"orbs\\\":[],\\\"effects\\\":0,\\\"targetId\\\":0,\\\"limits\\\":{\\\"enemies\\\":256,\\\"projectiles\\\":24,\\\"orbs\\\":96,\\\"effects\\\":48,\\\"shockwaves\\\":2},\\\"maxHp\\\":100,\\\"progression\\\":{\\\"level\\\":1,\\\"experience\\\":0,\\\"totalExperience\\\":0,\\\"threshold\\\":8,\\\"pendingChoices\\\":0,\\\"choiceLevel\\\":2,\\\"offers\\\":[],\\\"ranks\\\":{\\\"damage\\\":0,\\\"haste\\\":0,\\\"multishot\\\":0,\\\"vitality\\\":0,\\\"movement\\\":0,\\\"range\\\":0,\\\"orbit\\\":0,\\\"shockwave\\\":0,\\\"flame-sweep-weapon\\\":0,\\\"split-on-hit\\\":0,\\\"area\\\":0,\\\"chain\\\":0,\\\"bubble-weapon\\\":0,\\\"spark-weapon\\\":1,\\\"leaf-weapon\\\":0,\\\"draft-boiling-core\\\":0,\\\"overload-core\\\":0,\\\"hunter-eye\\\":0,\\\"shattered-core\\\":0,\\\"tidal-pearl\\\":0,\\\"specialist-badge\\\":0,\\\"echo-rune\\\":0,\\\"draft-martyr-core\\\":0,\\\"draft-kindling-flask\\\":0,\\\"draft-thorn-testament\\\":0,\\\"draft-bubble-spore\\\":0,\\\"draft-echo-bone-dice\\\":0,\\\"draft-slaughter-hourglass\\\":0,\\\"tide-prism\\\":0,\\\"berserk-route\\\":0,\\\"pursuit-route\\\":0},\\\"stats\\\":{\\\"damageMultiplier\\\":1,\\\"attackRateMultiplier\\\":1,\\\"projectileCount\\\":1,\\\"maxHp\\\":100,\\\"moveMultiplier\\\":1,\\\"rangeMultiplier\\\":1,\\\"orbitCount\\\":0,\\\"orbitDamage\\\":0,\\\"orbitRadius\\\":0,\\\"orbitSpeed\\\":0,\\\"shockDamage\\\":0,\\\"shockRadius\\\":0,\\\"shockInterval\\\":0,\\\"splitOnHit\\\":0},\\\"maxLevel\\\":72},\\\"encounters\\\":{\\\"enabled\\\":true,\\\"wave\\\":1,\\\"boss\\\":null,\\\"elite\\\":null,\\\"shots\\\":[],\\\"limit\\\":16},\\\"orbitAngle\\\":0,\\\"shockwaves\\\":[]},\\\"party\\\":[{\\\"id\\\":1,\\\"species\\\":\\\"yanrong\\\",\\\"x\\\":4.371788402398613,\\\"z\\\":-11.790155370716246,\\\"previousX\\\":4.3471087910956525,\\\"previousZ\\\":-11.723597608773526,\\\"facing\\\":2.786509340024015,\\\"attackCooldown\\\":0,\\\"targetId\\\":0,\\\"shotsFired\\\":4,\\\"rank\\\":1,\\\"evolution\\\":\\\"base\\\",\\\"blockedTime\\\":0}]}\""
+      ]
+    }
+  },
+  {
+    "browser": "webkit",
+    "file": "elemental-fusion-ui.spec.ts",
+    "test": "deep atlas loads, plays flight and one-shot impact, damages and slows in actual game ",
+    "sameBaselineAssertion": true,
+    "baseline": {
+      "assertions": [
+        "> 19 |  expect(result.hp.some((hp:number)=>hp<100)).toBe(true);expect(result.slow.some((s:number)=>s>0)).toBe(true);"
+      ],
+      "errors": [
+        "Error: expect(received).toBe(expected) // Object.is equality",
+        "Expected: true",
+        "Received: false"
+      ]
+    },
+    "current": {
+      "assertions": [
+        "> 19 |  expect(result.hp.some((hp:number)=>hp<100)).toBe(true);expect(result.slow.some((s:number)=>s>0)).toBe(true);"
+      ],
+      "errors": [
+        "Error: expect(received).toBe(expected) // Object.is equality",
+        "Expected: true",
+        "Received: false"
+      ]
+    }
+  },
+  {
+    "browser": "webkit",
+    "file": "elemental-fusion-ui.spec.ts",
+    "test": "paopaoyuan development entry uses one animated creature, real cards, automatic fusions and bounded colored effects ",
+    "sameBaselineAssertion": true,
+    "baseline": {
+      "assertions": [
+        "> 32 |  expect(await page.evaluate(()=>(window as any).game.party.members.map((m:any)=>m.species))).toEqual([species]);await expect(page.locator('#creature-name')).toHaveText(name);await expect(page.locator('.dash-control')).toBeHidden();"
+      ],
+      "errors": [
+        "Error: expect(locator).toHaveText(expected) failed",
+        "Expected: \"泡泡螈\"",
+        "Error: element(s) not found"
+      ]
+    },
+    "current": {
+      "assertions": [
+        "> 32 |  expect(await page.evaluate(()=>(window as any).game.party.members.map((m:any)=>m.species))).toEqual([species]);await expect(page.locator('#creature-name')).toHaveText(name);await expect(page.locator('.dash-control')).toBeHidden();"
+      ],
+      "errors": [
+        "Error: expect(locator).toHaveText(expected) failed",
+        "Expected: \"泡泡螈\"",
+        "Error: element(s) not found"
+      ]
+    }
+  },
+  {
+    "browser": "webkit",
+    "file": "elemental-fusion-ui.spec.ts",
+    "test": "yacishou development entry uses one animated creature, real cards, automatic fusions and bounded colored effects ",
+    "sameBaselineAssertion": true,
+    "baseline": {
+      "assertions": [
+        "> 32 |  expect(await page.evaluate(()=>(window as any).game.party.members.map((m:any)=>m.species))).toEqual([species]);await expect(page.locator('#creature-name')).toHaveText(name);await expect(page.locator('.dash-control')).toBeHidden();"
+      ],
+      "errors": [
+        "Error: expect(locator).toHaveText(expected) failed",
+        "Expected: \"芽刺兽\"",
+        "Error: element(s) not found"
+      ]
+    },
+    "current": {
+      "assertions": [
+        "> 32 |  expect(await page.evaluate(()=>(window as any).game.party.members.map((m:any)=>m.species))).toEqual([species]);await expect(page.locator('#creature-name')).toHaveText(name);await expect(page.locator('.dash-control')).toBeHidden();"
+      ],
+      "errors": [
+        "Error: expect(locator).toHaveText(expected) failed",
+        "Expected: \"芽刺兽\"",
+        "Error: element(s) not found"
+      ]
+    }
+  },
+  {
+    "browser": "webkit",
+    "file": "elemental-fusion-ui.spec.ts",
+    "test": "missing elemental textures and icons preserve procedural effects, readable cards and damage ",
+    "sameBaselineAssertion": true,
+    "baseline": {
+      "assertions": [
+        "> 76 |  expect(await page.evaluate(()=>(window as any).game.combat.hits)).toBeGreaterThan(0);expect(await page.evaluate(()=>(window as any).game.combatView.burstRings.count)).toBeGreaterThan(0);"
+      ],
+      "errors": [
+        "Error: page.evaluate: TypeError: undefined is not an object (evaluating 'window.game.combatView.burstRings.count')"
+      ]
+    },
+    "current": {
+      "assertions": [
+        "> 76 |  expect(await page.evaluate(()=>(window as any).game.combat.hits)).toBeGreaterThan(0);expect(await page.evaluate(()=>(window as any).game.combatView.burstRings.count)).toBeGreaterThan(0);"
+      ],
+      "errors": [
+        "Error: page.evaluate: TypeError: undefined is not an object (evaluating 'window.game.combatView.burstRings.count')"
+      ]
+    }
+  },
+  {
+    "browser": "webkit",
+    "file": "fusion-ui.spec.ts",
+    "test": "real fusion cards and impacts render child/explosion frames without duplicate hit flashes on both phone layouts ",
+    "sameBaselineAssertion": true,
+    "baseline": {
+      "assertions": [
+        "> 55 |   await expect(card.locator('.fire-icon')).toHaveClass(/ready/);"
+      ],
+      "errors": [
+        "Error: expect(locator).toHaveClass(expected) failed",
+        "Error: element(s) not found"
+      ]
+    },
+    "current": {
+      "assertions": [
+        "> 55 |   await expect(card.locator('.fire-icon')).toHaveClass(/ready/);"
+      ],
+      "errors": [
+        "Error: expect(locator).toHaveClass(expected) failed",
+        "Error: element(s) not found"
+      ]
+    }
+  },
+  {
+    "browser": "webkit",
+    "file": "fusion-ui.spec.ts",
+    "test": "missing atlas and icons keep procedural attack/explosion and readable cards ",
+    "sameBaselineAssertion": true,
+    "baseline": {
+      "assertions": [
+        "> 104 |   expect(await page.evaluate(() => { const v=(window as any).game.combatView;return {bolts:v.bolts.count,rings:v.burstRings.count}; })).toEqual({bolts:2,rings:1});"
+      ],
+      "errors": [
+        "Error: page.evaluate: TypeError: undefined is not an object (evaluating 'v.burstRings.count')"
+      ]
+    },
+    "current": {
+      "assertions": [
+        "> 104 |   expect(await page.evaluate(() => { const v=(window as any).game.combatView;return {bolts:v.bolts.count,rings:v.burstRings.count}; })).toEqual({bolts:2,rings:1});"
+      ],
+      "errors": [
+        "Error: page.evaluate: TypeError: undefined is not an object (evaluating 'v.burstRings.count')"
+      ]
+    }
+  },
+  {
+    "browser": "webkit",
+    "file": "game.spec.ts",
+    "test": "main menu renders a real 3D world and starts exploration without errors ",
+    "sameBaselineAssertion": true,
+    "baseline": {
+      "assertions": [
+        "> 30 |   await expect(page.getByRole('progressbar', { name: '生命值', exact: true })).toHaveAttribute('aria-valuenow', '100');"
+      ],
+      "errors": [
+        "Error: expect(locator).toHaveAttribute(expected) failed",
+        "Expected: \"100\"",
+        "Error: element(s) not found"
+      ]
+    },
+    "current": {
+      "assertions": [
+        "> 30 |   await expect(page.getByRole('progressbar', { name: '生命值', exact: true })).toHaveAttribute('aria-valuenow', '100');"
+      ],
+      "errors": [
+        "Error: expect(locator).toHaveAttribute(expected) failed",
+        "Expected: \"100\"",
+        "Error: element(s) not found"
+      ]
+    }
+  },
+  {
+    "browser": "webkit",
+    "file": "hud-art.spec.ts",
+    "test": "forest HUD keeps live values, weapon artwork and safe touch targets on landscape phones ",
+    "sameBaselineAssertion": true,
+    "baseline": {
+      "assertions": [
+        "> 47 |       expect(rect.width).toBeGreaterThanOrEqual(width === 568 ? 44 : 48);expect(rect.height).toBeGreaterThanOrEqual(width === 568 ? 44 : 48);"
+      ],
+      "errors": [
+        "Error: expect(received).toBeGreaterThanOrEqual(expected)",
+        "Expected: >= 48",
+        "Received:    44"
+      ]
+    },
+    "current": {
+      "assertions": [
+        "> 47 |       expect(rect.width).toBeGreaterThanOrEqual(width === 568 ? 44 : 48);expect(rect.height).toBeGreaterThanOrEqual(width === 568 ? 44 : 48);"
+      ],
+      "errors": [
+        "Error: expect(received).toBeGreaterThanOrEqual(expected)",
+        "Expected: >= 48",
+        "Received:    44"
+      ]
+    }
+  },
+  {
+    "browser": "webkit",
+    "file": "infinite-world-ui.spec.ts",
+    "test": "teleporting across many chunks does not accumulate chunk groups or materials ",
+    "sameBaselineAssertion": true,
+    "baseline": {
+      "assertions": [
+        "> 113 |   const result = await page.evaluate(() => {"
+      ],
+      "errors": [
+        "Test timeout of 30000ms exceeded.",
+        "Error: page.evaluate: Test timeout of 30000ms exceeded."
+      ]
+    },
+    "current": {
+      "assertions": [
+        "> 113 |   const result = await page.evaluate(() => {"
+      ],
+      "errors": [
+        "Test timeout of 30000ms exceeded.",
+        "Error: page.evaluate: Test timeout of 30000ms exceeded."
+      ]
+    }
+  },
+  {
+    "browser": "webkit",
+    "file": "random-world-ui.spec.ts",
+    "test": "different seeds render different regions and fit phone replay controls ",
+    "sameBaselineAssertion": true,
+    "baseline": {
+      "assertions": [
+        "> 119 |   expect(short.y).toBeGreaterThanOrEqual(0); expect(short.y + short.height).toBeLessThanOrEqual(320);"
+      ],
+      "errors": [
+        "Error: expect(received).toBeLessThanOrEqual(expected)",
+        "Expected: <= 320",
+        "Received:    326.59375"
+      ]
+    },
+    "current": {
+      "assertions": [
+        "> 119 |   expect(short.y).toBeGreaterThanOrEqual(0); expect(short.y + short.height).toBeLessThanOrEqual(320);"
+      ],
+      "errors": [
+        "Error: expect(received).toBeLessThanOrEqual(expected)",
+        "Expected: <= 320",
+        "Received:    326.59375"
+      ]
+    }
+  },
+  {
+    "browser": "webkit",
+    "file": "upgrades.spec.ts",
+    "test": "new spells coexist, max HP updates HUD and a fresh run clears all skills ",
+    "sameBaselineAssertion": true,
+    "baseline": {
+      "assertions": [
+        "> 134 |   await expect(page.getByRole('progressbar', { name: '生命值', exact: true })).toHaveAttribute('aria-valuemax', '120');"
+      ],
+      "errors": [
+        "Error: expect(locator).toHaveAttribute(expected) failed",
+        "Expected: \"120\"",
+        "Error: element(s) not found"
+      ]
+    },
+    "current": {
+      "assertions": [
+        "> 134 |   await expect(page.getByRole('progressbar', { name: '生命值', exact: true })).toHaveAttribute('aria-valuemax', '120');"
+      ],
+      "errors": [
+        "Error: expect(locator).toHaveAttribute(expected) failed",
+        "Expected: \"120\"",
+        "Error: element(s) not found"
+      ]
+    }
+  },
+  {
+    "browser": "webkit",
+    "file": "upgrades.spec.ts",
+    "test": "the last remaining skill is valid and full mastery stops creating empty dialogs ",
+    "sameBaselineAssertion": true,
+    "baseline": {
+      "assertions": [
+        "> 157 |   await expect(page.locator('#xp-progress')).toHaveText('满级');"
+      ],
+      "errors": [
+        "Error: expect(locator).toHaveText(expected) failed",
+        "Expected: \"满级\"",
+        "Error: element(s) not found"
+      ]
+    },
+    "current": {
+      "assertions": [
+        "> 157 |   await expect(page.locator('#xp-progress')).toHaveText('满级');"
+      ],
+      "errors": [
+        "Error: expect(locator).toHaveText(expected) failed",
+        "Expected: \"满级\"",
+        "Error: element(s) not found"
+      ]
+    }
+  }
+]

@@ -1,0 +1,10 @@
+PNG/Lightning/lightning_burst_003/lightning_burst_003_small_violet/frame0000.png = 0 0 48 48
+PNG/Lightning/lightning_burst_003/lightning_burst_003_small_violet/frame0001.png = 48 0 48 48
+PNG/Lightning/lightning_burst_003/lightning_burst_003_small_violet/frame0002.png = 96 0 48 48
+PNG/Lightning/lightning_burst_003/lightning_burst_003_small_violet/frame0003.png = 144 0 48 48
+PNG/Lightning/lightning_burst_003/lightning_burst_003_small_violet/frame0004.png = 192 0 48 48
+PNG/Lightning/lightning_burst_003/lightning_burst_003_small_violet/frame0005.png = 240 0 48 48
+PNG/Lightning/lightning_burst_003/lightning_burst_003_small_violet/frame0006.png = 288 0 48 48
+PNG/Lightning/lightning_burst_003/lightning_burst_003_small_violet/frame0007.png = 336 0 48 48
+PNG/Lightning/lightning_burst_003/lightning_burst_003_small_violet/frame0008.png = 384 0 48 48
+PNG/Lightning/lightning_burst_003/lightning_burst_003_small_violet/frame0009.png = 432 0 48 48

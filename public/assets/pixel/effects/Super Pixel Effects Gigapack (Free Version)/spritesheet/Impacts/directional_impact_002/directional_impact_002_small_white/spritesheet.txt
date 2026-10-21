@@ -1,0 +1,7 @@
+PNG/Impacts/directional_impact_002/directional_impact_002_small_white/frame0000.png = 0 0 70 25
+PNG/Impacts/directional_impact_002/directional_impact_002_small_white/frame0001.png = 70 0 70 25
+PNG/Impacts/directional_impact_002/directional_impact_002_small_white/frame0002.png = 140 0 70 25
+PNG/Impacts/directional_impact_002/directional_impact_002_small_white/frame0003.png = 210 0 70 25
+PNG/Impacts/directional_impact_002/directional_impact_002_small_white/frame0004.png = 280 0 70 25
+PNG/Impacts/directional_impact_002/directional_impact_002_small_white/frame0005.png = 350 0 70 25
+PNG/Impacts/directional_impact_002/directional_impact_002_small_white/frame0006.png = 420 0 70 25
