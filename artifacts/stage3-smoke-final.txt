@@ -1,0 +1,10 @@
+[WebServer] (node:66000) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 1 test using 1 worker
+
+(node:688) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 1 tests\behavior-relics.spec.ts:106:1 › one real browser smoke: projectile, zone, status and automatic card/shop/build art (14.1s)
+
+  1 passed (17.8s)

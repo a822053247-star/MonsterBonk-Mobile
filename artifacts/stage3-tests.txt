@@ -1,0 +1,62 @@
+[WebServer] (node:66220) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 11 tests using 1 worker
+
+(node:61572) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x   1 tests\behavior-relics.spec.ts:32:28 › mirror-prism: registry, prerequisites, real mechanic and bounded recursion (33ms)
+(node:55372) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  2 tests\behavior-relics.spec.ts:32:28 › returning-crown: registry, prerequisites, real mechanic and bounded recursion (37ms)
+  ok  3 tests\behavior-relics.spec.ts:32:28 › tidal-magnet: registry, prerequisites, real mechanic and bounded recursion (11ms)
+  ok  4 tests\behavior-relics.spec.ts:32:28 › hive-fuse: registry, prerequisites, real mechanic and bounded recursion (22ms)
+  ok  5 tests\behavior-relics.spec.ts:32:28 › ember-sigil: registry, prerequisites, real mechanic and bounded recursion (21ms)
+  ok  6 tests\behavior-relics.spec.ts:32:28 › spore-crown: registry, prerequisites, real mechanic and bounded recursion (16ms)
+  ok  7 tests\behavior-relics.spec.ts:32:28 › back-mirror: registry, prerequisites, real mechanic and bounded recursion (8ms)
+  ok  8 tests\behavior-relics.spec.ts:32:28 › slaughter-drum: registry, prerequisites, real mechanic and bounded recursion (6ms)
+  ok  9 tests\behavior-relics.spec.ts:32:28 › wet-vines: registry, prerequisites, real mechanic and bounded recursion (8ms)
+  ok 10 tests\behavior-relics.spec.ts:32:28 › blood-pact: registry, prerequisites, real mechanic and bounded recursion (9ms)
+  x  11 tests\behavior-relics.spec.ts:106:1 › one real browser smoke: projectile, zone, status and automatic card/shop/build art (10.1s)
+
+
+  1) tests\behavior-relics.spec.ts:32:28 › mirror-prism: registry, prerequisites, real mechanic and bounded recursion
+
+    Error: expect(received).toBeLessThan(expected)
+
+    Expected: < 1000
+    Received:   1000
+
+      45 |   expect(child.damage).toBe(50);expect(child.relicSource!.rootDamage).toBe(100);
+      46 |   c.relicBehaviors.projectileHit(p,a,a.x,a.z);c.relicBehaviors.projectileHit(child,b,b.x,b.z);
+    > 47 |   expect(c.projectiles.filter(p=>p.generation===1&&p.active)).toHaveLength(1);advance(c,.2);expect(b.hp).toBeLessThan(1000);break;
+         |                                                                                                          ^
+      48 |  }
+      49 |  case 'returning-crown':{
+      50 |   const a=target(c,5),b=target(c,3);const p=shot(c,a,'leaf');p.hitIds=[a.id];p.damageIds=[a.id];p.distance=10.5;p.flightRange=10.5;p.x=6;p.previousX=6;
+        at E:\study\game\MonsterBonk-relics-stage3\tests\behavior-relics.spec.ts:47:106
+
+    Error Context: artifacts\stage3-test-output\behavior-relics-mirror-pri-0100a-hanic-and-bounded-recursion\error-context.md
+
+  2) tests\behavior-relics.spec.ts:106:1 › one real browser smoke: projectile, zone, status and automatic card/shop/build art
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      121 |   return {bound,zone:c.relicBehaviors.zones.some((z:any)=>z.active),refracted:c.projectiles.some((p:any)=>p.active&&p.relicSource?.behavior),limits:c.inspect().limits};
+      122 |  });
+    > 123 |  expect(state.bound).toBe(true);expect(state.zone).toBe(true);expect(state.refracted).toBe(true);
+          |                                                                                       ^
+      124 |  await page.screenshot({path:'artifacts/stage3/smoke-combat.png'});
+      125 |  await page.evaluate(()=>{
+      126 |   const g=(window as any).__relicGame,c=g.combat;c.reset();c.grantUpgrade('bubble-weapon');c.grantUpgrade('leaf-weapon');c.grantUpgrade('area');
+        at E:\study\game\MonsterBonk-relics-stage3\tests\behavior-relics.spec.ts:123:87
+
+    Error Context: artifacts\stage3-test-output\behavior-relics-one-real-b-5cef5-tomatic-card-shop-build-art\error-context.md
+
+  2 failed
+    tests\behavior-relics.spec.ts:32:28 › mirror-prism: registry, prerequisites, real mechanic and bounded recursion
+    tests\behavior-relics.spec.ts:106:1 › one real browser smoke: projectile, zone, status and automatic card/shop/build art
+  9 passed (16.7s)

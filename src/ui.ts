@@ -196,7 +196,8 @@ export function renderBuildSummary(build: RunBuild | undefined, fusions: readonl
   document.getElementById('build-relics')!.innerHTML = build.relics.length ? build.relics.map(id => {
     const relic = RELICS[id];
     const inactive = id === 'specialist-badge' && build.attacks.length > 1 ? '（副武器已装备，加成失效）' : '';
-    return `<article class="build-relic"><strong>${buildText(relic.title+inactive)}</strong><p>${buildText(relic.benefit)}</p><p class="build-tradeoff">代价：${buildText(relic.tradeoff)}</p></article>`;
+    const art=upgradeArt({id,category:'relic'},build.attacks[0].attackId);
+    return `<article class="build-relic"><img class="build-relic-icon" data-upgrade-art="build-relic" src="${art.illustrations[0]}" alt=""/><strong>${buildText(relic.title+inactive)}</strong><p>${buildText(relic.benefit)}</p><p class="build-tradeoff">代价：${buildText(relic.tradeoff)}</p></article>`;
   }).join('') : '<p class="build-empty">尚未获得稀有道具，升级时偶尔出现。</p>';
   document.getElementById('build-evolution')!.textContent = build.evolution ? `${evolution}：${EVOLUTIONS[build.evolution].benefit}；${EVOLUTIONS[build.evolution].tradeoff}` : '火花弹获得命中分裂后，可出现互斥进化路线。';
   bindUpgradeArt(panel);

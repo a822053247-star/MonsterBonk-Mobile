@@ -1,5 +1,6 @@
 import type { Combat, CombatEffect, Enemy, Projectile } from './combat';
 import { WEAPON } from './combat';
+import type { BaseAttackId } from './fusion';
 import type { RelicDamageSource, RelicId } from './relics';
 import { factoryRelic } from './content/relic-registry';
 import type { RelicBehavior } from './content/relics/behavior-relics';
@@ -19,13 +20,25 @@ export class CombatRelicBehaviors {
   private hits=0;
   private pullReady=0;
   private fireReady=0;
+  private poisonReady=0;
+  private drumReady=0;
+  private kills:number[]=[];
+  private heals:number[]=[];
+  private casts=0;
   constructor(private c:Combat,private hooks:Hooks) {}
   rule<T extends RelicBehavior['handler']>(id:RelicId,handler:T):Extract<RelicBehavior,{handler:T}>|undefined {
     if(!this.c.usesRunBuild||!this.c.runBuild.relics.includes(id))return;
     const b=factoryRelic(id)?.behavior;
     return b?.handler===handler ? b as Extract<RelicBehavior,{handler:T}> : undefined;
   }
-  reset(){for(const zone of this.zones)zone.active=false;this.hits=this.pullReady=this.fireReady=0;}
+  reset(){for(const zone of this.zones)zone.active=false;this.hits=this.pullReady=this.fireReady=this.poisonReady=this.drumReady=this.casts=0;this.kills=[];this.heals=[];}
+  maxHpFactor(){return this.rule('blood-pact','blood')?.maxHp??1;}
+  intervalFactor(){const b=this.rule('blood-pact','blood');return b&&this.c.hp<=this.c.maxHp*b.threshold ? b.interval : 1;}
+  cast(attackId:BaseAttackId,melee:boolean){
+    const rule=this.rule('back-mirror','back-shot');if(!rule||melee||++this.casts%rule.every!==0)return;
+    const parent=this.c.projectiles.find(p=>p.active&&p.attackId===attackId&&p.age===0&&this.primary(p));
+    if(parent)this.launch(parent,this.c.anchorX,this.c.anchorZ,-parent.vx,-parent.vz,(parent.relicSource?.rootDamage??parent.damage)*rule.damage,'phantom-projectile');
+  }
   private derived(source:RelicDamageSource):RelicDamageSource{return {...source,behavior:true,copied:true,generation:source.generation+1};}
   private primary(shot:Projectile){const s=shot.relicSource;return (shot.generation??0)===0&&!shot.returning&&!s?.behavior&&!s?.copied&&(!s||s.kind==='hit');}
   private launch(parent:Projectile,x:number,z:number,dx:number,dz:number,damage:number,preset?:string){
@@ -38,6 +51,7 @@ export class CombatRelicBehaviors {
       age:0,burst:false,elemental:parent.attackId==='bubble'||parent.attackId==='leaf',homing:false,
       fusionIds:[],hitIds:[],damageIds:[],ignoreEnemyId:0,pierces:0,bounces:0,scatter:false,hopTargetId:0,
       hopDelay:0,hopElapsed:0,returning:false,outboundSpent:false,vfxPresetId:preset,behaviorRoot:source.rootId});
+    return shot;
   }
   projectileHit(shot:Projectile,enemy:Enemy,x:number,z:number){
     if(!this.primary(shot)||this.c.encounters.dying)return;
@@ -48,7 +62,8 @@ export class CombatRelicBehaviors {
       const target=this.c.enemies.filter(e=>e.active&&e.spawnTime<=0&&e.id!==enemy.id&&!(shot.hitIds??[]).includes(e.id)
         &&Math.hypot(e.x-x,e.z-z)<=WEAPON.range&&!this.hooks.covered(x,z,e.x,e.z))
         .sort((a,b)=>Math.hypot(a.x-x,a.z-z)-Math.hypot(b.x-x,b.z-z)||a.id-b.id)[0];
-      if(target){this.launch(shot,x,z,target.x-x,target.z-z,root*mirror.damage,'prism-projectile');
+      if(target){const child=this.launch(shot,x,z,target.x-x,target.z-z,root*mirror.damage,'prism-projectile');
+        if(child){child.ignoreEnemyId=enemy.id;child.hitIds=[enemy.id];child.damageIds=[enemy.id];}
         this.hooks.visual(x,z,'water',.6,'water-impact');}
     }
     const mine=this.rule('hive-fuse','mine');
@@ -96,6 +111,40 @@ export class CombatRelicBehaviors {
     if(rule&&(source.attackId==='spark'||source.attackId==='flame-sweep')&&this.c.elapsed>=this.fireReady){
       this.fireReady=this.c.elapsed+rule.cooldown;
       this.zone('fire-zone',enemy.x,enemy.z,rule.duration,rule.interval,rule.radius,(source.rootDamage??0)*rule.damage,rule.cap,source,'ember-area');
+    }
+    const vine=this.rule('wet-vines','wet-bind');
+    if(vine&&source.attackId==='leaf'&&(enemy.wetTime??0)>0&&this.c.elapsed>=(enemy.vineReadyAt??0)){
+      enemy.wetTime=0;enemy.vineReadyAt=this.c.elapsed+vine.cooldown;enemy.vineUntil=this.c.elapsed+vine.duration;
+      this.hooks.visual(enemy.x,enemy.z,'water',.65,'water-impact');
+    }
+  }
+  slowFactor(enemy:Enemy){
+    const rule=this.rule('wet-vines','wet-bind');return rule&&(enemy.vineUntil??0)>this.c.elapsed ? enemy.rank==='boss'?rule.bossSlow:rule.slow : 1;
+  }
+  kill(enemy:Enemy,damage:number,source:RelicDamageSource|undefined,origin:'player'|'spore'){
+    if(!this.c.usesRunBuild||origin!=='player')return;
+    const blood=this.rule('blood-pact','blood');
+    if(blood){
+      this.heals=this.heals.filter(time=>this.c.elapsed-time<1-1e-8);
+      if(this.heals.length<blood.healCap&&this.c.hp<this.c.maxHp){this.c.hp=Math.min(this.c.maxHp,this.c.hp+blood.heal);this.heals.push(this.c.elapsed);}
+    }
+    if(source?.behavior||source?.copied||this.c.encounters.dying||enemy.rank==='boss')return;
+    source??=this.hooks.source(damage);
+    const root=source.rootDamage??damage,poison=this.rule('spore-crown','poison-zone');
+    if(poison&&source.attackId==='leaf'&&this.c.elapsed>=this.poisonReady){
+      this.poisonReady=this.c.elapsed+poison.cooldown;
+      this.zone('poison-zone',enemy.x,enemy.z,poison.duration,poison.interval,poison.radius,root*poison.damage,poison.cap,source,'spore-area');
+    }
+    const drum=this.rule('slaughter-drum','kill-wave');
+    if(drum&&this.c.elapsed>=this.drumReady){
+      this.kills=this.kills.filter(time=>this.c.elapsed-time<=drum.window+1e-8);this.kills.push(this.c.elapsed);
+      if(this.kills.length>=drum.kills){
+        this.kills=[];this.drumReady=this.c.elapsed+drum.cooldown;
+        this.hooks.visual(this.c.anchorX,this.c.anchorZ,'burst',drum.radius,'fire-explosion');
+        const derived=this.derived(source);
+        for(const target of this.c.enemies)if(target.active&&target.spawnTime<=0&&Math.hypot(target.x-this.c.anchorX,target.z-this.c.anchorZ)<=drum.radius+this.c.enemyRadius(target)
+          &&!this.hooks.covered(this.c.anchorX,this.c.anchorZ,target.x,target.z))this.hooks.damage(target,root*drum.damage,derived);
+      }
     }
   }
   private zone(kind:Zone['kind'],x:number,z:number,duration:number,interval:number,radius:number,damage:number,cap:number,source:RelicDamageSource,preset:string){

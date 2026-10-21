@@ -48,4 +48,8 @@ export const VFX_PRESETS: readonly VfxPreset[] = [
     duration:'event',fade:.45,rotationSpeed:.4,pulseSpeed:4,height:.35,rise:.3,low:{mist:false} },
   { id:'prism-projectile',type:'projectile',color:'#b6e9ff',scale:.9,
     trail:{color:'#c4f2ff',length:.6,opacity:.5},low:{animated:false,trail:true} },
+  { id:'spore-area',type:'area',color:'#a7e77a',secondaryColor:'#72aa52',outline:'ring',radiusScale:1,
+    duration:'event',fade:.4,rotationSpeed:.3,pulseSpeed:3,height:.4,rise:.35,low:{mist:false} },
+  { id:'phantom-projectile',type:'projectile',color:'#b78bed',scale:.8,
+    trail:{color:'#d9bcff',length:.7,opacity:.4},low:{animated:false,trail:true} },
 ];

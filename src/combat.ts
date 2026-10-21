@@ -49,7 +49,7 @@ interface WeaponSnapshot {
   sweep?: ReturnType<typeof flameSweepStats>; mature?: boolean;
 }
 type Moving = Point & { previousX: number; previousZ: number; active: boolean };
-export interface Enemy extends Moving { wetTime?: number; steamReadyAt?: number; grassRollDistance?: number; grassCycle?: number; grassRollX?: number; grassRollZ?: number; grassAttackX?: number; grassAttackZ?: number; grassHit?: boolean; burnTime?: number; burnClock?: number; burnDamage?: number; burnStacks?: number; burnSource?: RelicDamageSource; specialTime?: number; swarm?: boolean; rank?: 'elite' | 'boss'; maxHp?: number; radius?: number; id: number; kind: EnemyKind; hp: number; age: number; spawnTime: number; flash: number; knockX: number; knockZ: number; facing: number; orbitCooldown: number; intent: EnemyIntent; intentTime: number; intentCooldown: number; aimX: number; aimZ: number; stagger: number; hornDash: number; slowTime?: number; walkPhase?: number; walkAmount?: number; steerX?: number; steerZ?: number; walkX?: number; walkZ?: number }
+export interface Enemy extends Moving { vineUntil?: number; vineReadyAt?: number; wetTime?: number; steamReadyAt?: number; grassRollDistance?: number; grassCycle?: number; grassRollX?: number; grassRollZ?: number; grassAttackX?: number; grassAttackZ?: number; grassHit?: boolean; burnTime?: number; burnClock?: number; burnDamage?: number; burnStacks?: number; burnSource?: RelicDamageSource; specialTime?: number; swarm?: boolean; rank?: 'elite' | 'boss'; maxHp?: number; radius?: number; id: number; kind: EnemyKind; hp: number; age: number; spawnTime: number; flash: number; knockX: number; knockZ: number; facing: number; orbitCooldown: number; intent: EnemyIntent; intentTime: number; intentCooldown: number; aimX: number; aimZ: number; stagger: number; hornDash: number; slowTime?: number; walkPhase?: number; walkAmount?: number; steerX?: number; steerZ?: number; walkX?: number; walkZ?: number }
 export interface Projectile extends Moving { returning?: boolean; outboundSpent?: boolean; flightRange?: number; behaviorRoot?: number; vfxPresetId?: string; relicSource?: RelicDamageSource; vx: number; vz: number; life: number; damage: number; distance: number; sourceId?: number; species?: SpeciesId; attackId?: BaseAttackId; attackRules?: AttackRules; homing?: boolean; generation?: number; bornTick?: number; ignoreEnemyId?: number; burst?: boolean; age?: number; elemental?: boolean; fusionIds?: FusionId[]; hitIds?: number[]; pierces?: number; bounces?: number; scatter?: boolean; baseDamage?: number; damageIds?: number[]; hopTargetId?: number; hopDelay?: number; hopElapsed?: number; hopDuration?: number; hopFromX?: number; hopFromZ?: number }
 export interface Shockwave { active: boolean; x: number; z: number; age: number; radius: number; previousRadius: number; maxRadius: number; damage: number; hitIds: Int32Array }
 export interface ExperienceOrb extends Moving { value: number; magnetized: boolean }
@@ -190,7 +190,7 @@ export class Combat {
   get hasAttackIntents() { return this.isTrial || this.encounters.enabled; }
   get xp() { return this.progression.totalExperience; }
   get stats() { return this.progression.stats; }
-  get maxHp() { return this.stats.maxHp; }
+  get maxHp() { return this.stats.maxHp * this.relicBehaviors.maxHpFactor(); }
   get baseAttack() { return CREATURES[this.party?.leader.species ?? 'yanrong'].skill; }
   get fusions() { return this.fusionEnabled ? (this.usesRunBuild ? this.runBuild.attacks.flatMap(attack => resolveFusions(attack.attackId, this.progression.ranks)) : resolveFusions(this.baseAttack, this.progression.ranks)) : []; }
   get fusion() { return this.fusions[0]; }
@@ -207,7 +207,7 @@ export class Combat {
 
   private applyUpgrade(id: SkillId, fromChoice: boolean) {
     if (this.hp <= 0) return false;
-    const previous = this.stats;
+    const previous = this.stats, previousMaxHp = this.maxHp;
     const previousSweep = flameSweepStats(this.runBuild.attacks.find(a => a.attackId === 'flame-sweep')?.level ?? 1);
     const intervals = new Map(this.runBuild.attacks.map(a => [a.attackId, this.runBuild.rules(a.attackId).intervalMultiplier]));
     if (!(fromChoice ? this.progression.pick(id) : this.progression.grant(id))) return false;
@@ -220,7 +220,7 @@ export class Combat {
       }
       attack.cooldown *= ratio; attack.cooldownTotal *= ratio;
     }
-    this.hp = Math.min(this.maxHp, this.hp + this.maxHp - previous.maxHp);
+    this.hp = Math.min(this.maxHp, this.hp + this.maxHp - previousMaxHp);
     this.fireClock *= previous.attackRateMultiplier / this.stats.attackRateMultiplier;
     if (this.party) for (const member of this.party.members) member.attackCooldown *= previous.attackRateMultiplier / this.stats.attackRateMultiplier;
     if (previous.shockDamage === 0 && this.stats.shockDamage > 0) this.shockClock = 0;
@@ -276,7 +276,7 @@ export class Combat {
     enemy.rank = undefined; enemy.maxHp = enemy.radius = undefined; enemy.swarm = false;
     enemy.specialTime = 0;
     enemy.grassRollDistance = 0; enemy.grassCycle = 0; enemy.grassRollX = enemy.grassRollZ = enemy.grassAttackX = enemy.grassAttackZ = undefined; enemy.grassHit = false;
-    enemy.wetTime = enemy.steamReadyAt = 0;
+    enemy.wetTime = enemy.steamReadyAt = 0; enemy.vineUntil=enemy.vineReadyAt=0;
     enemy.burnTime = enemy.burnClock = enemy.burnDamage = enemy.burnStacks = 0; enemy.burnSource = undefined;
     if (this.encounters.enabled) enemy.hp = enemy.maxHp = (kind==='fast'?40:kind==='tank'?FORMAL_ROCK_HP:kind==='draft-spore-bomber'?FORMAL_SPORE_HP:ENEMY_TYPES[kind].hp)*(ENCOUNTER_RULES.waveHealth[this.encounters.wave-1]??1);
     this.spawned++;
@@ -637,6 +637,7 @@ export class Combat {
       if (this.encounters.enabled && enemy.rank) {
         const motion = this.encounters.movement(enemy,dt,player,this,moveX,moveZ); moveX=motion.x; moveZ=motion.z;
       }
+      const bindingSlow=this.relicBehaviors.slowFactor(enemy);moveX*=bindingSlow;moveZ*=bindingSlow;
       if ((enemy.slowTime ?? 0) > 0) { const slow = enemy.rank === 'boss' ? .85 : ELEMENTAL_RULES.slowFactor; moveX *= slow; moveZ *= slow; }
       // Resolve voluntary locomotion before external impulses. Art follows the
       // collision-resolved walk (including cover sliding), never hit knockback.
@@ -662,7 +663,8 @@ export class Combat {
     if (this.usesRunBuild && this.party) {
       const member = this.party.leader, attacks = this.runBuild.attacks;
       const boostedTime = Math.max(0, Math.min(dt, this.hourglassUntil - (this.elapsed-dt)));
-      const attackTime = dt + boostedTime * TRIGGER_RELIC_RULES.hourglass.haste;
+      const bloodTempo=1/this.relicBehaviors.intervalFactor();
+      const attackTime = (dt + boostedTime * TRIGGER_RELIC_RULES.hourglass.haste)*bloodTempo;
       for (const attack of attacks) attack.cooldown = Math.max(0, attack.cooldown - attackTime);
       // Independent melee cooldown: a full bolt pool or an ongoing salvo cannot suppress a sweep.
       for (const attack of attacks) {
@@ -968,7 +970,7 @@ export class Combat {
     this.relicEvents = [];
     this.pendingEchoes = []; this.previousWeapon = undefined; this.weaponCastCount = 0;
     this.recentRelicKills = []; this.hourglassUntil = this.hourglassReadyAt = this.bubbleReadyAt = 0;
-    for (const enemy of this.enemies) { enemy.wetTime = enemy.steamReadyAt = 0; enemy.burnTime = enemy.burnClock = enemy.burnStacks = 0; enemy.burnSource = undefined; }
+    for (const enemy of this.enemies) { enemy.wetTime = enemy.steamReadyAt = 0; enemy.vineUntil=enemy.vineReadyAt=0; enemy.burnTime = enemy.burnClock = enemy.burnStacks = 0; enemy.burnSource = undefined; }
     this.melee.active = false;
     this.encounters.clearShots();
     this.salvo = undefined; this.launchClock = 0;
@@ -1229,6 +1231,7 @@ export class Combat {
   }
 
   private recordWeaponCast(attack: WeaponSnapshot) {
+    this.relicBehaviors.cast(attack.attackId,!!attack.sweep);
     if (!this.usesRunBuild || this.encounters.dying || !this.runBuild.relics.includes('draft-echo-bone-dice')) return;
     this.weaponCastCount++;
     if (this.weaponCastCount % TRIGGER_RELIC_RULES.echo.every === 0 && this.previousWeapon) {
@@ -1401,9 +1404,9 @@ export class Combat {
     if (this.usesRunBuild && source) {
       source.rootDamage ??= damage;
       this.relicBehaviors.hit(enemy,source);
-      if (source.kind !== 'burn' && source.attackId === 'bubble') enemy.wetTime = REACTION_RULES.wetDuration;
+      if (!source.behavior && source.kind !== 'burn' && source.attackId === 'bubble') enemy.wetTime = REACTION_RULES.wetDuration;
       const fire = source.attackId === 'spark' || source.attackId === 'flame-sweep';
-      if (fire && source.kind !== 'burn' && !source.reaction && (enemy.wetTime ?? 0) > 0
+      if (fire && !source.behavior && source.kind !== 'burn' && !source.reaction && (enemy.wetTime ?? 0) > 0
         && this.runBuild.relics.includes('draft-boiling-core') && this.elapsed + 1e-8 >= (enemy.steamReadyAt ?? 0)
         && source.generation < REACTION_RULES.mature.generations && reserveReaction(source)) {
         enemy.wetTime = 0; enemy.steamReadyAt = this.elapsed + REACTION_RULES.steam.cooldown;
@@ -1413,7 +1416,7 @@ export class Combat {
           source: { ...source, kind: 'steam', reaction: 'steam', generation: source.generation + 1 } });
       }
     }
-    if (this.usesRunBuild && source && source.kind !== 'burn' && (source.attackId === 'spark' || source.attackId === 'flame-sweep') && this.runBuild.relics.includes('draft-kindling-flask')) {
+    if (this.usesRunBuild && source && !source.behavior && source.kind !== 'burn' && (source.attackId === 'spark' || source.attackId === 'flame-sweep') && this.runBuild.relics.includes('draft-kindling-flask')) {
       const rule = TRIGGER_RELIC_RULES.kindling;
       enemy.burnStacks = (enemy.burnTime ?? 0) > 0 ? Math.min(rule.maxStacks, (enemy.burnStacks ?? 0) + 1) : 0;
       if (!(enemy.burnTime! > 0)) enemy.burnClock = 0;
@@ -1435,6 +1438,7 @@ export class Combat {
     if (enemy.hp === 0) {
       enemy.active = false;
       this.kills++;
+      this.relicBehaviors.kill(enemy,damage,source,origin);
       this.recordHourglassKill();
       if (source && source.generation > 0) this.relicTelemetry.chainKills++;
       if (this.usesRunBuild && source && !source.behavior && (source.kind !== 'burn' || source.mature)) this.queueRelicKill(enemy, damage, source);

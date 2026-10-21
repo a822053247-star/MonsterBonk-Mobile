@@ -26,7 +26,7 @@ function hit(c: Combat, target: Combat['enemies'][number], attackId: BaseAttackI
 test('six trigger relics enter compatible upgrade/shop pools and cannot be duplicated', () => {
   const c = fixture();
   expect(Object.keys(LEGACY_RELICS)).toHaveLength(13);
-  expect(Object.keys(RELICS)).toHaveLength(14);
+  expect(Object.keys(RELICS)).toHaveLength(24);
   expect(c.grantUpgrade('draft-martyr-core')).toBe(true);
   expect(c.grantUpgrade('draft-martyr-core')).toBe(false);
   expect(c.grantUpgrade('draft-kindling-flask')).toBe(true);

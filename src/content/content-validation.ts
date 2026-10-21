@@ -27,7 +27,7 @@ export function validateRelicContent(values: readonly unknown[], refs: ContentRe
     requirements(d.requirements);
     let validModifiers = Array.isArray(d.modifiers) && (d.modifiers.length > 0 || !!d.behavior);
     if (d.behavior) {
-      const fields = BEHAVIOR_FIELDS[d.behavior.handler];
+      const fields = Object.prototype.hasOwnProperty.call(BEHAVIOR_FIELDS,d.behavior.handler) ? BEHAVIOR_FIELDS[d.behavior.handler] : undefined;
       if (!fields) fail('unknown behavior handler');
       else for (const field of fields) {
         const value = (d.behavior as unknown as Record<string,unknown>)[field];
