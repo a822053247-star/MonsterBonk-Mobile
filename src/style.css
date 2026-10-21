@@ -1167,3 +1167,22 @@ h1>em{font-size:12px;line-height:1;letter-spacing:4px;display:inline-block;backg
 }
 
 .build-relic-icon{width:38px;height:38px;object-fit:contain;float:left;margin:0 8px 4px 0}
+
+/* Keep boss/elite health inside the top HUD, away from the player and ground warnings. */
+.hud.encounter-active .run-status{
+  top:calc(3px + var(--safe-top));left:50%;min-width:0;min-height:22px;
+  padding:2px 10px;flex-direction:row;gap:8px;border-radius:16px;
+}
+.hud.encounter-active .run-status::before,.hud.encounter-active .run-status::after{display:none}
+.hud.encounter-active #run-wave{font-size:11px;line-height:1.2}
+.hud.encounter-active #timer{font-size:16px;line-height:1.2;margin:0}
+.hud .encounter-status{
+  top:calc(31px + var(--safe-top));left:50%;right:auto;bottom:auto;
+  transform:translateX(-50%);width:clamp(150px,30vw,280px);min-height:0;
+  padding:4px 7px;border-radius:6px;background:#17342ce0;box-shadow:none;
+}
+.hud .encounter-status>div:first-child{align-items:center;gap:6px;font-size:11px;line-height:1.2}
+.hud .encounter-status #encounter-name{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;letter-spacing:0}
+.hud .encounter-status #encounter-health{flex-shrink:0;font-size:10px;line-height:1.2;white-space:nowrap}
+.hud .encounter-status .encounter-track{height:5px;margin:3px 0 0}
+.hud .encounter-status #encounter-hint,.hud .encounter-status #encounter-wave{display:none}
