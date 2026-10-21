@@ -42,4 +42,10 @@ export const VFX_PRESETS: readonly VfxPreset[] = [
   { id: 'tidal-ring', type: 'impact', color: '#70d9ff', secondaryColor: '#329de5', radiusScale: 1, radiusMode: 'event', height: 1.55,
     duration: .32, particles: true, ring: true,
     animation: { atlas: 'elemental', row: 0, frames: [3,4,5,6,7], fps: 20 }, low: { particles: false, animated: true } },
+  { id:'mine-warning',type:'impact',color:'#ffb45f',secondaryColor:'#ffcb68',radiusScale:1,radiusMode:'event',
+    duration:.7,particles:false,ring:true,low:{particles:false,animated:false} },
+  { id:'ember-area',type:'area',color:'#ff9d4b',secondaryColor:'#e65d36',outline:'ring',radiusScale:1,
+    duration:'event',fade:.45,rotationSpeed:.4,pulseSpeed:4,height:.35,rise:.3,low:{mist:false} },
+  { id:'prism-projectile',type:'projectile',color:'#b6e9ff',scale:.9,
+    trail:{color:'#c4f2ff',length:.6,opacity:.5},low:{animated:false,trail:true} },
 ];

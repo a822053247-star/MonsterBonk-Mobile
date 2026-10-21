@@ -1,5 +1,6 @@
 import type { BaseAttackId } from '../fusion';
 import type { AttackRules } from '../relics';
+import { behaviorCopy } from './relics/behavior-relics';
 import { meetsRequirements, type ModifierTarget, type RelicContext, type RelicDefinition, type RelicModifier, type ContentTag } from './content-types';
 
 const TARGET_COPY: Record<ModifierTarget,string> = { 'water-area':'水系范围攻击的实际效果', 'water-weapon':'水系武器', 'fire-weapon':'火系武器', 'grass-weapon':'草系武器', 'all-weapons':'所有武器' };
@@ -10,8 +11,9 @@ export function modifierCopy(m: RelicModifier) {
   return `${TARGET_COPY[m.target]}${STAT_COPY[m.stat]} ${m.multiply >= 1 ? '+' : '-'}${percentage}%`;
 }
 export function relicMetadata(definition: RelicDefinition) {
-  const benefit = definition.modifiers.filter(m => m.polarity === 'benefit').map(modifierCopy).join('；');
-  const tradeoff = definition.modifiers.filter(m => m.polarity === 'tradeoff').map(modifierCopy).join('；');
+  const copy = definition.behavior ? behaviorCopy(definition.behavior) : undefined;
+  const benefit = [...definition.modifiers.filter(m => m.polarity === 'benefit').map(modifierCopy), ...(copy ? [copy.benefit] : [])].join('；');
+  const tradeoff = [...definition.modifiers.filter(m => m.polarity === 'tradeoff').map(modifierCopy), ...(copy ? [copy.tradeoff] : [])].join('；');
   return { title: definition.title, benefit, tradeoff, description: `${benefit}。${tradeoff}。本局生效，不可重复获得。`, icon: 'wave' as const, color: { water:'#55c9ed',fire:'#ff9849',grass:'#70bc52' }[definition.art.palette] };
 }
 function attackTags(attack: BaseAttackId, context: RelicContext): readonly ContentTag[] {
@@ -40,5 +42,5 @@ export function applyRelicDefinition(rules: AttackRules, definition: RelicDefini
       EFFECT_HANDLERS[modifier.handler](rules, modifier);
     }
   }
-  if (matchesTarget(definition.vfx.target, attack, context)) rules.impactVfx = definition.vfx.preset;
+  if (!definition.behavior && matchesTarget(definition.vfx.target, attack, context)) rules.impactVfx = definition.vfx.preset;
 }

@@ -1,6 +1,7 @@
 import { CONTENT_SKILLS, CONTENT_TAGS, MODIFIER_STATS, MODIFIER_TARGETS, type RelicDefinition } from './content-types';
 import { ICON_PALETTES, ICON_SYMBOLS } from './relic-icons';
 import { EFFECT_HANDLERS, relicMetadata } from './relic-effects';
+import { BEHAVIOR_FIELDS } from './relics/behavior-relics';
 
 export interface ContentReferences { weapons: readonly string[]; vfx: readonly { id: string; type: string }[]; reservedIds?: readonly string[]; assetExists?: (path: string) => boolean }
 /** Accept untrusted JSON at the tooling boundary, with actionable per-item errors. */
@@ -19,10 +20,21 @@ export function validateRelicContent(values: readonly unknown[], refs: ContentRe
     const requirements = (r: RelicDefinition['requirements']) => {
       if (!r || typeof r !== 'object') { fail('missing requirements'); return; }
       if (r.weapon !== undefined && !has(refs.weapons,r.weapon)) fail(`unknown weapon ${r.weapon}`);
+      for (const list of [r.weapons,r.anyWeapons]) if (list !== undefined && (!Array.isArray(list) || !list.length || list.some(id => !has(refs.weapons,id)))) fail('unknown/empty weapon requirements');
+      if (r.projectile !== undefined && typeof r.projectile !== 'boolean') fail('invalid projectile requirement');
       if (r.skills !== undefined && (!Array.isArray(r.skills) || r.skills.some(s => !has(CONTENT_SKILLS,s)))) fail('unknown skill');
     };
     requirements(d.requirements);
-    let validModifiers = Array.isArray(d.modifiers) && d.modifiers.length > 0;
+    let validModifiers = Array.isArray(d.modifiers) && (d.modifiers.length > 0 || !!d.behavior);
+    if (d.behavior) {
+      const fields = BEHAVIOR_FIELDS[d.behavior.handler];
+      if (!fields) fail('unknown behavior handler');
+      else for (const field of fields) {
+        const value = (d.behavior as unknown as Record<string,unknown>)[field];
+        if (typeof value !== 'number' || !Number.isFinite(value) || value <= 0 || value > 10) fail(`invalid behavior parameter ${field}`);
+        if (['every','cap','count','kills','healCap'].includes(field) && !Number.isInteger(value)) fail(`integer required: ${field}`);
+      }
+    }
     if (!validModifiers) fail('missing modifiers');
     else for (const m of d.modifiers) {
       if (!m || !Object.prototype.hasOwnProperty.call(EFFECT_HANDLERS,m.handler) || !has(MODIFIER_STATS,m.stat) || !has(MODIFIER_TARGETS,m.target)) { fail('unknown effect handler, stat or target'); validModifiers = false; continue; }
@@ -34,7 +46,7 @@ export function validateRelicContent(values: readonly unknown[], refs: ContentRe
     }
     if (!d.art || !has(ICON_SYMBOLS,d.art.symbol) || !Object.prototype.hasOwnProperty.call(ICON_PALETTES,d.art.palette)) fail('icon cannot be generated');
     if (d.art?.png && (!/^assets\/[a-zA-Z0-9/_-]+\.png$/.test(d.art.png) || refs.assetExists && !refs.assetExists(d.art.png))) fail('PNG resource missing or unsafe path');
-    if (!d.vfx || !has(MODIFIER_TARGETS,d.vfx.target) || !refs.vfx.some(v => v.id === d.vfx.preset && v.type === 'impact')) fail('unknown or incompatible VFX preset/target');
+    if (!d.vfx || !has(MODIFIER_TARGETS,d.vfx.target) || !refs.vfx.some(v => v.id === d.vfx.preset && (v.type === 'impact' || !!d.behavior && v.type === 'area'))) fail('unknown or incompatible VFX preset/target');
     if (!d.rewards || typeof d.rewards.upgrade !== 'boolean' || typeof d.rewards.shop !== 'boolean') fail('missing reward metadata');
     if (validModifiers && d.art && Object.prototype.hasOwnProperty.call(ICON_PALETTES,d.art.palette)) {
       const metadata = relicMetadata(d);
