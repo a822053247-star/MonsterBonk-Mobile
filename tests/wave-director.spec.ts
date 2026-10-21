@@ -39,6 +39,12 @@ test('six plans cover each wave, alternate pressure and harvest, and increase la
   expect(()=>directorStage(7,0)).toThrow(RangeError);
 });
 
+test('the final flag-wave surge is Endless-only and finite campaign pacing stays unchanged', () => {
+  expect(directorStage(5, 72).beat).toBe('release');
+  expect(directorStage(5, 72, true).beat).toBe('pressure');
+  expect(directorStage(5, 72, true).fodderPerSecond).toBe(6.5);
+});
+
 test('opening gives growth space, then actual scheduled escorts appear without clearing any enemies',()=>{
   const {c,run}=fixture(); simulate(run,c,19);
   expect(c.enemies.some(e=>e.active&&e.kind==='fast')).toBe(false);

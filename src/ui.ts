@@ -209,7 +209,9 @@ export function renderBuildSummary(build: RunBuild | undefined, fusions: readonl
 export function renderRunShop(run: RunFlow, combat: Combat) {
   const shop = run.shop;
   if (!shop) return;
-  document.getElementById('shop-heading')!.textContent = `第 ${run.wave} 波完成 · 魔法商店`;
+  document.getElementById('shop-heading')!.textContent = run.endless
+    ? `${run.waveLabel}完成 · 魔法商店`
+    : `第 ${run.wave} 波完成 · 魔法商店`;
   document.getElementById('shop-coins')!.textContent = `${run.coins} 金币`;
   document.getElementById('shop-health')!.textContent = `生命 ${Math.ceil(combat.hp)} / ${combat.maxHp}`;
   const items = document.getElementById('shop-items')!;
@@ -248,7 +250,9 @@ export function renderRunResult(run: RunFlow | undefined, combat: Combat) {
   const build = combat.usesRunBuild ? combat.runBuild : undefined;
   const runSummary = document.getElementById('result-run')!;
   runSummary.hidden = !run;
-  runSummary.textContent = run ? `第 ${run.wave} / 6 波 · 完成 ${run.completedWaves} 波\n本局获得 ${run.earned} 金币` : '';
+  runSummary.textContent = run ? (run.endless
+    ? `无尽生存 · ${run.waveLabel}\n完成 ${run.completedWaves} 波 · 击败 ${run.bossesDefeated} 个 Boss\n本局获得 ${run.earned} 金币`
+    : `第 ${run.wave} / 6 波 · 完成 ${run.completedWaves} 波\n本局获得 ${run.earned} 金币`) : '';
   document.getElementById('result-weapons')!.innerHTML = build ? buildWeaponRows(build) : `<p>基础攻击：${buildText(ATTACKS[combat.baseAttack].title)}</p>`;
   const learned = combat.progression.skills.filter(skill => !skill.category && !skill.id.endsWith('-weapon') && combat.progression.ranks[skill.id] > 0);
   document.getElementById('result-skills')!.innerHTML = `<h4>技能强化</h4>${buildTokens(learned.map(skill => `${skill.title} ${combat.progression.ranks[skill.id]}级`))}`;
@@ -301,8 +305,13 @@ export function renderEncounterStatus(combat: Combat, run?: RunFlow) {
   document.getElementById('encounter-fill')!.style.width=`${Math.max(0,enemy.hp/max)*100}%`;
   const track=document.getElementById('encounter-track')!; track.setAttribute('aria-valuemax',String(max)); track.setAttribute('aria-valuenow',String(Math.ceil(enemy.hp)));
   const hints:Record<string,string>={approach:'保持移动，留意下一次攻击', 'spread-windup':'扇形弹幕蓄力 · 离开紫色扇面',spread:'弹幕来袭 · 从间隙或侧面绕过', 'dash-windup':'锁定冲击 · 立即横向移出橙色长条',dash:'冲击！避开路径', 'summon-windup':'即将召唤 · 预留清怪空间',summon:'援兵出生预警 · 优先清理包围',recover:'攻击间隙 · 趁机反击',dying:'兽王倒下……'};
-  document.getElementById('encounter-hint')!.textContent=enemy.spawnTime>0 ? (boss?'最终挑战 · 90 秒内击败兽王':'精英出现 · 击败额外获得 18 金币') : boss ? hints[c.bossState]??'' : c.elitePulsing?'震地蓄力 · 离开金色圆环':'绕开震地，或集中火力获取奖励';
-  document.getElementById('encounter-wave')!.textContent=run ? `第 ${run.wave} / 6 波 · 剩余 ${Math.ceil(run.remaining)} 秒 · 金币 ${run.coins}` : '';
+  document.getElementById('encounter-hint')!.textContent=enemy.spawnTime>0
+    ? (boss ? (run?.endless ? '阶段 Boss · 超时后进入狂暴' : '最终挑战 · 90 秒内击败兽王') : '精英出现 · 击败额外获得 18 金币')
+    : boss && run?.endless && run.bossOvertime ? '加时狂暴 · 继续战斗，击败兽王后进入下一轮'
+    : boss ? hints[c.bossState]??'' : c.elitePulsing?'震地蓄力 · 离开金色圆环':'绕开震地，或集中火力获取奖励';
+  document.getElementById('encounter-wave')!.textContent=run
+    ? `${run.waveLabel} · ${run.bossOvertime ? `加时 ${Math.ceil(run.bossOvertimeElapsed)} 秒` : `剩余 ${Math.ceil(run.remaining)} 秒`} · 金币 ${run.coins}`
+    : '';
 }
 
 export function renderWeaponPairPicker(build:RunBuild){

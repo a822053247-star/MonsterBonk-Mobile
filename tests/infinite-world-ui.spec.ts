@@ -14,7 +14,7 @@ async function start(page: Page) {
   await page.waitForFunction(() => (window as any).game?.inspect().world.layout === 'infinite-pixel-meadow');
 }
 
-test('endless exploration shares the EXACT six-wave build, species, upgrades and shop flow of start challenge', async ({ page }) => {
+test('endless exploration shares combat/build systems but uses endless survival rules', async ({ page }) => {
   await page.goto('/infinite-harness?seed=forest-42');
   // Choose a nondefault species to catch regressions to the old one-creature prototype.
   await page.locator('#choose-creature').click();
@@ -25,6 +25,7 @@ test('endless exploration shares the EXACT six-wave build, species, upgrades and
     const combat = g.combat;
     return { mode: g.inspect().mode, species: g.party.leader.species,
       runActive: !!g.run, wave: g.run?.wave, phase: g.run?.phase,
+      endlessRules: g.run?.endless, waveLabel: g.run?.waveLabel,
       shopAvailable: !!g.run?.buy, fusion: combat.fusionEnabled, usesRunBuild: combat.usesRunBuild,
       weaponIds: combat.runBuild.attacks.map((a: any) => a.attackId),
       upgradeCards: combat.progression.fusionBase,
@@ -39,9 +40,13 @@ test('endless exploration shares the EXACT six-wave build, species, upgrades and
   const endless = await snapshot();
   expect(challenge.world).toBe('random-pixel-meadow');
   expect(endless.world).toBe('infinite-pixel-meadow');
-  const { world: _challengeWorld, ...expected } = challenge;
-  const { world: _endlessWorld, ...actual } = endless;
+  const { world: _challengeWorld, endlessRules: _campaignRules, waveLabel: _campaignLabel, ...expected } = challenge;
+  const { world: _endlessWorld, endlessRules: _endlessRules, waveLabel: _endlessLabel, ...actual } = endless;
   expect(actual).toEqual(expected);
+  expect(challenge.endlessRules).toBe(false);
+  expect(challenge.waveLabel).toBe('第 1 / 6 波');
+  expect(endless.endlessRules).toBe(true);
+  expect(endless.waveLabel).toContain('第 1 波');
   expect(endless).toMatchObject({ species: 'sproutspike', runActive: true, wave: 1,
     phase: 'fighting', shopAvailable: true, fusion: true, usesRunBuild: true, sixWaveHud: true });
 });

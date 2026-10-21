@@ -388,7 +388,7 @@ export class Game {
     this.partyPrototype = partyPrototype;
     this.prototypeVariant = partyPrototype ? variant : 'sample';
     this.applyGraphics();
-    // Endless exploration changes ONLY the world, not the six-wave fusion combat rules.
+    // Infinite world and Endless survival are paired here; the formal fusion challenge remains finite.
     this.combat.fusionEnabled = partyPrototype && (variant === 'fusion' || variant === 'infinite');
     this.combatView.setFusion(this.combat.fusionEnabled, this.selectedSpecies !== 'yanrong');
     const endless = partyPrototype && variant === 'infinite';
@@ -422,7 +422,7 @@ export class Game {
     this.combat.reset(ruleset);
     this.world.update(0, 0);
     this.combat.refreshWorld(0, 0, this.world.revision);
-    this.run = this.combat.usesRunBuild ? new RunFlow() : undefined;
+    this.run = this.combat.usesRunBuild ? new RunFlow(Math.random, endless ? 'endless' : 'campaign') : undefined;
     if (this.run && new URLSearchParams(window.location.search).get('meleeDev') === 'flame-sweep') this.combat.grantUpgrade('flame-sweep-weapon');
     this.combat.automaticSpawning = !this.run;
     this.run?.prepare(this.combat,this.position);
@@ -661,14 +661,15 @@ export class Game {
         if (this.challenge.wave !== wave || this.challenge.phase !== phase) this.audio.play('level');
         if (this.challenge.phase === 'won') this.endRun('victory');
       }
-      if (this.mode === 'playing' && this.combat.progression.awaitingChoice && !this.combat.encounters.dying) this.openUpgrade();
+      const endlessBossChoice = !!this.run?.endless && this.run.isBossWave && this.combat.encounters.defeated;
+      if (this.mode === 'playing' && this.combat.progression.awaitingChoice && (!this.combat.encounters.dying || endlessBossChoice)) this.openUpgrade();
     }
   }
 
   private canShop() { return this.mode === 'shop' && !document.hidden && !this.portrait && !this.contextLost; }
 
   private syncRunPhase() {
-    this.audio.setWave(this.run?.wave);
+    this.audio.setWave(this.run?.waveInCycle);
     if (!this.run) return false;
     if (this.run.phase === 'won' || this.run.phase === 'lost') { this.endRun(this.run.phase === 'won' ? 'victory' : 'defeat'); return true; }
     if (this.run.phase === 'intermission') {
@@ -702,7 +703,7 @@ export class Game {
       document.getElementById('hud')!.inert = true;
       document.getElementById('shop-screen')!.hidden = false;
       const growth = this.run.lastWaveGrowth;
-      document.getElementById('shop-message')!.textContent = `本波奖励 +${this.run.definition.reward} 金币${growth.sporeBonus ? ` · 爆孢连锁 +${growth.sporeBonus} 金币` : ''}${this.run.shop?.treasureRefreshes ? ' · 前五波携宝兽奖励免费刷新' : ''}`;
+      document.getElementById('shop-message')!.textContent = `本波奖励 +${this.run.definition.reward} 金币${growth.sporeBonus ? ` · 爆孢连锁 +${growth.sporeBonus} 金币` : ''}${this.run.shop?.treasureRefreshes ? (this.run.endless ? ' · 本轮携宝兽奖励免费刷新' : ' · 前五波携宝兽奖励免费刷新') : ''}`;
       renderRunShop(this.run, this.combat); this.updateHUD();
       document.getElementById('shop-next')!.focus({ preventScroll: true }); this.wake(); return true;
     }
@@ -796,10 +797,16 @@ export class Game {
     document.getElementById('result-xp')!.textContent = String(this.combat.xp);
     const won = outcome === 'victory';
     renderResultOutcome(won);
-    document.getElementById('result-heading')!.textContent = this.run ? (won ? '六波挑战，通关！' : '冒险暂时结束。') : won ? '三波挑战，通关！' : '小火焰，休息一下。';
-    document.getElementById('result-eyebrow')!.textContent = won ? '挑战完成' : '本局结束';
+    document.getElementById('result-heading')!.textContent = this.run
+      ? this.run.endless ? '无尽生存，挑战结束' : won ? '六波挑战，通关！' : '冒险暂时结束。'
+      : won ? '三波挑战，通关！' : '小火焰，休息一下。';
+    document.getElementById('result-eyebrow')!.textContent = this.run?.endless ? '生存结算' : won ? '挑战完成' : '本局结束';
     document.getElementById('result-message')!.textContent = won ? '三波挑战完成，再次出发。' : '生命耗尽，本次冒险结束。';
-    if (this.run) document.getElementById('result-message')!.textContent = won ? '荆冠兽王已击败！构筑经受住了六波考验。' : this.run.failure === 'boss-timeout' ? '未能在 90 秒内击败荆冠兽王。调整构筑，再来挑战。' : `生命耗尽，止步第 ${this.run.wave} 波。换一种构筑再出发。`;
+    if (this.run) document.getElementById('result-message')!.textContent = this.run.endless
+      ? `生命耗尽，止步第 ${this.run.wave} 波（第 ${this.run.cycle} 轮）。击败 ${this.run.bossesDefeated} 个 Boss。`
+      : won ? '荆冠兽王已击败！构筑经受住了六波考验。'
+      : this.run.failure === 'boss-timeout' ? '未能在 90 秒内击败荆冠兽王。调整构筑，再来挑战。'
+      : `生命耗尽，止步第 ${this.run.wave} 波。换一种构筑再出发。`;
     renderRunResult(this.run, this.combat);
     const summary = document.getElementById('result-challenge')!;
     summary.hidden = !this.challenge;
@@ -827,7 +834,7 @@ export class Game {
     gold.hidden = true; // Only wave and elapsed time occupy the top center.
     const coins = this.run?.coins ?? this.combat.goldEarned;
     document.getElementById('hud-coins')!.textContent = Math.max(0, coins).toLocaleString('en-US');
-    if (this.run) { wave.textContent = `第 ${this.run.wave} / 6 波`; gold.textContent = `金币 ${this.run.coins}`; }
+    if (this.run) { wave.textContent = this.run.waveLabel; gold.textContent = `金币 ${this.run.coins}`; }
     renderBuildSummary(this.combat.usesRunBuild ? this.combat.runBuild : undefined, this.combat.fusions, this.combat.resonances);
     const fusionStatus = document.getElementById('fusion-status')!;
     fusionStatus.hidden = !this.combat.fusionEnabled;
@@ -899,15 +906,24 @@ export class Game {
       }
       this.welcome.classList.toggle('faded', !resting && this.challenge.waveTime > (this.challenge.wave === 0 ? 5 : 2));
     } else if (this.run?.phase === 'intermission') {
-      const shopping = this.run.wave === 5;
-      this.welcome.querySelector('h2')!.textContent = shopping ? '第五波完成 · 魔法商店即将开放' : `第 ${this.run.wave} 波完成！`;
+      const shopping = this.run.isShopWave;
+      this.welcome.querySelector('h2')!.textContent = shopping
+        ? `${this.run.waveLabel}完成 · 魔法商店即将开放`
+        : `${this.run.waveLabel}完成！`;
       this.welcome.querySelector('p')!.textContent = shopping
-        ? `${Math.ceil(this.run.intermissionRemaining)} 秒后进入商店 · 准备最终 Boss 战`
-        : `${Math.ceil(this.run.intermissionRemaining)} 秒后进入第 ${this.run.wave + 1} 波 · 已回收经验`;
+        ? `${Math.ceil(this.run.intermissionRemaining)} 秒后进入商店 · 为阶段 Boss 做准备`
+        : this.run.isBossWave
+          ? `${Math.ceil(this.run.intermissionRemaining)} 秒后进入下一轮 · Boss 奖励已结算`
+          : `${Math.ceil(this.run.intermissionRemaining)} 秒后进入第 ${this.run.wave + 1} 波 · 已回收经验`;
       this.welcome.classList.remove('faded');
     } else if (this.run && this.run.waveElapsed < 3 && this.run.wave > 1) {
-      this.welcome.querySelector('h2')!.textContent = `第 ${this.run.wave} 波 · ${this.run.wave === 6 ? '最终决战' : '怪潮来袭'}`;
-      this.welcome.querySelector('p')!.textContent = this.run.wave === 6 ? '荆冠兽王登场 · 留意攻击预警' : '开始新一波战斗';
+      const event = this.run.isBossWave ? (this.run.endless ? '阶段 Boss' : '最终决战') : this.run.isFlagWave ? '旗帜大波' : '怪潮来袭';
+      this.welcome.querySelector('h2')!.textContent = `${this.run.waveLabel} · ${event}`;
+      this.welcome.querySelector('p')!.textContent = this.run.isBossWave
+        ? (this.run.endless ? '荆冠兽王登场 · 超时后进入狂暴，击败后继续生存' : '荆冠兽王登场 · 留意攻击预警')
+        : this.run.isFlagWave ? '混合怪潮即将压境 · 留意走位与爆孢预警'
+        : this.run.waveInCycle === 1 && this.run.modifierLabel ? `本轮特殊规则：${this.run.modifierLabel}。 ${this.run.modifierDescription}`
+        : '开始新一波战斗';
       this.welcome.classList.remove('faded');
     } else this.welcome.classList.toggle('faded', this.elapsed > 5 || this.distance > 8);
     this.boundaryHint.hidden = this.combat.infiniteWorld || Math.hypot(this.position.x, this.position.z) < WORLD_RADIUS - 1.2;
