@@ -22,7 +22,7 @@ import { PartyView } from './party-view';
 
 type Mode = 'menu' | 'playing' | 'paused' | 'gameover' | 'upgrading' | 'settings' | 'shop';
 const STEP = 1 / 60;
-const DASH_COOLDOWN = 1.4;
+const DASH_COOLDOWN = 3;
 
 export class Game {
   private preferences = loadPreferences();
@@ -158,7 +158,6 @@ export class Game {
       this.audio.configure(this.preferences.music, this.preferences.sound); this.saveSettings();
     }, options);
     click('start-infinite', () => this.start('classic', true, true, 'infinite'));
-    click('start-party', () => this.start('classic', true, true, 'sample'));
     click('start-fusion', () => this.start('classic', true, true, 'fusion'));
     click('choose-creature', () => {
       document.getElementById('menu')!.inert = true;
@@ -174,7 +173,25 @@ export class Game {
     for (const species of ['yanrong', 'bubblesalamander', 'sproutspike'] as const) {
       document.querySelector<HTMLButtonElement>(`[data-creature="${species}"]`)!.addEventListener('click', () => { this.selectedSpecies = species; this.syncCreatureSelection(); }, options);
     }
-    click('start-legacy-party', () => this.start('classic', true, false, 'legacy-party'));
+    const closeLegacy = () => {
+      document.getElementById('legacy-picker')!.hidden = true;
+      document.getElementById('menu')!.inert = false;
+      document.getElementById('open-legacy')!.focus();
+    };
+    click('open-legacy', () => {
+      document.getElementById('menu')!.inert = true;
+      document.getElementById('legacy-picker')!.hidden = false;
+      document.getElementById('start')!.focus();
+    });
+    click('close-legacy', closeLegacy);
+    document.getElementById('legacy-picker')!.addEventListener('keydown', event => {
+      if(event.key==='Tab'){
+        const buttons=Array.from(document.querySelectorAll<HTMLButtonElement>('#legacy-picker button'));
+        if(event.shiftKey&&document.activeElement===buttons[0]){event.preventDefault();buttons[buttons.length-1]!.focus();}
+        else if(!event.shiftKey&&document.activeElement===buttons[buttons.length-1]){event.preventDefault();buttons[0].focus();}
+      }
+    }, options);
+    for(const id of ['start','start-trial','start-challenge'])click(id,closeLegacy);
     click('start', () => this.start('classic', false));
     click('start-trial', () => this.start('horn-trial', false));
     click('start-challenge', () => this.start('horn-challenge', false));
@@ -276,6 +293,7 @@ export class Game {
     window.addEventListener('keydown', (event) => {
       if (event.code !== 'Escape') return;
       if(!document.getElementById('weapon-pair-picker')!.hidden){document.getElementById('weapon-pair-cancel')!.click();return;}
+      if (!document.getElementById('legacy-picker')!.hidden) { closeLegacy(); return; }
       // Touch WebKit need not focus a tapped button; Escape can target body.
       if (!document.getElementById('creature-picker')!.hidden) { this.closeCreaturePicker(); return; }
       if (this.mode === 'settings') { this.closeSettings(); return; }
@@ -309,7 +327,7 @@ export class Game {
       ? '更清晰的画面，以 60 帧为目标；负载较高时仍会降低像素比。' : '根据运行负载调整清晰度，必要时转为 30 帧目标。';
     if (this.partyPrototype && this.prototypeVariant === 'infinite') {
       document.getElementById('quality-description')!.textContent =
-        '无尽草场保持屏幕原生分辨率和清晰像素边缘；画质选项仅调整粒子数量与目标帧率。';
+        '无尽挑战保持屏幕原生分辨率和清晰像素边缘；画质选项仅调整粒子数量与目标帧率。';
     }
   }
 
@@ -360,7 +378,7 @@ export class Game {
     const definition = CREATURES[this.selectedSpecies];
     for (const button of document.querySelectorAll<HTMLButtonElement>('[data-creature]')) button.setAttribute('aria-pressed', String(button.dataset.creature === this.selectedSpecies));
     document.querySelector('.menu-description')!.textContent = `${definition.name}出战 · 自动攻击，升级强化。`;
-    document.getElementById('start-selected-creature')!.firstChild!.textContent = `${definition.name} · 开始挑战 `;
+    document.getElementById('start-selected-creature')!.firstChild!.textContent = `${definition.name} · 闯关挑战 `;
     document.getElementById('choose-creature')!.setAttribute('aria-label', `选择出战幻兽，当前${definition.name}`);
   }
 
@@ -433,8 +451,8 @@ export class Game {
     document.getElementById('gameover-screen')!.hidden = true;
     (document.activeElement as HTMLElement | null)?.blur();
     this.welcome.classList.remove('faded');
-    this.welcome.querySelector('h2')!.textContent = endless ? '无尽草场，向远方出发。' : this.combat.fusionEnabled && species !== 'yanrong' ? `${CREATURES[species].name}，准备出发。` : this.combat.fusionEnabled ? '一簇火花，生长成烈焰。' : partyPrototype ? '草场已就绪，出发吧。' : this.challenge ? '三波迎战，冲出一条路。' : this.combat.isTrial ? '犄角已就绪，冲出一条路。' : '小小魔法，准备就绪。';
-    this.welcome.querySelector('p')!.textContent = endless ? '与开始挑战相同的六波战斗、升级及商店 · 地图无边界，可持续探索' : this.combat.fusionEnabled && species !== 'yanrong' ? `${CREATURES[species].name}出战 · 摇杆移动 · 自动攻击 · 升级三选一` : this.combat.fusionEnabled ? '六波自动战斗 · 升级形成融合 · 前四波连续迎战，第五波后才可购物' : partyPrototype && variant === 'legacy-party' ? '三兽兼容模式 · 主控移动，伙伴跟随并自动攻击' : partyPrototype ? '摇杆操控焰绒 · 自动攻击 · 沿泥路绕过林地与水岸' : this.challenge ? '击败三波即可通关 · 冲锋命中 6 次、打断 2 次各加一星' : this.combat.isTrial ? '冲刺命中可击退和打断 · 留意黄色扑击预警线' : '移动躲避敌人，焰绒会自动施法 · 靠近拾取经验';
+    this.welcome.querySelector('h2')!.textContent = endless ? '无尽挑战，向远方出发。' : this.combat.fusionEnabled && species !== 'yanrong' ? `${CREATURES[species].name}，准备出发。` : this.combat.fusionEnabled ? '一簇火花，生长成烈焰。' : partyPrototype ? '草场已就绪，出发吧。' : this.challenge ? '三波迎战，冲出一条路。' : this.combat.isTrial ? '犄角已就绪，冲出一条路。' : '小小魔法，准备就绪。';
+    this.welcome.querySelector('p')!.textContent = endless ? '与闯关挑战相同的六波战斗、升级及商店 · 地图无边界，可持续探索' : this.combat.fusionEnabled && species !== 'yanrong' ? `${CREATURES[species].name}出战 · 摇杆移动 · 自动攻击 · 升级三选一` : this.combat.fusionEnabled ? '六波自动战斗 · 升级形成融合 · 前四波连续迎战，第五波后才可购物' : partyPrototype && variant === 'legacy-party' ? '三兽兼容模式 · 主控移动，伙伴跟随并自动攻击' : partyPrototype ? '摇杆操控焰绒 · 自动攻击 · 沿泥路绕过林地与水岸' : this.challenge ? '击败三波即可通关 · 冲锋命中 6 次、打断 2 次各加一星' : this.combat.isTrial ? '冲刺命中可击退和打断 · 留意黄色扑击预警线' : '移动躲避敌人，焰绒会自动施法 · 靠近拾取经验';
     this.accumulator = 0;
     this.placeCamera(true);
     this.updateHUD();
@@ -869,7 +887,7 @@ export class Game {
     this.dashButton.style.setProperty('--ready', `${ready * 100}%`);
     this.dashButton.classList.toggle('cooling', this.cooldown > 0);
     this.dashButton.setAttribute('aria-disabled', String(this.cooldown > 0));
-    this.dashStatus.textContent = this.cooldown > 0 ? '冷却中' : '就绪';
+    this.dashStatus.textContent = this.cooldown > 0 ? `${this.cooldown.toFixed(1)} 秒` : '就绪';
     if (this.challenge) {
       const resting = this.challenge.phase === 'rest';
       if (resting) {

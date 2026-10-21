@@ -840,7 +840,19 @@ h1>em{font-size:12px;line-height:1;letter-spacing:4px;display:inline-block;backg
 
 /* Three prototype entries stay touchable on narrow landscape phones. */
 .prototype-entries{flex-wrap:wrap;column-gap:14px;row-gap:0}
-.prototype-entries #start-infinite{color:#f1d8a4;font-weight:700}
+.main-modes{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:min(360px,33.333vw);margin:16px 0 14px}
+.mode-card{display:flex;align-items:center;gap:8px;min-height:58px;padding:10px;border:2px solid #ddbd78;border-radius:14px;box-shadow:0 5px 0 #483d24,0 9px 20px #09241d44;text-align:left;color:#fff2c9;background:linear-gradient(135deg,#82542b,#493e27);touch-action:manipulation}
+.mode-card.infinite-mode{border-color:#aaca8c;background:linear-gradient(135deg,#496d42,#254d3d);box-shadow:0 5px 0 #213f30,0 9px 20px #09241d44}
+.mode-card>.icon{width:20px;height:20px;flex-shrink:0}.mode-card>.icon:last-child{display:none}
+.mode-card>span{display:flex;flex-direction:column;gap:9px}.mode-card strong{font-size:clamp(12px,1.9vw,17px);white-space:nowrap;letter-spacing:0}.mode-card small{font-size:11px;color:#eddfb8;white-space:nowrap}
+.menu .menu-copy{width:min(660px,70vw);max-width:none}.menu .menu-description{margin-bottom:14px}
+.menu .menu-utilities{gap:10px}.menu-utilities .secondary{min-height:44px}.menu .prototype-entries{margin-top:4px}
+.mode-card:focus-visible,.legacy-options button:focus-visible{outline:3px solid #fff5ce;outline-offset:5px}.mode-card:active{transform:translateY(3px);box-shadow:0 2px 0 #213f30}
+.menu-footer .trial-entry small{display:inline}.legacy-card{position:relative}.legacy-card h2{padding-right:20px}.legacy-card h2 small{font-size:12px;color:#d2bf8a}.legacy-options{display:grid;gap:12px;margin-top:24px}.legacy-options .secondary{min-height:54px;justify-content:flex-start;font-size:16px}
+.hud .dash-button.cooling{background:conic-gradient(#e9cb84 var(--ready,0%),#243d30 0);border-color:#e5ca8c}.hud .dash-button.cooling>span{font-size:13px;font-weight:800;font-variant-numeric:tabular-nums;color:#ffe4a2}
+@media(max-height:600px) and (orientation:landscape){.main-modes{margin:12px 0}.mode-card{min-height:54px;padding:8px;gap:6px}.menu .menu-copy{width:min(620px,78vw)}.menu .menu-utilities .secondary{min-height:38px}.menu .prototype-entries .text-button{min-height:32px}.menu .menu-description{margin-bottom:8px}}
+@media(max-height:380px) and (orientation:landscape){.main-modes{margin:8px 0}.mode-card{min-height:48px;padding:6px;gap:4px}.mode-card>.icon{width:16px;height:16px}.mode-card>span{gap:6px}.menu .menu-utilities .secondary{min-height:34px}}
+@media(max-width:600px) and (orientation:portrait){.menu .menu-copy{width:100%}.main-modes{grid-template-columns:1fr}.mode-card{min-height:48px;padding:8px}}
 
 
 
