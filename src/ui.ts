@@ -95,10 +95,23 @@ export function createUI(root: HTMLElement) {
         <div class="modal-symbol treasure-symbol" aria-hidden="true">${icon('spark')}</div>
         <small class="treasure-kicker">探索发现 · 战斗已暂停</small>
         <h2 id="treasure-heading">发现宝箱</h2>
-        <p>选择一份奖励。每个宝箱每局只能领取一次。</p>
+        <p id="treasure-description">三选一 · 奖励会计入本局构筑与商店。</p>
         <div class="treasure-rewards">
-          <button id="treasure-coins" class="treasure-reward" type="button"><strong id="treasure-coins-title">金币 +20</strong><span id="treasure-coins-description">用于后续波次的商店。</span></button>
-          <button id="treasure-heal" class="treasure-reward" type="button"><strong id="treasure-heal-title">恢复 35 生命</strong><span id="treasure-heal-description">立即恢复生命值，不超过上限。</span></button>
+          <button id="treasure-coins" class="treasure-reward treasure-reward-coins" type="button">
+            <span class="treasure-reward-icon" aria-hidden="true">${icon('coins')}</span>
+            <strong id="treasure-coins-title">金币袋 +30</strong>
+            <span id="treasure-coins-description">第 1 波 · 本局宝箱金币上限 100。</span>
+          </button>
+          <button id="treasure-heal" class="treasure-reward treasure-reward-heal" type="button">
+            <span class="treasure-reward-icon" aria-hidden="true">${icon('heart')}</span>
+            <strong id="treasure-heal-title">恢复 35 生命</strong>
+            <span id="treasure-heal-description">本次最多恢复 35 点；本局累计上限 70 点。</span>
+          </button>
+          <button id="treasure-upgrade" class="treasure-reward treasure-reward-upgrade" type="button">
+            <span class="treasure-reward-icon" aria-hidden="true">${icon('spark')}</span>
+            <strong id="treasure-upgrade-title">构筑强化</strong>
+            <span id="treasure-upgrade-description">免费提升一项当前构筑强化，本局限一次。</span>
+          </button>
         </div>
         <button id="treasure-close" class="text-button" type="button">稍后再开</button>
       </div>
