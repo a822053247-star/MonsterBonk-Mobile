@@ -74,6 +74,24 @@ test('Every cycle repeats the fifth-wave shop and sixth-wave Boss without array 
   expect(run.activeModifiers).toHaveLength(1);
 });
 
+test('cycle modifiers add real scheduled escorts rather than changing labels only', () => {
+  const combat = new Combat([], 32, () => .999);
+  combat.party = new PartySystem();
+  combat.fusionEnabled = true;
+  combat.automaticSpawning = false;
+  combat.reset();
+  const run = new RunFlow(() => 0, 'endless');
+  run.waveIndex = 6; // cycle two, wave one
+  (run as any).rollCycleModifiers(); // deterministic first rule: fast-advance
+  run.waveElapsed = 21;
+  run.prepare(combat, origin);
+  (run as any).stageEnd = 45;
+  (run as any).escortClock = .001;
+  run.update(.01, combat, origin);
+  expect(run.activeModifiers.map(modifier => modifier.id)).toEqual(['fast-advance']);
+  expect(run.inspect().director.pendingArrivals).toBe(2);
+});
+
 test('Endless difficulty and modifier count stay bounded, and campaign remains finite', () => {
   const { combat, run } = fixture();
   run.waveIndex = 18; // wave 19, cycle 4
