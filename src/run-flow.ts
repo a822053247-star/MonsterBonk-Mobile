@@ -202,12 +202,16 @@ export class RunFlow {
       this.escorts = []; this.escortClock = 2;
     } else if (stage.escortEvery > 0 && this.escortClock <= 0) {
       this.escorts = [...stage.escorts];
+      // Cycle modifiers change the actual scheduled mix, not just the quota labels.
+      if (this.hasModifier('fast-advance')) this.escorts.push('fast');
+      if (this.hasModifier('armored-line')) this.escorts.push('tank');
+      if (this.hasModifier('spore-chain')) this.escorts.push('draft-spore-bomber');
       this.escortHeading = this.random() * Math.PI * 2; this.escortIndex = 0;
       this.escortClock = stage.escortEvery / this.spawnRateMultiplier;
     }
     const target = Math.min(cap, this.populationTarget(stage));
     // Leave room for authored threats even when fodder has filled its budget.
-    const reserve = stage.escorts.length + Number(this.treasureWaiting);
+    const reserve = this.escorts.length + Number(this.treasureWaiting);
     const swarmCap = Math.max(0, Math.min(target, cap - reserve));
     const active = combat.enemies.filter(e => e.active).length;
     const near = combat.enemies.filter(e => e.active && Math.hypot(e.x-player.x,e.z-player.z) < 5.5).length;
