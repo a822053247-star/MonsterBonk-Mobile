@@ -1200,29 +1200,40 @@ h1>em{font-size:12px;line-height:1;letter-spacing:4px;display:inline-block;backg
 }
 .chest-interact:active:not(:disabled){transform:translate(-50%,2px)}
 .treasure-screen{z-index:18;background:#102e27ed}
-.treasure-card{width:min(520px,94vw);padding:clamp(18px,3vw,32px);border-color:#e0bd7180}
+.treasure-card{width:min(600px,94vw);padding:clamp(18px,3vw,32px);border-color:#e0bd7180}
 .treasure-symbol{background:#e2bd6222;color:#f4d77c;margin-bottom:12px}
 .treasure-kicker{display:block;color:#e2c879;font-size:9px;font-weight:800;letter-spacing:2px}
 .treasure-card h2{margin:10px 0 8px;color:#fff0c5}
 .treasure-card>p{margin:0;color:#c4d5bd}
-.treasure-rewards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:22px}
+.treasure-rewards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:22px}
 .treasure-reward{
-  display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:8px;
-  min-width:0;min-height:106px;padding:16px;text-align:left;
+  display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;gap:8px;
+  min-width:0;min-height:142px;padding:14px 12px;text-align:left;
   border:1px solid #d9bf7a66;border-radius:12px;background:linear-gradient(145deg,#31513f,#203e33);
-  color:#fff0c5;white-space:normal;
+  color:#fff0c5;white-space:normal;transition:border-color .15s,transform .15s,background .15s;
 }
-.treasure-reward strong{font-size:16px;line-height:1.4;color:#f7df9b}
-.treasure-reward span{font-size:11px;line-height:1.6;color:#c2d2ba}
-.treasure-reward:disabled{opacity:.52;filter:saturate(.55);cursor:default}
+.treasure-reward:hover:not(:disabled){transform:translateY(-2px);border-color:#f5d58a;background:linear-gradient(145deg,#3c634b,#254637)}
+.treasure-reward-coins{border-color:#d9bf7a99}
+.treasure-reward-heal{border-color:#9acfa477}
+.treasure-reward-upgrade{border-color:#b5a3ef99;background:linear-gradient(145deg,#463c65,#2c354d)}
+.treasure-reward-upgrade:hover:not(:disabled){border-color:#d4c2ff;background:linear-gradient(145deg,#574a7d,#33415d)}
+.treasure-reward-icon{display:grid;place-items:center;width:30px;height:30px;border-radius:9px;background:#f5e5a31c;color:#f6d98d}
+.treasure-reward-heal .treasure-reward-icon{background:#a5e5b91c;color:#a8e8bc}
+.treasure-reward-upgrade .treasure-reward-icon{background:#c7b4ff20;color:#d4c2ff}
+.treasure-reward-icon svg{width:20px;height:20px}
+.treasure-reward strong{font-size:14px;line-height:1.4;color:#f7df9b;overflow-wrap:anywhere}
+.treasure-reward span:not(.treasure-reward-icon){font-size:11px;line-height:1.6;color:#c2d2ba}
+.treasure-reward:disabled{opacity:.48;filter:saturate(.5);cursor:default}
 .treasure-card>#treasure-close{min-height:42px;margin-top:12px;padding:8px 14px}
 @media(max-width:650px){
   .chest-interact{bottom:calc(78px + var(--safe-bottom));min-height:44px;padding:0 15px;font-size:11px}
-  .treasure-card{padding:18px 16px}
-  .treasure-rewards{gap:8px;margin-top:16px}
-  .treasure-reward{min-height:82px;padding:12px}
-  .treasure-reward strong{font-size:13px}
-  .treasure-reward span{font-size:10px}
+  .treasure-card{padding:18px 14px}
+  .treasure-rewards{gap:7px;margin-top:16px}
+  .treasure-reward{min-height:112px;padding:10px 8px;gap:7px}
+  .treasure-reward-icon{width:25px;height:25px;border-radius:7px}
+  .treasure-reward-icon svg{width:17px;height:17px}
+  .treasure-reward strong{font-size:12px}
+  .treasure-reward span:not(.treasure-reward-icon){font-size:9px;line-height:1.5}
   .treasure-card h2{font-size:22px}
 }
 @media(max-height:390px) and (orientation:landscape){
@@ -1230,7 +1241,9 @@ h1>em{font-size:12px;line-height:1;letter-spacing:4px;display:inline-block;backg
   .treasure-symbol{display:none}
   .treasure-card h2{font-size:19px;margin:6px 0}
   .treasure-rewards{margin-top:10px;gap:8px}
-  .treasure-reward{min-height:66px;padding:10px}
-  .treasure-reward span{font-size:9px}
+  .treasure-reward{min-height:82px;padding:8px;gap:5px}
+  .treasure-reward-icon{width:22px;height:22px}
+  .treasure-reward-icon svg{width:15px;height:15px}
+  .treasure-reward span:not(.treasure-reward-icon){font-size:8px;line-height:1.35}
   .treasure-card>#treasure-close{margin-top:6px;min-height:32px}
 }
