@@ -274,10 +274,12 @@ test('treasure chest rewards are one-time, survive chunk recycling, and reset on
     return { id: chest.id, x: chest.x, z: chest.z };
   });
   await expect(page.locator('#chest-interact')).toBeVisible();
+  await page.screenshot({ path: 'test-results/treasure-chest-scene.png' });
   const promptBottom = await page.locator('#chest-interact').evaluate(element => element.getBoundingClientRect().bottom);
   expect(promptBottom).toBeLessThanOrEqual(390 - 64);
   await page.locator('#chest-interact').click();
   await expect(page.locator('#treasure-screen')).toBeVisible();
+  await page.screenshot({ path: 'test-results/treasure-reward-choices.png' });
   const before = await page.evaluate(() => {
     const run = (window as any).game.run;
     return { coins: run.coins, reward: run.treasureCoinReward };
