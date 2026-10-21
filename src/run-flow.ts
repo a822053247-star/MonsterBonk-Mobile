@@ -112,6 +112,13 @@ export class RunFlow {
     this.coins += amount; this.earned += amount;
   }
 
+  /** Exploration chests add to the same run-only wallet used by the shop. */
+  grantTreasureCoins(amount: number) {
+    if (this.phase !== 'fighting' || !Number.isSafeInteger(amount) || amount <= 0) return false;
+    this.coins += amount; this.earned += amount;
+    return true;
+  }
+
   update(dt: number, combat: Combat, player: { x: number; z: number }) {
     if (this.phase !== 'fighting' || !Number.isFinite(dt) || dt <= 0) return;
     this.collectGold(combat);
