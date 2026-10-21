@@ -1,0 +1,89 @@
+
+Running 22 tests using 1 worker
+
+(node:51868) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:51868) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  1 [chromium] › tests\build-depth.spec.ts:37:1 › weapon upgrades use real cards, cap at five and do not duplicate slots (39ms)
+  ok  2 [chromium] › tests\build-depth.spec.ts:48:1 › single-weapon specialization loses its bonus when a side weapon is equipped (17ms)
+  ok  3 [chromium] › tests\build-depth.spec.ts:57:1 › overload and berserk expand real splash while slowing fire, and evolution is exclusive (15ms)
+  ok  4 [chromium] › tests\build-depth.spec.ts:70:1 › hunter and shattered core change child motion/count with real damage costs and bounded generation (16ms)
+  ok  5 [chromium] › tests\build-depth.spec.ts:83:1 › pursuit route creates homing fire children at the cost of explosion radius (12ms)
+  ok  6 [chromium] › tests\build-depth.spec.ts:91:1 › tidal pearl extends water control and reduces direct hits without reducing splash (13ms)
+  ok  7 [chromium] › tests\build-depth.spec.ts:99:1 › echo extends leaf chain reach and increases damage decay at each extra hop (17ms)
+  ok  8 [chromium] › tests\build-depth.spec.ts:110:1 › reset clears levels/relics/evolution; legacy card pools never receive build rewards (12ms)
+  x   9 [chromium] › tests\build-depth.spec.ts:120:1 › large experience queues keep rare offers bounded and finish without an empty upgrade trap (145ms)
+(node:26084) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:26084) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 10 [chromium] › tests\weapon-pair-fusion.spec.ts:28:1 › unlock, formula, atomic replacement, free slot and untouched third weapon (29ms)
+  ok 11 [chromium] › tests\weapon-pair-fusion.spec.ts:43:2 › steam-comet: real projectile, bounded direct hits, configured area/control and refreshable burn (20ms)
+  ok 12 [chromium] › tests\weapon-pair-fusion.spec.ts:55:2 › steam-comet: acquired skills, lineage relics, no recursive children, bounded pool (20ms)
+  ok 13 [chromium] › tests\weapon-pair-fusion.spec.ts:43:2 › blazing-thorn: real projectile, bounded direct hits, configured area/control and refreshable burn (27ms)
+  ok 14 [chromium] › tests\weapon-pair-fusion.spec.ts:55:2 › blazing-thorn: acquired skills, lineage relics, no recursive children, bounded pool (18ms)
+  ok 15 [chromium] › tests\weapon-pair-fusion.spec.ts:43:2 › bramble-tide: real projectile, bounded direct hits, configured area/control and refreshable burn (7ms)
+  ok 16 [chromium] › tests\weapon-pair-fusion.spec.ts:55:2 › bramble-tide: acquired skills, lineage relics, no recursive children, bounded pool (11ms)
+  ok 17 [chromium] › tests\weapon-pair-fusion.spec.ts:69:1 › blazing-thorn pierces at most three victims; acquired chain replaces straight piercing (19ms)
+  ok 18 [chromium] › tests\weapon-pair-fusion.spec.ts:76:1 › fusion offer is guaranteed and cancel/normal reward preserves weapons; confirm consumes one choice (7ms)
+[{"id":"steam-comet","scenario":"single","before":679.2,"after":736,"ratio":1.084},{"id":"steam-comet","scenario":"group-5","before":679.2,"after":2060.8,"ratio":3.034},{"id":"blazing-thorn","scenario":"single","before":778.8,"after":772,"ratio":0.991},{"id":"blazing-thorn","scenario":"group-5","before":1243.44,"after":2316,"ratio":1.863},{"id":"bramble-tide","scenario":"single","before":558.72,"after":640,"ratio":1.145},{"id":"bramble-tide","scenario":"group-5","before":1023.36,"after":1664,"ratio":1.626}]
+  ok 19 [chromium] › tests\weapon-pair-fusion.spec.ts:86:1 › fixed seed 31: ten second single/group damage comparison without changing base weapons (557ms)
+  ok 20 [chromium] › tests\weapon-pair-fusion.spec.ts:103:1 › real upgrades affect pair damage, haste, volley, range and area; levels do not change interval/radius (9ms)
+  ok 21 [chromium] › tests\weapon-pair-fusion.spec.ts:112:1 › source-specific fire/water/leaf relic events survive fusion; explosion adapter fires once (30ms)
+  x  22 [chromium] › tests\weapon-pair-fusion.spec.ts:128:1 › fusion preserves evolution/XP/coins and reversed source order; death cancels active statuses and copies (6ms)
+
+
+  1) [chromium] › tests\build-depth.spec.ts:120:1 › large experience queues keep rare offers bounded and finish without an empty upgrade trap 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      130 |     expect(rare.length).toBeLessThanOrEqual(1); rareOffers += rare.length;
+      131 |     for (const id of p.offers) expect(p.ranks[id]).toBeLessThan(p.skills.find(s => s.id === id)!.maxRank);
+    > 132 |     expect(c.chooseUpgrade(p.offers[0])).toBe(true);
+          |                                          ^
+      133 |   }
+      134 |   expect(rareOffers).toBeGreaterThan(0);
+      135 |   expect(choices).toBeLessThan(100); expect(c.progression.awaitingChoice).toBe(false);
+        at D:\projects\MonsterBonk-Mobile\tests\build-depth.spec.ts:132:42
+
+    Error Context: test-results\build-depth-large-experien-ffa3b-thout-an-empty-upgrade-trap-chromium\error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\build-depth-large-experien-ffa3b-thout-an-empty-upgrade-trap-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\build-depth-large-experien-ffa3b-thout-an-empty-upgrade-trap-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [chromium] › tests\weapon-pair-fusion.spec.ts:128:1 › fusion preserves evolution/XP/coins and reversed source order; death cancels active statuses and copies 
+
+    TypeError: c.hurt is not a function
+
+      131 |  c.progression.gainExperience(8);const xp=c.xp;expect(c.confirmWeaponPair('steam-comet')).toBe(true);expect(c.xp).toBe(xp);expect(c.goldEarned).toBe(37);expect(b.evolution).toBe('pursuit-route');expect(b.attacks[0].attackId).toBe('bubble');
+      132 |  const e=enemy(c,3);fire(c,e);step(c,.2);expect(e.pairSlowUntil).toBeGreaterThan(c.elapsed);
+    > 133 |  c.invulnerability=0;(c as any).hurt(10000);expect(c.hp).toBe(0);expect(c.projectiles.filter(p=>p.active&&p.attackRules?.pairId)).toHaveLength(0);expect(e.pairSlowUntil).toBe(0);
+          |                                 ^
+      134 |  c.reset();expect(b.attacks.some(a=>a.pairId)).toBe(false);expect(b.evolution).toBeUndefined();
+      135 | });
+      136 |
+        at D:\projects\MonsterBonk-Mobile\tests\weapon-pair-fusion.spec.ts:133:33
+
+    Error Context: test-results\weapon-pair-fusion-fusion--76790--active-statuses-and-copies-chromium\error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\weapon-pair-fusion-fusion--76790--active-statuses-and-copies-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\weapon-pair-fusion-fusion--76790--active-statuses-and-copies-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2 failed
+    [chromium] › tests\build-depth.spec.ts:120:1 › large experience queues keep rare offers bounded and finish without an empty upgrade trap 
+    [chromium] › tests\weapon-pair-fusion.spec.ts:128:1 › fusion preserves evolution/XP/coins and reversed source order; death cancels active statuses and copies 
+  20 passed (3.7s)

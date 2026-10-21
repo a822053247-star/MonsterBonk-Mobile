@@ -1,3 +1,4 @@
+import {WEAPON_PAIR_RECIPES,PAIR_IDS,type PairSkillId,type WeaponPairId} from './weapon-pair-fusion';
 import { factoryRelic } from './content/relic-registry';
 import { meetsRequirements, type ContentSkillId } from './content/content-types';
 import type { RunBuild } from './run-build';
@@ -5,7 +6,7 @@ import type { BaseAttackId } from './fusion';
 import { flameSweepStats } from './flame-sweep';
 import { RELICS, EVOLUTIONS, isRelicId, isEvolutionId, WEAPON_DAMAGE_PER_LEVEL, type RelicId, type EvolutionId } from './relics';
 
-export type SkillId = ContentSkillId | RelicId | EvolutionId;
+export type SkillId = ContentSkillId | RelicId | EvolutionId | PairSkillId;
 export type SkillRanks = Record<SkillId, number>;
 export interface SkillStats {
   damageMultiplier: number; attackRateMultiplier: number; projectileCount: number;
@@ -65,7 +66,11 @@ const RARE_SKILLS: readonly SkillDefinition[] = [
   ...Object.entries(RELICS).map(([id, data]) => ({ ...data, id: id as RelicId, category: 'relic' as const, description: 'description' in data ? data.description : '获得后本局持续生效，同一道具不能重复获得。', maxRank: 1, effect: { type: 'spell' as const, levels: [{}] } })),
   ...Object.entries(EVOLUTIONS).map(([id, data]) => ({ ...data, id: id as EvolutionId, category: 'evolution' as const, description: '爆裂火种的互斥进化，选择后本局不可切换。', maxRank: 1, effect: { type: 'spell' as const, levels: [{}] } })),
 ];
-const RUN_SKILLS = [...BUILD_SKILLS.map(skill => WEAPON_CARDS[skill.id] ? { ...skill, maxRank: 5 } : skill), ...RARE_SKILLS];
+const PAIR_SKILLS:readonly SkillDefinition[]=[
+  {id:'weapon-pair-fusion',title:'双武器融合',benefit:'选择配方 · 两把合为一把',description:'两把不同基础武器达到3级可自愿融合，释放一个槽位，保留技能和遗物。取消可返回普通升级。',maxRank:1,icon:'battle',color:'#f4d69c',effect:{type:'spell',levels:[{}]}},
+  ...PAIR_IDS.map(id=>({id:`${id}-weapon` as PairSkillId,title:WEAPON_PAIR_RECIPES[id].title+'强化',benefit:'融合武器直接伤害提升',description:`每级伤害较3级基础增加${Math.round(WEAPON_PAIR_RECIPES[id].growth*100)}%；最高5级。保留来源、技能与遗物，攻击间隔不随等级缩短。`,maxRank:5,icon:'battle' as const,color:'#f4d69c',effect:{type:'spell' as const,levels:[{},{},{},{},{}]}}))
+];
+const RUN_SKILLS = [...BUILD_SKILLS.map(skill => WEAPON_CARDS[skill.id] ? { ...skill, maxRank: 5 } : skill), ...RARE_SKILLS, ...PAIR_SKILLS];
 const ALL_SKILLS = RUN_SKILLS;
 export const EXPERIENCE = { initial: 8, increment: 4 } as const;
 export const MAX_LEVEL = 1 + SKILLS.reduce((total, skill) => total + skill.maxRank, 0);
@@ -133,23 +138,27 @@ export class Progression {
   get skills() {
     if (!this.build || !this.fusionSkills) return this.pool;
     return this.pool.filter(skill => {
+      if(skill.id==='weapon-pair-fusion')return this.build!.availablePairs().length>0;
+      const pair=PAIR_IDS.find(id=>skill.id===`${id}-weapon`);
+      if(pair)return this.build!.attacks.some(a=>a.pairId===pair&&a.level<5);
+      if(WEAPON_CARDS[skill.id]&&this.build!.consumed(WEAPON_CARDS[skill.id]!))return false;
       const definition = factoryRelic(skill.id);
       if (definition && !meetsRequirements(definition.requirements, this.build!.relicContext)) return false;
       const weapon = WEAPON_CARDS[skill.id];
       if (weapon && !this.build!.has(weapon) && this.build!.attacks.length >= 3) return false;
-      if (skill.category === 'evolution') return this.build!.has('spark') && this.ranks['split-on-hit'] > 0 && !this.build!.evolution;
-      if (skill.id === 'overload-core') return this.build!.has('flame-sweep') || (this.build!.has('spark') && this.ranks['split-on-hit'] > 0) || (this.build!.has('bubble') && this.ranks.area > 0);
-      if (skill.id === 'hunter-eye' || skill.id === 'shattered-core') return (this.ranks['split-on-hit'] > 0 && (this.build!.has('spark') || this.build!.has('leaf'))) || this.build!.relics.includes('draft-thorn-testament');
-      if (skill.id === 'draft-martyr-core' || skill.id === 'draft-kindling-flask') return this.build!.has('spark') || this.build!.has('flame-sweep');
-      if (skill.id === 'draft-boiling-core') return this.build!.has('bubble') && (this.build!.has('spark') || this.build!.has('flame-sweep'));
-      if (skill.id === 'draft-thorn-testament') return this.build!.has('leaf');
-      if (skill.id === 'draft-bubble-spore') return this.build!.has('bubble');
-      if (skill.id === 'tidal-pearl') return this.build!.has('bubble');
+      if (skill.category === 'evolution') return this.build!.hasOrigin('spark') && this.ranks['split-on-hit'] > 0 && !this.build!.evolution;
+      if (skill.id === 'overload-core') return this.build!.hasOrigin('flame-sweep') || (this.build!.hasOrigin('spark') && this.ranks['split-on-hit'] > 0) || (this.build!.hasOrigin('bubble') && this.ranks.area > 0);
+      if (skill.id === 'hunter-eye' || skill.id === 'shattered-core') return (this.ranks['split-on-hit'] > 0 && (this.build!.hasOrigin('spark') || this.build!.hasOrigin('leaf'))) || this.build!.relics.includes('draft-thorn-testament');
+      if (skill.id === 'draft-martyr-core' || skill.id === 'draft-kindling-flask') return this.build!.hasOrigin('spark') || this.build!.hasOrigin('flame-sweep');
+      if (skill.id === 'draft-boiling-core') return this.build!.hasOrigin('bubble') && (this.build!.hasOrigin('spark') || this.build!.hasOrigin('flame-sweep'));
+      if (skill.id === 'draft-thorn-testament') return this.build!.hasOrigin('leaf');
+      if (skill.id === 'draft-bubble-spore') return this.build!.hasOrigin('bubble');
+      if (skill.id === 'tidal-pearl') return this.build!.hasOrigin('bubble');
       if (skill.id === 'specialist-badge') return this.build!.attacks.length === 1;
-      if (skill.id === 'echo-rune') return (this.ranks.chain > 0 && (this.build!.has('bubble') || this.build!.has('leaf'))) || this.build!.relics.includes('draft-bubble-spore');
-      if (skill.id === 'area') return this.build!.has('bubble');
-      if (skill.id === 'chain') return this.build!.has('bubble') || this.build!.has('leaf');
-      if (skill.id === 'split-on-hit') return this.build!.has('spark') || this.build!.has('leaf');
+      if (skill.id === 'echo-rune') return (this.ranks.chain > 0 && (this.build!.hasOrigin('bubble') || this.build!.hasOrigin('leaf'))) || this.build!.relics.includes('draft-bubble-spore');
+      if (skill.id === 'area') return this.build!.hasOrigin('bubble');
+      if (skill.id === 'chain') return this.build!.hasOrigin('bubble') || this.build!.hasOrigin('leaf');
+      if (skill.id === 'split-on-hit') return this.build!.hasOrigin('spark') || this.build!.hasOrigin('leaf');
       return true;
     }).map(skill => {
       const weapon = WEAPON_CARDS[skill.id];
@@ -165,7 +174,7 @@ export class Progression {
     });
   }
   get maxLevel() { return 1 + this.pool.reduce((total, skill) => total + skill.maxRank, 0) - this.purchasedRanks - (this.build && this.fusionSkills ? 2 + (this.build.attacks.length > 1 && !this.ranks['specialist-badge'] ? 1 : 0)
-    + (this.build.attacks.length >= 3 ? this.pool.filter(s => WEAPON_CARDS[s.id] && !this.build!.has(WEAPON_CARDS[s.id]!)).reduce((sum,s) => sum+s.maxRank,0) : 0) : 0); }
+    + (this.build.attacks.length >= 3 ? this.pool.filter(s => WEAPON_CARDS[s.id] && !this.build!.hasOrigin(WEAPON_CARDS[s.id]!)).reduce((sum,s) => sum+s.maxRank,0) : 0) : 0); }
   get awaitingChoice() { return this.pendingChoices > 0; }
   get offers(): readonly SkillId[] { return this.currentOffers; }
   get threshold() { return this.level >= this.maxLevel ? Infinity : EXPERIENCE.initial + Math.max(0, this.level - 1) * EXPERIENCE.increment; }
@@ -198,6 +207,11 @@ export class Progression {
     return true;
   }
 
+  confirmPair(id:WeaponPairId){
+    if(!this.fusionSkills||!this.awaitingChoice||!this.currentOffers.includes('weapon-pair-fusion')||!this.build?.fusePair(id))return false;
+    this.ranks[`${id}-weapon`]=this.build.attacks.find(a=>a.pairId===id)!.level;
+    this.pendingChoices--;this.currentOffers=[];if(this.awaitingChoice)this.rollOffers();return true;
+  }
   canGrant(id: SkillId) {
     return !!this.build && !this.awaitingChoice && this.skills.some(skill => skill.id === id && this.ranks[id] < skill.maxRank);
   }
@@ -215,6 +229,9 @@ export class Progression {
 
   private applyReward(skill: SkillDefinition) {
     const id = skill.id;
+    if(id==='weapon-pair-fusion')return false;
+    const pair=PAIR_IDS.find(pair=>id===`${pair}-weapon`);
+    if(pair){const attack=this.build?.attacks.find(a=>a.pairId===pair);if(!attack||!this.build!.upgrade(attack.attackId))return false;this.ranks[id]=attack.level;return true;}
     const weapon = WEAPON_CARDS[id];
     if (weapon && (!this.build || !(this.build.has(weapon) ? this.build.upgrade(weapon) : this.build.acquire(weapon)))) return false;
     if (skill.category === 'relic' && (!isRelicId(id) || !this.build?.addRelic(id))) return false;
@@ -225,7 +242,7 @@ export class Progression {
   }
 
   private rollOffers() {
-    const candidates = this.skills.filter((skill) => this.ranks[skill.id] < skill.maxRank && (factoryRelic(skill.id)?.rewards.upgrade ?? true)).map((skill) => skill.id);
+    const candidates = this.skills.filter((skill) => skill.id!=='weapon-pair-fusion' && this.ranks[skill.id] < skill.maxRank && (factoryRelic(skill.id)?.rewards.upgrade ?? true)).map((skill) => skill.id);
     if (!candidates.length) { this.pendingChoices = 0; this.currentOffers = []; return; }
     for (let i = candidates.length - 1; i > 0; i--) {
       const j = Math.floor(this.random() * (i + 1));
@@ -250,6 +267,7 @@ export class Progression {
     if (rareAllowed && rareChoice) this.currentOffers.push(rareChoice);
     // Exhaustion can leave only rare choices; do not trap an earned level-up.
     if (!this.currentOffers.length && candidates.length) this.currentOffers = [candidates[0]];
+    if(this.build.availablePairs().length){this.currentOffers=this.currentOffers.filter(id=>id!=='weapon-pair-fusion').slice(0,2);this.currentOffers.push('weapon-pair-fusion');}
   }
 
   private coreReward(id: SkillId) {
@@ -258,10 +276,10 @@ export class Progression {
 
   private supportsBuild(id: SkillId) {
     const weapon = WEAPON_CARDS[id];
-    if (weapon) return this.build!.has(weapon);
-    if (id === 'split-on-hit') return this.build!.has('spark') || this.build!.has('leaf');
-    if (id === 'area') return this.build!.has('bubble');
-    if (id === 'chain') return this.build!.has('bubble') || this.build!.has('leaf');
+    if (weapon) return this.build!.hasOrigin(weapon);
+    if (id === 'split-on-hit') return this.build!.hasOrigin('spark') || this.build!.hasOrigin('leaf');
+    if (id === 'area') return this.build!.hasOrigin('bubble');
+    if (id === 'chain') return this.build!.hasOrigin('bubble') || this.build!.hasOrigin('leaf');
     return false;
   }
 

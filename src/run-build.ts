@@ -1,3 +1,4 @@
+import {WEAPON_PAIR_RECIPES,PAIR_IDS,pairLevel,pairSources,type WeaponPairId} from './weapon-pair-fusion';
 import { CREATURES, type SpeciesId } from './party';
 import type { BaseAttackId } from './fusion';
 import { resolveAttackRules, type RelicId, type EvolutionId } from './relics';
@@ -17,6 +18,8 @@ export const ATTACKS = {
 
 export interface EquippedAttack {
   attackId: BaseAttackId;
+  pairId?: WeaponPairId;
+  sources?: readonly BaseAttackId[];
   slot: number;
   level: number;
   cooldown: number;
@@ -26,8 +29,12 @@ export interface EquippedAttack {
 
 export class RunBuild {
   private inheritedCapabilities=new Map<BaseAttackId,WeaponCapabilities>();
-  capabilities(id:BaseAttackId){return this.inheritedCapabilities.get(id)??weaponCapabilities(id,this.skillRanks);}
-  get relicContext():RelicContext{return {weapons:this.attacks.map(a=>a.attackId),ranks:this.skillRanks,capabilities:this.attacks.map(a=>this.capabilities(a.attackId))};}
+  capabilities(id:BaseAttackId){
+    const inherited=this.inheritedCapabilities.get(id),pair=this.attacks.find(a=>a.attackId===id)?.pairId;
+    if(inherited&&pair&&(WEAPON_PAIR_RECIPES[pair].radius>0||(this.skillRanks['split-on-hit']??0)>0))return {...inherited,tags:[...new Set([...inherited.tags,'explosion' as const])]};
+    return inherited??weaponCapabilities(id,this.skillRanks);
+  }
+  get relicContext():RelicContext{return {weapons:[...new Set(this.attacks.flatMap(a=>a.sources??[a.attackId]))],ranks:this.skillRanks,capabilities:this.attacks.map(a=>this.capabilities(a.attackId))};}
   /** Metadata seam only; the future merge engine must declare actual retained event delivery. */
   registerFusionCapabilities(result:BaseAttackId,parents:readonly BaseAttackId[],retainedEvents:readonly string[]){
     const merged=inheritWeaponCapabilities(parents.map(id=>this.capabilities(id)));
@@ -55,8 +62,32 @@ export class RunBuild {
   }
 
   rules(attackId: BaseAttackId) {
-    return resolveAttackRules(attackId, this.relics, this.attacks.length, this.attacks.find(a => a.attackId === attackId)?.level ?? 1, this.evolution, this.relicContext);
+    const attack=this.attacks.find(a=>a.attackId===attackId);
+    const ruleBase=attack?.sources?.includes('spark')?'spark':attackId;
+    const rules=resolveAttackRules(ruleBase,this.relics,this.attacks.length,attack?.pairId?3:attack?.level??1,this.evolution,this.relicContext);
+    if(attack?.pairId){
+      const recipe=WEAPON_PAIR_RECIPES[attack.pairId];
+      rules.pairId=attack.pairId;rules.pairArea=(this.skillRanks.area??0)>0;rules.pairSplit=(this.skillRanks['split-on-hit']??0)>0;rules.pairChain=(this.skillRanks.chain??0)>0;
+      if(ruleBase==='spark')rules.areaMultiplier/=1.12;
+      rules.damageMultiplier*=recipe.damage*(1+recipe.growth*(attack.level-3))/(ATTACKS[attackId].damage*(1+({spark:.16,bubble:.18,leaf:.16,'flame-sweep':.12}[ruleBase])*2));
+      rules.intervalMultiplier*=recipe.interval/(ATTACKS[attackId].interval*(attack.slot===0?1:attack.slot===1?1.6:1.9));
+      rules.slowDuration=recipe.slowDuration*(this.relics.includes('tidal-pearl')?1.6:1);rules.pierceBonus=0;
+    }
+    return rules;
   }
+  title(attack:EquippedAttack){return attack.pairId?WEAPON_PAIR_RECIPES[attack.pairId].title:ATTACKS[attack.attackId].title;}
+  hasOrigin(id:BaseAttackId){return this.attacks.some(a=>(a.sources??[a.attackId]).includes(id));}
+  consumed(id:BaseAttackId){return this.attacks.some(a=>a.sources?.includes(id));}
+  availablePairs(){return PAIR_IDS.filter(id=>pairSources(id).every(source=>this.attacks.some(a=>!a.pairId&&a.attackId===source&&a.level>=3)));}
+  fusePair(id:WeaponPairId){
+    if(!this.availablePairs().includes(id))return false;
+    const parents=this.equipped.filter(a=>pairSources(id).includes(a.attackId)).sort((a,b)=>a.slot-b.slot),first=parents[0],second=parents[1];
+    const events=['primary-hit','primary-cast','primary-projectile','explosion','kill','hp-loss','dash','level-choice','coin-earned',...pairSources(id).map(s=>`origin:${s}`)];
+    this.registerFusionCapabilities(first.attackId,parents.map(a=>a.attackId),events);
+    const fused:EquippedAttack={...first,pairId:id,sources:pairSources(id),level:pairLevel(first.level,second.level),cooldown:Math.max(first.cooldown,second.cooldown),cooldownTotal:Math.max(first.cooldownTotal,second.cooldownTotal),shotsFired:0};
+    this.equipped=this.equipped.filter(a=>!parents.includes(a));this.equipped.push(fused);this.equipped.sort((a,b)=>a.slot-b.slot);return true;
+  }
+  clearPairFusions(){this.equipped=this.equipped.filter(a=>!a.pairId);this.inheritedCapabilities.clear();}
 
   upgrade(attackId: BaseAttackId) {
     const weapon = this.equipped.find(a => a.attackId === attackId);
@@ -70,15 +101,15 @@ export class RunBuild {
   }
 
   evolve(id: EvolutionId) {
-    if (this.chosenEvolution || !this.has('spark')) return false;
+    if (this.chosenEvolution || !this.hasOrigin('spark')) return false;
     this.chosenEvolution = id; return true;
   }
 
   has(attackId: BaseAttackId) { return this.equipped.some(attack => attack.attackId === attackId); }
 
   acquire(attackId: BaseAttackId) {
-    if (this.has(attackId) || this.equipped.length >= 3) return false;
-    const slot = this.equipped.length;
+    if (this.has(attackId) || this.consumed(attackId) || this.equipped.length >= 3) return false;
+    const slot = [0,1,2].find(slot=>!this.equipped.some(a=>a.slot===slot))!;
     this.equipped.push({ attackId, slot, level: 1, cooldown: slot * .31, cooldownTotal: slot * .31, shotsFired: 0 });
     return true;
   }

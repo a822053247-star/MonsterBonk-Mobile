@@ -1,3 +1,4 @@
+import {PAIR_IDS,type PairSkillId} from './weapon-pair-fusion';
 import { factoryRelic, FACTORY_RELICS, type FactoryRelicId } from './content/relic-registry';
 import { relicIcon, generatedIcon } from './content/relic-icons';
 import type { RelicDefinition } from './content/content-types';
@@ -36,10 +37,11 @@ const LEGACY_UPGRADE_ART = {
   'echo-rune': ['relics/echo-rune.png'],
   'berserk-route': ['skills/berserk-route.png'],
   'pursuit-route': ['skills/pursuit-route.png'],
-} satisfies Record<Exclude<SkillId, FactoryRelicId>, readonly string[]>;
+} satisfies Record<Exclude<SkillId, FactoryRelicId | PairSkillId>, readonly string[]>;
 
 export const UPGRADE_ART: Partial<Record<SkillId, readonly string[]>> = {
-  ...LEGACY_UPGRADE_ART, ...Object.fromEntries(Object.values(FACTORY_RELICS).map(d => [d.id, [generatedIcon(d.art)]])),
+  ...LEGACY_UPGRADE_ART,...Object.fromEntries(PAIR_IDS.map(id=>[`${id}-weapon`,[`weapon-pairs/${id}.png`]])),
+ ...Object.fromEntries(Object.values(FACTORY_RELICS).map(d => [d.id, [generatedIcon(d.art)]])),
 };
 
 export const uiArtUrl = (path: string) => `${import.meta.env.BASE_URL}assets/ui/${path}`;

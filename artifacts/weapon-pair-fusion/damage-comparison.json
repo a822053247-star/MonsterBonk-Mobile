@@ -1,0 +1,50 @@
+{
+  "seed": 31,
+  "seconds": 10,
+  "hz": 120,
+  "level": 3,
+  "rows": [
+    {
+      "id": "steam-comet",
+      "scenario": "single",
+      "before": 679.2,
+      "after": 736,
+      "ratio": 1.084
+    },
+    {
+      "id": "steam-comet",
+      "scenario": "group-5",
+      "before": 679.2,
+      "after": 2060.8,
+      "ratio": 3.034
+    },
+    {
+      "id": "blazing-thorn",
+      "scenario": "single",
+      "before": 778.8,
+      "after": 772,
+      "ratio": 0.991
+    },
+    {
+      "id": "blazing-thorn",
+      "scenario": "group-5",
+      "before": 1243.44,
+      "after": 2316,
+      "ratio": 1.863
+    },
+    {
+      "id": "bramble-tide",
+      "scenario": "single",
+      "before": 558.72,
+      "after": 640,
+      "ratio": 1.145
+    },
+    {
+      "id": "bramble-tide",
+      "scenario": "group-5",
+      "before": 1023.36,
+      "after": 1664,
+      "ratio": 1.626
+    }
+  ]
+}

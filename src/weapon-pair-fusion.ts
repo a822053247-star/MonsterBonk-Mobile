@@ -1,0 +1,21 @@
+import type { BaseAttackId } from './fusion';
+
+/** Independent of the five automatic weapon/skill recipes in fusion.ts. */
+export const WEAPON_PAIR_RECIPES = {
+  'steam-comet': { title:'蒸汽彗星', sources:['spark','bubble'], damage:46, growth:.17, interval:.62, radius:1.35, splash:.45, slow:.75, slowDuration:.8, burnDuration:0, burnInterval:.4, burnDamage:.1, areaScale:1.2, chainAreaScale:1.25, pierces:0, splitCount:2, splitDamage:.35, splitRadius:0, splitSplash:0, chain:true, visual:'steam-area', effect:'steam', fusionVisual:undefined },
+  'blazing-thorn': { title:'焚枝穿刺', sources:['spark','leaf'], damage:40, growth:.16, interval:.58, radius:0, splash:0, slow:1, slowDuration:0, burnDuration:1.2, burnInterval:.4, burnDamage:.1, areaScale:1.2, chainAreaScale:1.25, pierces:2, splitCount:2, splitDamage:.35, splitRadius:1.35, splitSplash:.3, chain:true, visual:'fire-explosion', effect:'burst', fusionVisual:'burst-seed' },
+  'bramble-tide': { title:'藤潮囚泡', sources:['bubble','leaf'], damage:40, growth:.17, interval:.62, radius:1.5, splash:.4, slow:.7, slowDuration:1, burnDuration:0, burnInterval:.4, burnDamage:.1, areaScale:1.2, chainAreaScale:1.25, pierces:0, splitCount:3, splitDamage:.35, splitRadius:0, splitSplash:0, chain:false, visual:'water-impact', effect:'water', fusionVisual:'deep-bubble' },
+} as const;
+export type WeaponPairId=keyof typeof WEAPON_PAIR_RECIPES;
+export type PairSkillId='weapon-pair-fusion'|`${WeaponPairId}-weapon`;
+export const PAIR_IDS=Object.keys(WEAPON_PAIR_RECIPES) as WeaponPairId[];
+export const pairLevel=(a:number,b:number)=>Math.min(5,a+b-3);
+export const pairIcon=(id:WeaponPairId)=>`assets/ui/upgrade/illustrations/weapon-pairs/${id}.png`;
+export const pairSources=(id:WeaponPairId):readonly BaseAttackId[]=>WEAPON_PAIR_RECIPES[id].sources;
+
+/** Element-specific relic offspring keep their own trigger identity, preventing cross-element kill loops. */
+export function sourceHasAttack(source:{attackId:BaseAttackId;kind?:string;rules?:{pairId?:WeaponPairId}},id:BaseAttackId){
+  if(source.kind==='testament')return id==='leaf';
+  if(source.kind==='bubble-spore')return id==='bubble';
+  return source.rules?.pairId?pairSources(source.rules.pairId).includes(id):source.attackId===id;
+}

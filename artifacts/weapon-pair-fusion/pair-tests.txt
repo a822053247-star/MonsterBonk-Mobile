@@ -1,0 +1,54 @@
+
+Running 15 tests using 1 worker
+
+(node:52172) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:52172) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  1 [chromium] › tests\weapon-pair-fusion.spec.ts:28:1 › unlock, formula, atomic replacement, free slot and untouched third weapon (25ms)
+  ok  2 [chromium] › tests\weapon-pair-fusion.spec.ts:43:2 › steam-comet: real projectile, bounded direct hits, configured area/control and refreshable burn (14ms)
+  ok  3 [chromium] › tests\weapon-pair-fusion.spec.ts:55:2 › steam-comet: acquired skills, lineage relics, no recursive children, bounded pool (15ms)
+  ok  4 [chromium] › tests\weapon-pair-fusion.spec.ts:43:2 › blazing-thorn: real projectile, bounded direct hits, configured area/control and refreshable burn (22ms)
+  ok  5 [chromium] › tests\weapon-pair-fusion.spec.ts:55:2 › blazing-thorn: acquired skills, lineage relics, no recursive children, bounded pool (14ms)
+  ok  6 [chromium] › tests\weapon-pair-fusion.spec.ts:43:2 › bramble-tide: real projectile, bounded direct hits, configured area/control and refreshable burn (3ms)
+  ok  7 [chromium] › tests\weapon-pair-fusion.spec.ts:55:2 › bramble-tide: acquired skills, lineage relics, no recursive children, bounded pool (9ms)
+  ok  8 [chromium] › tests\weapon-pair-fusion.spec.ts:69:1 › blazing-thorn pierces at most three victims; acquired chain replaces straight piercing (15ms)
+  ok  9 [chromium] › tests\weapon-pair-fusion.spec.ts:76:1 › fusion offer is guaranteed and cancel/normal reward preserves weapons; confirm consumes one choice (6ms)
+[{"id":"steam-comet","scenario":"single","before":679.2,"after":736,"ratio":1.084},{"id":"steam-comet","scenario":"group-5","before":679.2,"after":2060.8,"ratio":3.034},{"id":"blazing-thorn","scenario":"single","before":778.8,"after":772,"ratio":0.991},{"id":"blazing-thorn","scenario":"group-5","before":1243.44,"after":2316,"ratio":1.863},{"id":"bramble-tide","scenario":"single","before":558.72,"after":640,"ratio":1.145},{"id":"bramble-tide","scenario":"group-5","before":1023.36,"after":1664,"ratio":1.626}]
+  ok 10 [chromium] › tests\weapon-pair-fusion.spec.ts:86:1 › fixed seed 31: ten second single/group damage comparison without changing base weapons (433ms)
+  ok 11 [chromium] › tests\weapon-pair-fusion.spec.ts:103:1 › real upgrades affect pair damage, haste, volley, range and area; levels do not change interval/radius (4ms)
+  ok 12 [chromium] › tests\weapon-pair-fusion.spec.ts:112:1 › source-specific fire/water/leaf relic events survive fusion; explosion adapter fires once (22ms)
+  ok 13 [chromium] › tests\weapon-pair-fusion.spec.ts:128:1 › fusion preserves evolution/XP/coins and reversed source order; death cancels active statuses and copies (7ms)
+  ok 14 [chromium] › tests\weapon-pair-fusion.spec.ts:137:1 › copied pair attacks retain inherent area but cannot split or re-trigger relics (4ms)
+  x  15 [chromium] › tests\weapon-pair-fusion.spec.ts:145:1 › in-flight pair skill snapshots and unrelated ongoing salvos survive optional fusion (6ms)
+
+
+  1) [chromium] › tests\weapon-pair-fusion.spec.ts:145:1 › in-flight pair skill snapshots and unrelated ongoing salvos survive optional fusion 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 100000
+    Received: 99955
+
+      145 | test('in-flight pair skill snapshots and unrelated ongoing salvos survive optional fusion',()=>{
+      146 |  const f=fixture('steam-comet');const target=enemy(f.c,3),other=enemy(f.c,3,2.1);fire(f.c,target);f.c.progression.ranks.area=1;f.c.progression.ranks['split-on-hit']=1;step(f.c,.2);
+    > 147 |  expect(other.hp).toBe(100000);expect(f.c.childShots).toBe(0);
+          |                   ^
+      148 |  const {c,b,internals}=fixture('steam-comet',false);b.acquire('leaf');const third=b.attacks[2];third.cooldown=.42;
+      149 |  const salvo={attackId:'leaf',index:1,total:3};internals.salvo=salvo;c.progression.gainExperience(8);
+      150 |  expect(c.confirmWeaponPair('steam-comet')).toBe(true);expect(internals.salvo).toBe(salvo);expect(third.cooldown).toBe(.42);
+        at D:\projects\MonsterBonk-Mobile\tests\weapon-pair-fusion.spec.ts:147:19
+
+    Error Context: test-results\weapon-pair-fusion-in-flig-7b6fd-vos-survive-optional-fusion-chromium\error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\weapon-pair-fusion-in-flig-7b6fd-vos-survive-optional-fusion-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\weapon-pair-fusion-in-flig-7b6fd-vos-survive-optional-fusion-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [chromium] › tests\weapon-pair-fusion.spec.ts:145:1 › in-flight pair skill snapshots and unrelated ongoing salvos survive optional fusion 
+  14 passed (2.1s)

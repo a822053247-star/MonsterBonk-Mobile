@@ -67,6 +67,8 @@ export const WEAPON_DAMAGE_PER_LEVEL: Readonly<Record<BaseAttackId, number>> = {
 
 /** Snapshot these rules on a volley; upgrades never rewrite an in-flight attack. */
 export interface AttackRules {
+  pairId?: import('./weapon-pair-fusion').WeaponPairId;
+  pairArea?:boolean; pairSplit?:boolean; pairChain?:boolean;
   damageMultiplier: number; directMultiplier: number; intervalMultiplier: number;
   rangeMultiplier: number; impactVfx?: string;
   areaMultiplier: number; childCountBonus: number; childDamageMultiplier: number;

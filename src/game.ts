@@ -1,3 +1,5 @@
+import {type WeaponPairId} from './weapon-pair-fusion';
+import {renderWeaponPairPicker} from './ui';
 import * as THREE from 'three';
 import { Input } from './input';
 import { Monster } from './monster';
@@ -176,6 +178,17 @@ export class Game {
     click('start', () => this.start('classic', false));
     click('start-trial', () => this.start('horn-trial', false));
     click('start-challenge', () => this.start('horn-challenge', false));
+    click('weapon-pair-cancel',()=>{
+      document.getElementById('upgrade-panel')!.classList.remove('choosing-pair');
+      document.getElementById('weapon-pair-picker')!.hidden=true;
+      document.getElementById('upgrade-cards')!.hidden=false;
+      document.querySelector<HTMLButtonElement>('[data-skill="weapon-pair-fusion"]')?.focus();
+    });
+    document.getElementById('weapon-pair-options')!.addEventListener('click',event=>{
+      const button=event.target instanceof Element?event.target.closest<HTMLButtonElement>('[data-pair]'):null;
+      if(this.mode!=='upgrading'||!button||document.hidden||!this.combat.confirmWeaponPair(button.dataset.pair as WeaponPairId))return;
+      this.finishUpgradeChoice();
+    },options);
     click('pause', () => this.pause('草原会在这里等你。'));
     click('resume', () => this.resume());
     click('back-menu', () => this.showMenu());
@@ -262,6 +275,7 @@ export class Game {
     window.addEventListener('pageshow', () => this.wake(), options);
     window.addEventListener('keydown', (event) => {
       if (event.code !== 'Escape') return;
+      if(!document.getElementById('weapon-pair-picker')!.hidden){document.getElementById('weapon-pair-cancel')!.click();return;}
       // Touch WebKit need not focus a tapped button; Escape can target body.
       if (!document.getElementById('creature-picker')!.hidden) { this.closeCreaturePicker(); return; }
       if (this.mode === 'settings') { this.closeSettings(); return; }
@@ -452,6 +466,7 @@ export class Game {
   }
 
   private showMenu() {
+    this.combat.runBuild.clearPairFusions();
     this.audio.setWave();
     this.run = undefined; this.combat.automaticSpawning = true;
     document.getElementById('shop-screen')!.hidden = true;
@@ -695,6 +710,8 @@ export class Game {
     clearTimeout(this.choiceTimer);
     this.cardDown = this.armedCard = null;
     const version = ++this.offerVersion;
+    document.getElementById('upgrade-panel')!.classList.remove('choosing-pair');
+      document.getElementById('weapon-pair-picker')!.hidden=true;document.getElementById('upgrade-cards')!.hidden=false;
     renderUpgradeCards(this.combat.progression, version);
     document.getElementById('upgrade-panel')!.focus({ preventScroll: true });
     // This UI-only delay blocks a tap already in progress or a rapid double tap
@@ -707,7 +724,14 @@ export class Game {
 
   private chooseUpgrade(id: SkillId) {
     if (this.mode !== 'upgrading' || document.hidden || this.portrait || this.contextLost) return;
+    if(id==='weapon-pair-fusion'){renderWeaponPairPicker(this.combat.runBuild);return;}
     if (!this.combat.chooseUpgrade(id)) return;
+    this.finishUpgradeChoice();
+  }
+
+  private finishUpgradeChoice(){
+    document.getElementById('upgrade-panel')!.classList.remove('choosing-pair');
+      document.getElementById('weapon-pair-picker')!.hidden=true;
     this.updateHUD();
     if (this.combat.progression.awaitingChoice) {
       this.renderChoices();
@@ -723,6 +747,8 @@ export class Game {
 
   private hideUpgrade() {
     clearTimeout(this.choiceTimer);
+    document.getElementById('upgrade-panel')!.classList.remove('choosing-pair');
+      document.getElementById('weapon-pair-picker')!.hidden=true;
     this.offerVersion++;
     this.cardDown = this.armedCard = null;
     document.getElementById('upgrade-screen')!.hidden = true;
@@ -791,8 +817,8 @@ export class Game {
     fusionStatus.classList.toggle('activated', fused);
     const title = document.getElementById('fusion-title')!, hint = document.getElementById('fusion-hint')!;
     const base = this.combat.baseAttack;
-    const titleText = this.combat.usesRunBuild && (this.combat.runBuild.attacks.length > 1 || this.combat.runBuild.attacks[0].level > 1) ? this.combat.runBuild.attacks.map(a => ATTACKS[a.attackId].title + (a.level > 1 ? ` ${a.level}级` : '')).join(' + ') + (fused ? ` · ${this.combat.fusions.length} 融合` : '') : fused ? this.combat.fusions.map(f => f.title).join(' / ')  : base === 'bubble' ? '水泡弹' : base === 'leaf' ? '飞叶弹' : '火花弹';
-    const hintText = this.combat.resonances.join(' · ');
+    const titleText = this.combat.usesRunBuild && (this.combat.runBuild.attacks.length > 1 || this.combat.runBuild.attacks[0].level > 1) ? this.combat.runBuild.attacks.map(a => this.combat.runBuild.title(a) + (a.level > 1 ? ` ${a.level}级` : '')).join(' + ') + (fused ? ` · ${this.combat.fusions.length} 融合` : '') : fused ? this.combat.fusions.map(f => f.title).join(' / ')  : base === 'bubble' ? '水泡弹' : base === 'leaf' ? '飞叶弹' : '火花弹';
+    const hintText = [...this.combat.resonances,...this.combat.runBuild.attacks.filter(a=>a.pairId).map(a=>'来源：'+a.sources!.map(id=>ATTACKS[id].title).join('+'))].join(' · ');
     hint.hidden = !hintText;
     fusionStatus.title = this.combat.fusions.map(f => f.title).join(' / ');
     const species = this.party.leader.species;
@@ -802,7 +828,7 @@ export class Game {
     (document.querySelector('.health-panel svg.portrait') as SVGElement).style.display = species === 'yanrong' ? '' : 'none';
     if (title.textContent !== titleText) title.textContent = titleText;
     if (hint.textContent !== hintText) hint.textContent = hintText;
-    const hasSpark = this.combat.usesRunBuild ? this.combat.runBuild.has('spark') : base === 'spark';
+    const hasSpark = this.combat.usesRunBuild ? this.combat.runBuild.has('spark')&&!this.combat.runBuild.consumed('spark') : base === 'spark';
     const hasBurst = this.combat.fusions.some(f => f.id === 'burst-seed');
     document.getElementById('fusion-spark-icon')!.hidden = !hasSpark || hasBurst;
     document.getElementById('fusion-burst-icon')!.hidden = !hasBurst;

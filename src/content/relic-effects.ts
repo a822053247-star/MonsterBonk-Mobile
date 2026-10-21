@@ -18,6 +18,8 @@ export function relicMetadata(definition: RelicDefinition) {
 }
 function attackTags(attack: BaseAttackId, context: RelicContext): readonly ContentTag[] {
   const area = attack === 'bubble' && ((context.ranks.area ?? 0) > 0 || (context.ranks.chain ?? 0) > 0);
+  const inherited=context.capabilities?.find(w=>w.origins.includes(attack));
+  if(inherited&&inherited.origins.length>1)return [...inherited.tags.filter(t=>t!=='explosion'),...(['area'] as const)];
   return [attack === 'bubble' ? 'water' : attack === 'leaf' ? 'grass' : 'fire', attack === 'flame-sweep' ? 'melee' : 'projectile', ...(area || attack === 'flame-sweep' || attack === 'spark' && (context.ranks['split-on-hit'] ?? 0) > 0 ? ['area' as const] : [])];
 }
 export function matchesTarget(target: ModifierTarget, attack: BaseAttackId, context: RelicContext) {

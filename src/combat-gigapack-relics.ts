@@ -1,3 +1,4 @@
+import {sourceHasAttack} from './weapon-pair-fusion';
 import type { Combat, Enemy, Projectile, CombatEffect, WeaponSnapshot } from './combat';
 import type { RelicHooks } from './combat-relic-behaviors';
 import type { BaseAttackId } from './fusion';
@@ -190,7 +191,7 @@ export class CombatGigapackRelics {
     }}
     const venom=this.rule('venom-insignia');
     if(venom){
-      if(s.attackId==='leaf'&&enemy.active){
+      if(sourceHasAttack(s,'leaf')&&enemy.active){
         enemy.venomUntil=this.c.elapsed+venom.duration;
         const prior=this.c.effects.find(e=>e.active&&e.vfxPresetId==='venom-mark'&&e.enemyId===enemy.id);
         const fx=prior??this.fx('venom-mark',enemy.x,enemy.z,.65,venom.duration);

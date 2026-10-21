@@ -1,3 +1,4 @@
+import {sourceHasAttack} from './weapon-pair-fusion';
 import type { Combat, CombatEffect, Enemy, Projectile, WeaponSnapshot } from './combat';
 import { WEAPON } from './combat';
 import type { BaseAttackId } from './fusion';
@@ -80,7 +81,7 @@ export class CombatRelicBehaviors {
     const source=shot.relicSource;
     if(shot.behaviorRoot!==source?.rootId){shot.behaviorRoot=source?.rootId;shot.returning=false;shot.outboundSpent=false;}
     const rule=this.rule('returning-crown','return');
-    if(rule&&shot.attackId==='leaf'&&this.primary(shot)&&shot.distance>=(shot.flightRange??WEAPON.range)){
+    if(rule&&(shot.attackId==='leaf'||!!shot.attackRules?.pairId&&sourceHasAttack({attackId:shot.attackId??'leaf',rules:shot.attackRules},'leaf'))&&this.primary(shot)&&shot.distance>=(shot.flightRange??WEAPON.range)){
       shot.returning=true;shot.outboundSpent=false;shot.damage=(source?.rootDamage??shot.damage)*rule.damage;
       if(source)shot.relicSource=this.derived(source);
       shot.life=Math.max(WEAPON.lifetime,Math.hypot(shot.x-this.c.anchorX,shot.z-this.c.anchorZ)/WEAPON.speed+.2);
@@ -94,7 +95,7 @@ export class CombatRelicBehaviors {
     }
   }
   preserveLeaf(shot:Projectile){
-    if(shot.attackId==='leaf'&&!shot.returning&&this.primary(shot)&&this.rule('returning-crown','return')){
+    if((shot.attackId==='leaf'||!!shot.attackRules?.pairId&&sourceHasAttack({attackId:shot.attackId??'leaf',rules:shot.attackRules},'leaf'))&&!shot.returning&&this.primary(shot)&&this.rule('returning-crown','return')){
       shot.active=true;shot.outboundSpent=true;return true;
     }
     return false;
@@ -114,12 +115,12 @@ export class CombatRelicBehaviors {
   hit(enemy:Enemy,source:RelicDamageSource){
     if(source.behavior||source.copied||!['hit','explosion'].includes(source.kind))return;
     const rule=this.rule('ember-sigil','fire-zone');
-    if(rule&&(source.attackId==='spark'||source.attackId==='flame-sweep')&&this.c.elapsed>=this.fireReady){
+    if(rule&&(sourceHasAttack(source,'spark')||sourceHasAttack(source,'flame-sweep'))&&this.c.elapsed>=this.fireReady){
       this.fireReady=this.c.elapsed+rule.cooldown;
       this.zone('fire-zone',enemy.x,enemy.z,rule.duration,rule.interval,rule.radius,(source.rootDamage??0)*rule.damage,rule.cap,source,'ember-area');
     }
     const vine=this.rule('wet-vines','wet-bind');
-    if(vine&&source.attackId==='leaf'&&(enemy.wetTime??0)>0&&this.c.elapsed>=(enemy.vineReadyAt??0)){
+    if(vine&&sourceHasAttack(source,'leaf')&&(enemy.wetTime??0)>0&&this.c.elapsed>=(enemy.vineReadyAt??0)){
       enemy.wetTime=0;enemy.vineReadyAt=this.c.elapsed+vine.cooldown;enemy.vineUntil=this.c.elapsed+vine.duration;
       this.hooks.visual(enemy.x,enemy.z,'water',.65,'water-impact');
     }
@@ -139,7 +140,7 @@ export class CombatRelicBehaviors {
     if(source?.behavior||source?.copied||this.c.encounters.dying||enemy.rank==='boss')return;
     source??=this.hooks.source(damage);
     const root=source.rootDamage??damage,poison=this.rule('spore-crown','poison-zone');
-    if(poison&&source.attackId==='leaf'&&this.c.elapsed>=this.poisonReady){
+    if(poison&&sourceHasAttack(source,'leaf')&&this.c.elapsed>=this.poisonReady){
       this.poisonReady=this.c.elapsed+poison.cooldown;
       this.zone('poison-zone',enemy.x,enemy.z,poison.duration,poison.interval,poison.radius,root*poison.damage,poison.cap,source,'spore-area');
     }

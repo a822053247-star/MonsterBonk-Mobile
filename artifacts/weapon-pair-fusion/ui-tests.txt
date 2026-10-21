@@ -1,0 +1,12 @@
+
+Running 3 tests using 1 worker
+
+(node:41272) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:41272) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 1 [chromium] › tests\weapon-pair-fusion-ui.spec.ts:5:26 › steam-comet: optional upgrade, confirmation, HUD/pause/result and restart (3.1s)
+  ok 2 [chromium] › tests\weapon-pair-fusion-ui.spec.ts:5:26 › blazing-thorn: optional upgrade, confirmation, HUD/pause/result and restart (2.9s)
+  ok 3 [chromium] › tests\weapon-pair-fusion-ui.spec.ts:5:26 › bramble-tide: optional upgrade, confirmation, HUD/pause/result and restart (3.0s)
+
+  3 passed (10.1s)

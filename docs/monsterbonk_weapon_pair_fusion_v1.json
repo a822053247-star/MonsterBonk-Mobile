@@ -1,0 +1,101 @@
+{
+  "phase": "P31-A",
+  "title": "双武器融合核心 + 首个可玩配方",
+  "repository": "a822053247-star/MonsterBonk-Mobile",
+  "base_branch": "main",
+  "branch": "feat/weapon-pair-fusion-v1",
+  "purpose": "在现有技能融合系统之外，新增可选的双武器合成系统。先验证完整闭环，只实现一条配方；后续再以配置扩展其他配方。",
+  "verified_current_architecture": {
+    "existing_skill_fusions": "src/fusion.ts 中的 burst-seed、deep-bubble、chain-bubble、thorn-scatter、jump-thorn 属于武器+技能条件触发的旧融合，必须保持不变。",
+    "weapon_slots": 3,
+    "base_weapon_max_level": 5,
+    "current_weapon_build": "src/run-build.ts 的 RunBuild / EquippedAttack",
+    "upgrade_pool": "src/progression.ts",
+    "combat": "src/combat.ts",
+    "ui": "src/game.ts 和 src/ui.ts",
+    "system_catalog": "docs/GAME_SYSTEM_CATALOG.md"
+  },
+  "system_rules": {
+    "feature_name": "双武器融合",
+    "internal_name": "WeaponPairFusion",
+    "must_not_reuse_existing_type": "不要把新系统塞进现有 FusionId；新类型、配方和测试必须与旧的技能融合明确区分。",
+    "mode_scope": "仅在现有 usesRunBuild 为 true 的构筑模式启用；不得污染旧模式、试炼模式或历史卡池。",
+    "eligibility": "同一局内两把不同、当前装备中的基础武器等级都 >= 3，且存在对应配方。",
+    "optional": true,
+    "offer_flow": "在下一次升级三选一中保证出现一个“武器融合”选项。点击后若有多个合法组合，打开轻量配方选择；只有确认某个配方后才执行融合。玩家选择普通升级或关闭配方选择时，不改变武器；后续升级仍可再次选择融合。",
+    "slot_behavior": "融合后两把来源武器从主动攻击列表移除，替换为一把融合武器；使用来源武器中较早的槽位，主动武器总数减少1并释放一个槽位。其他武器保留，不重复发射，不丢失已有冷却进度。",
+    "fusion_level_formula": "融合等级 = min(5, levelA + levelB - 3)。例如 3+3 => 3级，3+4 => 4级，4+4 => 5级。融合武器最高5级。",
+    "preserve_skills": "不清空、不重置任何技能等级。通用技能与全局属性继续生效。配方显式声明继承哪些来源武器专属行为；已取得的 split-on-hit、area、chain 等效果不能静默消失，必须由融合武器兼容实现或保留可观察的等价效果。",
+    "preserve_relics": "不删除、不重置任何遗物。融合武器保留来源武器标签，来源武器相关遗物/规则应继续按配方兼容性生效；被消耗的基础武器不再作为独立攻击，也不能继续出现只会升级已消耗武器的卡牌。",
+    "old_fusion_compatibility": "旧的五种技能融合继续按原规则工作。不要更改现有配方参数、触发顺序或历史模式行为。新融合只能显式复用或适配旧行为，不得意外触发两套重复攻击。",
+    "reset": "重开、死亡、返回菜单时清空本局融合状态；不能跨局保留。",
+    "mobile_performance": "复用现有弹体、效果池和VFX；不为首个配方新建独立渲染引擎；禁止递归派生和无限连锁。"
+  },
+  "first_recipe": {
+    "id": "steam-comet",
+    "name": "蒸汽彗星",
+    "sources": [
+      "spark",
+      "bubble"
+    ],
+    "unlock": "spark >= 3级 且 bubble >= 3级",
+    "fantasy": "把火花弹的爆发与水泡弹的湿润控制合成一颗蒸汽彗星：命中后形成清晰可见的蒸汽爆发，既能打单体，也能清理附近小怪。",
+    "combat": {
+      "attack_pattern": "自动锁定最近合法目标，发射一枚融合投射物；沿用现有命中与伤害结算路径。",
+      "direct_hit": "直接伤害按融合武器等级结算。",
+      "steam_burst_radius": 1.35,
+      "steam_burst_damage": "直接命中伤害的 45%",
+      "steam_burst_excludes_primary_target": true,
+      "slow": {
+        "factor": 0.75,
+        "duration_seconds": 0.8,
+        "boss_displacement": "不产生位移；减速按现有Boss控制规则处理"
+      },
+      "interval_seconds_at_level_3": 0.62,
+      "level_growth": "等级4和5只提升直接伤害与蒸汽爆发伤害，不缩短攻击间隔；具体增长系数根据当前武器升级公式校准。",
+      "inherit": {
+        "damage": "生效",
+        "haste": "生效",
+        "range": "生效",
+        "area": "扩大蒸汽爆发范围",
+        "multishot": "增加融合投射物数量，但共享现有弹体预算",
+        "split-on-hit": "若已拥有，融合命中后最多派生一代火花/蒸汽碎片；碎片不能再次分裂或递归触发融合",
+        "chain": "若已拥有，融合命中可按现有连锁上限跳向最多2名其他敌人；同一攻击链不重复命中同一目标"
+      },
+      "visual": "优先复用仓库中已有蒸汽、火花、水系VFX预设与投射物渲染器。Gigapack素材仅在本地实际存在且许可允许时使用；不得虚构路径或重新扫描整个素材库。"
+    },
+    "balance_target": "使用现有武器伤害与槽位冷却公式，对固定敌人和固定随机种子比较融合前后的10秒伤害；Lv3蒸汽彗星应有明显范围清怪收益，单体伤害不应远低于原两武器合计。记录数据，不改动其他武器基线。",
+    "ui": "融合选项清楚展示“火花弹 LvX + 水泡弹 LvY → 蒸汽彗星 LvZ”；融合后升级卡、HUD、暂停构筑、结算构筑显示融合名称、等级和来源武器。"
+  },
+  "acceptance": [
+    "两把武器均达到3级前，不显示该配方。",
+    "达到条件后，玩家可在升级界面主动选择融合，也可继续普通升级。",
+    "融合只执行一次，两个来源武器不再独立攻击，融合武器接管攻击。",
+    "融合等级符合公式；释放一个武器槽位。",
+    "技能等级、遗物、经验、金币和已选进化不被重置。",
+    "来源技能与遗物效果不会静默丢失；不兼容项必须明确映射并有测试。",
+    "旧的五种技能融合与旧模式回归通过。",
+    "死亡/重开清除融合状态；暂停期间不推进融合攻击与VFX。",
+    "手机横屏卡片、HUD、暂停构筑和结算构筑均可读。",
+    "不引入新依赖，不运行全量测试套件。"
+  ],
+  "minimal_tests": [
+    "构筑模型测试：门槛、等级公式、槽位释放、父武器移除、剩余武器与冷却保留。",
+    "技能/遗物兼容测试：damage/haste/area/multishot、split-on-hit、chain，以及来源武器相关遗物。",
+    "战斗测试：真实投射物、主目标去重、蒸汽范围伤害、减速、派生递归限制、弹池满时安全降级。",
+    "UI测试：融合选项出现、拒绝融合仍可普通升级、确认融合后HUD/暂停/结算同步。",
+    "运行 npm run build、npm run content:check（若适用）、仅运行新增融合测试及最相关的旧融合回归。"
+  ],
+  "out_of_scope": [
+    "本阶段不实现 spark+leaf、bubble+leaf 或 flame-sweep 配方。",
+    "不重写 src/fusion.ts 的旧技能融合。",
+    "不新增遗物，不重做卡片系统，不改波次、Boss、经济、地图和角色。",
+    "不做大规模素材导入，不运行全量Playwright或全部平衡模拟。",
+    "不自动合并PR。"
+  ],
+  "delivery": [
+    "完成一个端到端可玩的双武器融合系统与 steam-comet 配方。",
+    "更新 docs/GAME_SYSTEM_CATALOG.md 中双武器融合与旧技能融合的区别。",
+    "独立分支与PR；最终只报告完成项、改动文件、定向测试结果、融合前后伤害对比和PR链接。"
+  ]
+}

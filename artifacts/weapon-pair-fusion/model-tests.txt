@@ -1,0 +1,220 @@
+
+Running 90 tests using 1 worker
+
+(node:27272) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:27272) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  1 [chromium] › tests\build-depth.spec.ts:37:1 › weapon upgrades use real cards, cap at five and do not duplicate slots (41ms)
+  ok  2 [chromium] › tests\build-depth.spec.ts:48:1 › single-weapon specialization loses its bonus when a side weapon is equipped (11ms)
+  ok  3 [chromium] › tests\build-depth.spec.ts:57:1 › overload and berserk expand real splash while slowing fire, and evolution is exclusive (12ms)
+  ok  4 [chromium] › tests\build-depth.spec.ts:70:1 › hunter and shattered core change child motion/count with real damage costs and bounded generation (14ms)
+  ok  5 [chromium] › tests\build-depth.spec.ts:83:1 › pursuit route creates homing fire children at the cost of explosion radius (7ms)
+  ok  6 [chromium] › tests\build-depth.spec.ts:91:1 › tidal pearl extends water control and reduces direct hits without reducing splash (10ms)
+  ok  7 [chromium] › tests\build-depth.spec.ts:99:1 › echo extends leaf chain reach and increases damage decay at each extra hop (15ms)
+  ok  8 [chromium] › tests\build-depth.spec.ts:110:1 › reset clears levels/relics/evolution; legacy card pools never receive build rewards (8ms)
+  x   9 [chromium] › tests\build-depth.spec.ts:120:1 › large experience queues keep rare offers bounded and finish without an empty upgrade trap (139ms)
+(node:24992) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:24992) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 10 [chromium] › tests\elemental-fusion-model.spec.ts:19:1 › only four new recipes exist, modifiers form independent water/grass fusions and do not leak to legacy pools (15ms)
+  ok 11 [chromium] › tests\elemental-fusion-model.spec.ts:28:1 › base water slow expires, refreshes without stacking, and legacy bubbles do not acquire it (17ms)
+  ok 12 [chromium] › tests\elemental-fusion-model.spec.ts:35:1 › water impact visuals move into the victim and follow it without moving the damaging contact point (6ms)
+  ok 13 [chromium] › tests\elemental-fusion-model.spec.ts:56:1 › deep bubble damages and slows neighbors once per impact, excludes the direct victim and spawned enemies (13ms)
+  ok 14 [chromium] › tests\elemental-fusion-model.spec.ts:63:1 › leaf sweep pierces one additional enemy in the same tick, never hits the same victim twice (5ms)
+  ok 15 [chromium] › tests\elemental-fusion-model.spec.ts:70:66 › bubblesalamander chain flies to two fresh targets, respects cap and uses fixed subsequent damage (16ms)
+  ok 16 [chromium] › tests\elemental-fusion-model.spec.ts:70:66 › sproutspike chain flies to two fresh targets, respects cap and uses fixed subsequent damage (7ms)
+  ok 17 [chromium] › tests\elemental-fusion-model.spec.ts:83:1 › scatter spawns three weaker children next tick, ignores original and never recursively splits (8ms)
+  ok 18 [chromium] › tests\elemental-fusion-model.spec.ts:91:66 › bubblesalamander simultaneous recipes coexist in every volley and reset deterministically (13ms)
+  ok 19 [chromium] › tests\elemental-fusion-model.spec.ts:91:66 › sproutspike simultaneous recipes coexist in every volley and reset deterministically (16ms)
+  ok 20 [chromium] › tests\elemental-fusion-model.spec.ts:105:1 › cover blocks elemental impacts and chain targets; full pools degrade safely without dropping direct damage (5ms)
+  ok 21 [chromium] › tests\elemental-fusion-model.spec.ts:111:1 › death, choice and zero time freeze elemental clocks; reset clears slow, recipes, hits and projectiles (10ms)
+  ok 22 [chromium] › tests\elemental-fusion-model.spec.ts:120:1 › elemental deaths use the shared kill and XP path exactly once and snapshots do not change in flight (8ms)
+  ok 23 [chromium] › tests\elemental-fusion-model.spec.ts:126:1 › water chain ledger includes splash victims, excludes them from future primary hits and repeat splashes (7ms)
+  ok 24 [chromium] › tests\elemental-fusion-model.spec.ts:135:65 › bubblesalamander reselects a dead hop target and terminates if none remain (7ms)
+  ok 25 [chromium] › tests\elemental-fusion-model.spec.ts:135:65 › sproutspike reselects a dead hop target and terminates if none remain (3ms)
+  ok 26 [chromium] › tests\elemental-fusion-model.spec.ts:142:1 › deep AoE respects cover and scatter angles, range and single-hit children are independent of animations (12ms)
+  ok 27 [chromium] › tests\elemental-fusion-model.spec.ts:151:1 › staggered multi-shot keeps compatible recipes on every shot in its volley (7ms)
+  ok 28 [chromium] › tests\fusion-model.spec.ts:28:1 › ordinary spark uses existing automatic attacks and never splits without its card (2ms)
+  ok 29 [chromium] › tests\fusion-model.spec.ts:34:1 › real split card resolves the matching spark and leaf recipes; historical card pools stay unchanged (4ms)
+  ok 30 [chromium] › tests\fusion-model.spec.ts:42:1 › one main hit damages its target once, explodes once over multiple other targets, and defers two children (11ms)
+  ok 31 [chromium] › tests\fusion-model.spec.ts:54:1 › children can damage other enemies, never hit the original and never generate another explosion or generation (5ms)
+  ok 32 [chromium] › tests\fusion-model.spec.ts:67:1 › multishot and hit splitting coexist without replacing each other (6ms)
+  ok 33 [chromium] › tests\fusion-model.spec.ts:77:1 › full projectile and effect pools preserve direct/AoE damage and degrade to available child slots (5ms)
+  ok 34 [chromium] › tests\fusion-model.spec.ts:87:1 › kill credit and experience use the shared damage path exactly once for blast victims (3ms)
+  ok 35 [chromium] › tests\fusion-model.spec.ts:95:1 › choice and death freeze all damage, children and effect ages; restart clears the run (7ms)
+  ok 36 [chromium] › tests\fusion-model.spec.ts:109:1 › hundreds of fused hits stay inside original pools with generation capped at one (810ms)
+  ok 37 [chromium] › tests\gigapack-21-30.spec.ts:29:28 › resonant-aftershock: exact spec, actual trigger and edge conditions (8ms)
+  ok 38 [chromium] › tests\gigapack-21-30.spec.ts:29:28 › reverse-tide: exact spec, actual trigger and edge conditions (6ms)
+  ok 39 [chromium] › tests\gigapack-21-30.spec.ts:29:28 › charge-chamber: exact spec, actual trigger and edge conditions (48ms)
+  ok 40 [chromium] › tests\gigapack-21-30.spec.ts:29:28 › azure-ward: exact spec, actual trigger and edge conditions (59ms)
+  ok 41 [chromium] › tests\gigapack-21-30.spec.ts:29:28 › swift-weave: exact spec, actual trigger and edge conditions (33ms)
+  ok 42 [chromium] › tests\gigapack-21-30.spec.ts:29:28 › pristine-halo: exact spec, actual trigger and edge conditions (5ms)
+  ok 43 [chromium] › tests\gigapack-21-30.spec.ts:29:28 › blazing-satellite: exact spec, actual trigger and edge conditions (5ms)
+  ok 44 [chromium] › tests\gigapack-21-30.spec.ts:29:28 › prism-shower: exact spec, actual trigger and edge conditions (6ms)
+  ok 45 [chromium] › tests\gigapack-21-30.spec.ts:29:28 › scarlet-reprisal: exact spec, actual trigger and edge conditions (9ms)
+  ok 46 [chromium] › tests\gigapack-21-30.spec.ts:29:28 › starlit-magnet: exact spec, actual trigger and edge conditions (3ms)
+  ok 47 [chromium] › tests\gigapack-21-30.spec.ts:95:1 › ten exact new png/txt resources and all parsed rectangles exist; no guessed grid (94ms)
+  ok 48 [chromium] › tests\gigapack-21-30.spec.ts:101:1 › future fusion must retain owned relics, parent tags, original identities and trigger events (7ms)
+  ok 49 [chromium] › tests\gigapack-21-30.spec.ts:115:49 › charged spark really crosses the first victim and hits a second without duplicate hits (10ms)
+  ok 50 [chromium] › tests\gigapack-21-30.spec.ts:115:49 › charged bubble really crosses the first victim and hits a second without duplicate hits (11ms)
+  ok 51 [chromium] › tests\gigapack-21-30.spec.ts:121:1 › new derived damage cannot feed other relics and saturated projectile budget cannot spawn shards (4ms)
+  ok 52 [chromium] › tests\gigapack-21-30.spec.ts:130:1 › distinct-target windows retain the latest hit time for a repeatedly hit target (5ms)
+  ok 53 [chromium] › tests\gigapack-relics.spec.ts:23:28 › storm-relay: trigger, limits, derived exclusion and lifecycle (6ms)
+  ok 54 [chromium] › tests\gigapack-relics.spec.ts:23:28 › void-vessel: trigger, limits, derived exclusion and lifecycle (4ms)
+  ok 55 [chromium] › tests\gigapack-relics.spec.ts:23:28 › warp-eye: trigger, limits, derived exclusion and lifecycle (11ms)
+  ok 56 [chromium] › tests\gigapack-relics.spec.ts:23:28 › reaper-decree: trigger, limits, derived exclusion and lifecycle (10ms)
+  ok 57 [chromium] › tests\gigapack-relics.spec.ts:23:28 › rhythm-seal: trigger, limits, derived exclusion and lifecycle (6ms)
+  ok 58 [chromium] › tests\gigapack-relics.spec.ts:23:28 › alchemist-ledger: trigger, limits, derived exclusion and lifecycle (4ms)
+  ok 59 [chromium] › tests\gigapack-relics.spec.ts:23:28 › venom-insignia: trigger, limits, derived exclusion and lifecycle (7ms)
+  ok 60 [chromium] › tests\gigapack-relics.spec.ts:23:28 › heart-keeper: trigger, limits, derived exclusion and lifecycle (8ms)
+  ok 61 [chromium] › tests\gigapack-relics.spec.ts:23:28 › smokescreen-feather: trigger, limits, derived exclusion and lifecycle (6ms)
+  ok 62 [chromium] › tests\gigapack-relics.spec.ts:23:28 › levelup-salute: trigger, limits, derived exclusion and lifecycle (17ms)
+  ok 63 [chromium] › tests\gigapack-relics.spec.ts:101:1 › all 11 spritesheets match real metadata bounds, frame ordering, PNG dimensions and 15 FPS guide (301ms)
+  ok 64 [chromium] › tests\gigapack-relics.spec.ts:110:1 › saturated VFX cannot cancel damage; derived budget cannot be bypassed (1ms)
+  ok 65 [chromium] › tests\gigapack-relics.spec.ts:118:1 › decree identity cannot execute a reused pool slot; pending salute clears on death (5ms)
+  x  66 [chromium] › tests\trigger-relics.spec.ts:26:1 › six trigger relics enter compatible upgrade/shop pools and cannot be duplicated (3ms)
+(node:18044) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:18044) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 67 [chromium] › tests\trigger-relics.spec.ts:41:1 › standalone fire kills propagate only two generations, with unique rewards (30ms)
+  ok 68 [chromium] › tests\trigger-relics.spec.ts:53:1 › same-lineage explosions never double hit a surviving target (4ms)
+  ok 69 [chromium] › tests\trigger-relics.spec.ts:62:1 › water, grass, neutral skills and spore damage do not start martyr explosions (11ms)
+  ok 70 [chromium] › tests\trigger-relics.spec.ts:75:1 › burn ticks exactly four times over two seconds and burn kills cannot start martyr (5ms)
+  ok 71 [chromium] › tests\trigger-relics.spec.ts:86:1 › repeated hits cap kindling at three and burst seed consumes the bonus once (9ms)
+  ok 72 [chromium] › tests\trigger-relics.spec.ts:99:1 › martyr consumes kindling on death and overload scales its radius (3ms)
+  ok 73 [chromium] › tests\trigger-relics.spec.ts:109:1 › testament fires three low-damage thorns and their kills cannot trigger testament again (6ms)
+  ok 74 [chromium] › tests\trigger-relics.spec.ts:120:1 › shattered core modifies testament and full pools safely truncate derived thorns (9ms)
+  ok 75 [chromium] › tests\trigger-relics.spec.ts:133:1 › large sweep defers overflow explosion events and reset clears pending work (11ms)
+  ok 76 [chromium] › tests\trigger-relics.spec.ts:145:1 › cover and spawn immunity block relic explosions; deferred snapshots survive slot reuse (9ms)
+  ok 77 [chromium] › tests\trigger-relics.spec.ts:163:1 › choice/death pauses freeze burning, and a burn Boss kill uses the victory gate (17ms)
+  ok 78 [chromium] › tests\weapon-pair-fusion.spec.ts:28:1 › unlock, formula, atomic replacement, free slot and untouched third weapon (16ms)
+  ok 79 [chromium] › tests\weapon-pair-fusion.spec.ts:43:2 › steam-comet: real projectile, bounded direct hits, configured area/control and refreshable burn (10ms)
+  ok 80 [chromium] › tests\weapon-pair-fusion.spec.ts:55:2 › steam-comet: acquired skills, lineage relics, no recursive children, bounded pool (18ms)
+  ok 81 [chromium] › tests\weapon-pair-fusion.spec.ts:43:2 › blazing-thorn: real projectile, bounded direct hits, configured area/control and refreshable burn (19ms)
+  ok 82 [chromium] › tests\weapon-pair-fusion.spec.ts:55:2 › blazing-thorn: acquired skills, lineage relics, no recursive children, bounded pool (17ms)
+  ok 83 [chromium] › tests\weapon-pair-fusion.spec.ts:43:2 › bramble-tide: real projectile, bounded direct hits, configured area/control and refreshable burn (6ms)
+  ok 84 [chromium] › tests\weapon-pair-fusion.spec.ts:55:2 › bramble-tide: acquired skills, lineage relics, no recursive children, bounded pool (11ms)
+  ok 85 [chromium] › tests\weapon-pair-fusion.spec.ts:69:1 › blazing-thorn pierces at most three victims; acquired chain replaces straight piercing (19ms)
+  ok 86 [chromium] › tests\weapon-pair-fusion.spec.ts:76:1 › fusion offer is guaranteed and cancel/normal reward preserves weapons; confirm consumes one choice (7ms)
+[{"id":"steam-comet","scenario":"single","before":679.2,"after":736,"ratio":1.084},{"id":"steam-comet","scenario":"group-5","before":679.2,"after":2060.8,"ratio":3.034},{"id":"blazing-thorn","scenario":"single","before":778.8,"after":772,"ratio":0.991},{"id":"blazing-thorn","scenario":"group-5","before":1243.44,"after":2316,"ratio":1.863},{"id":"bramble-tide","scenario":"single","before":558.72,"after":640,"ratio":1.145},{"id":"bramble-tide","scenario":"group-5","before":1023.36,"after":1664,"ratio":1.626}]
+  ok 87 [chromium] › tests\weapon-pair-fusion.spec.ts:86:1 › fixed seed 31: ten second single/group damage comparison without changing base weapons (537ms)
+  x  88 [chromium] › tests\weapon-pair-fusion.spec.ts:103:1 › real upgrades affect pair damage, haste, volley, range and area; levels do not change interval/radius (9ms)
+(node:9152) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:9152) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 89 [chromium] › tests\weapon-pair-fusion.spec.ts:112:1 › source-specific fire/water/leaf relic events survive fusion; explosion adapter fires once (73ms)
+  x  90 [chromium] › tests\weapon-pair-fusion.spec.ts:128:1 › fusion preserves evolution/XP/coins and reversed source order; death cancels active statuses and copies (13ms)
+
+
+  1) [chromium] › tests\build-depth.spec.ts:120:1 › large experience queues keep rare offers bounded and finish without an empty upgrade trap 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      130 |     expect(rare.length).toBeLessThanOrEqual(1); rareOffers += rare.length;
+      131 |     for (const id of p.offers) expect(p.ranks[id]).toBeLessThan(p.skills.find(s => s.id === id)!.maxRank);
+    > 132 |     expect(c.chooseUpgrade(p.offers[0])).toBe(true);
+          |                                          ^
+      133 |   }
+      134 |   expect(rareOffers).toBeGreaterThan(0);
+      135 |   expect(choices).toBeLessThan(100); expect(c.progression.awaitingChoice).toBe(false);
+        at D:\projects\MonsterBonk-Mobile\tests\build-depth.spec.ts:132:42
+
+    Error Context: test-results\build-depth-large-experien-ffa3b-thout-an-empty-upgrade-trap-chromium\error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\build-depth-large-experien-ffa3b-thout-an-empty-upgrade-trap-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\build-depth-large-experien-ffa3b-thout-an-empty-upgrade-trap-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [chromium] › tests\trigger-relics.spec.ts:26:1 › six trigger relics enter compatible upgrade/shop pools and cannot be duplicated 
+
+    Error: expect(received).toHaveLength(expected)
+
+    Expected length: 24
+    Received length: 44
+    Received array:  ["draft-boiling-core", "overload-core", "hunter-eye", "shattered-core", "tidal-pearl", "specialist-badge", "echo-rune", "draft-martyr-core", "draft-kindling-flask", "draft-thorn-testament", …]
+
+      27 |   const c = fixture();
+      28 |   expect(Object.keys(LEGACY_RELICS)).toHaveLength(13);
+    > 29 |   expect(Object.keys(RELICS)).toHaveLength(24);
+         |                               ^
+      30 |   expect(c.grantUpgrade('draft-martyr-core')).toBe(true);
+      31 |   expect(c.grantUpgrade('draft-martyr-core')).toBe(false);
+      32 |   expect(c.grantUpgrade('draft-kindling-flask')).toBe(true);
+        at D:\projects\MonsterBonk-Mobile\tests\trigger-relics.spec.ts:29:31
+
+    Error Context: test-results\trigger-relics-six-trigger-ae5e7-ls-and-cannot-be-duplicated-chromium\error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\trigger-relics-six-trigger-ae5e7-ls-and-cannot-be-duplicated-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\trigger-relics-six-trigger-ae5e7-ls-and-cannot-be-duplicated-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) [chromium] › tests\weapon-pair-fusion.spec.ts:103:1 › real upgrades affect pair damage, haste, volley, range and area; levels do not change interval/radius 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 2
+    Received: 0
+
+      106 |  expect(c.stats.damageMultiplier).toBe(1.2);expect(c.stats.attackRateMultiplier).toBe(1.15);expect(c.stats.projectileCount).toBe(2);expect(c.stats.rangeMultiplier).toBe(1.15);
+      107 |  b.upgrade(a.attackId);b.upgrade(a.attackId);const after=b.rules(a.attackId);expect(after.damageMultiplier).toBeGreaterThan(before.damageMultiplier);expect(after.intervalMultiplier).toBe(before.intervalMultiplier);expect(after.areaMultiplier).toBe(before.areaMultiplier);
+    > 108 |  const target=enemy(c,3);step(c,.08);expect(c.projectiles.filter(p=>p.active&&p.attackRules?.pairId==='steam-comet').length).toBe(2);
+          |                                                                                                                              ^
+      109 |  expect(c.projectiles.find(p=>p.active)!.damage).toBeCloseTo(46*1.34*1.2);expect(target.hp).toBe(100000);
+      110 | });
+      111 |
+        at D:\projects\MonsterBonk-Mobile\tests\weapon-pair-fusion.spec.ts:108:126
+
+    Error Context: test-results\weapon-pair-fusion-real-up-559e4--not-change-interval-radius-chromium\error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\weapon-pair-fusion-real-up-559e4--not-change-interval-radius-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\weapon-pair-fusion-real-up-559e4--not-change-interval-radius-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  4) [chromium] › tests\weapon-pair-fusion.spec.ts:128:1 › fusion preserves evolution/XP/coins and reversed source order; death cancels active statuses and copies 
+
+    TypeError: c.takeDamage is not a function
+
+      131 |  c.progression.gainExperience(8);const xp=c.xp;expect(c.confirmWeaponPair('steam-comet')).toBe(true);expect(c.xp).toBe(xp);expect(c.goldEarned).toBe(37);expect(b.evolution).toBe('pursuit-route');expect(b.attacks[0].attackId).toBe('bubble');
+      132 |  const e=enemy(c,3);fire(c,e);step(c,.2);expect(e.pairSlowUntil).toBeGreaterThan(c.elapsed);
+    > 133 |  c.invulnerability=0;c.takeDamage(10000);expect(c.hp).toBe(0);expect(c.projectiles.filter(p=>p.active&&p.attackRules?.pairId)).toHaveLength(0);expect(e.pairSlowUntil).toBe(0);
+          |                        ^
+      134 |  c.reset();expect(b.attacks.some(a=>a.pairId)).toBe(false);expect(b.evolution).toBeUndefined();
+      135 | });
+      136 |
+        at D:\projects\MonsterBonk-Mobile\tests\weapon-pair-fusion.spec.ts:133:24
+
+    Error Context: test-results\weapon-pair-fusion-fusion--76790--active-statuses-and-copies-chromium\error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\weapon-pair-fusion-fusion--76790--active-statuses-and-copies-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\weapon-pair-fusion-fusion--76790--active-statuses-and-copies-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  4 failed
+    [chromium] › tests\build-depth.spec.ts:120:1 › large experience queues keep rare offers bounded and finish without an empty upgrade trap 
+    [chromium] › tests\trigger-relics.spec.ts:26:1 › six trigger relics enter compatible upgrade/shop pools and cannot be duplicated 
+    [chromium] › tests\weapon-pair-fusion.spec.ts:103:1 › real upgrades affect pair damage, haste, volley, range and area; levels do not change interval/radius 
+    [chromium] › tests\weapon-pair-fusion.spec.ts:128:1 › fusion preserves evolution/XP/coins and reversed source order; death cancels active statuses and copies 
+  86 passed (9.0s)
