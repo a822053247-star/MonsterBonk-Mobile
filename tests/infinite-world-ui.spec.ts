@@ -54,16 +54,19 @@ test('HD pixel terrain and all seven scenery batches use nearest sampling', asyn
     const first = chunks[0];
     const ground = first.children.find((child: any) => child.name === '像素草地与沙地') as any;
     const sprites = first.children.filter((child: any) => child.isInstancedMesh) as any[];
+    const chests = chunks.flatMap((chunk: any) => chunk.children.filter((child: any) => child.name === '像素宝箱')) as any[];
     return { chunks: chunks.length, width: ground.material.map.image.width,
       height: ground.material.map.image.height,
       generateMipmaps: ground.material.map.generateMipmaps,
       nearestSampling: ground.material.map.minFilter === 1003 && ground.material.map.magFilter === 1003,
-      spriteCount: sprites.length, childCount: first.children.length,
+      spriteCount: sprites.length, childCount: first.children.length, chestCount: chests.length,
       pixelSprites: sprites.every(s => s.material.map.magFilter === 1003 && s.material.map.minFilter === 1003),
+      pixelChests: chests.every(c => c.material.map.magFilter === 1003 && c.material.map.minFilter === 1003),
       scenery: chunks.flatMap((c: any) => c.children.filter((s: any) => s.isInstancedMesh)).reduce((n: number, s: any) => n + s.count, 0) };
   });
   expect(view).toMatchObject({ chunks: 9, width: 1024, height: 1024,
-    generateMipmaps: false, nearestSampling: true, pixelSprites: true, spriteCount: 7, childCount: 8 });
+    generateMipmaps: false, nearestSampling: true, pixelSprites: true, pixelChests: true,
+    spriteCount: 7, childCount: 9, chestCount: 9 });
   expect(view.scenery).toBeGreaterThan(100);
 });
 
@@ -249,4 +252,61 @@ test('trees stones and cacti stop the player while flowers and grass remain walk
     return { blocked, walkable };
   });
   expect(result).toEqual({ blocked: [true, true, true], walkable: [true, true] });
+});
+
+
+test('treasure chest rewards are one-time, survive chunk recycling, and reset on a new run', async ({ page }) => {
+  await start(page);
+  const found = await page.evaluate(() => {
+    const g = (window as any).game;
+    g.sleep();
+    let chest: any;
+    for (let cx = -4; cx <= 4 && !chest; cx++) for (let cz = -4; cz <= 4 && !chest; cz++) {
+      const x = cx * 64, z = cz * 64;
+      g.position.set(x, 0, z); g.previousPosition.copy(g.position);
+      g.world.update(x, z); g.combat.refreshWorld(x, z, g.world.revision);
+      chest = g.world.treasureChests.find((candidate: any) => !candidate.opened);
+    }
+    if (!chest) throw new Error('Expected a generated treasure chest in the scanned chunks');
+    g.position.set(chest.x, 0, chest.z); g.previousPosition.copy(g.position); g.velocity.set(0, 0);
+    g.world.update(chest.x, chest.z); g.combat.refreshWorld(chest.x, chest.z, g.world.revision);
+    g.step(1 / 60);
+    return { id: chest.id, x: chest.x, z: chest.z };
+  });
+  await expect(page.locator('#chest-interact')).toBeVisible();
+  await page.locator('#chest-interact').click();
+  await expect(page.locator('#treasure-screen')).toBeVisible();
+  const before = await page.evaluate(() => (window as any).game.run.coins);
+  await page.locator('#treasure-coins').click();
+  await expect(page.locator('#treasure-screen')).toBeHidden();
+  const first = await page.evaluate((id) => {
+    const g = (window as any).game; g.sleep();
+    return { mode: g.inspect().mode, coins: g.run.coins,
+      opened: g.world.treasureChests.find((candidate: any) => candidate.id === id)?.opened };
+  }, found.id);
+  expect(first).toMatchObject({ mode: 'playing', coins: before + 20, opened: true });
+
+  const revisited = await page.evaluate(({ id, x, z }) => {
+    const g = (window as any).game; g.sleep();
+    const farX = x + 64 * 8, farZ = z - 64 * 6;
+    g.position.set(farX, 0, farZ); g.previousPosition.copy(g.position);
+    g.world.update(farX, farZ); g.combat.refreshWorld(farX, farZ, g.world.revision);
+    g.position.set(x, 0, z); g.previousPosition.copy(g.position);
+    g.world.update(x, z); g.combat.refreshWorld(x, z, g.world.revision);
+    return { chest: g.world.treasureChests.find((candidate: any) => candidate.id === id),
+      coins: g.run.coins, chunks: g.world.inspect().chunks };
+  }, found);
+  expect(revisited.chest?.opened).toBe(true);
+  expect(revisited.chunks).toBe(9);
+  expect(revisited.coins).toBe(before + 20);
+
+  const reset = await page.evaluate(({ id, x, z }) => {
+    const g = (window as any).game;
+    g.start('classic', true, true, 'infinite'); g.sleep();
+    g.position.set(x, 0, z); g.previousPosition.copy(g.position); g.velocity.set(0, 0);
+    g.world.update(x, z); g.combat.refreshWorld(x, z, g.world.revision);
+    return { chest: g.world.treasureChests.find((candidate: any) => candidate.id === id), coins: g.run.coins };
+  }, found);
+  expect(reset.chest?.opened).toBe(false);
+  expect(reset.coins).toBe(0);
 });
