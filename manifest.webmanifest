@@ -1,0 +1,13 @@
+{
+  "id": "./",
+  "name": "幻兽幸存者 · MonsterBonk",
+  "short_name": "幻兽幸存者",
+  "lang": "zh-CN",
+  "start_url": "./?installed=1",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "landscape",
+  "background_color": "#173c32",
+  "theme_color": "#132b29",
+  "icons": [{"src":"./assets/pixel/creatures/yanrong-base.png","sizes":"1254x1254","type":"image/png","purpose":"any"}]
+}
