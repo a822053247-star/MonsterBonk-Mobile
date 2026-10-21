@@ -278,7 +278,10 @@ test('treasure chest rewards are one-time, survive chunk recycling, and reset on
   expect(promptBottom).toBeLessThanOrEqual(390 - 64);
   await page.locator('#chest-interact').click();
   await expect(page.locator('#treasure-screen')).toBeVisible();
-  const before = await page.evaluate(() => (window as any).game.run.coins);
+  const before = await page.evaluate(() => {
+    const run = (window as any).game.run;
+    return { coins: run.coins, reward: run.treasureCoinReward };
+  });
   await page.locator('#treasure-coins').click();
   await expect(page.locator('#treasure-screen')).toBeHidden();
   const first = await page.evaluate((id) => {
@@ -286,7 +289,7 @@ test('treasure chest rewards are one-time, survive chunk recycling, and reset on
     return { mode: g.inspect().mode, coins: g.run.coins,
       opened: g.world.treasureChests.find((candidate: any) => candidate.id === id)?.opened };
   }, found.id);
-  expect(first).toMatchObject({ mode: 'playing', coins: before + 20, opened: true });
+  expect(first).toMatchObject({ mode: 'playing', coins: before.coins + before.reward, opened: true });
 
   const revisited = await page.evaluate(({ id, x, z }) => {
     const g = (window as any).game; g.sleep();
@@ -300,7 +303,7 @@ test('treasure chest rewards are one-time, survive chunk recycling, and reset on
   }, found);
   expect(revisited.chest?.opened).toBe(true);
   expect(revisited.chunks).toBe(9);
-  expect(revisited.coins).toBe(before + 20);
+  expect(revisited.coins).toBe(before.coins + before.reward);
 
   const reset = await page.evaluate(({ id, x, z }) => {
     const g = (window as any).game;
@@ -311,4 +314,47 @@ test('treasure chest rewards are one-time, survive chunk recycling, and reset on
   }, found);
   expect(reset.chest?.opened).toBe(false);
   expect(reset.coins).toBe(0);
+});
+
+test('treasure chest grants one legal build upgrade and the reward is committed once', async ({ page }) => {
+  await start(page);
+  const found = await page.evaluate(() => {
+    const g = (window as any).game;
+    g.sleep();
+    let chest: any;
+    for (let cx = -4; cx <= 4 && !chest; cx++) for (let cz = -4; cz <= 4 && !chest; cz++) {
+      const x = cx * 64, z = cz * 64;
+      g.position.set(x, 0, z); g.previousPosition.copy(g.position);
+      g.world.update(x, z); g.combat.refreshWorld(x, z, g.world.revision);
+      chest = g.world.treasureChests.find((candidate: any) => !candidate.opened);
+    }
+    if (!chest) throw new Error('Expected a generated treasure chest in the scanned chunks');
+    g.position.set(chest.x, 0, chest.z); g.previousPosition.copy(g.position); g.velocity.set(0, 0);
+    g.world.update(chest.x, chest.z); g.combat.refreshWorld(chest.x, chest.z, g.world.revision);
+    g.step(1 / 60);
+    return { id: chest.id };
+  });
+  await expect(page.locator('#chest-interact')).toBeVisible();
+  await page.locator('#chest-interact').click();
+  await expect(page.locator('#treasure-upgrade')).toBeEnabled();
+  const preview = await page.locator('#treasure-upgrade-title').textContent();
+  expect(preview).toContain('构筑强化');
+  const beforeRanks = await page.evaluate(() => ({ ...(window as any).game.combat.progression.ranks }));
+  await page.locator('#treasure-upgrade').click();
+  await expect(page.locator('#treasure-screen')).toBeHidden();
+  const result = await page.evaluate((id) => {
+    const g = (window as any).game;
+    return {
+      mode: g.inspect().mode,
+      ranks: { ...g.combat.progression.ranks },
+      claimed: g.run.treasureUpgradeClaimed,
+      opened: g.world.treasureChests.find((candidate: any) => candidate.id === id)?.opened,
+      toast: document.getElementById('toast')?.textContent,
+    };
+  }, found.id);
+  expect(result.mode).toBe('playing');
+  expect(result.claimed).toBe(true);
+  expect(result.opened).toBe(true);
+  expect(result.ranks).not.toEqual(beforeRanks);
+  expect(result.toast).toContain('宝箱强化');
 });
