@@ -1,0 +1,135 @@
+[
+  {
+    "rank": "elite",
+    "file": "artifacts/compact-encounters/wave-4-elite-1024.png",
+    "wave": 4,
+    "hud": {
+      "x": 372,
+      "y": 31,
+      "width": 280,
+      "height": 31.1875
+    },
+    "name": "精英岩甲",
+    "visual": {
+      "shots": 0,
+      "capacity": 16,
+      "boss": null,
+      "lane": false,
+      "cone": false,
+      "elite": true,
+      "fallback": false
+    }
+  },
+  {
+    "rank": "boss",
+    "file": "artifacts/compact-encounters/wave-6-boss-1024.png",
+    "wave": 6,
+    "hud": {
+      "x": 372,
+      "y": 31,
+      "width": 280,
+      "height": 31.1875
+    },
+    "name": "荆冠兽王",
+    "visual": {
+      "shots": 0,
+      "capacity": 16,
+      "boss": {
+        "facing": "down",
+        "renderedFacing": "down",
+        "action": "spread-cast",
+        "asset": "crownthorn-spread-cast",
+        "frame": 2,
+        "mirror": false,
+        "columns": 4,
+        "time": 0.4333333333333333,
+        "usable": 4,
+        "expected": 4,
+        "complete": true,
+        "finished": false,
+        "renderedAsset": "crownthorn-spread-cast",
+        "renderedFrame": 2,
+        "fallback": false,
+        "visible": true,
+        "disposed": false,
+        "uv": [
+          0.5,
+          0,
+          0.25,
+          1
+        ],
+        "anchor": [
+          0.5,
+          0.0625
+        ],
+        "rotation": 0,
+        "textures": {
+          "textures": 8,
+          "references": 8
+        },
+        "atlases": [
+          {
+            "asset": "crownthorn-directions",
+            "loaded": true,
+            "failed": false,
+            "nearest": true,
+            "mipmaps": false
+          },
+          {
+            "asset": "crownthorn-idle",
+            "loaded": true,
+            "failed": false,
+            "nearest": true,
+            "mipmaps": false
+          },
+          {
+            "asset": "crownthorn-dash-windup",
+            "loaded": true,
+            "failed": false,
+            "nearest": true,
+            "mipmaps": false
+          },
+          {
+            "asset": "crownthorn-dash",
+            "loaded": true,
+            "failed": false,
+            "nearest": true,
+            "mipmaps": false
+          },
+          {
+            "asset": "crownthorn-spread-cast",
+            "loaded": true,
+            "failed": false,
+            "nearest": true,
+            "mipmaps": false
+          },
+          {
+            "asset": "crownthorn-summon",
+            "loaded": true,
+            "failed": false,
+            "nearest": true,
+            "mipmaps": false
+          },
+          {
+            "asset": "crownthorn-enraged-idle",
+            "loaded": true,
+            "failed": false,
+            "nearest": true,
+            "mipmaps": false
+          },
+          {
+            "asset": "crownthorn-death",
+            "loaded": true,
+            "failed": false,
+            "nearest": true,
+            "mipmaps": false
+          }
+        ]
+      },
+      "lane": false,
+      "cone": true,
+      "elite": false,
+      "fallback": false
+    }
+  }
+]
