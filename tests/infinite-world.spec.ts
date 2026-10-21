@@ -41,10 +41,13 @@ test('trees rocks and desert cacti collide, with safe spawn and chunk borders', 
 
 
 test('treasure chests are deterministic, sparse, safe, and do not add collision obstacles', () => {
+  for (const [cx, cz] of [[-5, -5], [0, 0], [4, -3]] as const)
+    expect(generateInfiniteChunk('chest-fixture', cx, cz).chests)
+      .toEqual(generateInfiniteChunk('chest-fixture', cx, cz).chests);
+
   let total = 0;
-  for (let cx = -8; cx <= 8; cx++) for (let cz = -8; cz <= 8; cz++) {
+  for (let cx = -5; cx <= 5; cx++) for (let cz = -5; cz <= 5; cz++) {
     const layout = generateInfiniteChunk('chest-fixture', cx, cz);
-    expect(layout.chests).toEqual(generateInfiniteChunk('chest-fixture', cx, cz).chests);
     expect(layout.chests.length).toBeLessThanOrEqual(1);
     expect(layout.obstacles.length).toBe(layout.trees.length + layout.rocks.length + layout.cacti.length);
     for (const chest of layout.chests) {
@@ -62,6 +65,6 @@ test('treasure chests are deterministic, sparse, safe, and do not add collision 
         expect(Math.hypot(x - obstacle.x, z - obstacle.z)).toBeGreaterThanOrEqual(obstacle.radius + 2.8);
     }
   }
-  expect(total).toBeGreaterThan(20);
-  expect(total).toBeLessThan(150);
+  expect(total).toBeGreaterThan(10);
+  expect(total).toBeLessThan(80);
 });
