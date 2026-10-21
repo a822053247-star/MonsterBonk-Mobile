@@ -1,0 +1,12 @@
+
+Running 5 tests using 1 worker
+
+(node:50104) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 1 [chromium] › tests\vfx-presets-ui.spec.ts:38:1 › real spark, bubble and wet-fire steam render through presets and keep lifecycle/budgets (5.6s)
+  ok 2 [chromium] › tests\vfx-presets-ui.spec.ts:74:1 › custom content changes actual render buffers; unavailable textures and low quality retain fallback (3.5s)
+  ok 3 [chromium] › tests\vfx-presets.spec.ts:5:1 › builtins resolve real attack/effect IDs and custom presets bind without renderer classes (12ms)
+  ok 4 [chromium] › tests\vfx-presets.spec.ts:22:1 › invalid authoring data fails registration, including nonfinite and out of atlas values (19ms)
+  ok 5 [chromium] › tests\vfx-presets.spec.ts:37:1 › presentation durations are clamped to combat clocks and cannot outlive expired events (3ms)
+
+  5 passed (11.2s)

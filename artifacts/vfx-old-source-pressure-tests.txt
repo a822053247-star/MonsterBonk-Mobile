@@ -1,0 +1,42 @@
+
+Running 3 tests using 1 worker
+
+(node:636) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  1 tests\infinite-world-ui.spec.ts:111:1 › teleporting across many chunks does not accumulate chunk groups or materials (30.5s)
+(node:50264) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  2 tests\random-world-ui.spec.ts:93:1 › different seeds render different regions and fit phone replay controls (11.3s)
+(node:58896) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 3 tests\relic-effects-preview.spec.ts:4:1 › four isolated relic demonstrations render real effects and support deterministic seeking (2.5s)
+
+
+  1) tests\infinite-world-ui.spec.ts:111:1 › teleporting across many chunks does not accumulate chunk groups or materials
+
+    Test timeout of 30000ms exceeded.
+
+    Error Context: artifacts\vfx-old-source-output\infinite-world-ui-teleport-14084-e-chunk-groups-or-materials\error-context.md
+
+  2) tests\random-world-ui.spec.ts:93:1 › different seeds render different regions and fit phone replay controls
+
+    Error: expect(received).toBeLessThanOrEqual(expected)
+
+    Expected: <= 320
+    Received:    326.59375
+
+      117 |   await page.locator('#pause').click();
+      118 |   const short = (await page.locator('#map-replay').boundingBox())!;
+    > 119 |   expect(short.y).toBeGreaterThanOrEqual(0); expect(short.y + short.height).toBeLessThanOrEqual(320);
+          |                                                                             ^
+      120 |   expect(invalidAtlasRequests).toEqual([]);
+      121 | });
+      122 |
+        at E:\study\game\MonsterBonk Mobile\tests\random-world-ui.spec.ts:119:77
+
+    Error Context: artifacts\vfx-old-source-output\random-world-ui-different--4d918-d-fit-phone-replay-controls\error-context.md
+
+  2 failed
+    tests\infinite-world-ui.spec.ts:111:1 › teleporting across many chunks does not accumulate chunk groups or materials
+    tests\random-world-ui.spec.ts:93:1 › different seeds render different regions and fit phone replay controls
+  1 passed (50.1s)

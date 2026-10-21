@@ -1,0 +1,25 @@
+
+Running 18 tests using 1 worker
+
+(node:57112) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  1 [chromium] › tests\combat-clarity.spec.ts:6:1 › even a single multishot weapon spaces its shots over time (14ms)
+  ok  2 [chromium] › tests\combat-clarity.spec.ts:14:1 › three ready weapons and multishot emit distinguishable bullets instead of same-frame stacks (245ms)
+  ok  3 [chromium] › tests\combat-clarity.spec.ts:34:1 › overlapping impact visuals keep the major explosion and leave combat state untouched (4ms)
+  ok  4 [chromium] › tests\combat-clarity.spec.ts:42:1 › pause/upgrade freezes a partially emitted volley and wave cleanup discards it (4ms)
+  ok  5 [chromium] › tests\particle-feedback.spec.ts:31:1 › feedback uses real event clocks, one bounded GPU batch, preserves combat and stops with lifecycle (4.5s)
+  ok  6 [chromium] › tests\particle-feedback.spec.ts:87:1 › missing feedback atlas retains existing trail and hit fallback and real damage (3.2s)
+  ok  7 [chromium] › tests\trigger-relics.spec.ts:26:1 › six trigger relics enter compatible upgrade/shop pools and cannot be duplicated (8ms)
+  ok  8 [chromium] › tests\trigger-relics.spec.ts:40:1 › standalone fire kills propagate only two generations, with unique rewards (7ms)
+  ok  9 [chromium] › tests\trigger-relics.spec.ts:52:1 › same-lineage explosions never double hit a surviving target (3ms)
+  ok 10 [chromium] › tests\trigger-relics.spec.ts:61:1 › water, grass, neutral skills and spore damage do not start martyr explosions (9ms)
+  ok 11 [chromium] › tests\trigger-relics.spec.ts:74:1 › burn ticks exactly four times over two seconds and burn kills cannot start martyr (6ms)
+  ok 12 [chromium] › tests\trigger-relics.spec.ts:85:1 › repeated hits cap kindling at three and burst seed consumes the bonus once (9ms)
+  ok 13 [chromium] › tests\trigger-relics.spec.ts:98:1 › martyr consumes kindling on death and overload scales its radius (3ms)
+  ok 14 [chromium] › tests\trigger-relics.spec.ts:108:1 › testament fires three low-damage thorns and their kills cannot trigger testament again (7ms)
+  ok 15 [chromium] › tests\trigger-relics.spec.ts:119:1 › shattered core modifies testament and full pools safely truncate derived thorns (6ms)
+  ok 16 [chromium] › tests\trigger-relics.spec.ts:132:1 › large sweep defers overflow explosion events and reset clears pending work (15ms)
+  ok 17 [chromium] › tests\trigger-relics.spec.ts:144:1 › cover and spawn immunity block relic explosions; deferred snapshots survive slot reuse (12ms)
+  ok 18 [chromium] › tests\trigger-relics.spec.ts:162:1 › choice/death pauses freeze burning, and a burn Boss kill uses the victory gate (11ms)
+
+  18 passed (10.2s)

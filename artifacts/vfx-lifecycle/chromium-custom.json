@@ -1,0 +1,889 @@
+{
+  "applied": {
+    "result": {
+      "ok": true
+    },
+    "before": {
+      "geometries": 70,
+      "textures": 18
+    },
+    "sameMesh": true
+  },
+  "frames": [
+    {
+      "label": "1-animation",
+      "image": "chromium-custom-1-animation.png",
+      "state": {
+        "gameTime": 3.049999999999992,
+        "combatTime": 3.049999999999992,
+        "castAt": 2.999999999999992,
+        "hitAt": 0,
+        "seed": 20261021,
+        "hp": 10000,
+        "wet": 0,
+        "boiling": false,
+        "steamBursts": 0,
+        "hits": 0,
+        "event": null,
+        "shots": [
+          {
+            "attack": "spark",
+            "age": 0.049999999999999996,
+            "x": -0.7993958788403541,
+            "z": 0.4134806269863899,
+            "distance": 0.9
+          }
+        ],
+        "feedback": {
+          "loaded": true,
+          "failed": false,
+          "count": 1,
+          "capacity": 48,
+          "trails": 1,
+          "impacts": 0,
+          "embers": 0,
+          "url": "/assets/particles/kenney-feedback.png",
+          "frames": [
+            2
+          ],
+          "opacity": [
+            0.800000011920929
+          ],
+          "nearest": true,
+          "depthWrite": false
+        },
+        "fire": {
+          "loaded": true,
+          "failed": false,
+          "count": 1,
+          "capacity": 120,
+          "nearest": true,
+          "url": "/assets/pixel/skills/yanrong/fire-effects-sheet.normalized.png",
+          "frames": [
+            4
+          ]
+        },
+        "reactions": {
+          "loaded": true,
+          "failed": false,
+          "count": 0,
+          "capacity": 48,
+          "url": "/assets/kenney_particle-pack/PNG%20(Transparent)/smoke_08.png",
+          "frames": [],
+          "alpha": [],
+          "outlines": 0,
+          "outlineCapacity": 48
+        },
+        "fallback": {
+          "bolts": 0,
+          "trails": 0,
+          "sparks": 0
+        },
+        "memory": {
+          "geometries": 70,
+          "textures": 18
+        },
+        "warnings": {
+          "shots": 0,
+          "capacity": 16,
+          "boss": null,
+          "lane": false,
+          "cone": false,
+          "elite": false,
+          "fallback": false
+        }
+      },
+      "pixels": {
+        "changed": 192,
+        "width": 27,
+        "height": 16
+      }
+    },
+    {
+      "label": "2-animation",
+      "image": "chromium-custom-2-animation.png",
+      "state": {
+        "gameTime": 3.0999999999999917,
+        "combatTime": 3.0999999999999917,
+        "castAt": 2.999999999999992,
+        "hitAt": 0,
+        "seed": 20261021,
+        "hp": 10000,
+        "wet": 0,
+        "boiling": false,
+        "steamBursts": 0,
+        "hits": 0,
+        "event": null,
+        "shots": [
+          {
+            "attack": "spark",
+            "age": 0.09999999999999999,
+            "x": -1.5987917576807085,
+            "z": 0.8269612539727796,
+            "distance": 1.7999999999999996
+          }
+        ],
+        "feedback": {
+          "loaded": true,
+          "failed": false,
+          "count": 1,
+          "capacity": 48,
+          "trails": 1,
+          "impacts": 0,
+          "embers": 0,
+          "url": "/assets/particles/kenney-feedback.png",
+          "frames": [
+            2
+          ],
+          "opacity": [
+            0.800000011920929
+          ],
+          "nearest": true,
+          "depthWrite": false
+        },
+        "fire": {
+          "loaded": true,
+          "failed": false,
+          "count": 1,
+          "capacity": 120,
+          "nearest": true,
+          "url": "/assets/pixel/skills/yanrong/fire-effects-sheet.normalized.png",
+          "frames": [
+            6
+          ]
+        },
+        "reactions": {
+          "loaded": true,
+          "failed": false,
+          "count": 0,
+          "capacity": 48,
+          "url": "/assets/kenney_particle-pack/PNG%20(Transparent)/smoke_08.png",
+          "frames": [],
+          "alpha": [],
+          "outlines": 0,
+          "outlineCapacity": 48
+        },
+        "fallback": {
+          "bolts": 0,
+          "trails": 0,
+          "sparks": 0
+        },
+        "memory": {
+          "geometries": 70,
+          "textures": 18
+        },
+        "warnings": {
+          "shots": 0,
+          "capacity": 16,
+          "boss": null,
+          "lane": false,
+          "cone": false,
+          "elite": false,
+          "fallback": false
+        }
+      },
+      "pixels": {
+        "changed": 283,
+        "width": 48,
+        "height": 21
+      }
+    },
+    {
+      "label": "3-animation",
+      "image": "chromium-custom-3-animation.png",
+      "state": {
+        "gameTime": 3.1999999999999913,
+        "combatTime": 3.1999999999999913,
+        "castAt": 2.999999999999992,
+        "hitAt": 0,
+        "seed": 20261021,
+        "hp": 10000,
+        "wet": 0,
+        "boiling": false,
+        "steamBursts": 0,
+        "hits": 0,
+        "event": null,
+        "shots": [
+          {
+            "attack": "spark",
+            "age": 0.19999999999999998,
+            "x": -3.197583515361415,
+            "z": 1.6539225079455593,
+            "distance": 3.5999999999999988
+          }
+        ],
+        "feedback": {
+          "loaded": true,
+          "failed": false,
+          "count": 1,
+          "capacity": 48,
+          "trails": 1,
+          "impacts": 0,
+          "embers": 0,
+          "url": "/assets/particles/kenney-feedback.png",
+          "frames": [
+            2
+          ],
+          "opacity": [
+            0.800000011920929
+          ],
+          "nearest": true,
+          "depthWrite": false
+        },
+        "fire": {
+          "loaded": true,
+          "failed": false,
+          "count": 1,
+          "capacity": 120,
+          "nearest": true,
+          "url": "/assets/pixel/skills/yanrong/fire-effects-sheet.normalized.png",
+          "frames": [
+            7
+          ]
+        },
+        "reactions": {
+          "loaded": true,
+          "failed": false,
+          "count": 0,
+          "capacity": 48,
+          "url": "/assets/kenney_particle-pack/PNG%20(Transparent)/smoke_08.png",
+          "frames": [],
+          "alpha": [],
+          "outlines": 0,
+          "outlineCapacity": 48
+        },
+        "fallback": {
+          "bolts": 0,
+          "trails": 0,
+          "sparks": 0
+        },
+        "memory": {
+          "geometries": 70,
+          "textures": 18
+        },
+        "warnings": {
+          "shots": 0,
+          "capacity": 16,
+          "boss": null,
+          "lane": false,
+          "cone": false,
+          "elite": false,
+          "fallback": false
+        }
+      },
+      "pixels": {
+        "changed": 261,
+        "width": 49,
+        "height": 21
+      }
+    }
+  ],
+  "validation": {
+    "invalid": [
+      {
+        "ok": false,
+        "error": "Invalid VFX configuration: bad-timeline"
+      },
+      {
+        "ok": false,
+        "error": "Invalid VFX atlas: bad-timeline-atlas"
+      },
+      {
+        "ok": false,
+        "error": "Mismatched VFX binding"
+      }
+    ],
+    "changed": 0,
+    "samePreset": true,
+    "color": "73e6ff",
+    "scale": 1.1700000473202132,
+    "memory": {
+      "geometries": 70,
+      "textures": 18
+    },
+    "officialCard": false
+  },
+  "stress": {
+    "accepted": 24,
+    "high": {
+      "gameTime": 3.0999999999999917,
+      "combatTime": 3.0999999999999917,
+      "castAt": 2.999999999999992,
+      "hitAt": 0,
+      "seed": 20261021,
+      "hp": 10000,
+      "wet": 0,
+      "boiling": false,
+      "steamBursts": 0,
+      "hits": 0,
+      "event": null,
+      "shots": [
+        {
+          "attack": "spark",
+          "age": 0.09999999999999999,
+          "x": -1.5987917576807085,
+          "z": 0.8269612539727796,
+          "distance": 1.7999999999999996
+        },
+        {
+          "attack": "spark",
+          "age": 0.09999999999999999,
+          "x": -1.5987917576807085,
+          "z": 0.8269612539727796,
+          "distance": 1.7999999999999996
+        },
+        {
+          "attack": "spark",
+          "age": 0.09999999999999999,
+          "x": -1.5987917576807085,
+          "z": 0.8269612539727796,
+          "distance": 1.7999999999999996
+        },
+        {
+          "attack": "spark",
+          "age": 0.09999999999999999,
+          "x": -1.5987917576807085,
+          "z": 0.8269612539727796,
+          "distance": 1.7999999999999996
+        },
+        {
+          "attack": "spark",
+          "age": 0.09999999999999999,
+          "x": -1.5987917576807085,
+          "z": 0.8269612539727796,
+          "distance": 1.7999999999999996
+        },
+        {
+          "attack": "spark",
+          "age": 0.09999999999999999,
+          "x": -1.5987917576807085,
+          "z": 0.8269612539727796,
+          "distance": 1.7999999999999996
+        },
+        {
+          "attack": "spark",
+          "age": 0.09999999999999999,
+          "x": -1.5987917576807085,
+          "z": 0.8269612539727796,
+          "distance": 1.7999999999999996
+        },
+        {
+          "attack": "spark",
+          "age": 0.09999999999999999,
+          "x": -1.5987917576807085,
+          "z": 0.8269612539727796,
+          "distance": 1.7999999999999996
+        },
+        {
+          "attack": "spark",
+          "age": 0.09999999999999999,
+          "x": -1.5987917576807085,
+          "z": 0.8269612539727796,
+          "distance": 1.7999999999999996
+        },
+        {
+          "attack": "spark",
+          "age": 0.09999999999999999,
+          "x": -1.5987917576807085,
+          "z": 0.8269612539727796,
+          "distance": 1.7999999999999996
+        },
+        {
+          "attack": "spark",
+          "age": 0.09999999999999999,
+          "x": -1.5987917576807085,
+          "z": 0.8269612539727796,
+          "distance": 1.7999999999999996
+        },
+        {
+          "attack": "spark",
+          "age": 0.09999999999999999,
+          "x": -1.5987917576807085,
+          "z": 0.8269612539727796,
+          "distance": 1.7999999999999996
+        },
+        {
+          "attack": "spark",
+          "age": 0.09999999999999999,
+          "x": -1.5987917576807085,
+          "z": 0.8269612539727796,
+          "distance": 1.7999999999999996
+        },
+        {
+          "attack": "spark",
+          "age": 0.09999999999999999,
+          "x": -1.5987917576807085,
+          "z": 0.8269612539727796,
+          "distance": 1.7999999999999996
+        },
+        {
+          "attack": "spark",
+          "age": 0.09999999999999999,
+          "x": -1.5987917576807085,
+          "z": 0.8269612539727796,
+          "distance": 1.7999999999999996
+        },
+        {
+          "attack": "spark",
+          "age": 0.09999999999999999,
+          "x": -1.5987917576807085,
+          "z": 0.8269612539727796,
+          "distance": 1.7999999999999996
+        },
+        {
+          "attack": "spark",
+          "age": 0.09999999999999999,
+          "x": -1.5987917576807085,
+          "z": 0.8269612539727796,
+          "distance": 1.7999999999999996
+        },
+        {
+          "attack": "spark",
+          "age": 0.09999999999999999,
+          "x": -1.5987917576807085,
+          "z": 0.8269612539727796,
+          "distance": 1.7999999999999996
+        },
+        {
+          "attack": "spark",
+          "age": 0.09999999999999999,
+          "x": -1.5987917576807085,
+          "z": 0.8269612539727796,
+          "distance": 1.7999999999999996
+        },
+        {
+          "attack": "spark",
+          "age": 0.09999999999999999,
+          "x": -1.5987917576807085,
+          "z": 0.8269612539727796,
+          "distance": 1.7999999999999996
+        },
+        {
+          "attack": "spark",
+          "age": 0.09999999999999999,
+          "x": -1.5987917576807085,
+          "z": 0.8269612539727796,
+          "distance": 1.7999999999999996
+        },
+        {
+          "attack": "spark",
+          "age": 0.09999999999999999,
+          "x": -1.5987917576807085,
+          "z": 0.8269612539727796,
+          "distance": 1.7999999999999996
+        },
+        {
+          "attack": "spark",
+          "age": 0.09999999999999999,
+          "x": -1.5987917576807085,
+          "z": 0.8269612539727796,
+          "distance": 1.7999999999999996
+        },
+        {
+          "attack": "spark",
+          "age": 0.09999999999999999,
+          "x": -1.5987917576807085,
+          "z": 0.8269612539727796,
+          "distance": 1.7999999999999996
+        }
+      ],
+      "feedback": {
+        "loaded": true,
+        "failed": false,
+        "count": 24,
+        "capacity": 48,
+        "trails": 24,
+        "impacts": 0,
+        "embers": 0,
+        "url": "/assets/particles/kenney-feedback.png",
+        "frames": [
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2
+        ],
+        "opacity": [
+          0.800000011920929,
+          0.800000011920929,
+          0.800000011920929,
+          0.800000011920929,
+          0.800000011920929,
+          0.800000011920929,
+          0.800000011920929,
+          0.800000011920929,
+          0.800000011920929,
+          0.800000011920929,
+          0.800000011920929,
+          0.800000011920929,
+          0.800000011920929,
+          0.800000011920929,
+          0.800000011920929,
+          0.800000011920929,
+          0.800000011920929,
+          0.800000011920929,
+          0.800000011920929,
+          0.800000011920929,
+          0.800000011920929,
+          0.800000011920929,
+          0.800000011920929,
+          0.800000011920929
+        ],
+        "nearest": true,
+        "depthWrite": false
+      },
+      "fire": {
+        "loaded": true,
+        "failed": false,
+        "count": 24,
+        "capacity": 120,
+        "nearest": true,
+        "url": "/assets/pixel/skills/yanrong/fire-effects-sheet.normalized.png",
+        "frames": [
+          6,
+          6,
+          6,
+          6,
+          6,
+          6,
+          6,
+          6,
+          6,
+          6,
+          6,
+          6,
+          6,
+          6,
+          6,
+          6,
+          6,
+          6,
+          6,
+          6,
+          6,
+          6,
+          6,
+          6
+        ]
+      },
+      "reactions": {
+        "loaded": true,
+        "failed": false,
+        "count": 0,
+        "capacity": 48,
+        "url": "/assets/kenney_particle-pack/PNG%20(Transparent)/smoke_08.png",
+        "frames": [],
+        "alpha": [],
+        "outlines": 0,
+        "outlineCapacity": 48
+      },
+      "fallback": {
+        "bolts": 0,
+        "trails": 0,
+        "sparks": 0
+      },
+      "memory": {
+        "geometries": 70,
+        "textures": 18
+      },
+      "warnings": {
+        "shots": 0,
+        "capacity": 16,
+        "boss": null,
+        "lane": false,
+        "cone": false,
+        "elite": false,
+        "fallback": false
+      }
+    },
+    "low": {
+      "gameTime": 3.0999999999999917,
+      "combatTime": 3.0999999999999917,
+      "castAt": 2.999999999999992,
+      "hitAt": 0,
+      "seed": 20261021,
+      "hp": 10000,
+      "wet": 0,
+      "boiling": false,
+      "steamBursts": 0,
+      "hits": 0,
+      "event": null,
+      "shots": [
+        {
+          "attack": "spark",
+          "age": 0.09999999999999999,
+          "x": -1.5987917576807085,
+          "z": 0.8269612539727796,
+          "distance": 1.7999999999999996
+        },
+        {
+          "attack": "spark",
+          "age": 0.09999999999999999,
+          "x": -1.5987917576807085,
+          "z": 0.8269612539727796,
+          "distance": 1.7999999999999996
+        },
+        {
+          "attack": "spark",
+          "age": 0.09999999999999999,
+          "x": -1.5987917576807085,
+          "z": 0.8269612539727796,
+          "distance": 1.7999999999999996
+        },
+        {
+          "attack": "spark",
+          "age": 0.09999999999999999,
+          "x": -1.5987917576807085,
+          "z": 0.8269612539727796,
+          "distance": 1.7999999999999996
+        },
+        {
+          "attack": "spark",
+          "age": 0.09999999999999999,
+          "x": -1.5987917576807085,
+          "z": 0.8269612539727796,
+          "distance": 1.7999999999999996
+        },
+        {
+          "attack": "spark",
+          "age": 0.09999999999999999,
+          "x": -1.5987917576807085,
+          "z": 0.8269612539727796,
+          "distance": 1.7999999999999996
+        },
+        {
+          "attack": "spark",
+          "age": 0.09999999999999999,
+          "x": -1.5987917576807085,
+          "z": 0.8269612539727796,
+          "distance": 1.7999999999999996
+        },
+        {
+          "attack": "spark",
+          "age": 0.09999999999999999,
+          "x": -1.5987917576807085,
+          "z": 0.8269612539727796,
+          "distance": 1.7999999999999996
+        },
+        {
+          "attack": "spark",
+          "age": 0.09999999999999999,
+          "x": -1.5987917576807085,
+          "z": 0.8269612539727796,
+          "distance": 1.7999999999999996
+        },
+        {
+          "attack": "spark",
+          "age": 0.09999999999999999,
+          "x": -1.5987917576807085,
+          "z": 0.8269612539727796,
+          "distance": 1.7999999999999996
+        },
+        {
+          "attack": "spark",
+          "age": 0.09999999999999999,
+          "x": -1.5987917576807085,
+          "z": 0.8269612539727796,
+          "distance": 1.7999999999999996
+        },
+        {
+          "attack": "spark",
+          "age": 0.09999999999999999,
+          "x": -1.5987917576807085,
+          "z": 0.8269612539727796,
+          "distance": 1.7999999999999996
+        },
+        {
+          "attack": "spark",
+          "age": 0.09999999999999999,
+          "x": -1.5987917576807085,
+          "z": 0.8269612539727796,
+          "distance": 1.7999999999999996
+        },
+        {
+          "attack": "spark",
+          "age": 0.09999999999999999,
+          "x": -1.5987917576807085,
+          "z": 0.8269612539727796,
+          "distance": 1.7999999999999996
+        },
+        {
+          "attack": "spark",
+          "age": 0.09999999999999999,
+          "x": -1.5987917576807085,
+          "z": 0.8269612539727796,
+          "distance": 1.7999999999999996
+        },
+        {
+          "attack": "spark",
+          "age": 0.09999999999999999,
+          "x": -1.5987917576807085,
+          "z": 0.8269612539727796,
+          "distance": 1.7999999999999996
+        },
+        {
+          "attack": "spark",
+          "age": 0.09999999999999999,
+          "x": -1.5987917576807085,
+          "z": 0.8269612539727796,
+          "distance": 1.7999999999999996
+        },
+        {
+          "attack": "spark",
+          "age": 0.09999999999999999,
+          "x": -1.5987917576807085,
+          "z": 0.8269612539727796,
+          "distance": 1.7999999999999996
+        },
+        {
+          "attack": "spark",
+          "age": 0.09999999999999999,
+          "x": -1.5987917576807085,
+          "z": 0.8269612539727796,
+          "distance": 1.7999999999999996
+        },
+        {
+          "attack": "spark",
+          "age": 0.09999999999999999,
+          "x": -1.5987917576807085,
+          "z": 0.8269612539727796,
+          "distance": 1.7999999999999996
+        },
+        {
+          "attack": "spark",
+          "age": 0.09999999999999999,
+          "x": -1.5987917576807085,
+          "z": 0.8269612539727796,
+          "distance": 1.7999999999999996
+        },
+        {
+          "attack": "spark",
+          "age": 0.09999999999999999,
+          "x": -1.5987917576807085,
+          "z": 0.8269612539727796,
+          "distance": 1.7999999999999996
+        },
+        {
+          "attack": "spark",
+          "age": 0.09999999999999999,
+          "x": -1.5987917576807085,
+          "z": 0.8269612539727796,
+          "distance": 1.7999999999999996
+        },
+        {
+          "attack": "spark",
+          "age": 0.09999999999999999,
+          "x": -1.5987917576807085,
+          "z": 0.8269612539727796,
+          "distance": 1.7999999999999996
+        }
+      ],
+      "feedback": {
+        "loaded": true,
+        "failed": false,
+        "count": 12,
+        "capacity": 48,
+        "trails": 12,
+        "impacts": 0,
+        "embers": 0,
+        "url": "/assets/particles/kenney-feedback.png",
+        "frames": [
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2,
+          2
+        ],
+        "opacity": [
+          0.581818163394928,
+          0.581818163394928,
+          0.581818163394928,
+          0.581818163394928,
+          0.581818163394928,
+          0.581818163394928,
+          0.581818163394928,
+          0.581818163394928,
+          0.581818163394928,
+          0.581818163394928,
+          0.581818163394928,
+          0.581818163394928
+        ],
+        "nearest": true,
+        "depthWrite": false
+      },
+      "fire": {
+        "loaded": true,
+        "failed": false,
+        "count": 0,
+        "capacity": 120,
+        "nearest": true,
+        "url": "/assets/pixel/skills/yanrong/fire-effects-sheet.normalized.png",
+        "frames": []
+      },
+      "reactions": {
+        "loaded": true,
+        "failed": false,
+        "count": 0,
+        "capacity": 48,
+        "url": "/assets/kenney_particle-pack/PNG%20(Transparent)/smoke_08.png",
+        "frames": [],
+        "alpha": [],
+        "outlines": 0,
+        "outlineCapacity": 48
+      },
+      "fallback": {
+        "bolts": 24,
+        "trails": 0,
+        "sparks": 0
+      },
+      "memory": {
+        "geometries": 70,
+        "textures": 18
+      },
+      "warnings": {
+        "shots": 0,
+        "capacity": 16,
+        "boss": null,
+        "lane": false,
+        "cone": false,
+        "elite": false,
+        "fallback": false
+      }
+    },
+    "memory": {
+      "geometries": 70,
+      "textures": 18
+    },
+    "after": {
+      "geometries": 70,
+      "textures": 18
+    },
+    "overflow": false
+  }
+}

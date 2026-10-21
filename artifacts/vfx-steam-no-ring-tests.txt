@@ -1,0 +1,17 @@
+
+Running 8 tests using 1 worker
+
+(node:4532) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 1 [chromium] › tests\vfx-lifecycle.spec.ts:17:3 › continuous collision and reaction lifecycles at 844 high (10.7s)
+  ok 2 [chromium] › tests\vfx-lifecycle.spec.ts:17:3 › continuous collision and reaction lifecycles at 568 battery (6.8s)
+  ok 3 [chromium] › tests\vfx-lifecycle.spec.ts:65:1 › actual elite and Boss warnings remain legible under overlapping explosions and steam on both phone sizes (9.1s)
+  ok 4 [chromium] › tests\vfx-lifecycle.spec.ts:129:1 › steam requires real wet hits and boiling core; failed assets still allow damage, pause, resume and clean restart (4.4s)
+(node:54488) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 5 [webkit] › tests\vfx-lifecycle.spec.ts:17:3 › continuous collision and reaction lifecycles at 844 high (8.9s)
+  ok 6 [webkit] › tests\vfx-lifecycle.spec.ts:17:3 › continuous collision and reaction lifecycles at 568 battery (8.2s)
+  ok 7 [webkit] › tests\vfx-lifecycle.spec.ts:65:1 › actual elite and Boss warnings remain legible under overlapping explosions and steam on both phone sizes (7.4s)
+  ok 8 [webkit] › tests\vfx-lifecycle.spec.ts:129:1 › steam requires real wet hits and boiling core; failed assets still allow damage, pause, resume and clean restart (4.4s)
+
+  8 passed (1.1m)

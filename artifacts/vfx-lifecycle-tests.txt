@@ -1,0 +1,103 @@
+
+Running 60 tests using 1 worker
+
+(node:48676) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  1 [chromium] › tests\combat-clarity.spec.ts:6:1 › even a single multishot weapon spaces its shots over time (22ms)
+  ok  2 [chromium] › tests\combat-clarity.spec.ts:14:1 › three ready weapons and multishot emit distinguishable bullets instead of same-frame stacks (380ms)
+  ok  3 [chromium] › tests\combat-clarity.spec.ts:34:1 › overlapping impact visuals keep the major explosion and leave combat state untouched (4ms)
+  ok  4 [chromium] › tests\combat-clarity.spec.ts:42:1 › pause/upgrade freezes a partially emitted volley and wave cleanup discards it (6ms)
+  ok  5 [chromium] › tests\particle-feedback.spec.ts:31:1 › feedback uses real event clocks, one bounded GPU batch, preserves combat and stops with lifecycle (5.6s)
+  ok  6 [chromium] › tests\particle-feedback.spec.ts:87:1 › missing feedback atlas retains existing trail and hit fallback and real damage (2.3s)
+  ok  7 [chromium] › tests\trigger-relics.spec.ts:26:1 › six trigger relics enter compatible upgrade/shop pools and cannot be duplicated (5ms)
+  ok  8 [chromium] › tests\trigger-relics.spec.ts:40:1 › standalone fire kills propagate only two generations, with unique rewards (5ms)
+  ok  9 [chromium] › tests\trigger-relics.spec.ts:52:1 › same-lineage explosions never double hit a surviving target (1ms)
+  ok 10 [chromium] › tests\trigger-relics.spec.ts:61:1 › water, grass, neutral skills and spore damage do not start martyr explosions (4ms)
+  ok 11 [chromium] › tests\trigger-relics.spec.ts:74:1 › burn ticks exactly four times over two seconds and burn kills cannot start martyr (3ms)
+  ok 12 [chromium] › tests\trigger-relics.spec.ts:85:1 › repeated hits cap kindling at three and burst seed consumes the bonus once (4ms)
+  ok 13 [chromium] › tests\trigger-relics.spec.ts:98:1 › martyr consumes kindling on death and overload scales its radius (3ms)
+  ok 14 [chromium] › tests\trigger-relics.spec.ts:108:1 › testament fires three low-damage thorns and their kills cannot trigger testament again (8ms)
+  ok 15 [chromium] › tests\trigger-relics.spec.ts:119:1 › shattered core modifies testament and full pools safely truncate derived thorns (5ms)
+  ok 16 [chromium] › tests\trigger-relics.spec.ts:132:1 › large sweep defers overflow explosion events and reset clears pending work (9ms)
+  ok 17 [chromium] › tests\trigger-relics.spec.ts:144:1 › cover and spawn immunity block relic explosions; deferred snapshots survive slot reuse (7ms)
+  ok 18 [chromium] › tests\trigger-relics.spec.ts:162:1 › choice/death pauses freeze burning, and a burn Boss kill uses the victory gate (8ms)
+  ok 19 [chromium] › tests\vfx-lifecycle.spec.ts:17:3 › continuous collision and reaction lifecycles at 844 high (4.7s)
+  ok 20 [chromium] › tests\vfx-lifecycle.spec.ts:17:3 › continuous collision and reaction lifecycles at 568 battery (3.9s)
+  ok 21 [chromium] › tests\vfx-lifecycle.spec.ts:61:1 › actual elite and Boss warnings remain legible under overlapping steam on both phone sizes (6.0s)
+  ok 22 [chromium] › tests\vfx-lifecycle.spec.ts:82:1 › test-only preset changes atlas animation and geometry; bad presets retain identical pixels and bounded resources (4.9s)
+  x  23 [chromium] › tests\vfx-lifecycle.spec.ts:125:1 › steam requires real wet hits and boiling core; failed assets still allow damage, pause, resume and clean restart (507ms)
+(node:59296) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 24 [chromium] › tests\vfx-presets-ui.spec.ts:38:1 › real spark, bubble and wet-fire steam render through presets and keep lifecycle/budgets (6.3s)
+  ok 25 [chromium] › tests\vfx-presets-ui.spec.ts:84:1 › custom content changes actual render buffers; unavailable textures and low quality retain fallback (3.4s)
+  ok 26 [chromium] › tests\vfx-presets-ui.spec.ts:104:1 › registered atlas, size, tint and area presets work through actual quality settings (3.8s)
+  ok 27 [chromium] › tests\vfx-presets.spec.ts:5:1 › builtins resolve real attack/effect IDs and custom presets bind without renderer classes (16ms)
+  ok 28 [chromium] › tests\vfx-presets.spec.ts:22:1 › invalid authoring data fails registration, including nonfinite and out of atlas values (28ms)
+  ok 29 [chromium] › tests\vfx-presets.spec.ts:37:1 › presentation durations are clamped to combat clocks and cannot outlive expired events (3ms)
+  ok 30 [chromium] › tests\vfx-presets.spec.ts:45:1 › runtime content errors retain the last working preset without throwing (7ms)
+(node:63564) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 31 [webkit] › tests\combat-clarity.spec.ts:6:1 › even a single multishot weapon spaces its shots over time (16ms)
+  ok 32 [webkit] › tests\combat-clarity.spec.ts:14:1 › three ready weapons and multishot emit distinguishable bullets instead of same-frame stacks (296ms)
+  ok 33 [webkit] › tests\combat-clarity.spec.ts:34:1 › overlapping impact visuals keep the major explosion and leave combat state untouched (4ms)
+  ok 34 [webkit] › tests\combat-clarity.spec.ts:42:1 › pause/upgrade freezes a partially emitted volley and wave cleanup discards it (5ms)
+  ok 35 [webkit] › tests\particle-feedback.spec.ts:31:1 › feedback uses real event clocks, one bounded GPU batch, preserves combat and stops with lifecycle (6.0s)
+  ok 36 [webkit] › tests\particle-feedback.spec.ts:87:1 › missing feedback atlas retains existing trail and hit fallback and real damage (4.0s)
+  ok 37 [webkit] › tests\trigger-relics.spec.ts:26:1 › six trigger relics enter compatible upgrade/shop pools and cannot be duplicated (9ms)
+  ok 38 [webkit] › tests\trigger-relics.spec.ts:40:1 › standalone fire kills propagate only two generations, with unique rewards (9ms)
+  ok 39 [webkit] › tests\trigger-relics.spec.ts:52:1 › same-lineage explosions never double hit a surviving target (3ms)
+  ok 40 [webkit] › tests\trigger-relics.spec.ts:61:1 › water, grass, neutral skills and spore damage do not start martyr explosions (9ms)
+  ok 41 [webkit] › tests\trigger-relics.spec.ts:74:1 › burn ticks exactly four times over two seconds and burn kills cannot start martyr (7ms)
+  ok 42 [webkit] › tests\trigger-relics.spec.ts:85:1 › repeated hits cap kindling at three and burst seed consumes the bonus once (10ms)
+  ok 43 [webkit] › tests\trigger-relics.spec.ts:98:1 › martyr consumes kindling on death and overload scales its radius (3ms)
+  ok 44 [webkit] › tests\trigger-relics.spec.ts:108:1 › testament fires three low-damage thorns and their kills cannot trigger testament again (6ms)
+  ok 45 [webkit] › tests\trigger-relics.spec.ts:119:1 › shattered core modifies testament and full pools safely truncate derived thorns (6ms)
+  ok 46 [webkit] › tests\trigger-relics.spec.ts:132:1 › large sweep defers overflow explosion events and reset clears pending work (15ms)
+  ok 47 [webkit] › tests\trigger-relics.spec.ts:144:1 › cover and spawn immunity block relic explosions; deferred snapshots survive slot reuse (9ms)
+  ok 48 [webkit] › tests\trigger-relics.spec.ts:162:1 › choice/death pauses freeze burning, and a burn Boss kill uses the victory gate (12ms)
+  ok 49 [webkit] › tests\vfx-lifecycle.spec.ts:17:3 › continuous collision and reaction lifecycles at 844 high (6.6s)
+  ok 50 [webkit] › tests\vfx-lifecycle.spec.ts:17:3 › continuous collision and reaction lifecycles at 568 battery (7.5s)
+  ok 51 [webkit] › tests\vfx-lifecycle.spec.ts:61:1 › actual elite and Boss warnings remain legible under overlapping steam on both phone sizes (6.7s)
+  ok 52 [webkit] › tests\vfx-lifecycle.spec.ts:82:1 › test-only preset changes atlas animation and geometry; bad presets retain identical pixels and bounded resources (4.7s)
+  ok 53 [webkit] › tests\vfx-lifecycle.spec.ts:125:1 › steam requires real wet hits and boiling core; failed assets still allow damage, pause, resume and clean restart (5.2s)
+  ok 54 [webkit] › tests\vfx-presets-ui.spec.ts:38:1 › real spark, bubble and wet-fire steam render through presets and keep lifecycle/budgets (6.4s)
+  ok 55 [webkit] › tests\vfx-presets-ui.spec.ts:84:1 › custom content changes actual render buffers; unavailable textures and low quality retain fallback (3.5s)
+  ok 56 [webkit] › tests\vfx-presets-ui.spec.ts:104:1 › registered atlas, size, tint and area presets work through actual quality settings (3.7s)
+  ok 57 [webkit] › tests\vfx-presets.spec.ts:5:1 › builtins resolve real attack/effect IDs and custom presets bind without renderer classes (8ms)
+  ok 58 [webkit] › tests\vfx-presets.spec.ts:22:1 › invalid authoring data fails registration, including nonfinite and out of atlas values (10ms)
+  ok 59 [webkit] › tests\vfx-presets.spec.ts:37:1 › presentation durations are clamped to combat clocks and cannot outlive expired events (1ms)
+  ok 60 [webkit] › tests\vfx-presets.spec.ts:45:1 › runtime content errors retain the last working preset without throwing (3ms)
+
+
+  1) [chromium] › tests\vfx-lifecycle.spec.ts:125:1 › steam requires real wet hits and boiling core; failed assets still allow damage, pause, resume and clean restart
+
+    Error: page.goto: Page crashed
+    Call log:
+      - navigating to "http://127.0.0.1:5173/vfx-timeline-harness?world=fixed", waiting until "load"
+
+
+       at vfx-timeline-harness.ts:71
+
+      69 |     };
+      70 |   </script></body></html>`}));
+    > 71 |   await page.goto('/vfx-timeline-harness?world=fixed');await page.locator('#start-fusion').click();
+         |              ^
+      72 |   await page.evaluate(battery=>{const g=(window as any).game;g.sleep();g.wake=()=>{};g.quality.setMode(battery?'battery':'high');g.applyGraphics()},battery);
+      73 |   await expect.poll(()=>page.evaluate(missing=>{
+      74 |     const v=(window as any).game.combatView;
+        at openTimeline (E:\study\game\MonsterBonk Mobile\tests\vfx-timeline-harness.ts:71:14)
+        at E:\study\game\MonsterBonk Mobile\tests\vfx-lifecycle.spec.ts:126:98
+
+    Error Context: artifacts\vfx-lifecycle-test-output\vfx-lifecycle-steam-requir-17552-se-resume-and-clean-restart-chromium\error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    artifacts\vfx-lifecycle-test-output\vfx-lifecycle-steam-requir-17552-se-resume-and-clean-restart-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace artifacts\vfx-lifecycle-test-output\vfx-lifecycle-steam-requir-17552-se-resume-and-clean-restart-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [chromium] › tests\vfx-lifecycle.spec.ts:125:1 › steam requires real wet hits and boiling core; failed assets still allow damage, pause, resume and clean restart
+  59 passed (1.7m)

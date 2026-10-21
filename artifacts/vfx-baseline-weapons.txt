@@ -1,0 +1,28 @@
+
+> monsterbonk-mobile@0.4.0 balance:weapons
+> node scripts/run-weapon-balance.mjs
+
+┌─────────┬───────────────┬───────┬─────────────┬─────────────┬────────┬───────┬────────────┬────────┐
+│ (index) │ weapon        │ level │ scenario    │ specialized │ dps    │ kills │ slowUptime │ sweeps │
+├─────────┼───────────────┼───────┼─────────────┼─────────────┼────────┼───────┼────────────┼────────┤
+│ 0       │ 'spark'       │ 5     │ 'boss-near' │ false       │ 66.42  │ 0     │ 0          │ 0      │
+│ 1       │ 'bubble'      │ 5     │ 'boss-near' │ false       │ 40.85  │ 0     │ 0.998      │ 0      │
+│ 2       │ 'leaf'        │ 5     │ 'boss-near' │ false       │ 48.11  │ 0     │ 0          │ 0      │
+│ 3       │ 'flame-sweep' │ 5     │ 'boss-near' │ false       │ 57.5   │ 0     │ 0          │ 37     │
+│ 4       │ 'spark'       │ 5     │ 'boss-far'  │ false       │ 65.19  │ 0     │ 0          │ 0      │
+│ 5       │ 'bubble'      │ 5     │ 'boss-far'  │ false       │ 40.85  │ 0     │ 0.984      │ 0      │
+│ 6       │ 'leaf'        │ 5     │ 'boss-far'  │ false       │ 47.01  │ 0     │ 0          │ 0      │
+│ 7       │ 'flame-sweep' │ 5     │ 'boss-far'  │ false       │ 0      │ 0     │ 0          │ 0      │
+│ 8       │ 'spark'       │ 5     │ 'cluster'   │ false       │ 66.42  │ 0     │ 0          │ 0      │
+│ 9       │ 'bubble'      │ 5     │ 'cluster'   │ false       │ 40.85  │ 0     │ 0.244      │ 0      │
+│ 10      │ 'leaf'        │ 5     │ 'cluster'   │ false       │ 48.11  │ 0     │ 0          │ 0      │
+│ 11      │ 'flame-sweep' │ 5     │ 'cluster'   │ false       │ 985.68 │ 0     │ 0          │ 37     │
+│ 12      │ 'spark'       │ 5     │ 'line'      │ false       │ 65.19  │ 0     │ 0          │ 0      │
+│ 13      │ 'bubble'      │ 5     │ 'line'      │ false       │ 40.85  │ 0     │ 0.165      │ 0      │
+│ 14      │ 'leaf'        │ 5     │ 'line'      │ false       │ 143.23 │ 0     │ 0          │ 0      │
+│ 15      │ 'flame-sweep' │ 5     │ 'line'      │ false       │ 82.14  │ 0     │ 0          │ 37     │
+│ 16      │ 'spark'       │ 5     │ 'mowing'    │ false       │ 49.5   │ 54    │ 0          │ 0      │
+│ 17      │ 'bubble'      │ 5     │ 'mowing'    │ false       │ 34.83  │ 38    │ 0          │ 0      │
+│ 18      │ 'leaf'        │ 5     │ 'mowing'    │ false       │ 121    │ 132   │ 0          │ 0      │
+│ 19      │ 'flame-sweep' │ 5     │ 'mowing'    │ false       │ 814    │ 888   │ 0          │ 37     │
+└─────────┴───────────────┴───────┴─────────────┴─────────────┴────────┴───────┴────────────┴────────┘

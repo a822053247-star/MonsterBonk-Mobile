@@ -1,0 +1,21 @@
+
+Running 12 tests using 1 worker
+
+(node:61552) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  1 [chromium] › tests\vfx-presets-ui.spec.ts:38:1 › real spark, bubble and wet-fire steam render through presets and keep lifecycle/budgets (7.2s)
+  ok  2 [chromium] › tests\vfx-presets-ui.spec.ts:84:1 › custom content changes actual render buffers; unavailable textures and low quality retain fallback (4.2s)
+  ok  3 [chromium] › tests\vfx-presets-ui.spec.ts:104:1 › registered atlas, size, tint and area presets work through actual quality settings (4.4s)
+  ok  4 [chromium] › tests\vfx-presets.spec.ts:5:1 › builtins resolve real attack/effect IDs and custom presets bind without renderer classes (16ms)
+  ok  5 [chromium] › tests\vfx-presets.spec.ts:22:1 › invalid authoring data fails registration, including nonfinite and out of atlas values (21ms)
+  ok  6 [chromium] › tests\vfx-presets.spec.ts:37:1 › presentation durations are clamped to combat clocks and cannot outlive expired events (4ms)
+(node:23020) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  7 [webkit] › tests\vfx-presets-ui.spec.ts:38:1 › real spark, bubble and wet-fire steam render through presets and keep lifecycle/budgets (7.2s)
+  ok  8 [webkit] › tests\vfx-presets-ui.spec.ts:84:1 › custom content changes actual render buffers; unavailable textures and low quality retain fallback (4.3s)
+  ok  9 [webkit] › tests\vfx-presets-ui.spec.ts:104:1 › registered atlas, size, tint and area presets work through actual quality settings (4.7s)
+  ok 10 [webkit] › tests\vfx-presets.spec.ts:5:1 › builtins resolve real attack/effect IDs and custom presets bind without renderer classes (14ms)
+  ok 11 [webkit] › tests\vfx-presets.spec.ts:22:1 › invalid authoring data fails registration, including nonfinite and out of atlas values (14ms)
+  ok 12 [webkit] › tests\vfx-presets.spec.ts:37:1 › presentation durations are clamped to combat clocks and cannot outlive expired events (4ms)
+
+  12 passed (36.5s)

@@ -1,0 +1,12 @@
+
+Running 5 tests using 1 worker
+
+(node:65520) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 1 [chromium] › tests\vfx-lifecycle.spec.ts:17:3 › continuous collision and reaction lifecycles at 844 high (11.0s)
+  ok 2 [chromium] › tests\vfx-lifecycle.spec.ts:17:3 › continuous collision and reaction lifecycles at 568 battery (8.6s)
+  ok 3 [chromium] › tests\vfx-lifecycle.spec.ts:61:1 › actual elite and Boss warnings remain legible under overlapping steam on both phone sizes (7.2s)
+  ok 4 [chromium] › tests\vfx-lifecycle.spec.ts:82:1 › test-only preset changes atlas animation and geometry; bad presets retain identical pixels and bounded resources (4.6s)
+  ok 5 [chromium] › tests\vfx-lifecycle.spec.ts:125:1 › steam requires real wet hits and boiling core; failed assets still allow damage, pause, resume and clean restart (4.5s)
+
+  5 passed (38.6s)

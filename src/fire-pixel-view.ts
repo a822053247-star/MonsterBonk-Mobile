@@ -10,6 +10,7 @@ export class FirePixelView {
   private frames = new THREE.InstancedBufferAttribute(new Float32Array(CAPACITY), 1);
   private texture: THREE.Texture;
   private pose = new THREE.Object3D();
+  private color = new THREE.Color();
   private orientation = new THREE.Quaternion();
   private spin = new THREE.Quaternion();
   private axis = new THREE.Vector3(0, 0, 1);
@@ -36,6 +37,8 @@ export class FirePixelView {
     this.mesh = new THREE.InstancedMesh(geometry, material, CAPACITY);
     this.mesh.name = name; this.mesh.count = 0; this.mesh.frustumCulled = false;
     this.mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+    this.mesh.setColorAt(0, this.color.set('#ffffff'));
+    this.mesh.instanceColor!.setUsage(THREE.DynamicDrawUsage);
     this.texture = new THREE.TextureLoader().load(url, texture => {
       if (this.disposed) { texture.dispose(); return; }
       texture.magFilter = texture.minFilter = THREE.NearestFilter;
@@ -52,7 +55,7 @@ export class FirePixelView {
   }
   begin() { this.mesh.count = 0; }
 
-  put(row: number, frame: number, x: number, y: number, z: number, size: number, vx = 0, vz = 0, ground = false, rotation = 0) {
+  put(row: number, frame: number, x: number, y: number, z: number, size: number, vx = 0, vz = 0, ground = false, rotation = 0, tint = '#ffffff') {
     if (!this.loaded || this.disposed || this.mesh.count >= CAPACITY) return;
     const index = this.mesh.count++;
     this.pose.position.set(x, y, z); this.pose.scale.set(size, size, 1);
@@ -65,9 +68,10 @@ export class FirePixelView {
       }
     }
     this.pose.updateMatrix(); this.mesh.setMatrixAt(index, this.pose.matrix);
+    this.mesh.setColorAt(index, this.color.set(tint));
     this.frames.setX(index, row * this.columns + Math.max(0, Math.min(this.columns - 1, frame)));
   }
-  finish() { this.mesh.instanceMatrix.needsUpdate = true; this.frames.needsUpdate = true; }
+  finish() { this.mesh.instanceMatrix.needsUpdate = true; this.frames.needsUpdate = true; this.mesh.instanceColor!.needsUpdate = true; }
   inspect() { return { loaded: this.loaded, failed: this.failed, count: this.mesh.count, capacity: CAPACITY, nearest: this.texture.magFilter === THREE.NearestFilter, url: this.url, frames: Array.from(this.frames.array.slice(0, this.mesh.count)) }; }
   dispose() {
     if (this.disposed) return;

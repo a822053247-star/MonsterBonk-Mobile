@@ -1,0 +1,40 @@
+
+Running 1 test using 1 worker
+
+(node:35652) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  1 [chromium] › tests\combat-clarity-ui.spec.ts:3:1 › fully fused three-weapon build stays readable with CD indicators and pooled impact visuals (5.0s)
+
+
+  1) [chromium] › tests\combat-clarity-ui.spec.ts:3:1 › fully fused three-weapon build stays readable with CD indicators and pooled impact visuals
+
+    Error: expect(received).toBeLessThanOrEqual(expected)
+
+    Expected: <= 1.551
+    Received:    2.799999952316284
+
+      39 |     }, steps);
+      40 |     expect(state.unchanged).toBe(true); expect(state.impacts).toBeLessThanOrEqual(6);
+    > 41 |     expect(state.largest).toBeLessThanOrEqual(1.551); expect(state.noDepthWrite).toBe(true); expect(state.maxHurt).toBeLessThanOrEqual(.301); expect(state.limits).toBe(24);
+         |                           ^
+      42 |     if (index === 1) expect(state.shots.every((count: number) => count > 0)).toBe(true);
+      43 |     await expect(page.locator('.weapon-charge')).toHaveCount(3);
+      44 |     await page.screenshot({ path: `artifacts/combat-clarity-${index === 0 ? 'volleys' : 'impacts'}.png` });
+        at E:\study\game\MonsterBonk Mobile\tests\combat-clarity-ui.spec.ts:41:27
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    artifacts\vfx-clarity-output\combat-clarity-ui-fully-fu-ae086-s-and-pooled-impact-visuals-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: artifacts\vfx-clarity-output\combat-clarity-ui-fully-fu-ae086-s-and-pooled-impact-visuals-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    artifacts\vfx-clarity-output\combat-clarity-ui-fully-fu-ae086-s-and-pooled-impact-visuals-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace artifacts\vfx-clarity-output\combat-clarity-ui-fully-fu-ae086-s-and-pooled-impact-visuals-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [chromium] › tests\combat-clarity-ui.spec.ts:3:1 › fully fused three-weapon build stays readable with CD indicators and pooled impact visuals

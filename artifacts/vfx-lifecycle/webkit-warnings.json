@@ -1,0 +1,2233 @@
+[
+  {
+    "width": 844,
+    "battery": false,
+    "effect": "burst",
+    "kind": "elite",
+    "pixels": {
+      "baseline": 2784,
+      "retained": 2784,
+      "ratio": 1,
+      "visible": true
+    },
+    "state": {
+      "gameTime": 3.428333333333324,
+      "combatTime": 3.428333333333324,
+      "castAt": 2.999999999999992,
+      "hitAt": 3.3083333333333242,
+      "seed": 727213271,
+      "hp": 9982,
+      "wet": 0,
+      "boiling": false,
+      "steamBursts": 0,
+      "hits": 1,
+      "event": {
+        "kind": "burst",
+        "active": true,
+        "age": 0.12000000000000038,
+        "duration": 0.4,
+        "radius": 1.35
+      },
+      "shots": [
+        {
+          "attack": "spark",
+          "age": 0.12000000000000001,
+          "x": -6.615053672313586,
+          "z": 1.3155473812868062,
+          "distance": 2.16
+        },
+        {
+          "attack": "spark",
+          "age": 0.12000000000000001,
+          "x": -4.896246982987515,
+          "z": 4.638573647317208,
+          "distance": 2.16
+        }
+      ],
+      "feedback": {
+        "loaded": true,
+        "failed": false,
+        "count": 4,
+        "capacity": 48,
+        "trails": 2,
+        "impacts": 0,
+        "embers": 1,
+        "url": "/assets/particles/kenney-feedback.png",
+        "frames": [
+          2,
+          2,
+          4,
+          5
+        ],
+        "opacity": [
+          0.550000011920929,
+          0.550000011920929,
+          0.4727272689342499,
+          0.4727272689342499
+        ],
+        "nearest": true,
+        "depthWrite": false
+      },
+      "fire": {
+        "loaded": true,
+        "failed": false,
+        "count": 3,
+        "capacity": 120,
+        "nearest": true,
+        "url": "/assets/pixel/skills/yanrong/fire-effects-sheet.normalized.png",
+        "frames": [
+          5,
+          5,
+          9
+        ]
+      },
+      "reactions": {
+        "loaded": true,
+        "failed": false,
+        "count": 0,
+        "capacity": 48,
+        "url": "/assets/kenney_particle-pack/PNG%20(Transparent)/smoke_08.png",
+        "frames": [],
+        "alpha": [],
+        "outlines": 0,
+        "outlineCapacity": 48
+      },
+      "fallback": {
+        "bolts": 0,
+        "trails": 0,
+        "sparks": 0
+      },
+      "memory": {
+        "geometries": 49,
+        "textures": 23
+      },
+      "warnings": {
+        "shots": 0,
+        "capacity": 16,
+        "boss": null,
+        "lane": false,
+        "cone": false,
+        "elite": true,
+        "fallback": false
+      }
+    }
+  },
+  {
+    "width": 844,
+    "battery": false,
+    "effect": "burst",
+    "kind": "lane",
+    "pixels": {
+      "baseline": 11039,
+      "retained": 11033,
+      "ratio": 0.9994564725065677,
+      "visible": true
+    },
+    "state": {
+      "gameTime": 3.428333333333324,
+      "combatTime": 3.428333333333324,
+      "castAt": 2.999999999999992,
+      "hitAt": 3.3083333333333242,
+      "seed": 727213271,
+      "hp": 9982,
+      "wet": 0,
+      "boiling": false,
+      "steamBursts": 0,
+      "hits": 1,
+      "event": {
+        "kind": "burst",
+        "active": true,
+        "age": 0.12000000000000038,
+        "duration": 0.4,
+        "radius": 1.35
+      },
+      "shots": [
+        {
+          "attack": "spark",
+          "age": 0.12000000000000001,
+          "x": -6.615053672313586,
+          "z": 1.3155473812868062,
+          "distance": 2.16
+        },
+        {
+          "attack": "spark",
+          "age": 0.12000000000000001,
+          "x": -4.896246982987515,
+          "z": 4.638573647317208,
+          "distance": 2.16
+        }
+      ],
+      "feedback": {
+        "loaded": true,
+        "failed": false,
+        "count": 4,
+        "capacity": 48,
+        "trails": 2,
+        "impacts": 0,
+        "embers": 1,
+        "url": "/assets/particles/kenney-feedback.png",
+        "frames": [
+          2,
+          2,
+          4,
+          5
+        ],
+        "opacity": [
+          0.550000011920929,
+          0.550000011920929,
+          0.4727272689342499,
+          0.4727272689342499
+        ],
+        "nearest": true,
+        "depthWrite": false
+      },
+      "fire": {
+        "loaded": true,
+        "failed": false,
+        "count": 3,
+        "capacity": 120,
+        "nearest": true,
+        "url": "/assets/pixel/skills/yanrong/fire-effects-sheet.normalized.png",
+        "frames": [
+          5,
+          5,
+          9
+        ]
+      },
+      "reactions": {
+        "loaded": true,
+        "failed": false,
+        "count": 0,
+        "capacity": 48,
+        "url": "/assets/kenney_particle-pack/PNG%20(Transparent)/smoke_08.png",
+        "frames": [],
+        "alpha": [],
+        "outlines": 0,
+        "outlineCapacity": 48
+      },
+      "fallback": {
+        "bolts": 0,
+        "trails": 0,
+        "sparks": 0
+      },
+      "memory": {
+        "geometries": 51,
+        "textures": 24
+      },
+      "warnings": {
+        "shots": 0,
+        "capacity": 16,
+        "boss": {
+          "facing": "down",
+          "renderedFacing": "down",
+          "action": "dash-windup",
+          "asset": "crownthorn-dash-windup",
+          "frame": 2,
+          "mirror": false,
+          "columns": 4,
+          "time": 0.3,
+          "usable": 4,
+          "expected": 4,
+          "complete": true,
+          "finished": false,
+          "renderedAsset": "crownthorn-dash-windup",
+          "renderedFrame": 2,
+          "fallback": false,
+          "visible": true,
+          "disposed": false,
+          "uv": [
+            0.5,
+            0,
+            0.25,
+            1
+          ],
+          "anchor": [
+            0.5,
+            0.0625
+          ],
+          "rotation": 0,
+          "textures": {
+            "textures": 8,
+            "references": 8
+          },
+          "atlases": [
+            {
+              "asset": "crownthorn-directions",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            },
+            {
+              "asset": "crownthorn-idle",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            },
+            {
+              "asset": "crownthorn-dash-windup",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            },
+            {
+              "asset": "crownthorn-dash",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            },
+            {
+              "asset": "crownthorn-spread-cast",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            },
+            {
+              "asset": "crownthorn-summon",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            },
+            {
+              "asset": "crownthorn-enraged-idle",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            },
+            {
+              "asset": "crownthorn-death",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            }
+          ]
+        },
+        "lane": true,
+        "cone": false,
+        "elite": false,
+        "fallback": false
+      }
+    }
+  },
+  {
+    "width": 844,
+    "battery": false,
+    "effect": "burst",
+    "kind": "cone",
+    "pixels": {
+      "baseline": 35594,
+      "retained": 35594,
+      "ratio": 1,
+      "visible": true
+    },
+    "state": {
+      "gameTime": 3.428333333333324,
+      "combatTime": 3.428333333333324,
+      "castAt": 2.999999999999992,
+      "hitAt": 3.3083333333333242,
+      "seed": 727213271,
+      "hp": 9982,
+      "wet": 0,
+      "boiling": false,
+      "steamBursts": 0,
+      "hits": 1,
+      "event": {
+        "kind": "burst",
+        "active": true,
+        "age": 0.12000000000000038,
+        "duration": 0.4,
+        "radius": 1.35
+      },
+      "shots": [
+        {
+          "attack": "spark",
+          "age": 0.12000000000000001,
+          "x": -6.615053672313586,
+          "z": 1.3155473812868062,
+          "distance": 2.16
+        },
+        {
+          "attack": "spark",
+          "age": 0.12000000000000001,
+          "x": -4.896246982987515,
+          "z": 4.638573647317208,
+          "distance": 2.16
+        }
+      ],
+      "feedback": {
+        "loaded": true,
+        "failed": false,
+        "count": 4,
+        "capacity": 48,
+        "trails": 2,
+        "impacts": 0,
+        "embers": 1,
+        "url": "/assets/particles/kenney-feedback.png",
+        "frames": [
+          2,
+          2,
+          4,
+          5
+        ],
+        "opacity": [
+          0.550000011920929,
+          0.550000011920929,
+          0.4727272689342499,
+          0.4727272689342499
+        ],
+        "nearest": true,
+        "depthWrite": false
+      },
+      "fire": {
+        "loaded": true,
+        "failed": false,
+        "count": 3,
+        "capacity": 120,
+        "nearest": true,
+        "url": "/assets/pixel/skills/yanrong/fire-effects-sheet.normalized.png",
+        "frames": [
+          5,
+          5,
+          9
+        ]
+      },
+      "reactions": {
+        "loaded": true,
+        "failed": false,
+        "count": 0,
+        "capacity": 48,
+        "url": "/assets/kenney_particle-pack/PNG%20(Transparent)/smoke_08.png",
+        "frames": [],
+        "alpha": [],
+        "outlines": 0,
+        "outlineCapacity": 48
+      },
+      "fallback": {
+        "bolts": 0,
+        "trails": 0,
+        "sparks": 0
+      },
+      "memory": {
+        "geometries": 52,
+        "textures": 25
+      },
+      "warnings": {
+        "shots": 0,
+        "capacity": 16,
+        "boss": {
+          "facing": "down",
+          "renderedFacing": "down",
+          "action": "spread-cast",
+          "asset": "crownthorn-spread-cast",
+          "frame": 1,
+          "mirror": false,
+          "columns": 4,
+          "time": 0.3,
+          "usable": 4,
+          "expected": 4,
+          "complete": true,
+          "finished": false,
+          "renderedAsset": "crownthorn-spread-cast",
+          "renderedFrame": 1,
+          "fallback": false,
+          "visible": true,
+          "disposed": false,
+          "uv": [
+            0.25,
+            0,
+            0.25,
+            1
+          ],
+          "anchor": [
+            0.5,
+            0.0625
+          ],
+          "rotation": 0,
+          "textures": {
+            "textures": 8,
+            "references": 8
+          },
+          "atlases": [
+            {
+              "asset": "crownthorn-directions",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            },
+            {
+              "asset": "crownthorn-idle",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            },
+            {
+              "asset": "crownthorn-dash-windup",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            },
+            {
+              "asset": "crownthorn-dash",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            },
+            {
+              "asset": "crownthorn-spread-cast",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            },
+            {
+              "asset": "crownthorn-summon",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            },
+            {
+              "asset": "crownthorn-enraged-idle",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            },
+            {
+              "asset": "crownthorn-death",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            }
+          ]
+        },
+        "lane": false,
+        "cone": true,
+        "elite": false,
+        "fallback": false
+      }
+    }
+  },
+  {
+    "width": 844,
+    "battery": false,
+    "effect": "steam",
+    "kind": "elite",
+    "pixels": {
+      "baseline": 2783,
+      "retained": 2783,
+      "ratio": 1,
+      "visible": true
+    },
+    "state": {
+      "gameTime": 3.7883333333333225,
+      "combatTime": 3.7883333333333225,
+      "castAt": 3.3083333333333242,
+      "hitAt": 3.608333333333323,
+      "seed": 727213271,
+      "hp": 9955.3,
+      "wet": 0,
+      "boiling": true,
+      "steamBursts": 1,
+      "hits": 3,
+      "event": {
+        "kind": "steam",
+        "active": true,
+        "age": 0.18000000000000022,
+        "duration": 0.55,
+        "radius": 2.5
+      },
+      "shots": [],
+      "feedback": {
+        "loaded": true,
+        "failed": false,
+        "count": 0,
+        "capacity": 48,
+        "trails": 0,
+        "impacts": 0,
+        "embers": 0,
+        "url": "/assets/particles/kenney-feedback.png",
+        "frames": [],
+        "opacity": [],
+        "nearest": true,
+        "depthWrite": false
+      },
+      "fire": {
+        "loaded": true,
+        "failed": false,
+        "count": 1,
+        "capacity": 120,
+        "nearest": true,
+        "url": "/assets/pixel/skills/yanrong/fire-effects-sheet.normalized.png",
+        "frames": [
+          10
+        ]
+      },
+      "reactions": {
+        "loaded": true,
+        "failed": false,
+        "count": 3,
+        "capacity": 48,
+        "url": "/assets/kenney_particle-pack/PNG%20(Transparent)/smoke_08.png",
+        "frames": [
+          0,
+          0,
+          0
+        ],
+        "alpha": [
+          0.7781618237495422,
+          0.7781618237495422,
+          0.7781618237495422
+        ],
+        "outlines": 0,
+        "outlineCapacity": 48
+      },
+      "fallback": {
+        "bolts": 0,
+        "trails": 0,
+        "sparks": 0
+      },
+      "memory": {
+        "geometries": 53,
+        "textures": 26
+      },
+      "warnings": {
+        "shots": 0,
+        "capacity": 16,
+        "boss": {
+          "facing": "down",
+          "renderedFacing": "down",
+          "action": "spread-cast",
+          "asset": "crownthorn-spread-cast",
+          "frame": 1,
+          "mirror": false,
+          "columns": 4,
+          "time": 0.3,
+          "usable": 4,
+          "expected": 4,
+          "complete": true,
+          "finished": false,
+          "renderedAsset": "crownthorn-spread-cast",
+          "renderedFrame": 1,
+          "fallback": false,
+          "visible": false,
+          "disposed": false,
+          "uv": [
+            0.25,
+            0,
+            0.25,
+            1
+          ],
+          "anchor": [
+            0.5,
+            0.0625
+          ],
+          "rotation": 0,
+          "textures": {
+            "textures": 8,
+            "references": 8
+          },
+          "atlases": [
+            {
+              "asset": "crownthorn-directions",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            },
+            {
+              "asset": "crownthorn-idle",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            },
+            {
+              "asset": "crownthorn-dash-windup",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            },
+            {
+              "asset": "crownthorn-dash",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            },
+            {
+              "asset": "crownthorn-spread-cast",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            },
+            {
+              "asset": "crownthorn-summon",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            },
+            {
+              "asset": "crownthorn-enraged-idle",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            },
+            {
+              "asset": "crownthorn-death",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            }
+          ]
+        },
+        "lane": false,
+        "cone": false,
+        "elite": true,
+        "fallback": false
+      }
+    }
+  },
+  {
+    "width": 844,
+    "battery": false,
+    "effect": "steam",
+    "kind": "lane",
+    "pixels": {
+      "baseline": 11039,
+      "retained": 11036,
+      "ratio": 0.9997282362532838,
+      "visible": true
+    },
+    "state": {
+      "gameTime": 3.7883333333333225,
+      "combatTime": 3.7883333333333225,
+      "castAt": 3.3083333333333242,
+      "hitAt": 3.608333333333323,
+      "seed": 727213271,
+      "hp": 9955.3,
+      "wet": 0,
+      "boiling": true,
+      "steamBursts": 1,
+      "hits": 3,
+      "event": {
+        "kind": "steam",
+        "active": true,
+        "age": 0.18000000000000022,
+        "duration": 0.55,
+        "radius": 2.5
+      },
+      "shots": [],
+      "feedback": {
+        "loaded": true,
+        "failed": false,
+        "count": 0,
+        "capacity": 48,
+        "trails": 0,
+        "impacts": 0,
+        "embers": 0,
+        "url": "/assets/particles/kenney-feedback.png",
+        "frames": [],
+        "opacity": [],
+        "nearest": true,
+        "depthWrite": false
+      },
+      "fire": {
+        "loaded": true,
+        "failed": false,
+        "count": 1,
+        "capacity": 120,
+        "nearest": true,
+        "url": "/assets/pixel/skills/yanrong/fire-effects-sheet.normalized.png",
+        "frames": [
+          10
+        ]
+      },
+      "reactions": {
+        "loaded": true,
+        "failed": false,
+        "count": 3,
+        "capacity": 48,
+        "url": "/assets/kenney_particle-pack/PNG%20(Transparent)/smoke_08.png",
+        "frames": [
+          0,
+          0,
+          0
+        ],
+        "alpha": [
+          0.7781618237495422,
+          0.7781618237495422,
+          0.7781618237495422
+        ],
+        "outlines": 0,
+        "outlineCapacity": 48
+      },
+      "fallback": {
+        "bolts": 0,
+        "trails": 0,
+        "sparks": 0
+      },
+      "memory": {
+        "geometries": 53,
+        "textures": 26
+      },
+      "warnings": {
+        "shots": 0,
+        "capacity": 16,
+        "boss": {
+          "facing": "down",
+          "renderedFacing": "down",
+          "action": "dash-windup",
+          "asset": "crownthorn-dash-windup",
+          "frame": 2,
+          "mirror": false,
+          "columns": 4,
+          "time": 0.3,
+          "usable": 4,
+          "expected": 4,
+          "complete": true,
+          "finished": false,
+          "renderedAsset": "crownthorn-dash-windup",
+          "renderedFrame": 2,
+          "fallback": false,
+          "visible": true,
+          "disposed": false,
+          "uv": [
+            0.5,
+            0,
+            0.25,
+            1
+          ],
+          "anchor": [
+            0.5,
+            0.0625
+          ],
+          "rotation": 0,
+          "textures": {
+            "textures": 8,
+            "references": 8
+          },
+          "atlases": [
+            {
+              "asset": "crownthorn-directions",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            },
+            {
+              "asset": "crownthorn-idle",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            },
+            {
+              "asset": "crownthorn-dash-windup",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            },
+            {
+              "asset": "crownthorn-dash",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            },
+            {
+              "asset": "crownthorn-spread-cast",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            },
+            {
+              "asset": "crownthorn-summon",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            },
+            {
+              "asset": "crownthorn-enraged-idle",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            },
+            {
+              "asset": "crownthorn-death",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            }
+          ]
+        },
+        "lane": true,
+        "cone": false,
+        "elite": false,
+        "fallback": false
+      }
+    }
+  },
+  {
+    "width": 844,
+    "battery": false,
+    "effect": "steam",
+    "kind": "cone",
+    "pixels": {
+      "baseline": 35554,
+      "retained": 35554,
+      "ratio": 1,
+      "visible": true
+    },
+    "state": {
+      "gameTime": 3.7883333333333225,
+      "combatTime": 3.7883333333333225,
+      "castAt": 3.3083333333333242,
+      "hitAt": 3.608333333333323,
+      "seed": 727213271,
+      "hp": 9955.3,
+      "wet": 0,
+      "boiling": true,
+      "steamBursts": 1,
+      "hits": 3,
+      "event": {
+        "kind": "steam",
+        "active": true,
+        "age": 0.18000000000000022,
+        "duration": 0.55,
+        "radius": 2.5
+      },
+      "shots": [],
+      "feedback": {
+        "loaded": true,
+        "failed": false,
+        "count": 0,
+        "capacity": 48,
+        "trails": 0,
+        "impacts": 0,
+        "embers": 0,
+        "url": "/assets/particles/kenney-feedback.png",
+        "frames": [],
+        "opacity": [],
+        "nearest": true,
+        "depthWrite": false
+      },
+      "fire": {
+        "loaded": true,
+        "failed": false,
+        "count": 1,
+        "capacity": 120,
+        "nearest": true,
+        "url": "/assets/pixel/skills/yanrong/fire-effects-sheet.normalized.png",
+        "frames": [
+          10
+        ]
+      },
+      "reactions": {
+        "loaded": true,
+        "failed": false,
+        "count": 3,
+        "capacity": 48,
+        "url": "/assets/kenney_particle-pack/PNG%20(Transparent)/smoke_08.png",
+        "frames": [
+          0,
+          0,
+          0
+        ],
+        "alpha": [
+          0.7781618237495422,
+          0.7781618237495422,
+          0.7781618237495422
+        ],
+        "outlines": 0,
+        "outlineCapacity": 48
+      },
+      "fallback": {
+        "bolts": 0,
+        "trails": 0,
+        "sparks": 0
+      },
+      "memory": {
+        "geometries": 53,
+        "textures": 26
+      },
+      "warnings": {
+        "shots": 0,
+        "capacity": 16,
+        "boss": {
+          "facing": "down",
+          "renderedFacing": "down",
+          "action": "spread-cast",
+          "asset": "crownthorn-spread-cast",
+          "frame": 1,
+          "mirror": false,
+          "columns": 4,
+          "time": 0.3,
+          "usable": 4,
+          "expected": 4,
+          "complete": true,
+          "finished": false,
+          "renderedAsset": "crownthorn-spread-cast",
+          "renderedFrame": 1,
+          "fallback": false,
+          "visible": true,
+          "disposed": false,
+          "uv": [
+            0.25,
+            0,
+            0.25,
+            1
+          ],
+          "anchor": [
+            0.5,
+            0.0625
+          ],
+          "rotation": 0,
+          "textures": {
+            "textures": 8,
+            "references": 8
+          },
+          "atlases": [
+            {
+              "asset": "crownthorn-directions",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            },
+            {
+              "asset": "crownthorn-idle",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            },
+            {
+              "asset": "crownthorn-dash-windup",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            },
+            {
+              "asset": "crownthorn-dash",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            },
+            {
+              "asset": "crownthorn-spread-cast",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            },
+            {
+              "asset": "crownthorn-summon",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            },
+            {
+              "asset": "crownthorn-enraged-idle",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            },
+            {
+              "asset": "crownthorn-death",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            }
+          ]
+        },
+        "lane": false,
+        "cone": true,
+        "elite": false,
+        "fallback": false
+      }
+    }
+  },
+  {
+    "width": 568,
+    "battery": true,
+    "effect": "burst",
+    "kind": "elite",
+    "pixels": {
+      "baseline": 1028,
+      "retained": 1028,
+      "ratio": 1,
+      "visible": true
+    },
+    "state": {
+      "gameTime": 3.428333333333324,
+      "combatTime": 3.428333333333324,
+      "castAt": 2.999999999999992,
+      "hitAt": 3.3083333333333242,
+      "seed": 727213271,
+      "hp": 9982,
+      "wet": 0,
+      "boiling": false,
+      "steamBursts": 0,
+      "hits": 1,
+      "event": {
+        "kind": "burst",
+        "active": true,
+        "age": 0.12000000000000038,
+        "duration": 0.4,
+        "radius": 1.35
+      },
+      "shots": [
+        {
+          "attack": "spark",
+          "age": 0.12000000000000001,
+          "x": -6.615053672313586,
+          "z": 1.3155473812868062,
+          "distance": 2.16
+        },
+        {
+          "attack": "spark",
+          "age": 0.12000000000000001,
+          "x": -4.896246982987515,
+          "z": 4.638573647317208,
+          "distance": 2.16
+        }
+      ],
+      "feedback": {
+        "loaded": true,
+        "failed": false,
+        "count": 3,
+        "capacity": 48,
+        "trails": 2,
+        "impacts": 0,
+        "embers": 1,
+        "url": "/assets/particles/kenney-feedback.png",
+        "frames": [
+          2,
+          2,
+          4
+        ],
+        "opacity": [
+          0.4000000059604645,
+          0.4000000059604645,
+          0.4727272689342499
+        ],
+        "nearest": true,
+        "depthWrite": false
+      },
+      "fire": {
+        "loaded": true,
+        "failed": false,
+        "count": 3,
+        "capacity": 120,
+        "nearest": true,
+        "url": "/assets/pixel/skills/yanrong/fire-effects-sheet.normalized.png",
+        "frames": [
+          5,
+          5,
+          9
+        ]
+      },
+      "reactions": {
+        "loaded": true,
+        "failed": false,
+        "count": 0,
+        "capacity": 48,
+        "url": "/assets/kenney_particle-pack/PNG%20(Transparent)/smoke_08.png",
+        "frames": [],
+        "alpha": [],
+        "outlines": 0,
+        "outlineCapacity": 48
+      },
+      "fallback": {
+        "bolts": 0,
+        "trails": 0,
+        "sparks": 0
+      },
+      "memory": {
+        "geometries": 53,
+        "textures": 26
+      },
+      "warnings": {
+        "shots": 0,
+        "capacity": 16,
+        "boss": {
+          "facing": "down",
+          "renderedFacing": "down",
+          "action": "spread-cast",
+          "asset": "crownthorn-spread-cast",
+          "frame": 1,
+          "mirror": false,
+          "columns": 4,
+          "time": 0.3,
+          "usable": 4,
+          "expected": 4,
+          "complete": true,
+          "finished": false,
+          "renderedAsset": "crownthorn-spread-cast",
+          "renderedFrame": 1,
+          "fallback": false,
+          "visible": false,
+          "disposed": false,
+          "uv": [
+            0.25,
+            0,
+            0.25,
+            1
+          ],
+          "anchor": [
+            0.5,
+            0.0625
+          ],
+          "rotation": 0,
+          "textures": {
+            "textures": 8,
+            "references": 8
+          },
+          "atlases": [
+            {
+              "asset": "crownthorn-directions",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            },
+            {
+              "asset": "crownthorn-idle",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            },
+            {
+              "asset": "crownthorn-dash-windup",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            },
+            {
+              "asset": "crownthorn-dash",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            },
+            {
+              "asset": "crownthorn-spread-cast",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            },
+            {
+              "asset": "crownthorn-summon",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            },
+            {
+              "asset": "crownthorn-enraged-idle",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            },
+            {
+              "asset": "crownthorn-death",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            }
+          ]
+        },
+        "lane": false,
+        "cone": false,
+        "elite": true,
+        "fallback": false
+      }
+    }
+  },
+  {
+    "width": 568,
+    "battery": true,
+    "effect": "burst",
+    "kind": "lane",
+    "pixels": {
+      "baseline": 4251,
+      "retained": 4250,
+      "ratio": 0.9997647612326511,
+      "visible": true
+    },
+    "state": {
+      "gameTime": 3.428333333333324,
+      "combatTime": 3.428333333333324,
+      "castAt": 2.999999999999992,
+      "hitAt": 3.3083333333333242,
+      "seed": 727213271,
+      "hp": 9982,
+      "wet": 0,
+      "boiling": false,
+      "steamBursts": 0,
+      "hits": 1,
+      "event": {
+        "kind": "burst",
+        "active": true,
+        "age": 0.12000000000000038,
+        "duration": 0.4,
+        "radius": 1.35
+      },
+      "shots": [
+        {
+          "attack": "spark",
+          "age": 0.12000000000000001,
+          "x": -6.615053672313586,
+          "z": 1.3155473812868062,
+          "distance": 2.16
+        },
+        {
+          "attack": "spark",
+          "age": 0.12000000000000001,
+          "x": -4.896246982987515,
+          "z": 4.638573647317208,
+          "distance": 2.16
+        }
+      ],
+      "feedback": {
+        "loaded": true,
+        "failed": false,
+        "count": 3,
+        "capacity": 48,
+        "trails": 2,
+        "impacts": 0,
+        "embers": 1,
+        "url": "/assets/particles/kenney-feedback.png",
+        "frames": [
+          2,
+          2,
+          4
+        ],
+        "opacity": [
+          0.4000000059604645,
+          0.4000000059604645,
+          0.4727272689342499
+        ],
+        "nearest": true,
+        "depthWrite": false
+      },
+      "fire": {
+        "loaded": true,
+        "failed": false,
+        "count": 3,
+        "capacity": 120,
+        "nearest": true,
+        "url": "/assets/pixel/skills/yanrong/fire-effects-sheet.normalized.png",
+        "frames": [
+          5,
+          5,
+          9
+        ]
+      },
+      "reactions": {
+        "loaded": true,
+        "failed": false,
+        "count": 0,
+        "capacity": 48,
+        "url": "/assets/kenney_particle-pack/PNG%20(Transparent)/smoke_08.png",
+        "frames": [],
+        "alpha": [],
+        "outlines": 0,
+        "outlineCapacity": 48
+      },
+      "fallback": {
+        "bolts": 0,
+        "trails": 0,
+        "sparks": 0
+      },
+      "memory": {
+        "geometries": 53,
+        "textures": 26
+      },
+      "warnings": {
+        "shots": 0,
+        "capacity": 16,
+        "boss": {
+          "facing": "down",
+          "renderedFacing": "down",
+          "action": "dash-windup",
+          "asset": "crownthorn-dash-windup",
+          "frame": 2,
+          "mirror": false,
+          "columns": 4,
+          "time": 0.3,
+          "usable": 4,
+          "expected": 4,
+          "complete": true,
+          "finished": false,
+          "renderedAsset": "crownthorn-dash-windup",
+          "renderedFrame": 2,
+          "fallback": false,
+          "visible": true,
+          "disposed": false,
+          "uv": [
+            0.5,
+            0,
+            0.25,
+            1
+          ],
+          "anchor": [
+            0.5,
+            0.0625
+          ],
+          "rotation": 0,
+          "textures": {
+            "textures": 8,
+            "references": 8
+          },
+          "atlases": [
+            {
+              "asset": "crownthorn-directions",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            },
+            {
+              "asset": "crownthorn-idle",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            },
+            {
+              "asset": "crownthorn-dash-windup",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            },
+            {
+              "asset": "crownthorn-dash",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            },
+            {
+              "asset": "crownthorn-spread-cast",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            },
+            {
+              "asset": "crownthorn-summon",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            },
+            {
+              "asset": "crownthorn-enraged-idle",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            },
+            {
+              "asset": "crownthorn-death",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            }
+          ]
+        },
+        "lane": true,
+        "cone": false,
+        "elite": false,
+        "fallback": false
+      }
+    }
+  },
+  {
+    "width": 568,
+    "battery": true,
+    "effect": "burst",
+    "kind": "cone",
+    "pixels": {
+      "baseline": 13352,
+      "retained": 13352,
+      "ratio": 1,
+      "visible": true
+    },
+    "state": {
+      "gameTime": 3.428333333333324,
+      "combatTime": 3.428333333333324,
+      "castAt": 2.999999999999992,
+      "hitAt": 3.3083333333333242,
+      "seed": 727213271,
+      "hp": 9982,
+      "wet": 0,
+      "boiling": false,
+      "steamBursts": 0,
+      "hits": 1,
+      "event": {
+        "kind": "burst",
+        "active": true,
+        "age": 0.12000000000000038,
+        "duration": 0.4,
+        "radius": 1.35
+      },
+      "shots": [
+        {
+          "attack": "spark",
+          "age": 0.12000000000000001,
+          "x": -6.615053672313586,
+          "z": 1.3155473812868062,
+          "distance": 2.16
+        },
+        {
+          "attack": "spark",
+          "age": 0.12000000000000001,
+          "x": -4.896246982987515,
+          "z": 4.638573647317208,
+          "distance": 2.16
+        }
+      ],
+      "feedback": {
+        "loaded": true,
+        "failed": false,
+        "count": 3,
+        "capacity": 48,
+        "trails": 2,
+        "impacts": 0,
+        "embers": 1,
+        "url": "/assets/particles/kenney-feedback.png",
+        "frames": [
+          2,
+          2,
+          4
+        ],
+        "opacity": [
+          0.4000000059604645,
+          0.4000000059604645,
+          0.4727272689342499
+        ],
+        "nearest": true,
+        "depthWrite": false
+      },
+      "fire": {
+        "loaded": true,
+        "failed": false,
+        "count": 3,
+        "capacity": 120,
+        "nearest": true,
+        "url": "/assets/pixel/skills/yanrong/fire-effects-sheet.normalized.png",
+        "frames": [
+          5,
+          5,
+          9
+        ]
+      },
+      "reactions": {
+        "loaded": true,
+        "failed": false,
+        "count": 0,
+        "capacity": 48,
+        "url": "/assets/kenney_particle-pack/PNG%20(Transparent)/smoke_08.png",
+        "frames": [],
+        "alpha": [],
+        "outlines": 0,
+        "outlineCapacity": 48
+      },
+      "fallback": {
+        "bolts": 0,
+        "trails": 0,
+        "sparks": 0
+      },
+      "memory": {
+        "geometries": 53,
+        "textures": 26
+      },
+      "warnings": {
+        "shots": 0,
+        "capacity": 16,
+        "boss": {
+          "facing": "down",
+          "renderedFacing": "down",
+          "action": "spread-cast",
+          "asset": "crownthorn-spread-cast",
+          "frame": 1,
+          "mirror": false,
+          "columns": 4,
+          "time": 0.3,
+          "usable": 4,
+          "expected": 4,
+          "complete": true,
+          "finished": false,
+          "renderedAsset": "crownthorn-spread-cast",
+          "renderedFrame": 1,
+          "fallback": false,
+          "visible": true,
+          "disposed": false,
+          "uv": [
+            0.25,
+            0,
+            0.25,
+            1
+          ],
+          "anchor": [
+            0.5,
+            0.0625
+          ],
+          "rotation": 0,
+          "textures": {
+            "textures": 8,
+            "references": 8
+          },
+          "atlases": [
+            {
+              "asset": "crownthorn-directions",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            },
+            {
+              "asset": "crownthorn-idle",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            },
+            {
+              "asset": "crownthorn-dash-windup",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            },
+            {
+              "asset": "crownthorn-dash",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            },
+            {
+              "asset": "crownthorn-spread-cast",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            },
+            {
+              "asset": "crownthorn-summon",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            },
+            {
+              "asset": "crownthorn-enraged-idle",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            },
+            {
+              "asset": "crownthorn-death",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            }
+          ]
+        },
+        "lane": false,
+        "cone": true,
+        "elite": false,
+        "fallback": false
+      }
+    }
+  },
+  {
+    "width": 568,
+    "battery": true,
+    "effect": "steam",
+    "kind": "elite",
+    "pixels": {
+      "baseline": 1021,
+      "retained": 1021,
+      "ratio": 1,
+      "visible": true
+    },
+    "state": {
+      "gameTime": 3.7883333333333225,
+      "combatTime": 3.7883333333333225,
+      "castAt": 3.3083333333333242,
+      "hitAt": 3.608333333333323,
+      "seed": 727213271,
+      "hp": 9955.3,
+      "wet": 0,
+      "boiling": true,
+      "steamBursts": 1,
+      "hits": 3,
+      "event": {
+        "kind": "steam",
+        "active": true,
+        "age": 0.18000000000000022,
+        "duration": 0.55,
+        "radius": 2.5
+      },
+      "shots": [],
+      "feedback": {
+        "loaded": true,
+        "failed": false,
+        "count": 0,
+        "capacity": 48,
+        "trails": 0,
+        "impacts": 0,
+        "embers": 0,
+        "url": "/assets/particles/kenney-feedback.png",
+        "frames": [],
+        "opacity": [],
+        "nearest": true,
+        "depthWrite": false
+      },
+      "fire": {
+        "loaded": true,
+        "failed": false,
+        "count": 1,
+        "capacity": 120,
+        "nearest": true,
+        "url": "/assets/pixel/skills/yanrong/fire-effects-sheet.normalized.png",
+        "frames": [
+          10
+        ]
+      },
+      "reactions": {
+        "loaded": true,
+        "failed": false,
+        "count": 2,
+        "capacity": 48,
+        "url": "/assets/kenney_particle-pack/PNG%20(Transparent)/smoke_08.png",
+        "frames": [
+          0,
+          0
+        ],
+        "alpha": [
+          0.7781618237495422,
+          0.7781618237495422
+        ],
+        "outlines": 0,
+        "outlineCapacity": 48
+      },
+      "fallback": {
+        "bolts": 0,
+        "trails": 0,
+        "sparks": 0
+      },
+      "memory": {
+        "geometries": 53,
+        "textures": 26
+      },
+      "warnings": {
+        "shots": 0,
+        "capacity": 16,
+        "boss": {
+          "facing": "down",
+          "renderedFacing": "down",
+          "action": "spread-cast",
+          "asset": "crownthorn-spread-cast",
+          "frame": 1,
+          "mirror": false,
+          "columns": 4,
+          "time": 0.3,
+          "usable": 4,
+          "expected": 4,
+          "complete": true,
+          "finished": false,
+          "renderedAsset": "crownthorn-spread-cast",
+          "renderedFrame": 1,
+          "fallback": false,
+          "visible": false,
+          "disposed": false,
+          "uv": [
+            0.25,
+            0,
+            0.25,
+            1
+          ],
+          "anchor": [
+            0.5,
+            0.0625
+          ],
+          "rotation": 0,
+          "textures": {
+            "textures": 8,
+            "references": 8
+          },
+          "atlases": [
+            {
+              "asset": "crownthorn-directions",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            },
+            {
+              "asset": "crownthorn-idle",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            },
+            {
+              "asset": "crownthorn-dash-windup",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            },
+            {
+              "asset": "crownthorn-dash",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            },
+            {
+              "asset": "crownthorn-spread-cast",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            },
+            {
+              "asset": "crownthorn-summon",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            },
+            {
+              "asset": "crownthorn-enraged-idle",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            },
+            {
+              "asset": "crownthorn-death",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            }
+          ]
+        },
+        "lane": false,
+        "cone": false,
+        "elite": true,
+        "fallback": false
+      }
+    }
+  },
+  {
+    "width": 568,
+    "battery": true,
+    "effect": "steam",
+    "kind": "lane",
+    "pixels": {
+      "baseline": 4267,
+      "retained": 4267,
+      "ratio": 1,
+      "visible": true
+    },
+    "state": {
+      "gameTime": 3.7883333333333225,
+      "combatTime": 3.7883333333333225,
+      "castAt": 3.3083333333333242,
+      "hitAt": 3.608333333333323,
+      "seed": 727213271,
+      "hp": 9955.3,
+      "wet": 0,
+      "boiling": true,
+      "steamBursts": 1,
+      "hits": 3,
+      "event": {
+        "kind": "steam",
+        "active": true,
+        "age": 0.18000000000000022,
+        "duration": 0.55,
+        "radius": 2.5
+      },
+      "shots": [],
+      "feedback": {
+        "loaded": true,
+        "failed": false,
+        "count": 0,
+        "capacity": 48,
+        "trails": 0,
+        "impacts": 0,
+        "embers": 0,
+        "url": "/assets/particles/kenney-feedback.png",
+        "frames": [],
+        "opacity": [],
+        "nearest": true,
+        "depthWrite": false
+      },
+      "fire": {
+        "loaded": true,
+        "failed": false,
+        "count": 1,
+        "capacity": 120,
+        "nearest": true,
+        "url": "/assets/pixel/skills/yanrong/fire-effects-sheet.normalized.png",
+        "frames": [
+          10
+        ]
+      },
+      "reactions": {
+        "loaded": true,
+        "failed": false,
+        "count": 2,
+        "capacity": 48,
+        "url": "/assets/kenney_particle-pack/PNG%20(Transparent)/smoke_08.png",
+        "frames": [
+          0,
+          0
+        ],
+        "alpha": [
+          0.7781618237495422,
+          0.7781618237495422
+        ],
+        "outlines": 0,
+        "outlineCapacity": 48
+      },
+      "fallback": {
+        "bolts": 0,
+        "trails": 0,
+        "sparks": 0
+      },
+      "memory": {
+        "geometries": 53,
+        "textures": 26
+      },
+      "warnings": {
+        "shots": 0,
+        "capacity": 16,
+        "boss": {
+          "facing": "down",
+          "renderedFacing": "down",
+          "action": "dash-windup",
+          "asset": "crownthorn-dash-windup",
+          "frame": 2,
+          "mirror": false,
+          "columns": 4,
+          "time": 0.3,
+          "usable": 4,
+          "expected": 4,
+          "complete": true,
+          "finished": false,
+          "renderedAsset": "crownthorn-dash-windup",
+          "renderedFrame": 2,
+          "fallback": false,
+          "visible": true,
+          "disposed": false,
+          "uv": [
+            0.5,
+            0,
+            0.25,
+            1
+          ],
+          "anchor": [
+            0.5,
+            0.0625
+          ],
+          "rotation": 0,
+          "textures": {
+            "textures": 8,
+            "references": 8
+          },
+          "atlases": [
+            {
+              "asset": "crownthorn-directions",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            },
+            {
+              "asset": "crownthorn-idle",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            },
+            {
+              "asset": "crownthorn-dash-windup",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            },
+            {
+              "asset": "crownthorn-dash",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            },
+            {
+              "asset": "crownthorn-spread-cast",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            },
+            {
+              "asset": "crownthorn-summon",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            },
+            {
+              "asset": "crownthorn-enraged-idle",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            },
+            {
+              "asset": "crownthorn-death",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            }
+          ]
+        },
+        "lane": true,
+        "cone": false,
+        "elite": false,
+        "fallback": false
+      }
+    }
+  },
+  {
+    "width": 568,
+    "battery": true,
+    "effect": "steam",
+    "kind": "cone",
+    "pixels": {
+      "baseline": 13350,
+      "retained": 13349,
+      "ratio": 0.9999250936329588,
+      "visible": true
+    },
+    "state": {
+      "gameTime": 3.7883333333333225,
+      "combatTime": 3.7883333333333225,
+      "castAt": 3.3083333333333242,
+      "hitAt": 3.608333333333323,
+      "seed": 727213271,
+      "hp": 9955.3,
+      "wet": 0,
+      "boiling": true,
+      "steamBursts": 1,
+      "hits": 3,
+      "event": {
+        "kind": "steam",
+        "active": true,
+        "age": 0.18000000000000022,
+        "duration": 0.55,
+        "radius": 2.5
+      },
+      "shots": [],
+      "feedback": {
+        "loaded": true,
+        "failed": false,
+        "count": 0,
+        "capacity": 48,
+        "trails": 0,
+        "impacts": 0,
+        "embers": 0,
+        "url": "/assets/particles/kenney-feedback.png",
+        "frames": [],
+        "opacity": [],
+        "nearest": true,
+        "depthWrite": false
+      },
+      "fire": {
+        "loaded": true,
+        "failed": false,
+        "count": 1,
+        "capacity": 120,
+        "nearest": true,
+        "url": "/assets/pixel/skills/yanrong/fire-effects-sheet.normalized.png",
+        "frames": [
+          10
+        ]
+      },
+      "reactions": {
+        "loaded": true,
+        "failed": false,
+        "count": 2,
+        "capacity": 48,
+        "url": "/assets/kenney_particle-pack/PNG%20(Transparent)/smoke_08.png",
+        "frames": [
+          0,
+          0
+        ],
+        "alpha": [
+          0.7781618237495422,
+          0.7781618237495422
+        ],
+        "outlines": 0,
+        "outlineCapacity": 48
+      },
+      "fallback": {
+        "bolts": 0,
+        "trails": 0,
+        "sparks": 0
+      },
+      "memory": {
+        "geometries": 53,
+        "textures": 26
+      },
+      "warnings": {
+        "shots": 0,
+        "capacity": 16,
+        "boss": {
+          "facing": "down",
+          "renderedFacing": "down",
+          "action": "spread-cast",
+          "asset": "crownthorn-spread-cast",
+          "frame": 1,
+          "mirror": false,
+          "columns": 4,
+          "time": 0.3,
+          "usable": 4,
+          "expected": 4,
+          "complete": true,
+          "finished": false,
+          "renderedAsset": "crownthorn-spread-cast",
+          "renderedFrame": 1,
+          "fallback": false,
+          "visible": true,
+          "disposed": false,
+          "uv": [
+            0.25,
+            0,
+            0.25,
+            1
+          ],
+          "anchor": [
+            0.5,
+            0.0625
+          ],
+          "rotation": 0,
+          "textures": {
+            "textures": 8,
+            "references": 8
+          },
+          "atlases": [
+            {
+              "asset": "crownthorn-directions",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            },
+            {
+              "asset": "crownthorn-idle",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            },
+            {
+              "asset": "crownthorn-dash-windup",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            },
+            {
+              "asset": "crownthorn-dash",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            },
+            {
+              "asset": "crownthorn-spread-cast",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            },
+            {
+              "asset": "crownthorn-summon",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            },
+            {
+              "asset": "crownthorn-enraged-idle",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            },
+            {
+              "asset": "crownthorn-death",
+              "loaded": true,
+              "failed": false,
+              "nearest": true,
+              "mipmaps": false
+            }
+          ]
+        },
+        "lane": false,
+        "cone": true,
+        "elite": false,
+        "fallback": false
+      }
+    }
+  }
+]

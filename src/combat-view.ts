@@ -18,9 +18,12 @@ import { ReactionView } from './reaction-view';
 import { SpecialEnemyView } from './special-enemy-view';
 import { BURST_SEED } from './fusion';
 import { FUSION_ASSET_ROOT, elementalClip, clipFrame } from './fusion-pixels';
+import { VfxResolver, visualProgress } from './visuals/vfx-resolver';
+import { instanceOpacity } from './visuals/instance-opacity';
 
 /** All enemies and effects use shared instanced batches: no per-kill GPU allocations. */
 export class CombatView {
+  readonly vfx = new VfxResolver();
   readonly group = new THREE.Group();
   private grassBlobs = new GrassBlobView();
   private dummy = new THREE.Object3D();
@@ -46,6 +49,7 @@ export class CombatView {
   private orbitPath: THREE.InstancedMesh;
   detail = 4;
   private boltTrails: THREE.InstancedMesh;
+  private trailAlpha: THREE.InstancedBufferAttribute;
   private dissolving: THREE.InstancedMesh;
   private shockwaveView = new ShockwaveView();
   private waveRings: THREE.InstancedMesh;
@@ -87,7 +91,8 @@ export class CombatView {
     this.warnings = make(ring, new THREE.MeshBasicMaterial({ color: '#ffbb89', transparent: true, opacity: 0.7, side: THREE.DoubleSide, depthWrite: false }), COMBAT_LIMITS.enemies);
     this.healthBack = make(plane, basic('#653d3b'), COMBAT_LIMITS.enemies);
     this.healthFill = make(plane, basic('#f5e8b0'), COMBAT_LIMITS.enemies);
-    this.boltTrails = make(sphere, new THREE.MeshBasicMaterial({ color: '#ffffff', transparent: true, opacity: 0.42, depthWrite: false }), COMBAT_LIMITS.projectiles * 5);
+    this.boltTrails = make(sphere.clone(), new THREE.MeshBasicMaterial({ color: '#ffffff', transparent: true, opacity: 0.42, depthWrite: false }), COMBAT_LIMITS.projectiles * 5);
+    this.trailAlpha = instanceOpacity(this.boltTrails as THREE.InstancedMesh<THREE.BufferGeometry, THREE.MeshBasicMaterial>, COMBAT_LIMITS.projectiles * 5);
     this.dissolving = make(sphere, lambert('#ffffff'), COMBAT_LIMITS.effects * 4);
     this.bolts = make(sphere, new THREE.MeshBasicMaterial({ color: '#ffffff', transparent: true, opacity: 0.6, depthWrite: false }), COMBAT_LIMITS.projectiles);
     this.boltCores = make(sphere, basic('#fff6d6'), COMBAT_LIMITS.projectiles);
@@ -110,6 +115,7 @@ export class CombatView {
   }
 
   private put(mesh: THREE.InstancedMesh, x: number, y: number, z: number, sx: number, sy: number, sz: number, rx = 0, ry = 0, rz = 0, color?: string) {
+    if (mesh.count >= mesh.instanceMatrix.count) return;
     const index = mesh.count++;
     this.dummy.position.set(x, y, z);
     this.dummy.scale.set(sx, sy, sz);
@@ -213,21 +219,29 @@ export class CombatView {
       if (!shot.active || this.combat.hp <= 0) continue;
       const x = THREE.MathUtils.lerp(shot.previousX, shot.x, alpha), z = THREE.MathUtils.lerp(shot.previousZ, shot.z, alpha), angle = Math.atan2(shot.vx, shot.vz);
       const attack = shot.species || this.combat.fusionEnabled ? shot.attackId ?? (shot.species ? CREATURES[shot.species].skill : undefined) : undefined;
-      const color = attack ? ATTACKS[attack].color : '#a594f2';
+      const preset = this.combat.usesRunBuild ? this.vfx.projectile(attack) : undefined;
+      const color = preset?.color ?? (attack ? ATTACKS[attack].color : '#a594f2');
       const bubble = attack === 'bubble', leaf = attack === 'leaf';
-      const child = shot.generation === 1, scale = child ? BURST_SEED.childSize : 1;
+      const child = shot.generation === 1, scale = (child ? BURST_SEED.childSize : 1) * (preset?.scale ?? 1);
       const clip = elementalClip(shot.fusionIds?.[0] ?? (child && leaf ? 'thorn-scatter' : undefined));
-      if (clip && this.fusionPixels?.loaded) {
+      if (clip && this.fusionPixels?.loaded && (!preset || this.detail > 2 || preset.low.animated)) {
         const frame = clipFrame(clip.flight, shot.age ?? 0, clip.flightFPS, true)!;
         const arc = shot.hopTargetId ? Math.sin(Math.PI * Math.min(1, (shot.hopElapsed ?? 0) / (shot.hopDuration || .12))) * .55 : 0;
-        this.fusionPixels.put(clip.row, frame, x, 1.15 + arc, z, child ? COMBAT_CLARITY.childSize : COMBAT_CLARITY.projectileSize, shot.vx, shot.vz, false, clip.row === 2 ? (shot.age ?? 0) * 8 : 0);
+        this.fusionPixels.put(clip.row, frame, x, 1.15 + arc, z, (child ? COMBAT_CLARITY.childSize : COMBAT_CLARITY.projectileSize) * (preset?.scale ?? 1), shot.vx, shot.vz, false, clip.row === 2 ? (shot.age ?? 0) * 8 : 0);
       }
-      else if (this.combat.fusionEnabled && !bubble && !leaf && this.firePixels?.loaded) this.firePixels.put(child ? 1 : 0, Math.floor((shot.age ?? 0) * 12) % 4, x, 1.15, z, child ? COMBAT_CLARITY.childSize : COMBAT_CLARITY.projectileSize, shot.vx, shot.vz);
+      else if (preset?.animation && (this.detail > 2 || preset.low.animated)
+        && (preset.animation.atlas === 'fire' ? this.firePixels : this.fusionPixels)?.loaded) {
+        const a = preset.animation, batch = a.atlas === 'fire' ? this.firePixels! : this.fusionPixels!;
+        batch.put(child ? a.childRow ?? a.row : a.row, clipFrame(a.frames, shot.age ?? 0, a.fps, true)!, x, 1.15, z,
+          (child ? COMBAT_CLARITY.childSize : COMBAT_CLARITY.projectileSize) * preset.scale, shot.vx, shot.vz, false, 0, preset.color);
+      }
+      else if (!preset && this.combat.fusionEnabled && !bubble && !leaf && this.firePixels?.loaded) this.firePixels.put(child ? 1 : 0, Math.floor((shot.age ?? 0) * 12) % 4, x, 1.15, z, child ? COMBAT_CLARITY.childSize : COMBAT_CLARITY.projectileSize, shot.vx, shot.vz);
       else {
         this.put(this.bolts, x, 1.15, z, (bubble ? 0.34 : 0.22) * scale, (leaf ? 0.09 : bubble ? 0.34 : 0.22) * scale, (bubble ? 0.34 : leaf ? 0.65 : 0.48) * scale, 0, angle, 0, color);
         this.put(this.boltCores, x + Math.sin(angle) * 0.12, 1.15, z + Math.cos(angle) * 0.12, 0.12 * scale, 0.12 * scale, 0.3 * scale, 0, angle);
       }
-      if (feedback?.trail(shot, x, z, color, scale)) continue;
+      if (preset && this.detail <= 2 && !preset.low.trail) continue;
+      if (feedback?.trail(shot, x, z, color, scale, preset)) continue;
       // Fixed-capacity fallback, also retained for curved elemental hops.
       for (let i = 1; i <= (this.combat.usesRunBuild ? 1 : this.detail + 1); i++) {
         if (shot.hopTargetId && !shot.hopDelay) {
@@ -235,12 +249,15 @@ export class CombatView {
           const current = Math.max(.001, (shot.hopElapsed ?? 0) / (shot.hopDuration || .12));
           const ratio = Math.min(1, t / current), size = .11 * (1 - i / 7);
           this.put(this.boltTrails, (shot.hopFromX ?? x) + (x - (shot.hopFromX ?? x)) * ratio, 1.15 + Math.sin(t * Math.PI) * .55, (shot.hopFromZ ?? z) + (z - (shot.hopFromZ ?? z)) * ratio, size, size, size, 0, 0, 0, color);
+          this.trailAlpha.setX(this.boltTrails.count - 1, preset?.trail.opacity ?? 1);
           continue;
         }
-        const distance = i * 0.28;
+        const distance = i * (preset ? preset.trail.length * scale * .43 : .28);
+        if (preset && (!preset.trail.opacity || !preset.trail.length)) break;
         if (distance > shot.distance) break;
         const size = 0.17 * (1 - i / 7) * scale;
-        this.put(this.boltTrails, x - Math.sin(angle) * distance, 1.15, z - Math.cos(angle) * distance, size, size, 0.24, 0, angle, 0, shot.species ? color : '#cfb7ff');
+        this.put(this.boltTrails, x - Math.sin(angle) * distance, 1.15, z - Math.cos(angle) * distance, size, size, 0.24, 0, angle, 0, preset?.trail.color ?? (shot.species ? color : '#cfb7ff'));
+        this.trailAlpha.setX(this.boltTrails.count - 1, preset?.trail.opacity ?? 1);
       }
     }
     const stats = this.combat.stats;
@@ -269,7 +286,7 @@ export class CombatView {
       this.put(this.gemRings, x, 0.045, z, size * 1.4, size * 1.4, 1, -Math.PI / 2);
     }
     const visibleEffects = this.combat.usesRunBuild ? readableEffects(this.combat.effects) : this.combat.effects;
-    this.reactions?.render(this.combat.usesRunBuild && this.combat.hp > 0 ? visibleEffects : [], this.combat.usesRunBuild && this.combat.hp > 0 ? this.combat.enemies : [], this.detail);
+    this.reactions?.render(this.combat.usesRunBuild && this.combat.hp > 0 ? visibleEffects : [], this.combat.usesRunBuild && this.combat.hp > 0 ? this.combat.enemies : [], this.detail, this.vfx);
     for (const effect of visibleEffects) {
       if (!effect.active || this.combat.hp <= 0) continue;
       if (this.combat.usesRunBuild && effect.kind === 'collect') continue;
@@ -281,9 +298,10 @@ export class CombatView {
         x: THREE.MathUtils.lerp(target.previousX, target.x, alpha),
         z: THREE.MathUtils.lerp(target.previousZ, target.z, alpha),
       } : undefined);
-      feedback?.embers(effect);
+      const preset = this.combat.usesRunBuild ? this.vfx.impact(effect.kind) : undefined;
+      feedback?.embers(effect, preset);
       const clip = elementalClip(effect.fusionId);
-      if (clip?.impact.length && this.fusionPixels?.loaded) {
+      if (clip?.impact.length && this.fusionPixels?.loaded && (!preset || this.detail > 2 || preset.low.animated)) {
         const frame = clipFrame(clip.impact, effect.duration - effect.time, clip.impactFPS, false);
         if (frame !== undefined) {
           const baseSize = impactSize(effect);
@@ -300,9 +318,18 @@ export class CombatView {
         if (progress < .42) this.firePixels?.put(2, Math.min(3, Math.floor(progress * 8)), effect.x, .8, effect.z, Math.min(3.2, (effect.radius ?? 2.5) * 1.3));
         continue;
       }
+      if (preset?.animation && (this.detail > 2 || preset.low.animated)) {
+        const a = preset.animation, batch = a.atlas === 'fire' ? this.firePixels : this.fusionPixels;
+        if (batch?.loaded) {
+          const progress = visualProgress(effect, preset.duration);
+          if (progress < 1) batch.put(a.row, a.frames[Math.min(a.frames.length - 1, Math.floor((effect.duration - effect.time) * a.fps))],
+            visual.x, preset.height ?? 1.3, visual.z, impactSize(effect) * preset.radiusScale, 0, 0, false, 0, preset.color);
+          continue;
+        }
+      }
       if (effect.kind === 'burst') {
         const radius = effect.radius ?? BURST_SEED.explosionRadius;
-        if (this.firePixels?.loaded) {
+        if (!preset && this.firePixels?.loaded) {
           const frame = Math.min(3, Math.floor(progress * 4));
           this.firePixels.put(2, frame, effect.x, 1.3, effect.z, this.combat.usesRunBuild ? impactSize(effect) : Math.min(COMBAT_CLARITY.impactSize, radius * 2));
           continue;
@@ -323,10 +350,12 @@ export class CombatView {
         }
       }
       const color = effect.kind === 'water' ? '#65dcff' : effect.kind === 'thorn' ? '#a5ec69' : effect.kind === 'burst' ? '#ffac48' : effect.kind === 'hurt' ? '#f7a08d' : effect.kind === 'collect' ? '#9cffe2' : effect.kind === 'death' ? '#ffe3a6' : '#f4ddff';
-      if (feedback?.impact(effect, visual.x, visual.z)) continue;
+      if (feedback?.impact(effect, visual.x, visual.z, preset)) continue;
+      const fallbackProgress = preset ? visualProgress(effect, preset.duration) : progress;
+      if (fallbackProgress >= 1 || preset && (!preset.particles || this.detail <= 2 && !preset.low.particles)) continue;
       for (let i = 0; i < this.detail; i++) {
-        const angle = i / this.detail * Math.PI * 2 + 0.4, size = (1 - progress) * 0.15;
-        this.put(this.sparks, visual.x + Math.sin(angle) * progress * 0.9, 0.7 + Math.sin(progress * Math.PI) * 0.6, visual.z + Math.cos(angle) * progress * 0.9, size, size * 1.7, size, 0, angle, progress * 5, color);
+        const angle = i / this.detail * Math.PI * 2 + 0.4, size = (1 - fallbackProgress) * 0.15 * (preset?.radiusScale ?? 1);
+        this.put(this.sparks, visual.x + Math.sin(angle) * fallbackProgress * 0.9, (preset?.height ?? .7) + Math.sin(fallbackProgress * Math.PI) * 0.6, visual.z + Math.cos(angle) * fallbackProgress * 0.9, size, size * 1.7, size, 0, angle, fallbackProgress * 5, preset ? i % 2 ? preset.secondaryColor : preset.color : color);
       }
     }
     for (const mesh of this.batches) {
@@ -338,6 +367,7 @@ export class CombatView {
     this.firePixels?.finish();
     this.fusionPixels?.finish();
     this.feedback?.finish();
+    this.trailAlpha.needsUpdate = true;
   }
 
   clear() { this.reactions?.clear(); this.grassBlobs.clear(); this.specialEnemies.clear(); this.flameSweep?.clear(); this.shockwaveView.clear(); this.encounters.clear(); for (const mesh of this.batches) mesh.count = 0; this.pixelEnemies?.begin(); this.pixelEnemies?.resetDirections(); this.firePixels?.begin(); this.fusionPixels?.begin(); this.feedback?.begin(); }

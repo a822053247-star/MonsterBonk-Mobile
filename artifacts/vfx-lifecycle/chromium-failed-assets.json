@@ -1,0 +1,302 @@
+{
+  "controls": {
+    "out": [
+      {
+        "gameTime": 3.608333333333323,
+        "combatTime": 3.608333333333323,
+        "castAt": 3.3083333333333242,
+        "hitAt": 3.608333333333323,
+        "seed": 20261021,
+        "hp": 9967,
+        "wet": 2.100000000000001,
+        "boiling": false,
+        "steamBursts": 0,
+        "hits": 2,
+        "event": {
+          "kind": "water",
+          "active": true,
+          "age": 0.30000000000000016,
+          "duration": 0.32,
+          "radius": 0.6
+        },
+        "shots": [],
+        "feedback": {
+          "loaded": false,
+          "failed": true,
+          "count": 0,
+          "capacity": 48,
+          "trails": 0,
+          "impacts": 0,
+          "embers": 0,
+          "url": "/assets/particles/kenney-feedback.png",
+          "frames": [],
+          "opacity": [],
+          "nearest": false,
+          "depthWrite": false
+        },
+        "fire": {
+          "loaded": false,
+          "failed": true,
+          "count": 0,
+          "capacity": 120,
+          "nearest": false,
+          "url": "/assets/pixel/skills/yanrong/fire-effects-sheet.normalized.png",
+          "frames": []
+        },
+        "reactions": {
+          "loaded": false,
+          "failed": true,
+          "count": 0,
+          "capacity": 48,
+          "url": "/assets/kenney_particle-pack/PNG%20(Transparent)/smoke_08.png",
+          "frames": [],
+          "alpha": [],
+          "outlines": 0,
+          "outlineCapacity": 48
+        },
+        "fallback": {
+          "bolts": 0,
+          "trails": 0,
+          "sparks": 0
+        },
+        "memory": {
+          "geometries": 47,
+          "textures": 20
+        },
+        "warnings": {
+          "shots": 0,
+          "capacity": 16,
+          "boss": null,
+          "lane": false,
+          "cone": false,
+          "elite": false,
+          "fallback": false
+        }
+      },
+      {
+        "gameTime": 3.3083333333333242,
+        "combatTime": 3.3083333333333242,
+        "castAt": 2.999999999999992,
+        "hitAt": 3.3083333333333242,
+        "seed": 20261021,
+        "hp": 9982,
+        "wet": 0,
+        "boiling": true,
+        "steamBursts": 0,
+        "hits": 1,
+        "event": {
+          "kind": "hit",
+          "active": true,
+          "age": 0,
+          "duration": 0.32,
+          "radius": 0
+        },
+        "shots": [],
+        "feedback": {
+          "loaded": false,
+          "failed": true,
+          "count": 0,
+          "capacity": 48,
+          "trails": 0,
+          "impacts": 0,
+          "embers": 0,
+          "url": "/assets/particles/kenney-feedback.png",
+          "frames": [],
+          "opacity": [],
+          "nearest": false,
+          "depthWrite": false
+        },
+        "fire": {
+          "loaded": false,
+          "failed": true,
+          "count": 0,
+          "capacity": 120,
+          "nearest": false,
+          "url": "/assets/pixel/skills/yanrong/fire-effects-sheet.normalized.png",
+          "frames": []
+        },
+        "reactions": {
+          "loaded": false,
+          "failed": true,
+          "count": 0,
+          "capacity": 48,
+          "url": "/assets/kenney_particle-pack/PNG%20(Transparent)/smoke_08.png",
+          "frames": [],
+          "alpha": [],
+          "outlines": 0,
+          "outlineCapacity": 48
+        },
+        "fallback": {
+          "bolts": 0,
+          "trails": 0,
+          "sparks": 2
+        },
+        "memory": {
+          "geometries": 47,
+          "textures": 20
+        },
+        "warnings": {
+          "shots": 0,
+          "capacity": 16,
+          "boss": null,
+          "lane": false,
+          "cone": false,
+          "elite": false,
+          "fallback": false
+        }
+      }
+    ],
+    "wet": {
+      "gameTime": 3.3083333333333242,
+      "combatTime": 3.3083333333333242,
+      "castAt": 2.999999999999992,
+      "hitAt": 3.3083333333333242,
+      "seed": 20261021,
+      "hp": 9985,
+      "wet": 2.4,
+      "boiling": true,
+      "steamBursts": 0,
+      "hits": 1,
+      "event": {
+        "kind": "water",
+        "active": true,
+        "age": 0,
+        "duration": 0.32,
+        "radius": 0.6
+      },
+      "shots": [],
+      "feedback": {
+        "loaded": false,
+        "failed": true,
+        "count": 0,
+        "capacity": 48,
+        "trails": 0,
+        "impacts": 0,
+        "embers": 0,
+        "url": "/assets/particles/kenney-feedback.png",
+        "frames": [],
+        "opacity": [],
+        "nearest": false,
+        "depthWrite": false
+      },
+      "fire": {
+        "loaded": false,
+        "failed": true,
+        "count": 0,
+        "capacity": 120,
+        "nearest": false,
+        "url": "/assets/pixel/skills/yanrong/fire-effects-sheet.normalized.png",
+        "frames": []
+      },
+      "reactions": {
+        "loaded": false,
+        "failed": true,
+        "count": 0,
+        "capacity": 48,
+        "url": "/assets/kenney_particle-pack/PNG%20(Transparent)/smoke_08.png",
+        "frames": [],
+        "alpha": [],
+        "outlines": 1,
+        "outlineCapacity": 48
+      },
+      "fallback": {
+        "bolts": 0,
+        "trails": 0,
+        "sparks": 2
+      },
+      "memory": {
+        "geometries": 47,
+        "textures": 20
+      },
+      "warnings": {
+        "shots": 0,
+        "capacity": 16,
+        "boss": null,
+        "lane": false,
+        "cone": false,
+        "elite": false,
+        "fallback": false
+      }
+    },
+    "active": {
+      "gameTime": 3.7583333333333226,
+      "combatTime": 3.7583333333333226,
+      "castAt": 3.3083333333333242,
+      "hitAt": 3.608333333333323,
+      "seed": 20261021,
+      "hp": 9955.3,
+      "wet": 0,
+      "boiling": true,
+      "steamBursts": 1,
+      "hits": 3,
+      "event": {
+        "kind": "steam",
+        "active": true,
+        "age": 0.15000000000000013,
+        "duration": 0.55,
+        "radius": 2.5
+      },
+      "shots": [],
+      "feedback": {
+        "loaded": false,
+        "failed": true,
+        "count": 0,
+        "capacity": 48,
+        "trails": 0,
+        "impacts": 0,
+        "embers": 0,
+        "url": "/assets/particles/kenney-feedback.png",
+        "frames": [],
+        "opacity": [],
+        "nearest": false,
+        "depthWrite": false
+      },
+      "fire": {
+        "loaded": false,
+        "failed": true,
+        "count": 0,
+        "capacity": 120,
+        "nearest": false,
+        "url": "/assets/pixel/skills/yanrong/fire-effects-sheet.normalized.png",
+        "frames": []
+      },
+      "reactions": {
+        "loaded": false,
+        "failed": true,
+        "count": 0,
+        "capacity": 48,
+        "url": "/assets/kenney_particle-pack/PNG%20(Transparent)/smoke_08.png",
+        "frames": [],
+        "alpha": [],
+        "outlines": 1,
+        "outlineCapacity": 48
+      },
+      "fallback": {
+        "bolts": 0,
+        "trails": 0,
+        "sparks": 0
+      },
+      "memory": {
+        "geometries": 47,
+        "textures": 20
+      },
+      "warnings": {
+        "shots": 0,
+        "capacity": 16,
+        "boss": null,
+        "lane": false,
+        "cone": false,
+        "elite": false,
+        "fallback": false
+      }
+    }
+  },
+  "restarted": {
+    "feedback": 0,
+    "fire": 0,
+    "mist": 0,
+    "rings": 0,
+    "trails": 0,
+    "bolts": 0
+  }
+}

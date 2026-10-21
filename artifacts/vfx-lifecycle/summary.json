@@ -1,0 +1,1504 @@
+{
+  "seed": 20261021,
+  "step": 0.008333333333333333,
+  "source": "Actual Game / CombatView screenshots, no compositing or interpolation",
+  "sequences": [
+    {
+      "name": "火花弹 · 844×390 · high",
+      "frames": [
+        {
+          "label": "01-launch",
+          "image": "chromium-844-high-spark-01-launch.png",
+          "gameTime": 2.999999999999992,
+          "hp": 10000,
+          "wet": 0,
+          "steam": 0,
+          "pixels": 0,
+          "shots": 1,
+          "atlas": [
+            0
+          ],
+          "feedback": 0,
+          "mist": 0
+        },
+        {
+          "label": "02-emerge",
+          "image": "chromium-844-high-spark-02-emerge.png",
+          "gameTime": 3.049999999999992,
+          "hp": 10000,
+          "wet": 0,
+          "steam": 0,
+          "pixels": 118,
+          "shots": 1,
+          "atlas": [
+            0
+          ],
+          "feedback": 1,
+          "mist": 0
+        },
+        {
+          "label": "02-flight-trail",
+          "image": "chromium-844-high-spark-02-flight-trail.png",
+          "gameTime": 3.1499999999999915,
+          "hp": 10000,
+          "wet": 0,
+          "steam": 0,
+          "pixels": 139,
+          "shots": 1,
+          "atlas": [
+            1
+          ],
+          "feedback": 1,
+          "mist": 0
+        },
+        {
+          "label": "03-impact",
+          "image": "chromium-844-high-spark-03-impact.png",
+          "gameTime": 3.3083333333333242,
+          "age": 0,
+          "active": true,
+          "radius": 0,
+          "hp": 9982,
+          "wet": 0,
+          "steam": 0,
+          "pixels": 71,
+          "shots": 0,
+          "atlas": [],
+          "feedback": 2,
+          "mist": 0
+        },
+        {
+          "label": "04-age-0.040",
+          "image": "chromium-844-high-spark-04-age-0.040.png",
+          "gameTime": 3.3483333333333243,
+          "age": 0.04000000000000009,
+          "active": true,
+          "radius": 0,
+          "hp": 9982,
+          "wet": 0,
+          "steam": 0,
+          "pixels": 64,
+          "shots": 0,
+          "atlas": [],
+          "feedback": 2,
+          "mist": 0
+        },
+        {
+          "label": "05-age-0.100",
+          "image": "chromium-844-high-spark-05-age-0.100.png",
+          "gameTime": 3.408333333333324,
+          "age": 0.10000000000000009,
+          "active": true,
+          "radius": 0,
+          "hp": 9982,
+          "wet": 0,
+          "steam": 0,
+          "pixels": 23,
+          "shots": 0,
+          "atlas": [],
+          "feedback": 2,
+          "mist": 0
+        },
+        {
+          "label": "06-age-0.170",
+          "image": "chromium-844-high-spark-06-age-0.170.png",
+          "gameTime": 3.4783333333333237,
+          "age": 0.17,
+          "active": true,
+          "radius": 0,
+          "hp": 9982,
+          "wet": 0,
+          "steam": 0,
+          "pixels": 0,
+          "shots": 0,
+          "atlas": [],
+          "feedback": 0,
+          "mist": 0
+        },
+        {
+          "label": "07-age-0.340",
+          "image": "chromium-844-high-spark-07-age-0.340.png",
+          "gameTime": 3.648333333333323,
+          "age": 0.3283333333333333,
+          "active": false,
+          "radius": 0,
+          "hp": 9982,
+          "wet": 0,
+          "steam": 0,
+          "pixels": 0,
+          "shots": 0,
+          "atlas": [],
+          "feedback": 0,
+          "mist": 0
+        }
+      ]
+    },
+    {
+      "name": "水泡弹 · 844×390 · high",
+      "frames": [
+        {
+          "label": "01-launch",
+          "image": "chromium-844-high-bubble-01-launch.png",
+          "gameTime": 2.999999999999992,
+          "hp": 10000,
+          "wet": 0,
+          "steam": 0,
+          "pixels": 63,
+          "shots": 1,
+          "atlas": [],
+          "feedback": 0,
+          "mist": 0
+        },
+        {
+          "label": "02-emerge",
+          "image": "chromium-844-high-bubble-02-emerge.png",
+          "gameTime": 3.049999999999992,
+          "hp": 10000,
+          "wet": 0,
+          "steam": 0,
+          "pixels": 201,
+          "shots": 1,
+          "atlas": [],
+          "feedback": 1,
+          "mist": 0
+        },
+        {
+          "label": "02-flight-trail",
+          "image": "chromium-844-high-bubble-02-flight-trail.png",
+          "gameTime": 3.1499999999999915,
+          "hp": 10000,
+          "wet": 0,
+          "steam": 0,
+          "pixels": 224,
+          "shots": 1,
+          "atlas": [],
+          "feedback": 1,
+          "mist": 0
+        },
+        {
+          "label": "03-impact",
+          "image": "chromium-844-high-bubble-03-impact.png",
+          "gameTime": 3.3083333333333242,
+          "age": 0,
+          "active": true,
+          "radius": 0.6,
+          "hp": 9985,
+          "wet": 2.4,
+          "steam": 0,
+          "pixels": 553,
+          "shots": 0,
+          "atlas": [],
+          "feedback": 0,
+          "mist": 1
+        },
+        {
+          "label": "04-age-0.040",
+          "image": "chromium-844-high-bubble-04-age-0.040.png",
+          "gameTime": 3.3483333333333243,
+          "age": 0.04000000000000009,
+          "active": true,
+          "radius": 0.6,
+          "hp": 9985,
+          "wet": 2.36,
+          "steam": 0,
+          "pixels": 738,
+          "shots": 0,
+          "atlas": [],
+          "feedback": 0,
+          "mist": 1
+        },
+        {
+          "label": "05-age-0.100",
+          "image": "chromium-844-high-bubble-05-age-0.100.png",
+          "gameTime": 3.408333333333324,
+          "age": 0.10000000000000009,
+          "active": true,
+          "radius": 0.6,
+          "hp": 9985,
+          "wet": 2.3000000000000003,
+          "steam": 0,
+          "pixels": 569,
+          "shots": 0,
+          "atlas": [],
+          "feedback": 0,
+          "mist": 1
+        },
+        {
+          "label": "06-age-0.170",
+          "image": "chromium-844-high-bubble-06-age-0.170.png",
+          "gameTime": 3.4783333333333237,
+          "age": 0.17,
+          "active": true,
+          "radius": 0.6,
+          "hp": 9985,
+          "wet": 2.2300000000000004,
+          "steam": 0,
+          "pixels": 233,
+          "shots": 0,
+          "atlas": [],
+          "feedback": 0,
+          "mist": 1
+        },
+        {
+          "label": "07-age-0.340",
+          "image": "chromium-844-high-bubble-07-age-0.340.png",
+          "gameTime": 3.648333333333323,
+          "age": 0.3283333333333333,
+          "active": false,
+          "radius": 0.6,
+          "hp": 9985,
+          "wet": 2.060000000000001,
+          "steam": 0,
+          "pixels": 45,
+          "shots": 0,
+          "atlas": [],
+          "feedback": 0,
+          "mist": 1
+        }
+      ]
+    },
+    {
+      "name": "火花弹 · 已有爆裂分裂升级 · 844×390 · high",
+      "frames": [
+        {
+          "label": "01-launch",
+          "image": "chromium-844-high-burst-01-launch.png",
+          "gameTime": 2.999999999999992,
+          "hp": 10000,
+          "wet": 0,
+          "steam": 0,
+          "pixels": 0,
+          "shots": 1,
+          "atlas": [
+            0
+          ],
+          "feedback": 0,
+          "mist": 0
+        },
+        {
+          "label": "02-emerge",
+          "image": "chromium-844-high-burst-02-emerge.png",
+          "gameTime": 3.049999999999992,
+          "hp": 10000,
+          "wet": 0,
+          "steam": 0,
+          "pixels": 118,
+          "shots": 1,
+          "atlas": [
+            0
+          ],
+          "feedback": 1,
+          "mist": 0
+        },
+        {
+          "label": "02-flight-trail",
+          "image": "chromium-844-high-burst-02-flight-trail.png",
+          "gameTime": 3.1499999999999915,
+          "hp": 10000,
+          "wet": 0,
+          "steam": 0,
+          "pixels": 139,
+          "shots": 1,
+          "atlas": [
+            1
+          ],
+          "feedback": 1,
+          "mist": 0
+        },
+        {
+          "label": "03-impact",
+          "image": "chromium-844-high-burst-03-impact.png",
+          "gameTime": 3.3083333333333242,
+          "age": 0,
+          "active": true,
+          "radius": 1.35,
+          "hp": 9982,
+          "wet": 0,
+          "steam": 0,
+          "pixels": 376,
+          "shots": 2,
+          "atlas": [
+            4,
+            4,
+            8
+          ],
+          "feedback": 0,
+          "mist": 0
+        },
+        {
+          "label": "04-age-0.040",
+          "image": "chromium-844-high-burst-04-age-0.040.png",
+          "gameTime": 3.3483333333333243,
+          "age": 0.04000000000000009,
+          "active": true,
+          "radius": 1.35,
+          "hp": 9982,
+          "wet": 0,
+          "steam": 0,
+          "pixels": 428,
+          "shots": 2,
+          "atlas": [
+            4,
+            4,
+            8
+          ],
+          "feedback": 2,
+          "mist": 0
+        },
+        {
+          "label": "05-age-0.120",
+          "image": "chromium-844-high-burst-05-age-0.120.png",
+          "gameTime": 3.428333333333324,
+          "age": 0.12000000000000022,
+          "active": true,
+          "radius": 1.35,
+          "hp": 9982,
+          "wet": 0,
+          "steam": 0,
+          "pixels": 900,
+          "shots": 2,
+          "atlas": [
+            5,
+            5,
+            9
+          ],
+          "feedback": 4,
+          "mist": 0
+        },
+        {
+          "label": "06-age-0.280",
+          "image": "chromium-844-high-burst-06-age-0.280.png",
+          "gameTime": 3.588333333333323,
+          "age": 0.28000000000000014,
+          "active": true,
+          "radius": 1.35,
+          "hp": 9982,
+          "wet": 0,
+          "steam": 0,
+          "pixels": 195,
+          "shots": 2,
+          "atlas": [
+            7,
+            7,
+            11
+          ],
+          "feedback": 2,
+          "mist": 0
+        },
+        {
+          "label": "07-age-0.390",
+          "image": "chromium-844-high-burst-07-age-0.390.png",
+          "gameTime": 3.6983333333333226,
+          "age": 0.38999999999999996,
+          "active": true,
+          "radius": 1.35,
+          "hp": 9982,
+          "wet": 0,
+          "steam": 0,
+          "pixels": 66,
+          "shots": 2,
+          "atlas": [
+            4,
+            4
+          ],
+          "feedback": 2,
+          "mist": 0
+        },
+        {
+          "label": "08-age-0.470",
+          "image": "chromium-844-high-burst-08-age-0.470.png",
+          "gameTime": 3.778333333333322,
+          "age": 0.4066666666666667,
+          "active": false,
+          "radius": 1.35,
+          "hp": 9982,
+          "wet": 0,
+          "steam": 0,
+          "pixels": 0,
+          "shots": 0,
+          "atlas": [],
+          "feedback": 0,
+          "mist": 0
+        }
+      ]
+    },
+    {
+      "name": "真实蒸汽反应 · 844×390 · high",
+      "frames": [
+        {
+          "label": "01-wet",
+          "image": "chromium-844-high-steam-01-wet.png",
+          "gameTime": 3.3083333333333242,
+          "age": 0,
+          "active": true,
+          "radius": 0.6,
+          "hp": 9985,
+          "wet": 2.4,
+          "steam": 0,
+          "pixels": 553,
+          "shots": 0,
+          "atlas": [],
+          "feedback": 0,
+          "mist": 1
+        },
+        {
+          "label": "02-fire-cast",
+          "image": "chromium-844-high-steam-02-fire-cast.png",
+          "gameTime": 3.408333333333324,
+          "age": 0.1000000000000002,
+          "active": true,
+          "radius": 0.6,
+          "hp": 9985,
+          "wet": 2.3000000000000003,
+          "steam": 0,
+          "pixels": 568,
+          "shots": 1,
+          "atlas": [
+            0
+          ],
+          "feedback": 0,
+          "mist": 1
+        },
+        {
+          "label": "03-fire-flight",
+          "image": "chromium-844-high-steam-03-fire-flight.png",
+          "gameTime": 3.5083333333333235,
+          "age": 0.20000000000000018,
+          "active": true,
+          "radius": 0.6,
+          "hp": 9985,
+          "wet": 2.2000000000000006,
+          "steam": 0,
+          "pixels": 192,
+          "shots": 1,
+          "atlas": [
+            1
+          ],
+          "feedback": 1,
+          "mist": 1
+        },
+        {
+          "label": "04-trigger",
+          "image": "chromium-844-high-steam-04-trigger.png",
+          "gameTime": 3.708333333333323,
+          "age": 0,
+          "active": true,
+          "radius": 2.5,
+          "hp": 9955.3,
+          "wet": 0,
+          "steam": 1,
+          "pixels": 479,
+          "shots": 0,
+          "atlas": [
+            8
+          ],
+          "feedback": 0,
+          "mist": 0
+        },
+        {
+          "label": "05-age-0.025",
+          "image": "chromium-844-high-steam-05-age-0.025.png",
+          "gameTime": 3.7333333333333227,
+          "age": 0.02499999999999991,
+          "active": true,
+          "radius": 2.5,
+          "hp": 9955.3,
+          "wet": 0,
+          "steam": 1,
+          "pixels": 1031,
+          "shots": 0,
+          "atlas": [
+            8
+          ],
+          "feedback": 0,
+          "mist": 3
+        },
+        {
+          "label": "06-age-0.120",
+          "image": "chromium-844-high-steam-06-age-0.120.png",
+          "gameTime": 3.8283333333333225,
+          "age": 0.1200000000000001,
+          "active": true,
+          "radius": 2.5,
+          "hp": 9955.3,
+          "wet": 0,
+          "steam": 1,
+          "pixels": 2140,
+          "shots": 0,
+          "atlas": [
+            9
+          ],
+          "feedback": 0,
+          "mist": 3
+        },
+        {
+          "label": "07-age-0.280",
+          "image": "chromium-844-high-steam-07-age-0.280.png",
+          "gameTime": 3.9883333333333217,
+          "age": 0.2800000000000005,
+          "active": true,
+          "radius": 2.5,
+          "hp": 9955.3,
+          "wet": 0,
+          "steam": 1,
+          "pixels": 3561,
+          "shots": 0,
+          "atlas": [],
+          "feedback": 0,
+          "mist": 3
+        },
+        {
+          "label": "08-age-0.460",
+          "image": "chromium-844-high-steam-08-age-0.460.png",
+          "gameTime": 4.1683333333333294,
+          "age": 0.4600000000000001,
+          "active": true,
+          "radius": 2.5,
+          "hp": 9955.3,
+          "wet": 0,
+          "steam": 1,
+          "pixels": 0,
+          "shots": 0,
+          "atlas": [],
+          "feedback": 0,
+          "mist": 0
+        },
+        {
+          "label": "09-age-0.535",
+          "image": "chromium-844-high-steam-09-age-0.535.png",
+          "gameTime": 4.243333333333332,
+          "age": 0.535,
+          "active": true,
+          "radius": 2.5,
+          "hp": 9955.3,
+          "wet": 0,
+          "steam": 1,
+          "pixels": 0,
+          "shots": 0,
+          "atlas": [],
+          "feedback": 0,
+          "mist": 0
+        },
+        {
+          "label": "10-age-0.570",
+          "image": "chromium-844-high-steam-10-age-0.570.png",
+          "gameTime": 4.278333333333334,
+          "age": 0.5516666666666667,
+          "active": false,
+          "radius": 2.5,
+          "hp": 9955.3,
+          "wet": 0,
+          "steam": 1,
+          "pixels": 0,
+          "shots": 0,
+          "atlas": [],
+          "feedback": 0,
+          "mist": 0
+        }
+      ]
+    },
+    {
+      "name": "火花弹 · 568×320 · battery",
+      "frames": [
+        {
+          "label": "01-launch",
+          "image": "chromium-568-battery-spark-01-launch.png",
+          "gameTime": 2.999999999999992,
+          "hp": 10000,
+          "wet": 0,
+          "steam": 0,
+          "pixels": 0,
+          "shots": 1,
+          "atlas": [
+            0
+          ],
+          "feedback": 0,
+          "mist": 0
+        },
+        {
+          "label": "02-emerge",
+          "image": "chromium-568-battery-spark-02-emerge.png",
+          "gameTime": 3.049999999999992,
+          "hp": 10000,
+          "wet": 0,
+          "steam": 0,
+          "pixels": 42,
+          "shots": 1,
+          "atlas": [
+            0
+          ],
+          "feedback": 1,
+          "mist": 0
+        },
+        {
+          "label": "02-flight-trail",
+          "image": "chromium-568-battery-spark-02-flight-trail.png",
+          "gameTime": 3.1499999999999915,
+          "hp": 10000,
+          "wet": 0,
+          "steam": 0,
+          "pixels": 55,
+          "shots": 1,
+          "atlas": [
+            1
+          ],
+          "feedback": 1,
+          "mist": 0
+        },
+        {
+          "label": "03-impact",
+          "image": "chromium-568-battery-spark-03-impact.png",
+          "gameTime": 3.3083333333333242,
+          "age": 0,
+          "active": true,
+          "radius": 0,
+          "hp": 9982,
+          "wet": 0,
+          "steam": 0,
+          "pixels": 29,
+          "shots": 0,
+          "atlas": [],
+          "feedback": 1,
+          "mist": 0
+        },
+        {
+          "label": "04-age-0.040",
+          "image": "chromium-568-battery-spark-04-age-0.040.png",
+          "gameTime": 3.3483333333333243,
+          "age": 0.04000000000000009,
+          "active": true,
+          "radius": 0,
+          "hp": 9982,
+          "wet": 0,
+          "steam": 0,
+          "pixels": 27,
+          "shots": 0,
+          "atlas": [],
+          "feedback": 1,
+          "mist": 0
+        },
+        {
+          "label": "05-age-0.100",
+          "image": "chromium-568-battery-spark-05-age-0.100.png",
+          "gameTime": 3.408333333333324,
+          "age": 0.10000000000000009,
+          "active": true,
+          "radius": 0,
+          "hp": 9982,
+          "wet": 0,
+          "steam": 0,
+          "pixels": 9,
+          "shots": 0,
+          "atlas": [],
+          "feedback": 1,
+          "mist": 0
+        },
+        {
+          "label": "06-age-0.170",
+          "image": "chromium-568-battery-spark-06-age-0.170.png",
+          "gameTime": 3.4783333333333237,
+          "age": 0.17,
+          "active": true,
+          "radius": 0,
+          "hp": 9982,
+          "wet": 0,
+          "steam": 0,
+          "pixels": 0,
+          "shots": 0,
+          "atlas": [],
+          "feedback": 0,
+          "mist": 0
+        },
+        {
+          "label": "07-age-0.340",
+          "image": "chromium-568-battery-spark-07-age-0.340.png",
+          "gameTime": 3.648333333333323,
+          "age": 0.3283333333333333,
+          "active": false,
+          "radius": 0,
+          "hp": 9982,
+          "wet": 0,
+          "steam": 0,
+          "pixels": 0,
+          "shots": 0,
+          "atlas": [],
+          "feedback": 0,
+          "mist": 0
+        }
+      ]
+    },
+    {
+      "name": "水泡弹 · 568×320 · battery",
+      "frames": [
+        {
+          "label": "01-launch",
+          "image": "chromium-568-battery-bubble-01-launch.png",
+          "gameTime": 2.999999999999992,
+          "hp": 10000,
+          "wet": 0,
+          "steam": 0,
+          "pixels": 23,
+          "shots": 1,
+          "atlas": [],
+          "feedback": 0,
+          "mist": 0
+        },
+        {
+          "label": "02-emerge",
+          "image": "chromium-568-battery-bubble-02-emerge.png",
+          "gameTime": 3.049999999999992,
+          "hp": 10000,
+          "wet": 0,
+          "steam": 0,
+          "pixels": 73,
+          "shots": 1,
+          "atlas": [],
+          "feedback": 1,
+          "mist": 0
+        },
+        {
+          "label": "02-flight-trail",
+          "image": "chromium-568-battery-bubble-02-flight-trail.png",
+          "gameTime": 3.1499999999999915,
+          "hp": 10000,
+          "wet": 0,
+          "steam": 0,
+          "pixels": 84,
+          "shots": 1,
+          "atlas": [],
+          "feedback": 1,
+          "mist": 0
+        },
+        {
+          "label": "03-impact",
+          "image": "chromium-568-battery-bubble-03-impact.png",
+          "gameTime": 3.3083333333333242,
+          "age": 0,
+          "active": true,
+          "radius": 0.6,
+          "hp": 9985,
+          "wet": 2.4,
+          "steam": 0,
+          "pixels": 208,
+          "shots": 0,
+          "atlas": [],
+          "feedback": 0,
+          "mist": 1
+        },
+        {
+          "label": "04-age-0.040",
+          "image": "chromium-568-battery-bubble-04-age-0.040.png",
+          "gameTime": 3.3483333333333243,
+          "age": 0.04000000000000009,
+          "active": true,
+          "radius": 0.6,
+          "hp": 9985,
+          "wet": 2.36,
+          "steam": 0,
+          "pixels": 280,
+          "shots": 0,
+          "atlas": [],
+          "feedback": 0,
+          "mist": 1
+        },
+        {
+          "label": "05-age-0.100",
+          "image": "chromium-568-battery-bubble-05-age-0.100.png",
+          "gameTime": 3.408333333333324,
+          "age": 0.10000000000000009,
+          "active": true,
+          "radius": 0.6,
+          "hp": 9985,
+          "wet": 2.3000000000000003,
+          "steam": 0,
+          "pixels": 216,
+          "shots": 0,
+          "atlas": [],
+          "feedback": 0,
+          "mist": 1
+        },
+        {
+          "label": "06-age-0.170",
+          "image": "chromium-568-battery-bubble-06-age-0.170.png",
+          "gameTime": 3.4783333333333237,
+          "age": 0.17,
+          "active": true,
+          "radius": 0.6,
+          "hp": 9985,
+          "wet": 2.2300000000000004,
+          "steam": 0,
+          "pixels": 87,
+          "shots": 0,
+          "atlas": [],
+          "feedback": 0,
+          "mist": 1
+        },
+        {
+          "label": "07-age-0.340",
+          "image": "chromium-568-battery-bubble-07-age-0.340.png",
+          "gameTime": 3.648333333333323,
+          "age": 0.3283333333333333,
+          "active": false,
+          "radius": 0.6,
+          "hp": 9985,
+          "wet": 2.060000000000001,
+          "steam": 0,
+          "pixels": 15,
+          "shots": 0,
+          "atlas": [],
+          "feedback": 0,
+          "mist": 1
+        }
+      ]
+    },
+    {
+      "name": "火花弹 · 已有爆裂分裂升级 · 568×320 · battery",
+      "frames": [
+        {
+          "label": "01-launch",
+          "image": "chromium-568-battery-burst-01-launch.png",
+          "gameTime": 2.999999999999992,
+          "hp": 10000,
+          "wet": 0,
+          "steam": 0,
+          "pixels": 0,
+          "shots": 1,
+          "atlas": [
+            0
+          ],
+          "feedback": 0,
+          "mist": 0
+        },
+        {
+          "label": "02-emerge",
+          "image": "chromium-568-battery-burst-02-emerge.png",
+          "gameTime": 3.049999999999992,
+          "hp": 10000,
+          "wet": 0,
+          "steam": 0,
+          "pixels": 42,
+          "shots": 1,
+          "atlas": [
+            0
+          ],
+          "feedback": 1,
+          "mist": 0
+        },
+        {
+          "label": "02-flight-trail",
+          "image": "chromium-568-battery-burst-02-flight-trail.png",
+          "gameTime": 3.1499999999999915,
+          "hp": 10000,
+          "wet": 0,
+          "steam": 0,
+          "pixels": 55,
+          "shots": 1,
+          "atlas": [
+            1
+          ],
+          "feedback": 1,
+          "mist": 0
+        },
+        {
+          "label": "03-impact",
+          "image": "chromium-568-battery-burst-03-impact.png",
+          "gameTime": 3.3083333333333242,
+          "age": 0,
+          "active": true,
+          "radius": 1.35,
+          "hp": 9982,
+          "wet": 0,
+          "steam": 0,
+          "pixels": 141,
+          "shots": 2,
+          "atlas": [
+            4,
+            4,
+            8
+          ],
+          "feedback": 0,
+          "mist": 0
+        },
+        {
+          "label": "04-age-0.040",
+          "image": "chromium-568-battery-burst-04-age-0.040.png",
+          "gameTime": 3.3483333333333243,
+          "age": 0.04000000000000009,
+          "active": true,
+          "radius": 1.35,
+          "hp": 9982,
+          "wet": 0,
+          "steam": 0,
+          "pixels": 162,
+          "shots": 2,
+          "atlas": [
+            4,
+            4,
+            8
+          ],
+          "feedback": 2,
+          "mist": 0
+        },
+        {
+          "label": "05-age-0.120",
+          "image": "chromium-568-battery-burst-05-age-0.120.png",
+          "gameTime": 3.428333333333324,
+          "age": 0.12000000000000022,
+          "active": true,
+          "radius": 1.35,
+          "hp": 9982,
+          "wet": 0,
+          "steam": 0,
+          "pixels": 331,
+          "shots": 2,
+          "atlas": [
+            5,
+            5,
+            9
+          ],
+          "feedback": 3,
+          "mist": 0
+        },
+        {
+          "label": "06-age-0.280",
+          "image": "chromium-568-battery-burst-06-age-0.280.png",
+          "gameTime": 3.588333333333323,
+          "age": 0.28000000000000014,
+          "active": true,
+          "radius": 1.35,
+          "hp": 9982,
+          "wet": 0,
+          "steam": 0,
+          "pixels": 73,
+          "shots": 2,
+          "atlas": [
+            7,
+            7,
+            11
+          ],
+          "feedback": 2,
+          "mist": 0
+        },
+        {
+          "label": "07-age-0.390",
+          "image": "chromium-568-battery-burst-07-age-0.390.png",
+          "gameTime": 3.6983333333333226,
+          "age": 0.38999999999999996,
+          "active": true,
+          "radius": 1.35,
+          "hp": 9982,
+          "wet": 0,
+          "steam": 0,
+          "pixels": 25,
+          "shots": 2,
+          "atlas": [
+            4,
+            4
+          ],
+          "feedback": 2,
+          "mist": 0
+        },
+        {
+          "label": "08-age-0.470",
+          "image": "chromium-568-battery-burst-08-age-0.470.png",
+          "gameTime": 3.778333333333322,
+          "age": 0.4066666666666667,
+          "active": false,
+          "radius": 1.35,
+          "hp": 9982,
+          "wet": 0,
+          "steam": 0,
+          "pixels": 0,
+          "shots": 0,
+          "atlas": [],
+          "feedback": 0,
+          "mist": 0
+        }
+      ]
+    },
+    {
+      "name": "真实蒸汽反应 · 568×320 · battery",
+      "frames": [
+        {
+          "label": "01-wet",
+          "image": "chromium-568-battery-steam-01-wet.png",
+          "gameTime": 3.3083333333333242,
+          "age": 0,
+          "active": true,
+          "radius": 0.6,
+          "hp": 9985,
+          "wet": 2.4,
+          "steam": 0,
+          "pixels": 208,
+          "shots": 0,
+          "atlas": [],
+          "feedback": 0,
+          "mist": 1
+        },
+        {
+          "label": "02-fire-cast",
+          "image": "chromium-568-battery-steam-02-fire-cast.png",
+          "gameTime": 3.408333333333324,
+          "age": 0.1000000000000002,
+          "active": true,
+          "radius": 0.6,
+          "hp": 9985,
+          "wet": 2.3000000000000003,
+          "steam": 0,
+          "pixels": 216,
+          "shots": 1,
+          "atlas": [
+            0
+          ],
+          "feedback": 0,
+          "mist": 1
+        },
+        {
+          "label": "03-fire-flight",
+          "image": "chromium-568-battery-steam-03-fire-flight.png",
+          "gameTime": 3.5083333333333235,
+          "age": 0.20000000000000018,
+          "active": true,
+          "radius": 0.6,
+          "hp": 9985,
+          "wet": 2.2000000000000006,
+          "steam": 0,
+          "pixels": 69,
+          "shots": 1,
+          "atlas": [
+            1
+          ],
+          "feedback": 1,
+          "mist": 1
+        },
+        {
+          "label": "04-trigger",
+          "image": "chromium-568-battery-steam-04-trigger.png",
+          "gameTime": 3.708333333333323,
+          "age": 0,
+          "active": true,
+          "radius": 2.5,
+          "hp": 9955.3,
+          "wet": 0,
+          "steam": 1,
+          "pixels": 172,
+          "shots": 0,
+          "atlas": [
+            8
+          ],
+          "feedback": 0,
+          "mist": 0
+        },
+        {
+          "label": "05-age-0.025",
+          "image": "chromium-568-battery-steam-05-age-0.025.png",
+          "gameTime": 3.7333333333333227,
+          "age": 0.02499999999999991,
+          "active": true,
+          "radius": 2.5,
+          "hp": 9955.3,
+          "wet": 0,
+          "steam": 1,
+          "pixels": 332,
+          "shots": 0,
+          "atlas": [
+            8
+          ],
+          "feedback": 0,
+          "mist": 2
+        },
+        {
+          "label": "06-age-0.120",
+          "image": "chromium-568-battery-steam-06-age-0.120.png",
+          "gameTime": 3.8283333333333225,
+          "age": 0.1200000000000001,
+          "active": true,
+          "radius": 2.5,
+          "hp": 9955.3,
+          "wet": 0,
+          "steam": 1,
+          "pixels": 719,
+          "shots": 0,
+          "atlas": [
+            9
+          ],
+          "feedback": 0,
+          "mist": 2
+        },
+        {
+          "label": "07-age-0.280",
+          "image": "chromium-568-battery-steam-07-age-0.280.png",
+          "gameTime": 3.9883333333333217,
+          "age": 0.2800000000000005,
+          "active": true,
+          "radius": 2.5,
+          "hp": 9955.3,
+          "wet": 0,
+          "steam": 1,
+          "pixels": 1135,
+          "shots": 0,
+          "atlas": [],
+          "feedback": 0,
+          "mist": 2
+        },
+        {
+          "label": "08-age-0.460",
+          "image": "chromium-568-battery-steam-08-age-0.460.png",
+          "gameTime": 4.1683333333333294,
+          "age": 0.4600000000000001,
+          "active": true,
+          "radius": 2.5,
+          "hp": 9955.3,
+          "wet": 0,
+          "steam": 1,
+          "pixels": 0,
+          "shots": 0,
+          "atlas": [],
+          "feedback": 0,
+          "mist": 0
+        },
+        {
+          "label": "09-age-0.535",
+          "image": "chromium-568-battery-steam-09-age-0.535.png",
+          "gameTime": 4.243333333333332,
+          "age": 0.535,
+          "active": true,
+          "radius": 2.5,
+          "hp": 9955.3,
+          "wet": 0,
+          "steam": 1,
+          "pixels": 0,
+          "shots": 0,
+          "atlas": [],
+          "feedback": 0,
+          "mist": 0
+        },
+        {
+          "label": "10-age-0.570",
+          "image": "chromium-568-battery-steam-10-age-0.570.png",
+          "gameTime": 4.278333333333334,
+          "age": 0.5516666666666667,
+          "active": false,
+          "radius": 2.5,
+          "hp": 9955.3,
+          "wet": 0,
+          "steam": 1,
+          "pixels": 0,
+          "shots": 0,
+          "atlas": [],
+          "feedback": 0,
+          "mist": 0
+        }
+      ]
+    },
+    {
+      "name": "临时测试预设 · 不进入卡池",
+      "frames": [
+        {
+          "label": "1-animation",
+          "image": "chromium-custom-1-animation.png",
+          "gameTime": 3.049999999999992,
+          "pixels": 192,
+          "atlas": [
+            4
+          ],
+          "shots": 1
+        },
+        {
+          "label": "2-animation",
+          "image": "chromium-custom-2-animation.png",
+          "gameTime": 3.0999999999999917,
+          "pixels": 283,
+          "atlas": [
+            6
+          ],
+          "shots": 1
+        },
+        {
+          "label": "3-animation",
+          "image": "chromium-custom-3-animation.png",
+          "gameTime": 3.1999999999999913,
+          "pixels": 261,
+          "atlas": [
+            7
+          ],
+          "shots": 1
+        }
+      ]
+    }
+  ],
+  "warnings": [
+    {
+      "browser": "chromium",
+      "width": 844,
+      "effect": "burst",
+      "kind": "elite",
+      "baseline": 2788,
+      "retained": 2788,
+      "ratio": 1,
+      "visible": true
+    },
+    {
+      "browser": "chromium",
+      "width": 844,
+      "effect": "burst",
+      "kind": "lane",
+      "baseline": 11040,
+      "retained": 11035,
+      "ratio": 0.9995471014492754,
+      "visible": true
+    },
+    {
+      "browser": "chromium",
+      "width": 844,
+      "effect": "burst",
+      "kind": "cone",
+      "baseline": 35589,
+      "retained": 35589,
+      "ratio": 1,
+      "visible": true
+    },
+    {
+      "browser": "chromium",
+      "width": 844,
+      "effect": "steam",
+      "kind": "elite",
+      "baseline": 2787,
+      "retained": 2787,
+      "ratio": 1,
+      "visible": true
+    },
+    {
+      "browser": "chromium",
+      "width": 844,
+      "effect": "steam",
+      "kind": "lane",
+      "baseline": 11040,
+      "retained": 11034,
+      "ratio": 0.9994565217391305,
+      "visible": true
+    },
+    {
+      "browser": "chromium",
+      "width": 844,
+      "effect": "steam",
+      "kind": "cone",
+      "baseline": 35560,
+      "retained": 35560,
+      "ratio": 1,
+      "visible": true
+    },
+    {
+      "browser": "chromium",
+      "width": 568,
+      "effect": "burst",
+      "kind": "elite",
+      "baseline": 1029,
+      "retained": 1029,
+      "ratio": 1,
+      "visible": true
+    },
+    {
+      "browser": "chromium",
+      "width": 568,
+      "effect": "burst",
+      "kind": "lane",
+      "baseline": 4252,
+      "retained": 4251,
+      "ratio": 0.9997648165569144,
+      "visible": true
+    },
+    {
+      "browser": "chromium",
+      "width": 568,
+      "effect": "burst",
+      "kind": "cone",
+      "baseline": 13353,
+      "retained": 13353,
+      "ratio": 1,
+      "visible": true
+    },
+    {
+      "browser": "chromium",
+      "width": 568,
+      "effect": "steam",
+      "kind": "elite",
+      "baseline": 1022,
+      "retained": 1022,
+      "ratio": 1,
+      "visible": true
+    },
+    {
+      "browser": "chromium",
+      "width": 568,
+      "effect": "steam",
+      "kind": "lane",
+      "baseline": 4267,
+      "retained": 4267,
+      "ratio": 1,
+      "visible": true
+    },
+    {
+      "browser": "chromium",
+      "width": 568,
+      "effect": "steam",
+      "kind": "cone",
+      "baseline": 13349,
+      "retained": 13349,
+      "ratio": 1,
+      "visible": true
+    },
+    {
+      "browser": "webkit",
+      "width": 844,
+      "effect": "burst",
+      "kind": "elite",
+      "baseline": 2784,
+      "retained": 2784,
+      "ratio": 1,
+      "visible": true
+    },
+    {
+      "browser": "webkit",
+      "width": 844,
+      "effect": "burst",
+      "kind": "lane",
+      "baseline": 11039,
+      "retained": 11033,
+      "ratio": 0.9994564725065677,
+      "visible": true
+    },
+    {
+      "browser": "webkit",
+      "width": 844,
+      "effect": "burst",
+      "kind": "cone",
+      "baseline": 35594,
+      "retained": 35594,
+      "ratio": 1,
+      "visible": true
+    },
+    {
+      "browser": "webkit",
+      "width": 844,
+      "effect": "steam",
+      "kind": "elite",
+      "baseline": 2783,
+      "retained": 2783,
+      "ratio": 1,
+      "visible": true
+    },
+    {
+      "browser": "webkit",
+      "width": 844,
+      "effect": "steam",
+      "kind": "lane",
+      "baseline": 11039,
+      "retained": 11036,
+      "ratio": 0.9997282362532838,
+      "visible": true
+    },
+    {
+      "browser": "webkit",
+      "width": 844,
+      "effect": "steam",
+      "kind": "cone",
+      "baseline": 35554,
+      "retained": 35554,
+      "ratio": 1,
+      "visible": true
+    },
+    {
+      "browser": "webkit",
+      "width": 568,
+      "effect": "burst",
+      "kind": "elite",
+      "baseline": 1028,
+      "retained": 1028,
+      "ratio": 1,
+      "visible": true
+    },
+    {
+      "browser": "webkit",
+      "width": 568,
+      "effect": "burst",
+      "kind": "lane",
+      "baseline": 4251,
+      "retained": 4250,
+      "ratio": 0.9997647612326511,
+      "visible": true
+    },
+    {
+      "browser": "webkit",
+      "width": 568,
+      "effect": "burst",
+      "kind": "cone",
+      "baseline": 13352,
+      "retained": 13352,
+      "ratio": 1,
+      "visible": true
+    },
+    {
+      "browser": "webkit",
+      "width": 568,
+      "effect": "steam",
+      "kind": "elite",
+      "baseline": 1021,
+      "retained": 1021,
+      "ratio": 1,
+      "visible": true
+    },
+    {
+      "browser": "webkit",
+      "width": 568,
+      "effect": "steam",
+      "kind": "lane",
+      "baseline": 4267,
+      "retained": 4267,
+      "ratio": 1,
+      "visible": true
+    },
+    {
+      "browser": "webkit",
+      "width": 568,
+      "effect": "steam",
+      "kind": "cone",
+      "baseline": 13350,
+      "retained": 13349,
+      "ratio": 0.9999250936329588,
+      "visible": true
+    }
+  ],
+  "minimumWarningRetention": 0.9994564725065677,
+  "custom": {
+    "invalid": [
+      {
+        "ok": false,
+        "error": "Invalid VFX configuration: bad-timeline"
+      },
+      {
+        "ok": false,
+        "error": "Invalid VFX atlas: bad-timeline-atlas"
+      },
+      {
+        "ok": false,
+        "error": "Mismatched VFX binding"
+      }
+    ],
+    "changed": 0,
+    "samePreset": true,
+    "color": "73e6ff",
+    "scale": 1.1700000473202132,
+    "memory": {
+      "geometries": 70,
+      "textures": 18
+    },
+    "officialCard": false
+  },
+  "stress": {
+    "accepted": 24,
+    "high": 24,
+    "low": 12,
+    "memoryStable": true
+  }
+}

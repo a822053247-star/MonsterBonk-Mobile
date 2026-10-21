@@ -1,0 +1,162 @@
+
+Running 18 tests using 1 worker
+
+(node:56468) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x   1 tests\combat-clarity-ui.spec.ts:3:1 › fully fused three-weapon build stays readable with CD indicators and pooled impact visuals (3.2s)
+(node:40160) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  2 tests\creature-animation-ui.spec.ts:43:1 › real V5 leader renders all projected directions, mirrors left and retains heading when stopping (5.1s)
+  ok  3 tests\creature-animation-ui.spec.ts:63:1 › visible GPU pixels change across real walking/idle frames, with stable foot, size and frame sequence (4.3s)
+  x   4 tests\creature-animation-ui.spec.ts:77:1 › actual collision displacement controls animation and animated/static visuals have identical combat and positions (5.4s)
+(node:60308) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  5 tests\creature-animation-ui.spec.ts:91:1 › pause, choices, background and death freeze frames; restart resets the real leader (4.4s)
+  ok  6 tests\creature-animation-ui.spec.ts:102:1 › missing diagonal falls back to a mirrored side; both missing atlases retain the original PNG (8.0s)
+  ok  7 tests\creature-animation-ui.spec.ts:115:1 › shared atlases render independent real frames/mirrors without shared UV mutations and release all leases (3.7s)
+  ok  8 tests\creature-animation-ui.spec.ts:121:1 › disposal during animation loading releases leases and late callbacks never reattach (3.9s)
+  x   9 tests\elemental-fusion-ui.spec.ts:14:1 › deep atlas loads, plays flight and one-shot impact, damages and slows in actual game (4.3s)
+(node:62112) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  10 tests\elemental-fusion-ui.spec.ts:30:11 › paopaoyuan development entry uses one animated creature, real cards, automatic fusions and bounded colored effects (11.7s)
+(node:61152) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  11 tests\elemental-fusion-ui.spec.ts:30:11 › yacishou development entry uses one animated creature, real cards, automatic fusions and bounded colored effects (11.9s)
+(node:59652) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 12 tests\elemental-fusion-ui.spec.ts:44:1 › unknown developer value preserves Yanrong and old three-party ignores developer species and new cards (3.4s)
+  ok 13 tests\elemental-fusion-ui.spec.ts:53:11 › deep-bubble individual skill renders audited pixels, icon and real damage; lifecycle clears batch (4.9s)
+  ok 14 tests\elemental-fusion-ui.spec.ts:53:11 › chain-bubble individual skill renders audited pixels, icon and real damage; lifecycle clears batch (7.8s)
+  ok 15 tests\elemental-fusion-ui.spec.ts:53:11 › thorn-scatter individual skill renders audited pixels, icon and real damage; lifecycle clears batch (4.7s)
+  ok 16 tests\elemental-fusion-ui.spec.ts:53:11 › jump-thorn individual skill renders audited pixels, icon and real damage; lifecycle clears batch (5.5s)
+  x  17 tests\elemental-fusion-ui.spec.ts:73:1 › missing elemental textures and icons preserve procedural effects, readable cards and damage (3.6s)
+(node:63384) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 18 tests\elemental-fusion-ui.spec.ts:80:1 › changing only visual FPS preserves actual combat state; repeated starts reuse the elemental GPU batch (5.3s)
+
+
+  1) tests\combat-clarity-ui.spec.ts:3:1 › fully fused three-weapon build stays readable with CD indicators and pooled impact visuals
+
+    Error: expect(received).toBeLessThanOrEqual(expected)
+
+    Expected: <= 1.551
+    Received:    2.799999952316284
+
+      39 |     }, steps);
+      40 |     expect(state.unchanged).toBe(true); expect(state.impacts).toBeLessThanOrEqual(6);
+    > 41 |     expect(state.largest).toBeLessThanOrEqual(1.551); expect(state.noDepthWrite).toBe(true); expect(state.maxHurt).toBeLessThanOrEqual(.301); expect(state.limits).toBe(24);
+         |                           ^
+      42 |     if (index === 1) expect(state.shots.every((count: number) => count > 0)).toBe(true);
+      43 |     await expect(page.locator('.weapon-charge')).toHaveCount(3);
+      44 |     await page.screenshot({ path: `artifacts/combat-clarity-${index === 0 ? 'volleys' : 'impacts'}.png` });
+        at E:\study\game\MonsterBonk Mobile\tests\combat-clarity-ui.spec.ts:41:27
+
+    Error Context: artifacts\vfx-old-source-output\combat-clarity-ui-fully-fu-ae086-s-and-pooled-impact-visuals\error-context.md
+
+  2) tests\creature-animation-ui.spec.ts:77:1 › actual collision displacement controls animation and animated/static visuals have identical combat and positions
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: "{\"position\":{\"x\":4.371788402398613,\"z\":-11.790155370716246},\"combat\":{\"balanceTelemetry\":{\"damageEvents\":0,\"projectileBlockedAttempts\":0,\"sporeChainKills\":0,\"derivedDenied\":0,\"queuePeak\":0},\"triggerRelics\":{\"explosions\":0,\"thorns\":0,\"maxGeneration\":0,\"bubbles\":0,\"echoes\":0,\"echoesSkipped\":0,\"hourglassProcs\":0,\"steamBursts\":0,\"chainKills\":0,\"maxNodes\":0,\"casts\":0,\"pendingEchoes\":0,\"hasteRemaining\":0,\"hasteCooldown\":0,\"bubbleCooldown\":0,\"pending\":0,\"wet\":0,\"burning\":0},\"specialEnemies\":{\"sporeKills\":0,\"treasureEscapes\":0,\"treasureCaught\":0,\"explosions\":[],\"rewards\":[]},\"build\":{\"enabled\":true,\"species\":\"yanrong\",\"relics\":[],\"evolution\":null,\"attacks\":[{\"attackId\":\"spark\",\"slot\":0,\"level\":1,\"cooldown\":0,\"cooldownTotal\":0.44,\"shotsFired\":6}]},\"melee\":{\"active\":false,\"attackInstanceId\":0,\"x\":0,\"z\":0,\"aimX\":0,\"aimZ\":1,\"age\":0,\"radius\":0,\"angle\":3.141592653589793,\"hitIds\":[]},\"firing\":{\"weapon\":null,\"remaining\":0,\"gap\":0},\"hp\":100,\"kills\":1,\"goldEarned\":0,\"xp\":0,\"shotsFired\":6,\"hits\":5,\"fusion\":{\"enabled\":true,\"active\":null,\"recipes\":[],\"bursts\":0,\"childShots\":0,\"children\":0},\"spawned\":5,\"collected\":0,\"invulnerability\":0,\"enemies\":[{\"id\":1,\"kind\":\"tank\",\"x\":6.0869497631365554,\"z\":2.468766271412285,\"hp\":53,\"spawning\":false},{\"id\":2,\"kind\":\"normal\",\"x\":-7.160059554116788,\"z\":-14.688546577449115,\"hp\":12,\"spawning\":false},{\"id\":5,\"kind\":\"normal\",\"x\":22.80310688573755,\"z\":-11.376694578511783,\"hp\":12,\"spawning\":true},{\"id\":4,\"kind\":\"normal\",\"x\":-10.081785142933057,\"z\":-16.63918936203975,\"hp\":12,\"spawning\":false}],\"projectiles\":1,\"orbs\":[],\"effects\":1,\"targetId\":0,\"limits\":{\"enemies\":256,\"projectiles\":24,\"orbs\":96,\"effects\":48,\"shockwaves\":2},\"maxHp\":100,\"progression\":{\"level\":1,\"experience\":0,\"totalExperience\":0,\"threshold\":8,\"pendingChoices\":0,\"choiceLevel\":2,\"offers\":[],\"ranks\":{\"damage\":0,\"haste\":0,\"multishot\":0,\"vitality\":0,\"movement\":0,\"range\":0,\"orbit\":0,\"shockwave\":0,\"flame-sweep-weapon\":0,\"split-on-hit\":0,\"area\":0,\"chain\":0,\"bubble-weapon\":0,\"spark-weapon\":1,\"leaf-weapon\":0,\"draft-boiling-core\":0,\"overload-core\":0,\"hunter-eye\":0,\"shattered-core\":0,\"tidal-pearl\":0,\"specialist-badge\":0,\"echo-rune\":0,\"draft-martyr-core\":0,\"draft-kindling-flask\":0,\"draft-thorn-testament\":0,\"draft-bubble-spore\":0,\"draft-echo-bone-dice\":0,\"draft-slaughter-hourglass\":0,\"berserk-route\":0,\"pursuit-route\":0},\"stats\":{\"damageMultiplier\":1,\"attackRateMultiplier\":1,\"projectileCount\":1,\"maxHp\":100,\"moveMultiplier\":1,\"rangeMultiplier\":1,\"orbitCount\":0,\"orbitDamage\":0,\"orbitRadius\":0,\"orbitSpeed\":0,\"shockDamage\":0,\"shockRadius\":0,\"shockInterval\":0,\"splitOnHit\":0},\"maxLevel\":71},\"encounters\":{\"enabled\":true,\"wave\":1,\"boss\":null,\"elite\":null,\"shots\":[],\"limit\":16},\"orbitAngle\":0,\"shockwaves\":[]},\"party\":[{\"id\":1,\"species\":\"yanrong\",\"x\":4.371788402398613,\"z\":-11.790155370716246,\"previousX\":4.3471087910956525,\"previousZ\":-11.723597608773526,\"facing\":2.786509340024015,\"attackCooldown\":0,\"targetId\":0,\"shotsFired\":6,\"rank\":1,\"evolution\":\"base\",\"blockedTime\":0}]}"
+    Received: "{\"position\":{\"x\":4.371788402398613,\"z\":-11.790155370716246},\"combat\":{\"balanceTelemetry\":{\"damageEvents\":0,\"projectileBlockedAttempts\":0,\"sporeChainKills\":0,\"derivedDenied\":0,\"queuePeak\":0},\"triggerRelics\":{\"explosions\":0,\"thorns\":0,\"maxGeneration\":0,\"bubbles\":0,\"echoes\":0,\"echoesSkipped\":0,\"hourglassProcs\":0,\"steamBursts\":0,\"chainKills\":0,\"maxNodes\":0,\"casts\":0,\"pendingEchoes\":0,\"hasteRemaining\":0,\"hasteCooldown\":0,\"bubbleCooldown\":0,\"pending\":0,\"wet\":0,\"burning\":0},\"specialEnemies\":{\"sporeKills\":0,\"treasureEscapes\":0,\"treasureCaught\":0,\"explosions\":[],\"rewards\":[]},\"build\":{\"enabled\":true,\"species\":\"yanrong\",\"relics\":[],\"evolution\":null,\"attacks\":[{\"attackId\":\"spark\",\"slot\":0,\"level\":1,\"cooldown\":0,\"cooldownTotal\":0.44,\"shotsFired\":4}]},\"melee\":{\"active\":false,\"attackInstanceId\":0,\"x\":0,\"z\":0,\"aimX\":0,\"aimZ\":1,\"age\":0,\"radius\":0,\"angle\":3.141592653589793,\"hitIds\":[]},\"firing\":{\"weapon\":null,\"remaining\":0,\"gap\":0},\"hp\":100,\"kills\":0,\"goldEarned\":0,\"xp\":0,\"shotsFired\":4,\"hits\":4,\"fusion\":{\"enabled\":true,\"active\":null,\"recipes\":[],\"bursts\":0,\"childShots\":0,\"children\":0},\"spawned\":5,\"collected\":0,\"invulnerability\":0,\"enemies\":[{\"id\":1,\"kind\":\"tank\",\"x\":6.0869497631365554,\"z\":2.468766271412285,\"hp\":53,\"spawning\":false},{\"id\":2,\"kind\":\"normal\",\"x\":19.90286190717076,\"z\":6.049099052005374,\"hp\":12,\"spawning\":false},{\"id\":3,\"kind\":\"normal\",\"x\":18.64772465200046,\"z\":13.31556941004014,\"hp\":12,\"spawning\":false},{\"id\":4,\"kind\":\"normal\",\"x\":22.238809368611705,\"z\":7.620913545324466,\"hp\":12,\"spawning\":false},{\"id\":5,\"kind\":\"normal\",\"x\":22.791695361799693,\"z\":5.699471775574045,\"hp\":12,\"spawning\":true}],\"projectiles\":0,\"orbs\":[],\"effects\":0,\"targetId\":0,\"limits\":{\"enemies\":256,\"projectiles\":24,\"orbs\":96,\"effects\":48,\"shockwaves\":2},\"maxHp\":100,\"progression\":{\"level\":1,\"experience\":0,\"totalExperience\":0,\"threshold\":8,\"pendingChoices\":0,\"choiceLevel\":2,\"offers\":[],\"ranks\":{\"damage\":0,\"haste\":0,\"multishot\":0,\"vitality\":0,\"movement\":0,\"range\":0,\"orbit\":0,\"shockwave\":0,\"flame-sweep-weapon\":0,\"split-on-hit\":0,\"area\":0,\"chain\":0,\"bubble-weapon\":0,\"spark-weapon\":1,\"leaf-weapon\":0,\"draft-boiling-core\":0,\"overload-core\":0,\"hunter-eye\":0,\"shattered-core\":0,\"tidal-pearl\":0,\"specialist-badge\":0,\"echo-rune\":0,\"draft-martyr-core\":0,\"draft-kindling-flask\":0,\"draft-thorn-testament\":0,\"draft-bubble-spore\":0,\"draft-echo-bone-dice\":0,\"draft-slaughter-hourglass\":0,\"berserk-route\":0,\"pursuit-route\":0},\"stats\":{\"damageMultiplier\":1,\"attackRateMultiplier\":1,\"projectileCount\":1,\"maxHp\":100,\"moveMultiplier\":1,\"rangeMultiplier\":1,\"orbitCount\":0,\"orbitDamage\":0,\"orbitRadius\":0,\"orbitSpeed\":0,\"shockDamage\":0,\"shockRadius\":0,\"shockInterval\":0,\"splitOnHit\":0},\"maxLevel\":71},\"encounters\":{\"enabled\":true,\"wave\":1,\"boss\":null,\"elite\":null,\"shots\":[],\"limit\":16},\"orbitAngle\":0,\"shockwaves\":[]},\"party\":[{\"id\":1,\"species\":\"yanrong\",\"x\":4.371788402398613,\"z\":-11.790155370716246,\"previousX\":4.3471087910956525,\"previousZ\":-11.723597608773526,\"facing\":2.786509340024015,\"attackCooldown\":0,\"targetId\":0,\"shotsFired\":4,\"rank\":1,\"evolution\":\"base\",\"blockedTime\":0}]}"
+
+      82 |   await page.goto('/animation-harness?world=fixed&creatureAnimation=static');await page.waitForFunction(()=>'game'in window);await page.locator('#start-fusion').tap();
+      83 |   // Static override intentionally requests no atlases; compare through the same actual Game steps.
+    > 84 |   expect(await page.evaluate(()=>(window as any).parity())).toBe(animated);
+         |                                                             ^
+      85 |   await page.goto('/animation-harness?world=fixed');await page.waitForFunction(()=>'game'in window);await page.locator('#start-fusion').tap();
+      86 |   await expect.poll(async ()=>(await animation(page)).atlases.filter(a=>a.loaded).length).toBe(2);
+      87 |   await page.evaluate(()=>{const g=(window as any).game;g.world.obstacles.splice(0,g.world.obstacles.length,{x:2,z:0,radius:1});});
+        at E:\study\game\MonsterBonk Mobile\tests\creature-animation-ui.spec.ts:84:61
+
+    Error Context: artifacts\vfx-old-source-output\creature-animation-ui-actu-676ef-ntical-combat-and-positions\error-context.md
+
+  3) tests\elemental-fusion-ui.spec.ts:14:1 › deep atlas loads, plays flight and one-shot impact, damages and slows in actual game
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      17 |  await learn(page,'area');await page.evaluate(()=>(window as any).impact());
+      18 |  const result=await page.evaluate(()=>{const g=(window as any).game;return {hp:g.combat.enemies.filter((e:any)=>e.active).map((e:any)=>e.hp),slow:g.combat.enemies.filter((e:any)=>e.active).map((e:any)=>e.slowTime),pixels:g.combatView.inspectElemental()}});
+    > 19 |  expect(result.hp.some((hp:number)=>hp<100)).toBe(true);expect(result.slow.some((s:number)=>s>0)).toBe(true);
+         |                                              ^
+      20 |  expect(result.pixels).toMatchObject({loaded:true,nearest:true,count:1});expect(result.pixels.frames).toEqual([3]);
+      21 |  await page.evaluate(()=>{const w=window as any;w.game.combat.update(.14,w.game.position);w.draw()});
+      22 |  expect(await page.evaluate(()=>(window as any).game.combatView.inspectElemental().frames)).toEqual([4]);
+        at E:\study\game\MonsterBonk Mobile\tests\elemental-fusion-ui.spec.ts:19:46
+
+    Error Context: artifacts\vfx-old-source-output\elemental-fusion-ui-deep-a-8c9d6-es-and-slows-in-actual-game\error-context.md
+
+  4) tests\elemental-fusion-ui.spec.ts:30:11 › paopaoyuan development entry uses one animated creature, real cards, automatic fusions and bounded colored effects
+
+    Error: expect(locator).toHaveText(expected) failed
+
+    Locator: locator('#creature-name')
+    Expected: "泡泡螈"
+    Timeout: 8000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toHaveText" locator('#creature-name') with timeout 8000ms
+      - waiting for locator('#creature-name')
+
+
+      30 | ]as const)test(dev+' development entry uses one animated creature, real cards, automatic fusions and bounded colored effects',async({page})=>{
+      31 |  const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));await open(page,dev);
+    > 32 |  expect(await page.evaluate(()=>(window as any).game.party.members.map((m:any)=>m.species))).toEqual([species]);await expect(page.locator('#creature-name')).toHaveText(name);await expect(page.locator('.dash-control')).toBeHidden();
+         |                                                                                                                                                              ^
+      33 |  for(let i=0;i<cards.length;i++){await learn(page,cards[i]);await expect(page.locator('#fusion-title')).toContainText(titles[i]);}
+      34 |  await page.evaluate(()=>(window as any).impact());
+      35 |  const state=await page.evaluate(()=>{const g=(window as any).game;return {c:g.combat.inspect(),rings:g.combatView.burstRings.count+(g.combatView.inspectElemental()?.count??0),fire:g.combatView.firePixels?.mesh.count??0,children:g.combat.projectiles.filter((s:any)=>s.active&&s.generation===1).length}});
+        at E:\study\game\MonsterBonk Mobile\tests\elemental-fusion-ui.spec.ts:32:158
+
+    Error Context: artifacts\vfx-old-source-output\elemental-fusion-ui-paopao-625ea-and-bounded-colored-effects\error-context.md
+
+  5) tests\elemental-fusion-ui.spec.ts:30:11 › yacishou development entry uses one animated creature, real cards, automatic fusions and bounded colored effects
+
+    Error: expect(locator).toHaveText(expected) failed
+
+    Locator: locator('#creature-name')
+    Expected: "芽刺兽"
+    Timeout: 8000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toHaveText" locator('#creature-name') with timeout 8000ms
+      - waiting for locator('#creature-name')
+
+
+      30 | ]as const)test(dev+' development entry uses one animated creature, real cards, automatic fusions and bounded colored effects',async({page})=>{
+      31 |  const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));await open(page,dev);
+    > 32 |  expect(await page.evaluate(()=>(window as any).game.party.members.map((m:any)=>m.species))).toEqual([species]);await expect(page.locator('#creature-name')).toHaveText(name);await expect(page.locator('.dash-control')).toBeHidden();
+         |                                                                                                                                                              ^
+      33 |  for(let i=0;i<cards.length;i++){await learn(page,cards[i]);await expect(page.locator('#fusion-title')).toContainText(titles[i]);}
+      34 |  await page.evaluate(()=>(window as any).impact());
+      35 |  const state=await page.evaluate(()=>{const g=(window as any).game;return {c:g.combat.inspect(),rings:g.combatView.burstRings.count+(g.combatView.inspectElemental()?.count??0),fire:g.combatView.firePixels?.mesh.count??0,children:g.combat.projectiles.filter((s:any)=>s.active&&s.generation===1).length}});
+        at E:\study\game\MonsterBonk Mobile\tests\elemental-fusion-ui.spec.ts:32:158
+
+    Error Context: artifacts\vfx-old-source-output\elemental-fusion-ui-yacish-1fef3-and-bounded-colored-effects\error-context.md
+
+  6) tests\elemental-fusion-ui.spec.ts:73:1 › missing elemental textures and icons preserve procedural effects, readable cards and damage
+
+    Error: page.evaluate: TypeError: Cannot read properties of undefined (reading 'count')
+        at eval (eval at evaluate (:370:30), <anonymous>:1:41)
+        at UtilityScript.evaluate (<anonymous>:372:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at eval (eval at evaluate (:370:30), <anonymous>:1:41)
+        at UtilityScript.evaluate (<anonymous>:372:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at E:\study\game\MonsterBonk Mobile\tests\elemental-fusion-ui.spec.ts:76:105
+
+    Error Context: artifacts\vfx-old-source-output\elemental-fusion-ui-missin-e8229-s-readable-cards-and-damage\error-context.md
+
+  6 failed
+    tests\combat-clarity-ui.spec.ts:3:1 › fully fused three-weapon build stays readable with CD indicators and pooled impact visuals
+    tests\creature-animation-ui.spec.ts:77:1 › actual collision displacement controls animation and animated/static visuals have identical combat and positions
+    tests\elemental-fusion-ui.spec.ts:14:1 › deep atlas loads, plays flight and one-shot impact, damages and slows in actual game
+    tests\elemental-fusion-ui.spec.ts:30:11 › paopaoyuan development entry uses one animated creature, real cards, automatic fusions and bounded colored effects
+    tests\elemental-fusion-ui.spec.ts:30:11 › yacishou development entry uses one animated creature, real cards, automatic fusions and bounded colored effects
+    tests\elemental-fusion-ui.spec.ts:73:1 › missing elemental textures and icons preserve procedural effects, readable cards and damage
+  12 passed (1.9m)

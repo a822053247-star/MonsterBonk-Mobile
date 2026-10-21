@@ -1,0 +1,105 @@
+
+Running 5 tests using 1 worker
+
+(node:62720) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 1 tests\companion-animation.spec.ts:85:1 › missing companion atlases keep original static PNGs visible without disabling movement (4.1s)
+  x  2 tests\fusion-ui.spec.ts:51:1 › real fusion cards and impacts render child/explosion frames without duplicate hit flashes on both phone layouts (11.4s)
+(node:40108) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  3 tests\fusion-ui.spec.ts:98:1 › missing atlas and icons keep procedural attack/explosion and readable cards (4.6s)
+(node:55552) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  4 tests\game.spec.ts:14:1 › main menu renders a real 3D world and starts exploration without errors (14.6s)
+(node:34764) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  5 tests\hud-art.spec.ts:3:1 › forest HUD keeps live values, weapon artwork and safe touch targets on landscape phones (4.5s)
+
+
+  1) tests\fusion-ui.spec.ts:51:1 › real fusion cards and impacts render child/explosion frames without duplicate hit flashes on both phone layouts
+
+    Error: expect(locator).toHaveClass(expected) failed
+
+    Locator: locator('[data-skill="split-on-hit"]').locator('.fire-icon')
+    Expected pattern: /ready/
+    Timeout: 8000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toHaveClass" locator('[data-skill="split-on-hit"]').locator('.fire-icon') with timeout 8000ms
+      - waiting for locator('[data-skill="split-on-hit"]').locator('.fire-icon')
+
+
+      53 |   await page.evaluate(() => (window as unknown as Fixture).offer());
+      54 |   const card = page.locator('[data-skill="split-on-hit"]'); await expect(card).toBeEnabled();
+    > 55 |   await expect(card.locator('.fire-icon')).toHaveClass(/ready/);
+         |                                            ^
+      56 |   await page.screenshot({ path: 'artifacts/v5-fusion-card-844.png' });
+      57 |   await page.setViewportSize({ width: 568, height: 320 });
+      58 |   await page.screenshot({ path: 'artifacts/v5-fusion-card-568.png' });
+        at E:\study\game\MonsterBonk Mobile\tests\fusion-ui.spec.ts:55:44
+
+    Error Context: artifacts\vfx-old-source-output\fusion-ui-real-fusion-card-e5c41-ashes-on-both-phone-layouts\error-context.md
+
+  2) tests\fusion-ui.spec.ts:98:1 › missing atlas and icons keep procedural attack/explosion and readable cards
+
+    Error: page.evaluate: TypeError: Cannot read properties of undefined (reading 'count')
+        at eval (eval at evaluate (:370:30), <anonymous>:5:27)
+        at UtilityScript.evaluate (<anonymous>:372:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at eval (eval at evaluate (:370:30), <anonymous>:5:27)
+        at UtilityScript.evaluate (<anonymous>:372:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at E:\study\game\MonsterBonk Mobile\tests\fusion-ui.spec.ts:104:21
+
+    Error Context: artifacts\vfx-old-source-output\fusion-ui-missing-atlas-an-4f1a2-xplosion-and-readable-cards\error-context.md
+
+  3) tests\game.spec.ts:14:1 › main menu renders a real 3D world and starts exploration without errors
+
+    Error: expect(locator).toHaveAttribute(expected) failed
+
+    Locator: getByRole('progressbar', { name: '生命值', exact: true })
+    Expected: "100"
+    Timeout: 8000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toHaveAttribute" getByRole('progressbar', { name: '生命值', exact: true }) with timeout 8000ms
+      - waiting for getByRole('progressbar', { name: '生命值', exact: true })
+
+
+      28 |   await expect(page.locator('#hud')).toBeVisible();
+      29 |   await expect(page.locator('#menu')).toBeHidden();
+    > 30 |   await expect(page.getByRole('progressbar', { name: '生命值', exact: true })).toHaveAttribute('aria-valuenow', '100');
+         |                                                                             ^
+      31 |   await expect.poll(async () => (await inspect(page)).elapsed).toBeGreaterThan(0.5);
+      32 |   const state = await inspect(page);
+      33 |   expect(state.drawCalls).toBeLessThan(100);
+        at E:\study\game\MonsterBonk Mobile\tests\game.spec.ts:30:77
+
+    Error Context: artifacts\vfx-old-source-output\game-main-menu-renders-a-r-10d93--exploration-without-errors\error-context.md
+
+  4) tests\hud-art.spec.ts:3:1 › forest HUD keeps live values, weapon artwork and safe touch targets on landscape phones
+
+    Error: expect(received).toBeGreaterThanOrEqual(expected)
+
+    Expected: >= 48
+    Received:    44
+
+      45 |     for(const selector of ['#pause','#settings']) {
+      46 |       const rect=(await page.locator(selector).boundingBox())!;
+    > 47 |       expect(rect.width).toBeGreaterThanOrEqual(width === 568 ? 44 : 48);expect(rect.height).toBeGreaterThanOrEqual(width === 568 ? 44 : 48);
+         |                          ^
+      48 |     }
+      49 |   }
+      50 |   if(browserName==='chromium') await page.screenshot({path:'artifacts/hud-boss-small-chromium.png'});
+        at E:\study\game\MonsterBonk Mobile\tests\hud-art.spec.ts:47:26
+
+    Error Context: artifacts\vfx-old-source-output\hud-art-forest-HUD-keeps-l-0a44a-targets-on-landscape-phones\error-context.md
+
+  4 failed
+    tests\fusion-ui.spec.ts:51:1 › real fusion cards and impacts render child/explosion frames without duplicate hit flashes on both phone layouts
+    tests\fusion-ui.spec.ts:98:1 › missing atlas and icons keep procedural attack/explosion and readable cards
+    tests\game.spec.ts:14:1 › main menu renders a real 3D world and starts exploration without errors
+    tests\hud-art.spec.ts:3:1 › forest HUD keeps live values, weapon artwork and safe touch targets on landscape phones
+  1 passed (49.6s)

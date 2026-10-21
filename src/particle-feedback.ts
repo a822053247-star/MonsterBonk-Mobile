@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import type { CombatEffect, Projectile } from './combat';
+import type { ProjectileVfx, ImpactVfx } from './visuals/vfx-presets';
 
 const CAPACITY = 48;
 const URL = `${import.meta.env.BASE_URL}assets/particles/kenney-feedback.png`;
@@ -81,43 +82,48 @@ export class ParticleFeedbackView {
   }
 
   /** True also means the decoration was intentionally culled by the budget. */
-  trail(shot: Projectile, x: number, z: number, color: string, scale: number) {
+  trail(shot: Projectile, x: number, z: number, color: string, scale: number, preset?: ProjectileVfx) {
+    if (preset && this.detail <= 2 && !preset.low.trail) return true;
     if (!this.loaded || this.disposed || (shot.hopTargetId && !shot.hopDelay)) return false;
-    const speed = Math.hypot(shot.vx, shot.vz), length = Math.min(.65 * scale, shot.distance);
+    const speed = Math.hypot(shot.vx, shot.vz), length = Math.min((preset?.trail.length ?? .65) * scale, shot.distance);
     if (speed < .001 || length < .12 || this.trailCount >= (this.detail <= 2 ? 12 : 24)) return true;
     this.trailCount++;
     const dx = shot.vx / speed, dz = shot.vz / speed;
     const angle = Math.atan2(this.up.x * dx + this.up.z * dz, this.right.x * dx + this.right.z * dz) - Math.PI / 2;
     this.put(2, x - dx * length * .55, 1.15, z - dz * length * .55,
-      .28 * scale, length, color, this.detail <= 2 ? .4 : .55, angle);
+      .28 * scale, length, preset?.trail.color ?? color, (preset?.trail.opacity ?? .55) * (this.detail <= 2 ? .4 / .55 : 1), angle);
     return true;
   }
 
-  impact(effect: CombatEffect, x: number, z: number) {
+  impact(effect: CombatEffect, x: number, z: number, preset?: ImpactVfx) {
+    if (preset && (!preset.particles || this.detail <= 2 && !preset.low.particles)) return true;
     if (!this.loaded || this.disposed || !(effect.kind in INK)) return false;
     if (this.impactCount >= (this.detail <= 2 ? 3 : 6)) return true;
     const kind = effect.kind as keyof typeof INK, age = effect.duration - effect.time;
-    const life = kind === 'thorn' ? .2 : .16;
+    const life = Math.min(effect.duration, preset?.duration ?? (kind === 'thorn' ? .2 : .16));
     if (age >= life) return true;
     this.impactCount++;
     const p = Math.max(0, age / life), fade = (1 - p) * .9;
-    if (kind === 'thorn') this.put(3, x, .95, z, .95 + p * .25, .8, INK.thorn, fade, -.45 + p * .7);
-    else this.put(0, x, .95, z, .85 + p * .3, .85 + p * .3, INK[kind], fade, p * .25);
-    if (this.detail > 2) this.put(1, x + .22, 1.1 + p * .18, z, .2, .2, INK[kind], fade * .5);
+    const height = preset?.height ?? .95;
+    if (kind === 'thorn') this.put(3, x, height, z, (.95 + p * .25) * (preset?.radiusScale ?? 1), .8 * (preset?.radiusScale ?? 1), preset?.color ?? INK.thorn, fade, -.45 + p * .7);
+    else this.put(0, x, height, z, (.85 + p * .3) * (preset?.radiusScale ?? 1), (.85 + p * .3) * (preset?.radiusScale ?? 1), preset?.color ?? INK[kind], fade, p * .25);
+    if (this.detail > 2) this.put(1, x + .22, height + .15 + p * .18, z, .2, .2, preset?.secondaryColor ?? INK[kind], fade * .5);
     return true;
   }
 
   /** Small edge embers accompany the existing explosion; no second explosion. */
-  embers(effect: CombatEffect) {
+  embers(effect: CombatEffect, preset?: ImpactVfx) {
+    if (preset && (!preset.particles || this.detail <= 2 && !preset.low.particles)) return;
     if (effect.kind !== 'burst' || !this.loaded || this.disposed || this.emberCount >= (this.detail <= 2 ? 3 : 6)) return;
     const age = effect.duration - effect.time;
-    if (age < .06 || age > .28) return;
+    const end = Math.min(.28, effect.duration, preset?.duration ?? .28);
+    if (age < .06 || age >= end) return;
     this.emberCount++;
-    const p = (age - .06) / .22, count = this.detail <= 2 ? 1 : 2;
+    const p = (age - .06) / Math.max(.001, end - .06), count = this.detail <= 2 ? 1 : 2;
     for (let i = 0; i < count; i++) {
       const side = i ? 1 : -1;
       this.put(4 + i, effect.x + side * (.22 + p * .18), .9 + p * .35, effect.z,
-        .55 * (1 - p * .5), .8 * (1 - p * .35), i ? '#ffe09a' : '#ffac59', .65 * (1 - p), side * .2);
+        .55 * (1 - p * .5), .8 * (1 - p * .35), i ? preset?.secondaryColor ?? '#ffe09a' : preset?.color ?? '#ffac59', .65 * (1 - p), side * .2);
     }
   }
 

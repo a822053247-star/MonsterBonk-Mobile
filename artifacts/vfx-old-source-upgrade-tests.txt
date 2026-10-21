@@ -1,0 +1,66 @@
+
+Running 3 tests using 1 worker
+
+(node:59072) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 1 tests\game.spec.ts:193:1 › automatic combat updates HUD, collects XP and restart clears every combat entity (11.1s)
+  x  2 tests\upgrades.spec.ts:124:1 › new spells coexist, max HP updates HUD and a fresh run clears all skills (11.9s)
+(node:57752) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  3 tests\upgrades.spec.ts:147:1 › the last remaining skill is valid and full mastery stops creating empty dialogs (10.8s)
+
+
+  1) tests\upgrades.spec.ts:124:1 › new spells coexist, max HP updates HUD and a fresh run clears all skills
+
+    Error: expect(locator).toHaveAttribute(expected) failed
+
+    Locator: getByRole('progressbar', { name: '生命值', exact: true })
+    Expected: "120"
+    Timeout: 8000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toHaveAttribute" getByRole('progressbar', { name: '生命值', exact: true }) with timeout 8000ms
+      - waiting for getByRole('progressbar', { name: '生命值', exact: true })
+
+
+      132 |   expect(upgraded.combat.progression.stats).toMatchObject({ orbitCount: 1, shockDamage: 24, maxHp: 120, moveMultiplier: 1.1 });
+      133 |   await expect(page.locator('#health-value')).toHaveText('120 / 120');
+    > 134 |   await expect(page.getByRole('progressbar', { name: '生命值', exact: true })).toHaveAttribute('aria-valuemax', '120');
+          |                                                                             ^
+      135 |   await expect.poll(async () => (await state(page)).combat.orbitAngle).toBeGreaterThan(0);
+      136 |   if (testInfo.project.name === 'chromium') {
+      137 |     await expect.poll(async () => (await state(page)).combat.shockwaves.some((wave) => wave.radius > 1.5), { timeout: 7_000, intervals: [50] }).toBe(true);
+        at E:\study\game\MonsterBonk Mobile\tests\upgrades.spec.ts:134:77
+
+    Error Context: artifacts\vfx-old-source-output\upgrades-new-spells-coexis-8c811-fresh-run-clears-all-skills\error-context.md
+
+  2) tests\upgrades.spec.ts:147:1 › the last remaining skill is valid and full mastery stops creating empty dialogs
+
+    Error: expect(locator).toHaveText(expected) failed
+
+    Locator: locator('#xp-progress')
+    Expected: "满级"
+    Timeout: 8000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toHaveText" locator('#xp-progress') with timeout 8000ms
+      - waiting for locator('#xp-progress')
+
+
+      155 |   await page.locator('.skill-card').tap();
+      156 |   await expect(page.locator('#upgrade-screen')).toBeHidden();
+    > 157 |   await expect(page.locator('#xp-progress')).toHaveText('满级');
+          |                                              ^
+      158 |   await page.evaluate(() => (window as unknown as Harness).testGame.combat.progression.gainExperience(500));
+      159 |   await page.waitForTimeout(200);
+      160 |   expect((await state(page)).mode).toBe('playing');
+        at E:\study\game\MonsterBonk Mobile\tests\upgrades.spec.ts:157:46
+
+    Error Context: artifacts\vfx-old-source-output\upgrades-the-last-remainin-0cb5f-tops-creating-empty-dialogs\error-context.md
+
+  2 failed
+    tests\upgrades.spec.ts:124:1 › new spells coexist, max HP updates HUD and a fresh run clears all skills
+    tests\upgrades.spec.ts:147:1 › the last remaining skill is valid and full mastery stops creating empty dialogs
+  1 passed (37.3s)

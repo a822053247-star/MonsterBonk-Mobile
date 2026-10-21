@@ -1,0 +1,51 @@
+
+> monsterbonk-mobile@0.4.0 test
+> playwright test
+
+
+Running 1020 tests using 1 worker
+
+(node:58268) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok    1 [chromium] › tests\25d-model.spec.ts:7:1 › screen input maps to projected ground direction without changing speed or analog strength (35ms)
+  ok    2 [chromium] › tests\25d-model.spec.ts:17:1 › landscape frustum keeps horizontal and vertical combat visibility across phone sizes (5ms)
+  ok    3 [chromium] › tests\25d-model.spec.ts:27:1 › independent organs replace once, survive form socket changes, reuse resources, and dispose detached props (29ms)
+  ok    4 [chromium] › tests\25d.spec.ts:21:1 › mobile touches follow all screen directions with fixed orientation and ground height (8.7s)
+  ok    5 [chromium] › tests\25d.spec.ts:47:1 › Yanrong and two socket props render with clear low scenery, combat and responsive frustum (4.6s)
+  ok    6 [chromium] › tests\build-chain-ui.spec.ts:4:1 › four real build demonstrations support seeking, playback and phone layout (17.3s)
+  ok    7 [chromium] › tests\build-chain-ui.spec.ts:51:1 › preview honors reduced motion and steam art works in real upgrades (5.4s)
+  ok    8 [chromium] › tests\build-chain.spec.ts:29:1 › mature fire propagates three generations from the original snapshot; basic fire retains its rules (36ms)
+  ok    9 [chromium] › tests\build-chain.spec.ts:46:1 › only mature burn kills relay; copied roots retain their reduced damage (11ms)
+  ok   10 [chromium] › tests\build-chain.spec.ts:58:1 › steam consumes wet, damages living origin and neighbors, and cannot recursively boil (14ms)
+  ok   11 [chromium] › tests\build-chain.spec.ts:73:1 › wet expiry, pause, cover, spawn protection and pooled reset are respected (22ms)
+  ok   12 [chromium] › tests\build-chain.spec.ts:91:1 › steam can kill a Boss through the shared victory gate (10ms)
+  ok   13 [chromium] › tests\build-chain.spec.ts:100:1 › mature roots cap nodes while all primary kills and XP survive full effect/projectile pools (18ms)
+  ok   14 [chromium] › tests\build-chain.spec.ts:114:1 › steam eligibility requires water and fire; six skipped rolls reserve an applicable core (17ms)
+  ok   15 [chromium] › tests\build-chain.spec.ts:132:1 › steam can be bought in the real shop and key effects survive a pool full of deaths (6ms)
+  ok   16 [chromium] › tests\build-chain.spec.ts:142:1 › declared demo builds exercise actual propagation, steam and slaughter deterministically (314ms)
+  ok   17 [chromium] › tests\build-chain.spec.ts:160:1 › maturity is snapshotted on volleys and echo copies across a mid-flight upgrade (9ms)
+  ok   18 [chromium] › tests\build-chain.spec.ts:174:1 › 200-enemy mixed reactions remain deterministic with bounded queues and pools (726ms)
+  x    19 [chromium] › tests\build-depth-ui.spec.ts:3:1 › rare choices expose costs, and pause shows levels, all six relics and the exclusive route (8.4s)
+(node:57244) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok   20 [chromium] › tests\build-depth.spec.ts:37:1 › weapon upgrades use real cards, cap at five and do not duplicate slots (25ms)
+  ok   21 [chromium] › tests\build-depth.spec.ts:48:1 › single-weapon specialization loses its bonus when a side weapon is equipped (9ms)
+  ok   22 [chromium] › tests\build-depth.spec.ts:57:1 › overload and berserk expand real splash while slowing fire, and evolution is exclusive (11ms)
+  ok   23 [chromium] › tests\build-depth.spec.ts:70:1 › hunter and shattered core change child motion/count with real damage costs and bounded generation (9ms)
+  ok   24 [chromium] › tests\build-depth.spec.ts:83:1 › pursuit route creates homing fire children at the cost of explosion radius (5ms)
+  ok   25 [chromium] › tests\build-depth.spec.ts:91:1 › tidal pearl extends water control and reduces direct hits without reducing splash (6ms)
+  ok   26 [chromium] › tests\build-depth.spec.ts:99:1 › echo extends leaf chain reach and increases damage decay at each extra hop (9ms)
+  ok   27 [chromium] › tests\build-depth.spec.ts:110:1 › reset clears levels/relics/evolution; legacy card pools never receive build rewards (7ms)
+  ok   28 [chromium] › tests\build-depth.spec.ts:120:1 › large experience queues keep rare offers bounded and finish without an empty upgrade trap (115ms)
+  ok   29 [chromium] › tests\campaign-balance.spec.ts:4:1 › earned choices, HP and resources carry through a continuous run deterministically (3.1s)
+  ok   30 [chromium] › tests\campaign-balance.spec.ts:14:1 › standing still with real damage is not sufficient to coast through the formal run (1.0s)
+  ok   31 [chromium] › tests\campaign-balance.spec.ts:22:1 › a naturally earned mature build gets a late harvest payoff without bypassing pressure or pool limits (8.2s)
+  ok   32 [chromium] › tests\campaign-balance.spec.ts:36:1 › invalid campaign probes are rejected (10ms)
+  ok   33 [chromium] › tests\challenge-model.spec.ts:11:1 › finite waves spawn exactly their configured enemies and victory never requires optional techniques (34ms)
+  ok   34 [chromium] › tests\challenge-model.spec.ts:21:1 › remaining queued enemies prevent early clears, rest lasts three simulation seconds, and running away respawns targets (5ms)
+  ok   35 [chromium] › tests\challenge-model.spec.ts:35:1 › upgrades/death freeze wave timers, and final kills win before an unused upgrade (5ms)
+  ok   36 [chromium] › tests\challenge-model.spec.ts:49:1 › bonuses add stars only after winning and fresh directors carry no previous progress (19ms)
+  ok   37 [chromium] › tests\challenge-model.spec.ts:57:1 › encounter retries respect cover, boundaries and pool capacity without losing the wave queue (13ms)
+  ok   38 [chromium] › tests\challenge-model.spec.ts:66:1 › 30/60/120 Hz render schedules produce the same fixed-step wave progression (13ms)
+  ok   39 [chromium] › tests\challenge-ui.spec.ts:32:1 › challenge clears three finite waves into victory, freezes, retries, and preserves classic defeat text (5.0s)
+  ok   40 [chromium] › tests\challenge-ui.spec.ts:46:1 › wave break, three-choice upgrades, pause and background freeze the director (8.0s)

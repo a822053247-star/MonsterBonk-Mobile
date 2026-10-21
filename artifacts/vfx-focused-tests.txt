@@ -1,0 +1,513 @@
+
+Running 50 tests using 1 worker
+
+(node:652) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x   1 [chromium] › tests\elemental-fusion-ui.spec.ts:14:1 › deep atlas loads, plays flight and one-shot impact, damages and slows in actual game (5.8s)
+(node:43304) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x   2 [chromium] › tests\elemental-fusion-ui.spec.ts:30:11 › paopaoyuan development entry uses one animated creature, real cards, automatic fusions and bounded colored effects (13.2s)
+(node:59088) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x   3 [chromium] › tests\elemental-fusion-ui.spec.ts:30:11 › yacishou development entry uses one animated creature, real cards, automatic fusions and bounded colored effects (13.3s)
+(node:57620) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  4 [chromium] › tests\elemental-fusion-ui.spec.ts:44:1 › unknown developer value preserves Yanrong and old three-party ignores developer species and new cards (3.4s)
+  ok  5 [chromium] › tests\elemental-fusion-ui.spec.ts:53:11 › deep-bubble individual skill renders audited pixels, icon and real damage; lifecycle clears batch (4.9s)
+  ok  6 [chromium] › tests\elemental-fusion-ui.spec.ts:53:11 › chain-bubble individual skill renders audited pixels, icon and real damage; lifecycle clears batch (4.8s)
+  ok  7 [chromium] › tests\elemental-fusion-ui.spec.ts:53:11 › thorn-scatter individual skill renders audited pixels, icon and real damage; lifecycle clears batch (4.9s)
+  ok  8 [chromium] › tests\elemental-fusion-ui.spec.ts:53:11 › jump-thorn individual skill renders audited pixels, icon and real damage; lifecycle clears batch (5.5s)
+  x   9 [chromium] › tests\elemental-fusion-ui.spec.ts:73:1 › missing elemental textures and icons preserve procedural effects, readable cards and damage (5.7s)
+(node:52804) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 10 [chromium] › tests\elemental-fusion-ui.spec.ts:80:1 › changing only visual FPS preserves actual combat state; repeated starts reuse the elemental GPU batch (4.3s)
+  ok 11 [chromium] › tests\fusion-ui.spec.ts:35:1 › new menu starts one pixel Yanrong with joystick only and automatically fires ordinary sparks (4.4s)
+  x  12 [chromium] › tests\fusion-ui.spec.ts:51:1 › real fusion cards and impacts render child/explosion frames without duplicate hit flashes on both phone layouts (15.1s)
+(node:39448) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 13 [chromium] › tests\fusion-ui.spec.ts:80:1 › pause, background, death and restart freeze animations/damage and clear learned fusion (7.0s)
+  x  14 [chromium] › tests\fusion-ui.spec.ts:98:1 › missing atlas and icons keep procedural attack/explosion and readable cards (6.7s)
+(node:61508) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 15 [chromium] › tests\fusion-ui.spec.ts:108:1 › legacy three-creature entry retains following/automatic attacks and does not learn fusion (6.4s)
+  ok 16 [chromium] › tests\fusion-ui.spec.ts:119:1 › new and preserved menu entries fit both phone safe areas with unobstructed touch targets (11.9s)
+  ok 17 [chromium] › tests\fusion-ui.spec.ts:134:1 › fusion restarts reuse GPU resources and disposal releases the atlas batch (7.1s)
+  ok 18 [chromium] › tests\fusion-ui.spec.ts:149:1 › late fire atlas completion cannot attach resources after disposal (8.6s)
+  ok 19 [chromium] › tests\particle-feedback.spec.ts:31:1 › feedback uses real event clocks, one bounded GPU batch, preserves combat and stops with lifecycle (5.6s)
+  ok 20 [chromium] › tests\particle-feedback.spec.ts:87:1 › missing feedback atlas retains existing trail and hit fallback and real damage (4.4s)
+  ok 21 [chromium] › tests\vfx-presets-ui.spec.ts:38:1 › real spark, bubble and wet-fire steam render through presets and keep lifecycle/budgets (6.5s)
+  ok 22 [chromium] › tests\vfx-presets-ui.spec.ts:84:1 › custom content changes actual render buffers; unavailable textures and low quality retain fallback (4.8s)
+  ok 23 [chromium] › tests\vfx-presets.spec.ts:5:1 › builtins resolve real attack/effect IDs and custom presets bind without renderer classes (15ms)
+  ok 24 [chromium] › tests\vfx-presets.spec.ts:22:1 › invalid authoring data fails registration, including nonfinite and out of atlas values (16ms)
+  ok 25 [chromium] › tests\vfx-presets.spec.ts:37:1 › presentation durations are clamped to combat clocks and cannot outlive expired events (3ms)
+(node:58308) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  26 [webkit] › tests\elemental-fusion-ui.spec.ts:14:1 › deep atlas loads, plays flight and one-shot impact, damages and slows in actual game (8.8s)
+(node:59776) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  27 [webkit] › tests\elemental-fusion-ui.spec.ts:30:11 › paopaoyuan development entry uses one animated creature, real cards, automatic fusions and bounded colored effects (14.1s)
+(node:61020) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  28 [webkit] › tests\elemental-fusion-ui.spec.ts:30:11 › yacishou development entry uses one animated creature, real cards, automatic fusions and bounded colored effects (14.8s)
+(node:60060) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 29 [webkit] › tests\elemental-fusion-ui.spec.ts:44:1 › unknown developer value preserves Yanrong and old three-party ignores developer species and new cards (4.8s)
+  ok 30 [webkit] › tests\elemental-fusion-ui.spec.ts:53:11 › deep-bubble individual skill renders audited pixels, icon and real damage; lifecycle clears batch (6.0s)
+  ok 31 [webkit] › tests\elemental-fusion-ui.spec.ts:53:11 › chain-bubble individual skill renders audited pixels, icon and real damage; lifecycle clears batch (6.4s)
+  ok 32 [webkit] › tests\elemental-fusion-ui.spec.ts:53:11 › thorn-scatter individual skill renders audited pixels, icon and real damage; lifecycle clears batch (8.5s)
+  ok 33 [webkit] › tests\elemental-fusion-ui.spec.ts:53:11 › jump-thorn individual skill renders audited pixels, icon and real damage; lifecycle clears batch (6.7s)
+  x  34 [webkit] › tests\elemental-fusion-ui.spec.ts:73:1 › missing elemental textures and icons preserve procedural effects, readable cards and damage (7.3s)
+(node:9612) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 35 [webkit] › tests\elemental-fusion-ui.spec.ts:80:1 › changing only visual FPS preserves actual combat state; repeated starts reuse the elemental GPU batch (9.6s)
+  ok 36 [webkit] › tests\fusion-ui.spec.ts:35:1 › new menu starts one pixel Yanrong with joystick only and automatically fires ordinary sparks (6.1s)
+  x  37 [webkit] › tests\fusion-ui.spec.ts:51:1 › real fusion cards and impacts render child/explosion frames without duplicate hit flashes on both phone layouts (14.1s)
+(node:58296) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 38 [webkit] › tests\fusion-ui.spec.ts:80:1 › pause, background, death and restart freeze animations/damage and clear learned fusion (9.0s)
+  x  39 [webkit] › tests\fusion-ui.spec.ts:98:1 › missing atlas and icons keep procedural attack/explosion and readable cards (7.3s)
+(node:63224) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 40 [webkit] › tests\fusion-ui.spec.ts:108:1 › legacy three-creature entry retains following/automatic attacks and does not learn fusion (6.0s)
+  ok 41 [webkit] › tests\fusion-ui.spec.ts:119:1 › new and preserved menu entries fit both phone safe areas with unobstructed touch targets (9.4s)
+  ok 42 [webkit] › tests\fusion-ui.spec.ts:134:1 › fusion restarts reuse GPU resources and disposal releases the atlas batch (10.3s)
+  ok 43 [webkit] › tests\fusion-ui.spec.ts:149:1 › late fire atlas completion cannot attach resources after disposal (5.5s)
+  ok 44 [webkit] › tests\particle-feedback.spec.ts:31:1 › feedback uses real event clocks, one bounded GPU batch, preserves combat and stops with lifecycle (6.5s)
+  ok 45 [webkit] › tests\particle-feedback.spec.ts:87:1 › missing feedback atlas retains existing trail and hit fallback and real damage (5.8s)
+  x  46 [webkit] › tests\vfx-presets-ui.spec.ts:38:1 › real spark, bubble and wet-fire steam render through presets and keep lifecycle/budgets (14.9s)
+(node:58720) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 47 [webkit] › tests\vfx-presets-ui.spec.ts:84:1 › custom content changes actual render buffers; unavailable textures and low quality retain fallback (7.4s)
+  ok 48 [webkit] › tests\vfx-presets.spec.ts:5:1 › builtins resolve real attack/effect IDs and custom presets bind without renderer classes (33ms)
+  ok 49 [webkit] › tests\vfx-presets.spec.ts:22:1 › invalid authoring data fails registration, including nonfinite and out of atlas values (30ms)
+  ok 50 [webkit] › tests\vfx-presets.spec.ts:37:1 › presentation durations are clamped to combat clocks and cannot outlive expired events (9ms)
+
+
+  1) [chromium] › tests\elemental-fusion-ui.spec.ts:14:1 › deep atlas loads, plays flight and one-shot impact, damages and slows in actual game
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      17 |  await learn(page,'area');await page.evaluate(()=>(window as any).impact());
+      18 |  const result=await page.evaluate(()=>{const g=(window as any).game;return {hp:g.combat.enemies.filter((e:any)=>e.active).map((e:any)=>e.hp),slow:g.combat.enemies.filter((e:any)=>e.active).map((e:any)=>e.slowTime),pixels:g.combatView.inspectElemental()}});
+    > 19 |  expect(result.hp.some((hp:number)=>hp<100)).toBe(true);expect(result.slow.some((s:number)=>s>0)).toBe(true);
+         |                                              ^
+      20 |  expect(result.pixels).toMatchObject({loaded:true,nearest:true,count:1});expect(result.pixels.frames).toEqual([3]);
+      21 |  await page.evaluate(()=>{const w=window as any;w.game.combat.update(.14,w.game.position);w.draw()});
+      22 |  expect(await page.evaluate(()=>(window as any).game.combatView.inspectElemental().frames)).toEqual([4]);
+        at E:\study\game\MonsterBonk Mobile\tests\elemental-fusion-ui.spec.ts:19:46
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    artifacts\vfx-focused-output\elemental-fusion-ui-deep-a-8c9d6-es-and-slows-in-actual-game-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: artifacts\vfx-focused-output\elemental-fusion-ui-deep-a-8c9d6-es-and-slows-in-actual-game-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    artifacts\vfx-focused-output\elemental-fusion-ui-deep-a-8c9d6-es-and-slows-in-actual-game-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace artifacts\vfx-focused-output\elemental-fusion-ui-deep-a-8c9d6-es-and-slows-in-actual-game-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [chromium] › tests\elemental-fusion-ui.spec.ts:30:11 › paopaoyuan development entry uses one animated creature, real cards, automatic fusions and bounded colored effects
+
+    Error: expect(locator).toHaveText(expected) failed
+
+    Locator: locator('#creature-name')
+    Expected: "泡泡螈"
+    Timeout: 8000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toHaveText" locator('#creature-name') with timeout 8000ms
+      - waiting for locator('#creature-name')
+
+
+      30 | ]as const)test(dev+' development entry uses one animated creature, real cards, automatic fusions and bounded colored effects',async({page})=>{
+      31 |  const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));await open(page,dev);
+    > 32 |  expect(await page.evaluate(()=>(window as any).game.party.members.map((m:any)=>m.species))).toEqual([species]);await expect(page.locator('#creature-name')).toHaveText(name);await expect(page.locator('.dash-control')).toBeHidden();
+         |                                                                                                                                                              ^
+      33 |  for(let i=0;i<cards.length;i++){await learn(page,cards[i]);await expect(page.locator('#fusion-title')).toContainText(titles[i]);}
+      34 |  await page.evaluate(()=>(window as any).impact());
+      35 |  const state=await page.evaluate(()=>{const g=(window as any).game;return {c:g.combat.inspect(),rings:g.combatView.burstRings.count+(g.combatView.inspectElemental()?.count??0),fire:g.combatView.firePixels?.mesh.count??0,children:g.combat.projectiles.filter((s:any)=>s.active&&s.generation===1).length}});
+        at E:\study\game\MonsterBonk Mobile\tests\elemental-fusion-ui.spec.ts:32:158
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    artifacts\vfx-focused-output\elemental-fusion-ui-paopao-625ea-and-bounded-colored-effects-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: artifacts\vfx-focused-output\elemental-fusion-ui-paopao-625ea-and-bounded-colored-effects-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    artifacts\vfx-focused-output\elemental-fusion-ui-paopao-625ea-and-bounded-colored-effects-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace artifacts\vfx-focused-output\elemental-fusion-ui-paopao-625ea-and-bounded-colored-effects-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) [chromium] › tests\elemental-fusion-ui.spec.ts:30:11 › yacishou development entry uses one animated creature, real cards, automatic fusions and bounded colored effects
+
+    Error: expect(locator).toHaveText(expected) failed
+
+    Locator: locator('#creature-name')
+    Expected: "芽刺兽"
+    Timeout: 8000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toHaveText" locator('#creature-name') with timeout 8000ms
+      - waiting for locator('#creature-name')
+
+
+      30 | ]as const)test(dev+' development entry uses one animated creature, real cards, automatic fusions and bounded colored effects',async({page})=>{
+      31 |  const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));await open(page,dev);
+    > 32 |  expect(await page.evaluate(()=>(window as any).game.party.members.map((m:any)=>m.species))).toEqual([species]);await expect(page.locator('#creature-name')).toHaveText(name);await expect(page.locator('.dash-control')).toBeHidden();
+         |                                                                                                                                                              ^
+      33 |  for(let i=0;i<cards.length;i++){await learn(page,cards[i]);await expect(page.locator('#fusion-title')).toContainText(titles[i]);}
+      34 |  await page.evaluate(()=>(window as any).impact());
+      35 |  const state=await page.evaluate(()=>{const g=(window as any).game;return {c:g.combat.inspect(),rings:g.combatView.burstRings.count+(g.combatView.inspectElemental()?.count??0),fire:g.combatView.firePixels?.mesh.count??0,children:g.combat.projectiles.filter((s:any)=>s.active&&s.generation===1).length}});
+        at E:\study\game\MonsterBonk Mobile\tests\elemental-fusion-ui.spec.ts:32:158
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    artifacts\vfx-focused-output\elemental-fusion-ui-yacish-1fef3-and-bounded-colored-effects-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: artifacts\vfx-focused-output\elemental-fusion-ui-yacish-1fef3-and-bounded-colored-effects-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    artifacts\vfx-focused-output\elemental-fusion-ui-yacish-1fef3-and-bounded-colored-effects-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace artifacts\vfx-focused-output\elemental-fusion-ui-yacish-1fef3-and-bounded-colored-effects-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  4) [chromium] › tests\elemental-fusion-ui.spec.ts:73:1 › missing elemental textures and icons preserve procedural effects, readable cards and damage
+
+    Error: page.evaluate: TypeError: Cannot read properties of undefined (reading 'count')
+        at eval (eval at evaluate (:370:30), <anonymous>:1:41)
+        at UtilityScript.evaluate (<anonymous>:372:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at eval (eval at evaluate (:370:30), <anonymous>:1:41)
+        at UtilityScript.evaluate (<anonymous>:372:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at E:\study\game\MonsterBonk Mobile\tests\elemental-fusion-ui.spec.ts:76:105
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    artifacts\vfx-focused-output\elemental-fusion-ui-missin-e8229-s-readable-cards-and-damage-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: artifacts\vfx-focused-output\elemental-fusion-ui-missin-e8229-s-readable-cards-and-damage-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    artifacts\vfx-focused-output\elemental-fusion-ui-missin-e8229-s-readable-cards-and-damage-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace artifacts\vfx-focused-output\elemental-fusion-ui-missin-e8229-s-readable-cards-and-damage-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  5) [chromium] › tests\fusion-ui.spec.ts:51:1 › real fusion cards and impacts render child/explosion frames without duplicate hit flashes on both phone layouts
+
+    Error: expect(locator).toHaveClass(expected) failed
+
+    Locator: locator('[data-skill="split-on-hit"]').locator('.fire-icon')
+    Expected pattern: /ready/
+    Timeout: 8000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toHaveClass" locator('[data-skill="split-on-hit"]').locator('.fire-icon') with timeout 8000ms
+      - waiting for locator('[data-skill="split-on-hit"]').locator('.fire-icon')
+
+
+      53 |   await page.evaluate(() => (window as unknown as Fixture).offer());
+      54 |   const card = page.locator('[data-skill="split-on-hit"]'); await expect(card).toBeEnabled();
+    > 55 |   await expect(card.locator('.fire-icon')).toHaveClass(/ready/);
+         |                                            ^
+      56 |   await page.screenshot({ path: 'artifacts/v5-fusion-card-844.png' });
+      57 |   await page.setViewportSize({ width: 568, height: 320 });
+      58 |   await page.screenshot({ path: 'artifacts/v5-fusion-card-568.png' });
+        at E:\study\game\MonsterBonk Mobile\tests\fusion-ui.spec.ts:55:44
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    artifacts\vfx-focused-output\fusion-ui-real-fusion-card-e5c41-ashes-on-both-phone-layouts-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: artifacts\vfx-focused-output\fusion-ui-real-fusion-card-e5c41-ashes-on-both-phone-layouts-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    artifacts\vfx-focused-output\fusion-ui-real-fusion-card-e5c41-ashes-on-both-phone-layouts-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace artifacts\vfx-focused-output\fusion-ui-real-fusion-card-e5c41-ashes-on-both-phone-layouts-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  6) [chromium] › tests\fusion-ui.spec.ts:98:1 › missing atlas and icons keep procedural attack/explosion and readable cards
+
+    Error: page.evaluate: TypeError: Cannot read properties of undefined (reading 'count')
+        at eval (eval at evaluate (:370:30), <anonymous>:5:27)
+        at UtilityScript.evaluate (<anonymous>:372:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at eval (eval at evaluate (:370:30), <anonymous>:5:27)
+        at UtilityScript.evaluate (<anonymous>:372:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at E:\study\game\MonsterBonk Mobile\tests\fusion-ui.spec.ts:104:21
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    artifacts\vfx-focused-output\fusion-ui-missing-atlas-an-4f1a2-xplosion-and-readable-cards-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: artifacts\vfx-focused-output\fusion-ui-missing-atlas-an-4f1a2-xplosion-and-readable-cards-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    artifacts\vfx-focused-output\fusion-ui-missing-atlas-an-4f1a2-xplosion-and-readable-cards-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace artifacts\vfx-focused-output\fusion-ui-missing-atlas-an-4f1a2-xplosion-and-readable-cards-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  7) [webkit] › tests\elemental-fusion-ui.spec.ts:14:1 › deep atlas loads, plays flight and one-shot impact, damages and slows in actual game
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      17 |  await learn(page,'area');await page.evaluate(()=>(window as any).impact());
+      18 |  const result=await page.evaluate(()=>{const g=(window as any).game;return {hp:g.combat.enemies.filter((e:any)=>e.active).map((e:any)=>e.hp),slow:g.combat.enemies.filter((e:any)=>e.active).map((e:any)=>e.slowTime),pixels:g.combatView.inspectElemental()}});
+    > 19 |  expect(result.hp.some((hp:number)=>hp<100)).toBe(true);expect(result.slow.some((s:number)=>s>0)).toBe(true);
+         |                                              ^
+      20 |  expect(result.pixels).toMatchObject({loaded:true,nearest:true,count:1});expect(result.pixels.frames).toEqual([3]);
+      21 |  await page.evaluate(()=>{const w=window as any;w.game.combat.update(.14,w.game.position);w.draw()});
+      22 |  expect(await page.evaluate(()=>(window as any).game.combatView.inspectElemental().frames)).toEqual([4]);
+        at E:\study\game\MonsterBonk Mobile\tests\elemental-fusion-ui.spec.ts:19:46
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    artifacts\vfx-focused-output\elemental-fusion-ui-deep-a-8c9d6-es-and-slows-in-actual-game-webkit\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: artifacts\vfx-focused-output\elemental-fusion-ui-deep-a-8c9d6-es-and-slows-in-actual-game-webkit\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    artifacts\vfx-focused-output\elemental-fusion-ui-deep-a-8c9d6-es-and-slows-in-actual-game-webkit\trace.zip
+    Usage:
+
+        npx playwright show-trace artifacts\vfx-focused-output\elemental-fusion-ui-deep-a-8c9d6-es-and-slows-in-actual-game-webkit\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  8) [webkit] › tests\elemental-fusion-ui.spec.ts:30:11 › paopaoyuan development entry uses one animated creature, real cards, automatic fusions and bounded colored effects
+
+    Error: expect(locator).toHaveText(expected) failed
+
+    Locator: locator('#creature-name')
+    Expected: "泡泡螈"
+    Timeout: 8000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toHaveText" locator('#creature-name') with timeout 8000ms
+      - waiting for locator('#creature-name')
+
+
+      30 | ]as const)test(dev+' development entry uses one animated creature, real cards, automatic fusions and bounded colored effects',async({page})=>{
+      31 |  const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));await open(page,dev);
+    > 32 |  expect(await page.evaluate(()=>(window as any).game.party.members.map((m:any)=>m.species))).toEqual([species]);await expect(page.locator('#creature-name')).toHaveText(name);await expect(page.locator('.dash-control')).toBeHidden();
+         |                                                                                                                                                              ^
+      33 |  for(let i=0;i<cards.length;i++){await learn(page,cards[i]);await expect(page.locator('#fusion-title')).toContainText(titles[i]);}
+      34 |  await page.evaluate(()=>(window as any).impact());
+      35 |  const state=await page.evaluate(()=>{const g=(window as any).game;return {c:g.combat.inspect(),rings:g.combatView.burstRings.count+(g.combatView.inspectElemental()?.count??0),fire:g.combatView.firePixels?.mesh.count??0,children:g.combat.projectiles.filter((s:any)=>s.active&&s.generation===1).length}});
+        at E:\study\game\MonsterBonk Mobile\tests\elemental-fusion-ui.spec.ts:32:158
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    artifacts\vfx-focused-output\elemental-fusion-ui-paopao-625ea-and-bounded-colored-effects-webkit\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: artifacts\vfx-focused-output\elemental-fusion-ui-paopao-625ea-and-bounded-colored-effects-webkit\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    artifacts\vfx-focused-output\elemental-fusion-ui-paopao-625ea-and-bounded-colored-effects-webkit\trace.zip
+    Usage:
+
+        npx playwright show-trace artifacts\vfx-focused-output\elemental-fusion-ui-paopao-625ea-and-bounded-colored-effects-webkit\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  9) [webkit] › tests\elemental-fusion-ui.spec.ts:30:11 › yacishou development entry uses one animated creature, real cards, automatic fusions and bounded colored effects
+
+    Error: expect(locator).toHaveText(expected) failed
+
+    Locator: locator('#creature-name')
+    Expected: "芽刺兽"
+    Timeout: 8000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toHaveText" locator('#creature-name') with timeout 8000ms
+      - waiting for locator('#creature-name')
+
+
+      30 | ]as const)test(dev+' development entry uses one animated creature, real cards, automatic fusions and bounded colored effects',async({page})=>{
+      31 |  const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));await open(page,dev);
+    > 32 |  expect(await page.evaluate(()=>(window as any).game.party.members.map((m:any)=>m.species))).toEqual([species]);await expect(page.locator('#creature-name')).toHaveText(name);await expect(page.locator('.dash-control')).toBeHidden();
+         |                                                                                                                                                              ^
+      33 |  for(let i=0;i<cards.length;i++){await learn(page,cards[i]);await expect(page.locator('#fusion-title')).toContainText(titles[i]);}
+      34 |  await page.evaluate(()=>(window as any).impact());
+      35 |  const state=await page.evaluate(()=>{const g=(window as any).game;return {c:g.combat.inspect(),rings:g.combatView.burstRings.count+(g.combatView.inspectElemental()?.count??0),fire:g.combatView.firePixels?.mesh.count??0,children:g.combat.projectiles.filter((s:any)=>s.active&&s.generation===1).length}});
+        at E:\study\game\MonsterBonk Mobile\tests\elemental-fusion-ui.spec.ts:32:158
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    artifacts\vfx-focused-output\elemental-fusion-ui-yacish-1fef3-and-bounded-colored-effects-webkit\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: artifacts\vfx-focused-output\elemental-fusion-ui-yacish-1fef3-and-bounded-colored-effects-webkit\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    artifacts\vfx-focused-output\elemental-fusion-ui-yacish-1fef3-and-bounded-colored-effects-webkit\trace.zip
+    Usage:
+
+        npx playwright show-trace artifacts\vfx-focused-output\elemental-fusion-ui-yacish-1fef3-and-bounded-colored-effects-webkit\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  10) [webkit] › tests\elemental-fusion-ui.spec.ts:73:1 › missing elemental textures and icons preserve procedural effects, readable cards and damage
+
+    Error: page.evaluate: TypeError: undefined is not an object (evaluating 'window.game.combatView.burstRings.count')
+
+      74 |  await page.route('**/assets/pixel/skills/fusions/*.png',r=>r.abort());await open(page,'paopaoyuan');await page.evaluate(()=>(window as any).game.sleep());
+      75 |  await expect.poll(()=>page.evaluate(()=>(window as any).game.combatView.inspectElemental()?.failed)).toBe(true);await learn(page,'area');await page.evaluate(()=>(window as any).impact());
+    > 76 |  expect(await page.evaluate(()=>(window as any).game.combat.hits)).toBeGreaterThan(0);expect(await page.evaluate(()=>(window as any).game.combatView.burstRings.count)).toBeGreaterThan(0);
+         |                                                                                                         ^
+      77 |  expect(await page.evaluate(()=>(window as any).game.combatView.inspectElemental().count)).toBe(0);await expect(page.locator('#fusion-title')).toContainText('深海泡影');
+      78 | });
+      79 |
+        at E:\study\game\MonsterBonk Mobile\tests\elemental-fusion-ui.spec.ts:76:105
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    artifacts\vfx-focused-output\elemental-fusion-ui-missin-e8229-s-readable-cards-and-damage-webkit\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: artifacts\vfx-focused-output\elemental-fusion-ui-missin-e8229-s-readable-cards-and-damage-webkit\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    artifacts\vfx-focused-output\elemental-fusion-ui-missin-e8229-s-readable-cards-and-damage-webkit\trace.zip
+    Usage:
+
+        npx playwright show-trace artifacts\vfx-focused-output\elemental-fusion-ui-missin-e8229-s-readable-cards-and-damage-webkit\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  11) [webkit] › tests\fusion-ui.spec.ts:51:1 › real fusion cards and impacts render child/explosion frames without duplicate hit flashes on both phone layouts
+
+    Error: expect(locator).toHaveClass(expected) failed
+
+    Locator: locator('[data-skill="split-on-hit"]').locator('.fire-icon')
+    Expected pattern: /ready/
+    Timeout: 8000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toHaveClass" locator('[data-skill="split-on-hit"]').locator('.fire-icon') with timeout 8000ms
+      - waiting for locator('[data-skill="split-on-hit"]').locator('.fire-icon')
+
+
+      53 |   await page.evaluate(() => (window as unknown as Fixture).offer());
+      54 |   const card = page.locator('[data-skill="split-on-hit"]'); await expect(card).toBeEnabled();
+    > 55 |   await expect(card.locator('.fire-icon')).toHaveClass(/ready/);
+         |                                            ^
+      56 |   await page.screenshot({ path: 'artifacts/v5-fusion-card-844.png' });
+      57 |   await page.setViewportSize({ width: 568, height: 320 });
+      58 |   await page.screenshot({ path: 'artifacts/v5-fusion-card-568.png' });
+        at E:\study\game\MonsterBonk Mobile\tests\fusion-ui.spec.ts:55:44
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    artifacts\vfx-focused-output\fusion-ui-real-fusion-card-e5c41-ashes-on-both-phone-layouts-webkit\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: artifacts\vfx-focused-output\fusion-ui-real-fusion-card-e5c41-ashes-on-both-phone-layouts-webkit\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    artifacts\vfx-focused-output\fusion-ui-real-fusion-card-e5c41-ashes-on-both-phone-layouts-webkit\trace.zip
+    Usage:
+
+        npx playwright show-trace artifacts\vfx-focused-output\fusion-ui-real-fusion-card-e5c41-ashes-on-both-phone-layouts-webkit\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  12) [webkit] › tests\fusion-ui.spec.ts:98:1 › missing atlas and icons keep procedural attack/explosion and readable cards
+
+    Error: page.evaluate: TypeError: undefined is not an object (evaluating 'v.burstRings.count')
+
+      102 |   await page.evaluate(() => (window as unknown as Fixture).impact());
+      103 |   expect((await state(page)).combat.fusion.bursts).toBe(1); expect((await state(page)).combat.fusion.children).toBe(2);
+    > 104 |   expect(await page.evaluate(() => { const v=(window as any).game.combatView;return {bolts:v.bolts.count,rings:v.burstRings.count}; })).toEqual({bolts:2,rings:1});
+          |                     ^
+      105 |   expect((await state(page)).fusionVisual!.count).toBe(0);
+      106 | });
+      107 |
+        at E:\study\game\MonsterBonk Mobile\tests\fusion-ui.spec.ts:104:21
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    artifacts\vfx-focused-output\fusion-ui-missing-atlas-an-4f1a2-xplosion-and-readable-cards-webkit\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: artifacts\vfx-focused-output\fusion-ui-missing-atlas-an-4f1a2-xplosion-and-readable-cards-webkit\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    artifacts\vfx-focused-output\fusion-ui-missing-atlas-an-4f1a2-xplosion-and-readable-cards-webkit\trace.zip
+    Usage:
+
+        npx playwright show-trace artifacts\vfx-focused-output\fusion-ui-missing-atlas-an-4f1a2-xplosion-and-readable-cards-webkit\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  13) [webkit] › tests\vfx-presets-ui.spec.ts:38:1 › real spark, bubble and wet-fire steam render through presets and keep lifecycle/budgets
+
+    Error: page.evaluate: Execution context was destroyed, most likely because of a navigation
+
+      57 |       const w=window as any,g=w.game,v=g.combatView,r=g.renderer,gl=r.getContext();
+      58 |       const size=gl.drawingBufferWidth*gl.drawingBufferHeight*4,a=new Uint8Array(size),b=new Uint8Array(size);
+    > 59 |       const mesh=kind==='steam'?v.reactions.group:v.feedback.mesh;
+         |                              ^
+      60 |       r.render(g.scene,g.camera);gl.readPixels(0,0,gl.drawingBufferWidth,gl.drawingBufferHeight,gl.RGBA,gl.UNSIGNED_BYTE,a);
+      61 |       mesh.visible=false;r.render(g.scene,g.camera);gl.readPixels(0,0,gl.drawingBufferWidth,gl.drawingBufferHeight,gl.RGBA,gl.UNSIGNED_BYTE,b);
+      62 |       mesh.visible=true;w.draw();let changed=0;for(let i=0;i<size;i+=4)if(a[i]!==b[i]||a[i+1]!==b[i+1]||a[i+2]!==b[i+2])changed++;
+        at E:\study\game\MonsterBonk Mobile\tests\vfx-presets-ui.spec.ts:59:30
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    artifacts\vfx-focused-output\vfx-presets-ui-real-spark--74641--and-keep-lifecycle-budgets-webkit\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: artifacts\vfx-focused-output\vfx-presets-ui-real-spark--74641--and-keep-lifecycle-budgets-webkit\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    artifacts\vfx-focused-output\vfx-presets-ui-real-spark--74641--and-keep-lifecycle-budgets-webkit\trace.zip
+    Usage:
+
+        npx playwright show-trace artifacts\vfx-focused-output\vfx-presets-ui-real-spark--74641--and-keep-lifecycle-budgets-webkit\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  13 failed
+    [chromium] › tests\elemental-fusion-ui.spec.ts:14:1 › deep atlas loads, plays flight and one-shot impact, damages and slows in actual game
+    [chromium] › tests\elemental-fusion-ui.spec.ts:30:11 › paopaoyuan development entry uses one animated creature, real cards, automatic fusions and bounded colored effects
+    [chromium] › tests\elemental-fusion-ui.spec.ts:30:11 › yacishou development entry uses one animated creature, real cards, automatic fusions and bounded colored effects
+    [chromium] › tests\elemental-fusion-ui.spec.ts:73:1 › missing elemental textures and icons preserve procedural effects, readable cards and damage
+    [chromium] › tests\fusion-ui.spec.ts:51:1 › real fusion cards and impacts render child/explosion frames without duplicate hit flashes on both phone layouts
+    [chromium] › tests\fusion-ui.spec.ts:98:1 › missing atlas and icons keep procedural attack/explosion and readable cards
+    [webkit] › tests\elemental-fusion-ui.spec.ts:14:1 › deep atlas loads, plays flight and one-shot impact, damages and slows in actual game
+    [webkit] › tests\elemental-fusion-ui.spec.ts:30:11 › paopaoyuan development entry uses one animated creature, real cards, automatic fusions and bounded colored effects
+    [webkit] › tests\elemental-fusion-ui.spec.ts:30:11 › yacishou development entry uses one animated creature, real cards, automatic fusions and bounded colored effects
+    [webkit] › tests\elemental-fusion-ui.spec.ts:73:1 › missing elemental textures and icons preserve procedural effects, readable cards and damage
+    [webkit] › tests\fusion-ui.spec.ts:51:1 › real fusion cards and impacts render child/explosion frames without duplicate hit flashes on both phone layouts
+    [webkit] › tests\fusion-ui.spec.ts:98:1 › missing atlas and icons keep procedural attack/explosion and readable cards
+    [webkit] › tests\vfx-presets-ui.spec.ts:38:1 › real spark, bubble and wet-fire steam render through presets and keep lifecycle/budgets
+  37 passed (6.8m)

@@ -1,0 +1,13 @@
+
+Running 4 tests using 1 worker
+
+(node:60100) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 1 [chromium] › tests\vfx-live-entry.spec.ts:4:3 › spark presets run from the shipped entry with natural auto attacks (16.0s)
+  ok 2 [chromium] › tests\vfx-live-entry.spec.ts:4:3 › bubble presets run from the shipped entry with natural auto attacks (9.6s)
+(node:59980) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 3 [webkit] › tests\vfx-live-entry.spec.ts:4:3 › spark presets run from the shipped entry with natural auto attacks (15.4s)
+  ok 4 [webkit] › tests\vfx-live-entry.spec.ts:4:3 › bubble presets run from the shipped entry with natural auto attacks (10.4s)
+
+  4 passed (55.4s)
