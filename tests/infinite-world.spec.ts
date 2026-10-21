@@ -38,3 +38,30 @@ test('trees rocks and desert cacti collide, with safe spawn and chunk borders', 
       expect(Math.hypot(positions[i].x - positions[j].x, positions[i].z - positions[j].z)).toBeGreaterThan(4);
   }
 });
+
+
+test('treasure chests are deterministic, sparse, safe, and do not add collision obstacles', () => {
+  let total = 0;
+  for (let cx = -8; cx <= 8; cx++) for (let cz = -8; cz <= 8; cz++) {
+    const layout = generateInfiniteChunk('chest-fixture', cx, cz);
+    expect(layout.chests).toEqual(generateInfiniteChunk('chest-fixture', cx, cz).chests);
+    expect(layout.chests.length).toBeLessThanOrEqual(1);
+    expect(layout.obstacles.length).toBe(layout.trees.length + layout.rocks.length + layout.cacti.length);
+    for (const chest of layout.chests) {
+      total++;
+      expect(chest.id).toBe(`chest-fixture:${cx}:${cz}:chest-0`);
+      expect(chest.x).toBeGreaterThanOrEqual(9);
+      expect(chest.x).toBeLessThanOrEqual(55);
+      expect(chest.z).toBeGreaterThanOrEqual(9);
+      expect(chest.z).toBeLessThanOrEqual(55);
+      const x = cx * CHUNK_SIZE - CHUNK_SIZE / 2 + chest.x;
+      const z = cz * CHUNK_SIZE - CHUNK_SIZE / 2 + chest.z;
+      expect(Math.hypot(x, z)).toBeGreaterThanOrEqual(12);
+      expect(sampleInfiniteSurface('chest-fixture', x, z)).not.toBe('sand');
+      for (const obstacle of layout.obstacles)
+        expect(Math.hypot(x - obstacle.x, z - obstacle.z)).toBeGreaterThanOrEqual(obstacle.radius + 2.8);
+    }
+  }
+  expect(total).toBeGreaterThan(20);
+  expect(total).toBeLessThan(150);
+});
