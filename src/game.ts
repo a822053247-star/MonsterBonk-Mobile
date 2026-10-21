@@ -7,6 +7,7 @@ import { CombatView } from './combat-view';
 import { renderUpgradeCards, setFusionIcons, renderBuildSummary, renderRunShop, renderRunResult, renderResultOutcome, renderWeaponCooldowns, renderHudWeaponIcons, renderEncounterStatus } from './ui';
 import { elementalClip, type ElementalFusionId } from './fusion-pixels';
 import type { SkillId } from './progression';
+import { factoryRelic } from './content/relic-registry';
 import { RunFlow } from './run-flow';
 import { ATTACKS } from './run-build';
 import { AdaptiveQuality, loadPreferences, savePreferences, normalizeGameSpeed, type QualityMode } from './quality';
@@ -77,6 +78,7 @@ export class Game {
   private toastTimeout = 0;
   private nearbyTreasureChestId: string | null = null;
   private pendingTreasureChestId: string | null = null;
+  private pendingTreasureSkillId: SkillId | null = null;
   private choiceTimer = 0;
   private offerVersion = 0;
   private cardDown: { pointer: number; skill: SkillId; version: number } | null = null;
@@ -183,6 +185,7 @@ export class Game {
     click('chest-interact', () => this.openNearbyTreasureChest());
     click('treasure-coins', () => this.claimTreasureReward('coins'));
     click('treasure-heal', () => this.claimTreasureReward('heal'));
+    click('treasure-upgrade', () => this.claimTreasureReward('upgrade'));
     click('treasure-close', () => this.closeTreasure());
     window.addEventListener('keydown', event => {
       if (event.code !== 'KeyE' || event.repeat || this.mode !== 'playing' || !this.nearbyTreasureChestId) return;
@@ -432,6 +435,7 @@ export class Game {
     document.getElementById('chest-interact')!.hidden = true;
     document.getElementById('hud')!.inert = false;
     this.nearbyTreasureChestId = this.pendingTreasureChestId = null;
+    this.pendingTreasureSkillId = null;
     (document.activeElement as HTMLElement | null)?.blur();
     this.welcome.classList.remove('faded');
     this.welcome.querySelector('h2')!.textContent = endless ? '无尽草场，向远方出发。' : this.combat.fusionEnabled && species !== 'yanrong' ? `${CREATURES[species].name}，准备出发。` : this.combat.fusionEnabled ? '一簇火花，生长成烈焰。' : partyPrototype ? '草场已就绪，出发吧。' : this.challenge ? '三波迎战，冲出一条路。' : this.combat.isTrial ? '犄角已就绪，冲出一条路。' : '小小魔法，准备就绪。';
@@ -492,6 +496,7 @@ export class Game {
     this.monster.resetVisual();
     this.mode = 'menu';
     this.pendingTreasureChestId = this.nearbyTreasureChestId = null;
+    this.pendingTreasureSkillId = null;
     document.getElementById('treasure-screen')!.hidden = true;
     document.getElementById('chest-interact')!.hidden = true;
     document.getElementById('hud')!.inert = false;
@@ -676,6 +681,25 @@ export class Game {
     }
   }
 
+  private pickTreasureUpgradeSkill(): SkillId | null {
+    if (!this.run?.canClaimTreasureUpgrade) return null;
+    const progression = this.combat.progression;
+    const candidates = progression.skills.filter(skill =>
+      progression.canGrant(skill.id) && (factoryRelic(skill.id)?.rewards.shop ?? true));
+    if (!candidates.length) return null;
+    // Prefer upgrades that advance the current build; fall back to any legal reward.
+    const priority: SkillId[] = [
+      ...this.combat.runBuild.attacks.map(attack => `${attack.attackId}-weapon` as SkillId),
+      'split-on-hit', 'area', 'chain', 'haste', 'damage', 'orbit', 'shockwave', 'vitality', 'range', 'movement',
+    ];
+    const relevant = priority.flatMap(id => {
+      const skill = candidates.find(candidate => candidate.id === id);
+      return skill ? [skill] : [];
+    });
+    const pool = relevant.length ? relevant : candidates;
+    return pool[Math.floor(Math.random() * pool.length)]?.id ?? null;
+  }
+
   private openNearbyTreasureChest() {
     if (this.mode !== 'playing' || !this.world.infiniteActive || !this.nearbyTreasureChestId) return;
     const chest = this.world.treasureChests.find(candidate => candidate.id === this.nearbyTreasureChestId && !candidate.opened);
@@ -683,14 +707,43 @@ export class Game {
     this.pendingTreasureChestId = chest.id;
     this.nearbyTreasureChestId = null;
     document.getElementById('chest-interact')!.hidden = true;
+
+    const run = this.run;
+    const coins = run?.treasureCoinReward ?? 0;
     const coinsButton = document.getElementById('treasure-coins') as HTMLButtonElement;
-    coinsButton.disabled = !this.run || this.run.phase !== 'fighting';
-    const healAmount = Math.min(35, Math.max(0, Math.floor(this.combat.maxHp - this.combat.hp)));
+    coinsButton.disabled = !run || run.phase !== 'fighting' || coins <= 0;
+    document.getElementById('treasure-coins-title')!.textContent = coins > 0 ? `金币袋 +${coins}` : '金币袋已领满';
+    document.getElementById('treasure-coins-description')!.textContent = coins > 0
+      ? `第 ${run!.wave} 波 · 本局宝箱金币上限 100` : '本局宝箱金币奖励已达上限。';
+
+    const healAmount = Math.min(35, Math.max(0, Math.floor(this.combat.maxHp - this.combat.hp)),
+      run?.treasureHealRemaining ?? 0);
     const healButton = document.getElementById('treasure-heal') as HTMLButtonElement;
-    healButton.disabled = healAmount <= 0;
-    document.getElementById('treasure-heal-title')!.textContent = healAmount > 0 ? `恢复 ${healAmount} 生命` : '生命值已满';
+    healButton.disabled = !run || run.phase !== 'fighting' || healAmount <= 0;
+    document.getElementById('treasure-heal-title')!.textContent = healAmount > 0 ? `恢复 ${healAmount} 生命` : '暂不需要治疗';
     document.getElementById('treasure-heal-description')!.textContent = healAmount > 0
-      ? '立即恢复生命值，不超过上限。' : '当前生命值已满，可以选择金币奖励。';
+      ? '本次最多恢复 35 点；本局宝箱治疗累计上限 70 点。'
+      : (run?.treasureHealRemaining === 0 ? '本局宝箱治疗额度已用完。' : '生命值已满。');
+
+    const upgradeSkillId = this.pickTreasureUpgradeSkill();
+    this.pendingTreasureSkillId = upgradeSkillId;
+    const upgradeSkill = upgradeSkillId
+      ? this.combat.progression.skills.find(skill => skill.id === upgradeSkillId) : undefined;
+    const upgradeButton = document.getElementById('treasure-upgrade') as HTMLButtonElement;
+    upgradeButton.disabled = !upgradeSkill;
+    document.getElementById('treasure-upgrade-title')!.textContent = upgradeSkill
+      ? `构筑强化 · ${upgradeSkill.title}`
+      : (run?.treasureUpgradeClaimed ? '本局强化已领取' : '暂无可用强化');
+    document.getElementById('treasure-upgrade-description')!.textContent = upgradeSkill
+      ? `${upgradeSkill.benefit} · 免费提升 1 级，仅限本局一次。`
+      : (run?.treasureUpgradeClaimed ? '每局只能从宝箱获得一次免费强化。' : '当前构筑没有可用的强化项目。');
+
+    const available = !coinsButton.disabled || !healButton.disabled || !upgradeButton.disabled;
+    document.getElementById('treasure-heading')!.textContent = available ? '发现宝箱' : '宝箱奖励已领完';
+    document.getElementById('treasure-description')!.textContent = available
+      ? '三选一 · 战斗已暂停 · 奖励会计入本局构筑与商店。'
+      : '本局宝箱奖励额度已用完；可以稍后再开，或继续探索。';
+
     document.getElementById('treasure-screen')!.hidden = false;
     document.getElementById('hud')!.inert = true;
     this.mode = 'treasure';
@@ -700,25 +753,43 @@ export class Game {
     this.monster.root.position.copy(this.position);
     this.accumulator = 0;
     this.sleep();
-    coinsButton.focus({ preventScroll: true });
+    (available ? (!coinsButton.disabled ? coinsButton : !healButton.disabled ? healButton : upgradeButton) :
+      document.getElementById('treasure-close') as HTMLButtonElement).focus({ preventScroll: true });
   }
 
-  private claimTreasureReward(reward: 'coins' | 'heal') {
+  private claimTreasureReward(reward: 'coins' | 'heal' | 'upgrade') {
     if (this.mode !== 'treasure' || !this.pendingTreasureChestId) return;
     const id = this.pendingTreasureChestId;
     const chest = this.world.treasureChests.find(candidate => candidate.id === id);
     if (!chest || chest.opened) { this.closeTreasure(); return; }
-    if (reward === 'coins' && (!this.run || this.run.phase !== 'fighting')) return;
-    const healed = Math.min(35, Math.max(0, Math.floor(this.combat.maxHp - this.combat.hp)));
+    const run = this.run;
+    if (!run || run.phase !== 'fighting') return;
+
+    const coins = run.treasureCoinReward;
+    const healed = Math.min(35, Math.max(0, Math.floor(this.combat.maxHp - this.combat.hp)), run.treasureHealRemaining);
+    const skillId = this.pendingTreasureSkillId;
+    const skill = skillId ? this.combat.progression.skills.find(candidate => candidate.id === skillId) : undefined;
+    if (reward === 'coins' && coins <= 0) return;
     if (reward === 'heal' && healed <= 0) return;
+    if (reward === 'upgrade' && (!skillId || !skill || !run.canClaimTreasureUpgrade
+      || !this.combat.progression.canGrant(skillId))) return;
     if (!this.world.openTreasureChest(id)) { this.closeTreasure(); return; }
+
     let message: string;
     if (reward === 'coins') {
-      this.run!.grantTreasureCoins(20);
-      message = '宝箱开启：获得 20 金币';
+      const granted = run.grantTreasureCoins(coins);
+      if (granted <= 0) { this.closeTreasure(); return; }
+      message = `宝箱开启：获得 ${granted} 金币`;
+    } else if (reward === 'heal') {
+      const actual = run.grantTreasureHealing(healed);
+      if (actual <= 0) { this.closeTreasure(); return; }
+      this.combat.hp = Math.min(this.combat.maxHp, this.combat.hp + actual);
+      message = `宝箱开启：恢复 ${actual} 点生命`;
     } else {
-      this.combat.hp = Math.min(this.combat.maxHp, this.combat.hp + healed);
-      message = `宝箱开启：恢复 ${healed} 点生命`;
+      if (!skillId || !this.combat.grantUpgrade(skillId) || !run.claimTreasureUpgrade()) {
+        this.closeTreasure(); return;
+      }
+      message = `宝箱强化：${skill!.title}`;
     }
     this.closeTreasure();
     this.showTreasureToast(message);
@@ -729,6 +800,7 @@ export class Game {
     document.getElementById('treasure-screen')!.hidden = true;
     document.getElementById('hud')!.inert = false;
     this.pendingTreasureChestId = null;
+    this.pendingTreasureSkillId = null;
     this.mode = 'playing';
     this.input.setEnabled(true);
     this.previousPosition.copy(this.position);
