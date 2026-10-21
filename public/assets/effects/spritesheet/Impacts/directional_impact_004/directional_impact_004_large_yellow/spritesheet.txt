@@ -1,0 +1,5 @@
+PNG/Impacts/directional_impact_004/directional_impact_004_large_yellow/frame0000.png = 0 0 80 80
+PNG/Impacts/directional_impact_004/directional_impact_004_large_yellow/frame0001.png = 80 0 80 80
+PNG/Impacts/directional_impact_004/directional_impact_004_large_yellow/frame0002.png = 160 0 80 80
+PNG/Impacts/directional_impact_004/directional_impact_004_large_yellow/frame0003.png = 240 0 80 80
+PNG/Impacts/directional_impact_004/directional_impact_004_large_yellow/frame0004.png = 320 0 80 80

@@ -1,0 +1,10 @@
+PNG/Sci-fi/scifi_warp_002/scifi_warp_002_small_red/frame0000.png = 0 0 48 48
+PNG/Sci-fi/scifi_warp_002/scifi_warp_002_small_red/frame0001.png = 48 0 48 48
+PNG/Sci-fi/scifi_warp_002/scifi_warp_002_small_red/frame0002.png = 96 0 48 48
+PNG/Sci-fi/scifi_warp_002/scifi_warp_002_small_red/frame0003.png = 144 0 48 48
+PNG/Sci-fi/scifi_warp_002/scifi_warp_002_small_red/frame0004.png = 192 0 48 48
+PNG/Sci-fi/scifi_warp_002/scifi_warp_002_small_red/frame0005.png = 240 0 48 48
+PNG/Sci-fi/scifi_warp_002/scifi_warp_002_small_red/frame0006.png = 288 0 48 48
+PNG/Sci-fi/scifi_warp_002/scifi_warp_002_small_red/frame0007.png = 336 0 48 48
+PNG/Sci-fi/scifi_warp_002/scifi_warp_002_small_red/frame0008.png = 384 0 48 48
+PNG/Sci-fi/scifi_warp_002/scifi_warp_002_small_red/frame0009.png = 432 0 48 48

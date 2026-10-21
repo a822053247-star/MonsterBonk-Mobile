@@ -1,0 +1,16 @@
+PNG/Smoke Bursts/looping_smoke_burst_002/looping_smoke_burst_002_large_gray/frame0000.png = 0 0 64 64
+PNG/Smoke Bursts/looping_smoke_burst_002/looping_smoke_burst_002_large_gray/frame0001.png = 64 0 64 64
+PNG/Smoke Bursts/looping_smoke_burst_002/looping_smoke_burst_002_large_gray/frame0002.png = 128 0 64 64
+PNG/Smoke Bursts/looping_smoke_burst_002/looping_smoke_burst_002_large_gray/frame0003.png = 192 0 64 64
+PNG/Smoke Bursts/looping_smoke_burst_002/looping_smoke_burst_002_large_gray/frame0004.png = 0 64 64 64
+PNG/Smoke Bursts/looping_smoke_burst_002/looping_smoke_burst_002_large_gray/frame0005.png = 64 64 64 64
+PNG/Smoke Bursts/looping_smoke_burst_002/looping_smoke_burst_002_large_gray/frame0006.png = 128 64 64 64
+PNG/Smoke Bursts/looping_smoke_burst_002/looping_smoke_burst_002_large_gray/frame0007.png = 192 64 64 64
+PNG/Smoke Bursts/looping_smoke_burst_002/looping_smoke_burst_002_large_gray/frame0008.png = 0 128 64 64
+PNG/Smoke Bursts/looping_smoke_burst_002/looping_smoke_burst_002_large_gray/frame0009.png = 64 128 64 64
+PNG/Smoke Bursts/looping_smoke_burst_002/looping_smoke_burst_002_large_gray/frame0010.png = 128 128 64 64
+PNG/Smoke Bursts/looping_smoke_burst_002/looping_smoke_burst_002_large_gray/frame0011.png = 192 128 64 64
+PNG/Smoke Bursts/looping_smoke_burst_002/looping_smoke_burst_002_large_gray/frame0012.png = 0 192 64 64
+PNG/Smoke Bursts/looping_smoke_burst_002/looping_smoke_burst_002_large_gray/frame0013.png = 64 192 64 64
+PNG/Smoke Bursts/looping_smoke_burst_002/looping_smoke_burst_002_large_gray/frame0014.png = 128 192 64 64
+PNG/Smoke Bursts/looping_smoke_burst_002/looping_smoke_burst_002_large_gray/frame0015.png = 192 192 64 64

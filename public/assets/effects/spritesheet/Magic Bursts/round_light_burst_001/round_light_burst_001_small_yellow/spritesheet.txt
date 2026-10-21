@@ -1,0 +1,9 @@
+PNG/Magic Bursts/round_light_burst_001/round_light_burst_001_small_yellow/frame0000.png = 0 0 128 72
+PNG/Magic Bursts/round_light_burst_001/round_light_burst_001_small_yellow/frame0001.png = 128 0 128 72
+PNG/Magic Bursts/round_light_burst_001/round_light_burst_001_small_yellow/frame0002.png = 256 0 128 72
+PNG/Magic Bursts/round_light_burst_001/round_light_burst_001_small_yellow/frame0003.png = 384 0 128 72
+PNG/Magic Bursts/round_light_burst_001/round_light_burst_001_small_yellow/frame0004.png = 512 0 128 72
+PNG/Magic Bursts/round_light_burst_001/round_light_burst_001_small_yellow/frame0005.png = 640 0 128 72
+PNG/Magic Bursts/round_light_burst_001/round_light_burst_001_small_yellow/frame0006.png = 768 0 128 72
+PNG/Magic Bursts/round_light_burst_001/round_light_burst_001_small_yellow/frame0007.png = 896 0 128 72
+PNG/Magic Bursts/round_light_burst_001/round_light_burst_001_small_yellow/frame0008.png = 1024 0 128 72

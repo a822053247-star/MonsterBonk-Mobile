@@ -1,0 +1,101 @@
+////////////////////////////////////////
+// SUPER PIXEL EFFECTS GIGAPACK GUIDE //
+////////////////////////////////////////
+
+- This document offers a brief overview of each category of animations found within the gigapack, in alphabetical order.
+
+- Searching for a particular category? Just ctrl+F and search for the folder name.
+
+- Quick Tips:
+	- Every animation is intended to be played at 15 FPS (66.7 ms/frame).
+	- You can rotate or flip most effects for more variety in your game!
+
+////////////////
+// Explosions //
+////////////////
+
+Animations which depict explosions, usually involving a fireball and smoke puff together. May include other elements such as lightning.
+
+Explosions have the following subtypes:
+- Epic explosion: Explosions which are grander in scale / more detailed.
+- Stylized explosion: Explosions which have their own particular flair.
+- Symmetrical explosion: Explosions which have vertical, horizontal, diagonal, or rotational symmetry. (Tend to be more videogame-like.)
+
+////////////////////
+// Fantasy Spells //
+////////////////////
+
+Animations which depict effects resembling spells which one might see in a classic RPG. Common examples might include status-inducing effects like poison or buffs/debuffs.
+
+/////////////
+// Impacts //
+/////////////
+
+Animations which depict a burst of particles, as if from one object hitting another. They usually combine an expanding ring and several linear particles to convey the force of the impact. Very versatile animations which are great for fighting games, damage effects, and more.
+
+Impacts have the following subtypes:
+- Directional impact: An impact which implies a particular direction, as if bouncing off of or repelled by the object being impacted. Rotate the effect to change the direction.
+- Symmetrical impact: Directionless impacts which are typically circular and have vertical, horizontal, diagonal, or rotational symmetry.
+- Toon impact: An impact which is cartoonlike, usually featuring exaggerated features such as stars. (Can be directional or symmetrical, but is always labeled as "toon.")
+
+///////////////
+// Lightning //
+///////////////
+
+Animations which depict lightning as their primary feature.
+
+Lightning has the following subtypes:
+- Lightning strike: One or more lightning bolts which follows a specific path / direction. These animations usually have an impact animation, and some have a second version without an impact.
+	- (A) Lightning strikes marked with the "A" suffix have an impact.
+	- (B) Lightning strikes marked with the "B" suffix are the same as A, without the impact.
+- Lightning burst: Animations which primarily depict a shocking burst of electricity. Great for powerups, damage effects, or as sci-fi explosions.
+
+//////////////////
+// Magic Bursts //
+//////////////////
+
+Animations which typically depict a burst of sparkling particles and sometimes smoke puffs. May include symbols such as hearts, stars, and so on.
+These are kind of like fantasy spells, but much more generic and can fit in any genre.
+
+Magic bursts have the following subtypes:
+- Directional burst: A burst which mostly flows in a particular direction.
+- Round burst: A burst in which the particles go in all directions, starting from a central point.
+
+////////////
+// Sci-fi //
+////////////
+
+Animations which have a bit more of a science-fiction flair to them. Common examples might include charge-up effects or warp/portal animations.
+
+If you're looking for sci-fi explosions, check the explosions category. You can also combine lightning bursts with explosions!
+
+//////////////////
+// Smoke Bursts //
+//////////////////
+
+Animations which depict a burst of smoke, which expands or rises before dissipating.
+
+Smoke bursts have the following subtypes:
+- Directional smoke burst: A smoke burst which mostly flows in a particular direction.
+- Symmetrical smoke burst: A smoke burst in which the smoke goes in all directions, starting from a central point.
+- Stylized smoke burst: A smoke burst with its own particular flair.
+
+Many directional or symmetrical smoke bursts can be combined with explosions and other burst effects!
+
+///////////////
+// Splatters //
+///////////////
+
+Animations which depict bursts of juicy particles. The particles are typically affected by gravity, but not always. Great for blood effects, for both human and alien!
+
+Splatters have the following subtypes:
+- Burst splatter: Splatters in which the particles go outwards in many directions from a central point.
+- Directional splatter: Splatters in which the particles go mainly in a specific direction.
+
+/////////////
+// Symbols //
+/////////////
+
+Animations which depict symbols such as checkmarks, X's, and so on. These animations blur the line between effect and UI element, and can be used as either one.
+
+Some symbols (such as Symbols/symbol_success_001, for example) may have a distinct start, loop, and finish animation. These animations are not separated by default, but can be separated manually as your game or project requires. For example, you could have a checkmark appear (start), shine and sparkle (loop) for some duration, then disappear (finish).

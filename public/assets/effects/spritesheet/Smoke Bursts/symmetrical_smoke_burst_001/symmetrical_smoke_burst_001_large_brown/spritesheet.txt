@@ -1,0 +1,10 @@
+PNG/Smoke Bursts/symmetrical_smoke_burst_001/symmetrical_smoke_burst_001_large_brown/frame0000.png = 0 0 64 64
+PNG/Smoke Bursts/symmetrical_smoke_burst_001/symmetrical_smoke_burst_001_large_brown/frame0001.png = 64 0 64 64
+PNG/Smoke Bursts/symmetrical_smoke_burst_001/symmetrical_smoke_burst_001_large_brown/frame0002.png = 128 0 64 64
+PNG/Smoke Bursts/symmetrical_smoke_burst_001/symmetrical_smoke_burst_001_large_brown/frame0003.png = 192 0 64 64
+PNG/Smoke Bursts/symmetrical_smoke_burst_001/symmetrical_smoke_burst_001_large_brown/frame0004.png = 256 0 64 64
+PNG/Smoke Bursts/symmetrical_smoke_burst_001/symmetrical_smoke_burst_001_large_brown/frame0005.png = 320 0 64 64
+PNG/Smoke Bursts/symmetrical_smoke_burst_001/symmetrical_smoke_burst_001_large_brown/frame0006.png = 384 0 64 64
+PNG/Smoke Bursts/symmetrical_smoke_burst_001/symmetrical_smoke_burst_001_large_brown/frame0007.png = 448 0 64 64
+PNG/Smoke Bursts/symmetrical_smoke_burst_001/symmetrical_smoke_burst_001_large_brown/frame0008.png = 512 0 64 64
+PNG/Smoke Bursts/symmetrical_smoke_burst_001/symmetrical_smoke_burst_001_large_brown/frame0009.png = 576 0 64 64
