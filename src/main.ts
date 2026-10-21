@@ -1,8 +1,10 @@
 import './style.css';
 import { createUI } from './ui';
 import { Game, showError } from './game';
+import { registerPhoneApp } from './pwa';
 
 createUI(document.getElementById('app')!);
+if (import.meta.env.PROD) registerPhoneApp();
 document.getElementById('retry')!.addEventListener('click', () => window.location.reload());
 
 try {

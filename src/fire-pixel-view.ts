@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { COMBAT_LIMITS } from './combat';
 
 const CAPACITY = COMBAT_LIMITS.projectiles + COMBAT_LIMITS.effects * 2;
-const URL = '/assets/pixel/skills/yanrong/fire-effects-sheet.normalized.png';
+const URL = `${import.meta.env.BASE_URL}assets/pixel/skills/yanrong/fire-effects-sheet.normalized.png`;
 
 /** One atlas and one bounded batch for bolts, seeds, explosions and ground rings. */
 export class FirePixelView {
