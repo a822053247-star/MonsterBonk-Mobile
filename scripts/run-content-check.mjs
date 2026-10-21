@@ -15,8 +15,8 @@ try {
   if (input !== undefined && !Array.isArray(input)) throw new Error('Content input must be an array');
   const icons = checkContent(input);
   await mkdir('public/assets/generated/relics', { recursive: true });
-  for (const icon of icons) await writeFile(`public/assets/generated/relics/${icon.id}.svg`, icon.svg + '\n');
-  console.log(`Content valid: ${icons.length} factory relic(s); legacy IDs reserved; generated icons ready.`);
+  for (const icon of icons) if (icon.svg) await writeFile(`public/assets/generated/relics/${icon.id}.svg`, icon.svg + '\n');
+  console.log(`Content valid: ${icons.length} factory relic(s); legacy IDs reserved; supplied PNGs or generated fallbacks ready.`);
 } catch (error) {
   console.error(error instanceof Error ? error.message : error); process.exitCode = 1;
 } finally { await rm(directory, { recursive: true, force: true }); }

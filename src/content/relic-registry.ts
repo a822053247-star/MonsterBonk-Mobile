@@ -1,11 +1,12 @@
 import { tidePrism } from './relics/tide-prism';
+import { FIRST_RELIC_BATCH, SECOND_RELIC_BATCH } from './relics/behavior-relics';
 import { relicMetadata } from './relic-effects';
 import type { RelicDefinition } from './content-types';
 import { validateRelicContent, type ContentReferences } from './content-validation';
 import { VFX_PRESETS } from '../visuals/vfx-presets';
 
 /** Add a definition here; combat, rewards, cards and shop consume this same catalogue. */
-const DEFINITIONS = [tidePrism] as const;
+const DEFINITIONS = [tidePrism, ...FIRST_RELIC_BATCH, ...SECOND_RELIC_BATCH] as const;
 export const FACTORY_RELICS = Object.fromEntries(createRelicRegistry(DEFINITIONS)) as {
   [Id in typeof DEFINITIONS[number]['id']]: Extract<typeof DEFINITIONS[number], {id: Id}>
 };

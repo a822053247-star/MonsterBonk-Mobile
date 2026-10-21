@@ -12,5 +12,5 @@ export function checkContent(input?: unknown[]) {
   const errors = validateRelicContent(definitions, { weapons: Object.keys(ATTACKS), vfx: VFX_PRESETS,
     reservedIds: [...Object.keys(LEGACY_RELICS), ...Object.keys(EVOLUTIONS), ...CONTENT_SKILLS], assetExists: path => existsSync(`public/${path}`) });
   if (errors.length) throw new Error(errors.join('\n'));
-  return (definitions as import('../src/content/content-types').RelicDefinition[]).map(d => ({ id: d.id, svg: relicIconSvg(d.art) }));
+  return (definitions as import('../src/content/content-types').RelicDefinition[]).map(d => ({ id: d.id, svg: d.art.png ? undefined : relicIconSvg(d.art) }));
 }

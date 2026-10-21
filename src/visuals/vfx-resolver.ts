@@ -73,12 +73,18 @@ export class VfxResolver {
       return { ok: false, error: error instanceof Error ? error.message : 'Invalid VFX' };
     }
   }
-  projectile(attack?: BaseAttackId) { return attack ? this.projectiles.get(attack) : undefined; }
+  projectile(attack?: BaseAttackId, id?: string) {
+    const preset=id ? this.presets.get(id) : undefined;
+    return preset?.type==='projectile' ? preset : attack ? this.projectiles.get(attack) : undefined;
+  }
   impact(kind: CombatEffect['kind'], id?: string) {
     const preset = id ? this.presets.get(id) : undefined;
     return preset?.type === 'impact' ? preset : this.impacts.get(kind);
   }
-  area(kind: CombatEffect['kind']) { return this.areas.get(kind); }
+  area(kind: CombatEffect['kind'], id?: string) {
+    const preset=id ? this.presets.get(id) : undefined;
+    return preset?.type==='area' ? preset : this.areas.get(kind);
+  }
 }
 
 export function visualProgress(effect: Pick<CombatEffect, 'time' | 'duration'>, maxDuration = effect.duration) {

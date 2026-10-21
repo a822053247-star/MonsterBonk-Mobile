@@ -43,7 +43,7 @@ export class ReactionView {
           this.alpha.setX(index, (1 - p) * .35);
         }
       }
-      const preset = resolver.area(effect.kind);
+      const preset = resolver.area(effect.kind,effect.vfxPresetId);
       if (!effect.active || !preset) continue;
       const t = visualProgress(effect), age = effect.duration - effect.time;
       const radius = (effect.radius ?? 2.5) * preset.radiusScale;

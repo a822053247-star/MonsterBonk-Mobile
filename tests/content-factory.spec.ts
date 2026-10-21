@@ -15,11 +15,11 @@ import { resolveAttackRules, LEGACY_RELICS } from '../src/relics';
 import { RunFlow, WAVE_INTERMISSION_SECONDS } from '../src/run-flow';
 import type { RelicDefinition } from '../src/content/content-types';
 import { spawnSync } from 'node:child_process';
-import { mkdtempSync, writeFileSync, rmSync } from 'node:fs';
+import { mkdtempSync, writeFileSync, rmSync, existsSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
-const refs = { weapons: Object.keys(ATTACKS), vfx: VFX_PRESETS, reservedIds: Object.keys(LEGACY_RELICS), assetExists: () => false };
+const refs = { weapons: Object.keys(ATTACKS), vfx: VFX_PRESETS, reservedIds: Object.keys(LEGACY_RELICS), assetExists: (path:string) => existsSync(`public/${path}`) };
 function fixture(area = true) {
   const c = new Combat([],32,()=>.5); c.party = new PartySystem(); c.party.reset(['bubblesalamander']);
   c.fusionEnabled = true; c.automaticSpawning = false; c.reset();

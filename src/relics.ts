@@ -32,6 +32,7 @@ export const TRIGGER_RELIC_RULES = {
 
 /** Unique attack lineage, separate from the caster ID and fusion-child generation. */
 export interface RelicDamageSource {
+  behavior?: boolean;
   rootId: number;
   attackId: BaseAttackId;
   kind: 'hit' | 'explosion' | 'burn' | 'testament' | 'bubble-spore' | 'steam';
@@ -39,7 +40,7 @@ export interface RelicDamageSource {
   rootDamage?: number;
   mature?: boolean;
   reaction?: 'steam';
-  chain?: { nodes: number };
+  chain?: { nodes: number; refracted?: boolean };
   copied?: boolean;
   generation: number;
   rules: AttackRules;

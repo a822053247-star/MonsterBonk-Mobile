@@ -219,11 +219,11 @@ export class CombatView {
       if (!shot.active || this.combat.hp <= 0) continue;
       const x = THREE.MathUtils.lerp(shot.previousX, shot.x, alpha), z = THREE.MathUtils.lerp(shot.previousZ, shot.z, alpha), angle = Math.atan2(shot.vx, shot.vz);
       const attack = shot.species || this.combat.fusionEnabled ? shot.attackId ?? (shot.species ? CREATURES[shot.species].skill : undefined) : undefined;
-      const preset = this.combat.usesRunBuild ? this.vfx.projectile(attack) : undefined;
+      const preset = this.combat.usesRunBuild ? this.vfx.projectile(attack,shot.vfxPresetId) : undefined;
       const color = preset?.color ?? (attack ? ATTACKS[attack].color : '#a594f2');
       const bubble = attack === 'bubble', leaf = attack === 'leaf';
       const child = shot.generation === 1, scale = (child ? BURST_SEED.childSize : 1) * (preset?.scale ?? 1);
-      const clip = elementalClip(shot.fusionIds?.[0] ?? (child && leaf ? 'thorn-scatter' : undefined));
+      const clip = shot.vfxPresetId ? undefined : elementalClip(shot.fusionIds?.[0] ?? (child && leaf ? 'thorn-scatter' : undefined));
       if (clip && this.fusionPixels?.loaded && (!preset || this.detail > 2 || preset.low.animated)) {
         const frame = clipFrame(clip.flight, shot.age ?? 0, clip.flightFPS, true)!;
         const arc = shot.hopTargetId ? Math.sin(Math.PI * Math.min(1, (shot.hopElapsed ?? 0) / (shot.hopDuration || .12))) * .55 : 0;
@@ -315,7 +315,7 @@ export class CombatView {
         continue;
       }
       if (effect.kind === 'steam') {
-        if (progress < .42) this.firePixels?.put(2, Math.min(3, Math.floor(progress * 8)), effect.x, .8, effect.z, Math.min(3.2, (effect.radius ?? 2.5) * 1.3));
+        if (!effect.vfxPresetId && progress < .42) this.firePixels?.put(2, Math.min(3, Math.floor(progress * 8)), effect.x, .8, effect.z, Math.min(3.2, (effect.radius ?? 2.5) * 1.3));
         continue;
       }
       if (preset?.animation && (this.detail > 2 || preset.low.animated)) {

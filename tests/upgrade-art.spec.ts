@@ -90,9 +90,9 @@ test('card motion follows rarity, preserves pointer feedback and respects reduce
   }
 });
 
-test('all 31 real IDs are covered, element variants follow equipped weapons, categories stay data-driven', async ({ page }) => {
+test('all 41 real IDs are covered, element variants follow equipped weapons, categories stay data-driven', async ({ page }) => {
   const catalog = await page.evaluate(() => (window as any).artCatalog);
-  expect(catalog.ids).toHaveLength(31);
+  expect(catalog.ids).toHaveLength(41);
   expect([...catalog.artIds].sort()).toEqual([...catalog.ids].sort());
   for (let index = 0; index < catalog.ids.length; index += 3) {
     await show(page, catalog.ids.slice(index, index + 3));
