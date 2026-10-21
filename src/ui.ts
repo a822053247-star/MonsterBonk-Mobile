@@ -73,6 +73,7 @@ export function createUI(root: HTMLElement) {
       <div class="movement-control"><div id="joystick" class="joystick" role="group" aria-label="虚拟摇杆：按住并拖动以移动"><span class="joystick-cross horizontal"></span><span class="joystick-cross vertical"></span><span class="joystick-knob"><span></span></span></div><span class="control-caption">移动</span></div>
       <div class="dash-control"><button id="dash" class="dash-button" aria-label="冲刺">${icon('dash')}<strong>冲刺</strong><span id="dash-status">就绪</span></button><span class="control-caption">空格冲刺</span></div>
       <div id="boundary-hint" class="boundary-hint" hidden>已到边界</div>
+      <button id="chest-interact" class="chest-interact" type="button" aria-label="打开附近的宝箱" hidden>打开宝箱 · E</button>
       <div class="stage-note">2.5D 原型 <span>·</span> 幻兽幸存者</div>
     </section>
     <section id="pause-screen" class="modal-screen" role="dialog" aria-modal="true" aria-labelledby="pause-heading" aria-label="暂停菜单" hidden><div class="modal pause-card"><div class="pause-controls"><div class="modal-symbol" aria-hidden="true">${icon('leaf')}</div><h2 id="pause-heading">已暂停</h2><p id="pause-reason"></p><button id="resume" class="primary">继续冒险 ${icon('arrow')}</button><button id="pause-settings" class="text-button">画质与声音</button><div class="pause-links"><button id="restart" class="text-button">重新开始</button><button id="back-menu" class="text-button">返回主菜单</button></div><a id="map-replay" class="map-replay" hidden></a></div><section id="build-summary" class="build-summary" aria-label="本局构筑" tabindex="0" hidden><h3>本局构筑</h3><div id="build-weapons" class="build-weapon-list"></div><h4>技能融合</h4><div id="build-fusions" class="build-detail"></div><h4>稀有道具与进化</h4><div id="build-relics" class="build-detail"></div><p id="build-evolution"></p></section></div></section>
@@ -88,6 +89,19 @@ export function createUI(root: HTMLElement) {
       <div class="shop-panel"><header class="shop-header"><div><small>休整 · 已暂停</small><h2 id="shop-heading">森林魔法商店</h2></div><div><span class="shop-wallet"><img data-upgrade-art="coin" src="${uiArtUrl('common/coin.png')}" alt="" draggable="false"/><strong id="shop-coins"></strong></span><small id="shop-health"></small></div></header>
       <p id="shop-message" class="shop-message" role="status"></p><div class="shop-display"><img class="shop-panel-art" data-upgrade-art="shop-panel" src="${uiArtUrl('shop/shop-panel.png')}" alt="" draggable="false"/><div id="shop-items" class="shop-items"></div></div>
       <footer class="shop-actions"><button id="shop-refresh" class="secondary"></button><button id="shop-menu" class="text-button">返回主菜单</button><button id="shop-next" class="primary"></button></footer></div>
+    </section>
+    <section id="treasure-screen" class="modal-screen treasure-screen" role="dialog" aria-modal="true" aria-labelledby="treasure-heading" hidden>
+      <div id="treasure-panel" class="modal treasure-card" tabindex="-1">
+        <div class="modal-symbol treasure-symbol" aria-hidden="true">${icon('spark')}</div>
+        <small class="treasure-kicker">探索发现 · 战斗已暂停</small>
+        <h2 id="treasure-heading">发现宝箱</h2>
+        <p>选择一份奖励。每个宝箱每局只能领取一次。</p>
+        <div class="treasure-rewards">
+          <button id="treasure-coins" class="treasure-reward" type="button"><strong id="treasure-coins-title">金币 +20</strong><span id="treasure-coins-description">用于后续波次的商店。</span></button>
+          <button id="treasure-heal" class="treasure-reward" type="button"><strong id="treasure-heal-title">恢复 35 生命</strong><span id="treasure-heal-description">立即恢复生命值，不超过上限。</span></button>
+        </div>
+        <button id="treasure-close" class="text-button" type="button">稍后再开</button>
+      </div>
     </section>
     <section id="upgrade-screen" class="upgrade-screen" role="dialog" aria-modal="true" aria-labelledby="upgrade-heading" hidden>
       <div id="upgrade-panel" class="upgrade-panel" tabindex="-1">
