@@ -1,0 +1,221 @@
+{
+  "version": "monsterbonk-relics-21-30-v1",
+  "source": "User-uploaded Super Pixel Effects Gigapack folder tree, 6776 lines. All 10 exact clip names and png/txt filenames verified against tree. Animation bytes/license not provided.",
+  "scope": "formal-run only; existing modes unaffected",
+  "status": "design specification, not implemented",
+  "shared_rules": {
+    "one_per_run": true,
+    "relic_rarity": "rare",
+    "no_recursive_proc": true,
+    "derived_damage_shared_budget": true,
+    "vfx": "read actual spritesheet.txt with frame positions; match VFX to combat mechanics; do not make VFX determine damage",
+    "existing_relics": "must preserve 1-20 and old core relics; especially no loss of effect on future weapon merges; inspect and assign future weapon tags",
+    "test": "build + content:check + parameterized 10-case behavior regression + small 3-effect visual smoke check; no forced full suite; do not claim full suite passed"
+  },
+  "relics": [
+    {
+      "no": 21,
+      "id": "resonant-aftershock",
+      "title": "余震熔晶",
+      "tags": [
+        "fire",
+        "area"
+      ],
+      "eligibility": "spark+split-on-hit 或其他真实火系爆炸",
+      "combat_rule": "火系主攻击的范围爆炸命中至少2个不同敌人时，0.28秒后以原爆心产生一次半径1.5的余震，造成该次主攻击基础伤害的40%；冷却2.8秒，每个主攻击根链最多1次，不触发燃烧或额外余震。",
+      "vfx": {
+        "clip": "epic_explosion_001_small_orange",
+        "spritesheet": "effects/spritesheet/Explosions/epic_explosion_001/epic_explosion_001_small_orange/spritesheet.png",
+        "metadata": "effects/spritesheet/Explosions/epic_explosion_001/epic_explosion_001_small_orange/spritesheet.txt"
+      },
+      "synergies": [
+        "爆裂火种",
+        "范围扩张"
+      ]
+    },
+    {
+      "no": 22,
+      "id": "reverse-tide",
+      "title": "逆潮波纹",
+      "tags": [
+        "water",
+        "knockback"
+      ],
+      "eligibility": "装备bubble或具有water标签且可进行主攻击的武器",
+      "combat_rule": "每4次水系主攻击命中后，在第4次命中位置释放半径2.0的无伤害推波，将普通怪沿远离圆心方向推动0.8单位，精英最多0.25单位，Boss免疫。冷却2.5秒，不打断攻击预警或冲刺。",
+      "vfx": {
+        "clip": "directional_bubble_burst_001_small_green",
+        "spritesheet": "effects/spritesheet/Magic Bursts/directional_bubble_burst_001/directional_bubble_burst_001_small_green/spritesheet.png",
+        "metadata": "effects/spritesheet/Magic Bursts/directional_bubble_burst_001/directional_bubble_burst_001_small_green/spritesheet.txt"
+      },
+      "synergies": [
+        "水泡连锁",
+        "蜂巢引信"
+      ]
+    },
+    {
+      "no": 23,
+      "id": "charge-chamber",
+      "title": "蓄能膛室",
+      "tags": [
+        "projectile",
+        "charge"
+      ],
+      "eligibility": "至少1把可发射主投射物的武器",
+      "combat_rule": "玩家连续1.5秒没有发出主投射物后蓄满1层；下一次主投射物命中时产生半径1.6、55%该次主攻击伤害的冲击，并让这枚弹额外穿透1名敌人。触发后冷却5秒，最多存1层；无合法目标时保持蓄能。",
+      "vfx": {
+        "clip": "scifi_charge_up_001_small_yellow",
+        "spritesheet": "effects/spritesheet/Sci-fi/scifi_charge_up_001/scifi_charge_up_001_small_yellow/spritesheet.png",
+        "metadata": "effects/spritesheet/Sci-fi/scifi_charge_up_001/scifi_charge_up_001_small_yellow/spritesheet.txt"
+      },
+      "synergies": [
+        "慢速武器",
+        "攻击间隔取舍"
+      ]
+    },
+    {
+      "no": 24,
+      "id": "azure-ward",
+      "title": "苍蓝守印",
+      "tags": [
+        "defense",
+        "guard"
+      ],
+      "eligibility": "任意武器",
+      "combat_rule": "连续6秒没有实际失去生命值时获得1层守印。守印使下一次有效受击减少40%实际伤害后消耗；每次消耗后冷却10秒。最多1层；不可与其它挡伤重复结算同一伤害，优先按统一伤害顺序处理。",
+      "vfx": {
+        "clip": "spell_defense_up_001_small_blue",
+        "spritesheet": "effects/spritesheet/Fantasy Spells/spell_defense_up_001/spell_defense_up_001_small_blue/spritesheet.png",
+        "metadata": "effects/spritesheet/Fantasy Spells/spell_defense_up_001/spell_defense_up_001_small_blue/spritesheet.txt"
+      },
+      "synergies": [
+        "高风险近战",
+        "绝境血契"
+      ]
+    },
+    {
+      "no": 25,
+      "id": "swift-weave",
+      "title": "疾风共振",
+      "tags": [
+        "hit-streak",
+        "haste"
+      ],
+      "eligibility": "任意可命中敌人的武器",
+      "combat_rule": "在2.5秒内用主攻击命中4名不同敌人，获得2.5秒攻击间隔×0.82加速；触发冷却7秒，不能叠加或刷新自身。派生弹、DOT不计入。",
+      "vfx": {
+        "clip": "spell_haste_001_small_green",
+        "spritesheet": "effects/spritesheet/Fantasy Spells/spell_haste_001/spell_haste_001_small_green/spritesheet.png",
+        "metadata": "effects/spritesheet/Fantasy Spells/spell_haste_001/spell_haste_001_small_green/spritesheet.txt"
+      },
+      "synergies": [
+        "穿透",
+        "范围武器",
+        "多目标打法"
+      ]
+    },
+    {
+      "no": 26,
+      "id": "pristine-halo",
+      "title": "无瑕光轮",
+      "tags": [
+        "full-health",
+        "pulse"
+      ],
+      "eligibility": "任意武器",
+      "combat_rule": "满生命时每累计5次有效主攻击命中，以玩家为中心释放一次半径2.3的光波，每个目标受到触发主攻击伤害的35%，冷却4秒；实际失去生命时计数清零。派生光波不触发其他遗物。",
+      "vfx": {
+        "clip": "round_light_burst_001_small_yellow",
+        "spritesheet": "effects/spritesheet/Magic Bursts/round_light_burst_001/round_light_burst_001_small_yellow/spritesheet.png",
+        "metadata": "effects/spritesheet/Magic Bursts/round_light_burst_001/round_light_burst_001_small_yellow/spritesheet.txt"
+      },
+      "synergies": [
+        "无伤心铃",
+        "控制流"
+      ]
+    },
+    {
+      "no": 27,
+      "id": "blazing-satellite",
+      "title": "炽焰卫星",
+      "tags": [
+        "melee",
+        "orbit"
+      ],
+      "eligibility": "装备flame-sweep或未来有fire+melee标签的融合武器",
+      "combat_rule": "3秒内火焰横扫主攻击命中3名不同敌人，生成1枚绕玩家旋转的火焰卫星，持续3秒，旋转半径2.2；每0.6秒每目标最多命中一次，造成火焰横扫基础伤害的25%。同一时刻最多1枚，触发冷却6秒；卫星伤害不可触发卫星。",
+      "vfx": {
+        "clip": "fire_looping_004B_small_orange",
+        "spritesheet": "effects/spritesheet/Fire/fire_looping_004B/fire_looping_004B_small_orange/spritesheet.png",
+        "metadata": "effects/spritesheet/Fire/fire_looping_004B/fire_looping_004B_small_orange/spritesheet.txt"
+      },
+      "synergies": [
+        "火焰横扫",
+        "近战范围",
+        "吸血"
+      ]
+    },
+    {
+      "no": 28,
+      "id": "prism-shower",
+      "title": "棱光星雨",
+      "tags": [
+        "multishot",
+        "shards"
+      ],
+      "eligibility": "multishot技能等级>=1 且装备投射物武器",
+      "combat_rule": "同一次主施放的至少2枚不同主弹在0.7秒内分别命中2个不同敌人时，在第二处命中位置生成3枚自动索敌星屑弹，每枚伤害为该施放根攻击伤害的30%。冷却2.5秒；每次施放只触发1次；派生弹不得再次触发。",
+      "vfx": {
+        "clip": "round_sparkle_burst_002_small_green",
+        "spritesheet": "effects/spritesheet/Magic Bursts/round_sparkle_burst_002/round_sparkle_burst_002_small_green/spritesheet.png",
+        "metadata": "effects/spritesheet/Magic Bursts/round_sparkle_burst_002/round_sparkle_burst_002_small_green/spritesheet.txt"
+      },
+      "synergies": [
+        "分枝魔法",
+        "多武器输出"
+      ]
+    },
+    {
+      "no": 29,
+      "id": "scarlet-reprisal",
+      "title": "赤痕回响",
+      "tags": [
+        "hurt",
+        "echo"
+      ],
+      "eligibility": "任意武器",
+      "combat_rule": "受到一次实际生命伤害后，4秒内下一次主武器施放附带一次50%伤害的同型复制施放，随后消耗；触发冷却10秒。复制不计主施放次数，不再触发自身或回声骨骰等主施放复制；使用现有派生预算。",
+      "vfx": {
+        "clip": "burst_splatter_001_small_red",
+        "spritesheet": "effects/spritesheet/Splatters/burst_splatter_001/burst_splatter_001_small_red/spritesheet.png",
+        "metadata": "effects/spritesheet/Splatters/burst_splatter_001/burst_splatter_001_small_red/spritesheet.txt"
+      },
+      "synergies": [
+        "绝境血契",
+        "回声骨骰",
+        "近战反击"
+      ]
+    },
+    {
+      "no": 30,
+      "id": "starlit-magnet",
+      "title": "星辉磁环",
+      "tags": [
+        "xp",
+        "magnet"
+      ],
+      "eligibility": "任意武器",
+      "combat_rule": "在4秒内累计7个合格击杀时，将玩家周围6.5单位内最多12颗已有经验宝珠直接标记为磁吸状态，不额外生成经验或改变宝珠数值；冷却8秒，击杀计数触发后清零。",
+      "vfx": {
+        "clip": "status_sparkling_001_small_yellow",
+        "spritesheet": "effects/spritesheet/Fantasy Spells/status_sparkling_001/status_sparkling_001_small_yellow/spritesheet.png",
+        "metadata": "effects/spritesheet/Fantasy Spells/status_sparkling_001/status_sparkling_001_small_yellow/spritesheet.txt"
+      },
+      "synergies": [
+        "星屑之瓮",
+        "点金秘典",
+        "经验构筑"
+      ]
+    }
+  ]
+}

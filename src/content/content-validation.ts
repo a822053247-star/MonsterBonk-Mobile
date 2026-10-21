@@ -1,3 +1,4 @@
+import {WEAPON_TAGS} from './weapon-traits';
 import { CONTENT_SKILLS, CONTENT_TAGS, MODIFIER_STATS, MODIFIER_TARGETS, type RelicDefinition } from './content-types';
 import { ICON_PALETTES, ICON_SYMBOLS } from './relic-icons';
 import { EFFECT_HANDLERS, relicMetadata } from './relic-effects';
@@ -21,6 +22,7 @@ export function validateRelicContent(values: readonly unknown[], refs: ContentRe
       if (!r || typeof r !== 'object') { fail('missing requirements'); return; }
       if (r.weapon !== undefined && !has(refs.weapons,r.weapon)) fail(`unknown weapon ${r.weapon}`);
       for (const list of [r.weapons,r.anyWeapons]) if (list !== undefined && (!Array.isArray(list) || !list.length || list.some(id => !has(refs.weapons,id)))) fail('unknown/empty weapon requirements');
+      if(r.weaponTags&&(!Array.isArray(r.weaponTags)||!r.weaponTags.length||r.weaponTags.some(t=>!has(WEAPON_TAGS,t))))fail('unknown weapon capability tag');
       if (r.projectile !== undefined && typeof r.projectile !== 'boolean') fail('invalid projectile requirement');
       if (r.skills !== undefined && (!Array.isArray(r.skills) || r.skills.some(s => !has(CONTENT_SKILLS,s)))) fail('unknown skill');
     };
@@ -31,9 +33,9 @@ export function validateRelicContent(values: readonly unknown[], refs: ContentRe
       if (!fields) fail('unknown behavior handler');
       else for (const field of fields) {
         const value = (d.behavior as unknown as Record<string,unknown>)[field];
-        const limit = field === 'degrees' ? 360 : field === 'cooldown' ? 60 : 10;
+        const limit = field === 'degrees' ? 360 : field === 'cooldown' ? 60 : field === 'cap' ? 12 : 10;
         if (typeof value !== 'number' || !Number.isFinite(value) || value <= 0 || value > limit) fail(`invalid behavior parameter ${field}`);
-        if (['every','cap','count','kills','healCap','sameHits','coins','experience'].includes(field) && !Number.isInteger(value)) fail(`integer required: ${field}`);
+        if (['every','cap','count','kills','healCap','sameHits','coins','experience','targets','pierce'].includes(field) && !Number.isInteger(value)) fail(`integer required: ${field}`);
       }
     }
     if (!validModifiers) fail('missing modifiers');

@@ -134,7 +134,7 @@ export class Progression {
     if (!this.build || !this.fusionSkills) return this.pool;
     return this.pool.filter(skill => {
       const definition = factoryRelic(skill.id);
-      if (definition && !meetsRequirements(definition.requirements, { weapons: this.build!.attacks.map(a => a.attackId), ranks: this.ranks })) return false;
+      if (definition && !meetsRequirements(definition.requirements, this.build!.relicContext)) return false;
       const weapon = WEAPON_CARDS[skill.id];
       if (weapon && !this.build!.has(weapon) && this.build!.attacks.length >= 3) return false;
       if (skill.category === 'evolution') return this.build!.has('spark') && this.ranks['split-on-hit'] > 0 && !this.build!.evolution;
