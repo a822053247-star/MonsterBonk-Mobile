@@ -2,6 +2,16 @@ import type { ImpactVfx } from './vfx-presets';
 import type { GigapackClipId } from './gigapack-clips';
 
 export const GIGAPACK_BINDINGS:Record<string,GigapackClipId>={
+  'resonant-aftershock':'epic_explosion_001_small_orange',
+  'reverse-tide':'directional_bubble_burst_001_small_green',
+  'charge-chamber':'scifi_charge_up_001_small_yellow',
+  'azure-ward':'spell_defense_up_001_small_blue',
+  'swift-weave':'spell_haste_001_small_green',
+  'pristine-halo':'round_light_burst_001_small_yellow',
+  'blazing-satellite':'fire_looping_004B_small_orange',
+  'prism-shower':'round_sparkle_burst_002_small_green',
+  'scarlet-reprisal':'burst_splatter_001_small_red',
+  'starlit-magnet':'status_sparkling_001_small_yellow',
   'storm-relay':'lightning_strike_001_small_violet',
   'void-vessel':'spell_absorb_001_small_violet',
   'warp-eye':'scifi_warp_003_small_blue',

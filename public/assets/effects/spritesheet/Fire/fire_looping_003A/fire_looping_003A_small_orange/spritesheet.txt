@@ -1,5 +1,0 @@
-PNG/Fire/fire_looping_003A/fire_looping_003A_small_orange/frame0000.png = 0 0 40 64
-PNG/Fire/fire_looping_003A/fire_looping_003A_small_orange/frame0001.png = 40 0 40 64
-PNG/Fire/fire_looping_003A/fire_looping_003A_small_orange/frame0002.png = 80 0 40 64
-PNG/Fire/fire_looping_003A/fire_looping_003A_small_orange/frame0003.png = 0 64 40 64
-PNG/Fire/fire_looping_003A/fire_looping_003A_small_orange/frame0004.png = 40 64 40 64

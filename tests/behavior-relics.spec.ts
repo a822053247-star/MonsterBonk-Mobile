@@ -103,7 +103,7 @@ for(const d of definitions)test(`${d.id}: registry, prerequisites, real mechanic
  c.reset();expect(c.runBuild.relics).toEqual([]);expect(c.relicBehaviors.zones.some(z=>z.active)).toBe(false);expect(c.maxHp).toBe(100);
 });
 
-test('one real browser smoke: projectile, zone, status and automatic card/shop/build art',async({page})=>{
+test('one real browser smoke: projectile, zone, status and automatic card/shop/build art',async({page},testInfo)=>{
  test.setTimeout(60000);mkdirSync('artifacts/stage3',{recursive:true});
  const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
  await page.route('**/src/main.ts*',async r=>{const response=await r.fetch();await r.fulfill({response,body:(await response.text()).replace('const game = new Game();','const game = window.__relicGame = new Game();')});});
@@ -124,7 +124,7 @@ test('one real browser smoke: projectile, zone, status and automatic card/shop/b
  });
  expect(state.bound).toBe(true);expect(state.zone).toBe(true);expect(state.refracted).toBe(true);
  await page.evaluate(()=>{const g=(window as any).__relicGame;g.welcome.hidden=true;g.updateHUD();});
- await page.screenshot({path:'artifacts/stage3/smoke-combat.png'});
+ await page.screenshot({path:testInfo.outputPath('smoke-combat.png')});
  const lifecycle=await page.evaluate(()=>{
   const g=(window as any).__relicGame,c=g.combat;g.pause('特效暂停检查');const age=c.elapsed;g.step(.2);const paused=c.elapsed===age;
   g.resume();for(let i=0;i<60;i++)g.step(1/120);
@@ -133,9 +133,9 @@ test('one real browser smoke: projectile, zone, status and automatic card/shop/b
  });
  expect(lifecycle.paused).toBe(true);expect(lifecycle.zone).toBe(true);
  expect(lifecycle.visual.reactions.outlines).toBeGreaterThan(0);
- await page.screenshot({path:'artifacts/stage3/smoke-area.png'});
+ await page.screenshot({path:testInfo.outputPath('smoke-area.png')});
  await page.evaluate(()=>{const g=(window as any).__relicGame;g.combatView.detail=2;g.combatView.render(1,g.visualTime,g.position);g.renderer.render(g.scene,g.camera);});
- await page.screenshot({path:'artifacts/stage3/smoke-area-low.png'});
+ await page.screenshot({path:testInfo.outputPath('smoke-area-low.png')});
  await page.evaluate(()=>{
   const g=(window as any).__relicGame,c=g.combat;c.reset();c.grantUpgrade('bubble-weapon');c.grantUpgrade('leaf-weapon');c.grantUpgrade('area');
   for(let seed=1;seed<500;seed++){c.progression.reset(true);let n=seed;c.progression.random=()=>{n=(Math.imul(n,1664525)+1013904223)>>>0;return n/4294967296};c.progression.ranks.area=1;
@@ -143,14 +143,14 @@ test('one real browser smoke: projectile, zone, status and automatic card/shop/b
   g.openUpgrade();
  });
  await page.waitForFunction(()=>Array.from(document.querySelectorAll<HTMLImageElement>('.skill-illustration')).every(i=>i.complete&&i.naturalWidth>0));
- await page.screenshot({path:'artifacts/stage3/smoke-cards.png'});
+ await page.screenshot({path:testInfo.outputPath('smoke-cards.png')});
  const card=page.locator('.skill-card[data-skill="mirror-prism"],.skill-card[data-skill="ember-sigil"],.skill-card[data-skill="blood-pact"]').first();
  const chosen=await card.getAttribute('data-skill');await expect(card).toBeEnabled();await card.click();
  await page.locator('#pause').click();
  await page.waitForFunction(()=>Array.from(document.querySelectorAll<HTMLImageElement>('.build-relic-icon')).every(i=>i.complete&&i.naturalWidth>0));
  await expect(page.locator('#build-relics img')).toHaveCount(1);
  await page.locator('#build-relics').scrollIntoViewIfNeeded();
- await page.screenshot({path:'artifacts/stage3/smoke-build.png'});await page.locator('#resume').click();
+ await page.screenshot({path:testInfo.outputPath('smoke-build.png')});await page.locator('#resume').click();
  const shopId=await page.evaluate(()=>{
   const g=(window as any).__relicGame,c=g.combat,run=g.run;
   run.waveIndex=4;run.coins=200;run.phase='intermission';run.intermissionRemaining=0;
@@ -162,7 +162,7 @@ test('one real browser smoke: projectile, zone, status and automatic card/shop/b
  expect(shopId).toBeTruthy();expect(shopId).not.toBe(chosen);
  await page.waitForFunction(()=>Array.from(document.querySelectorAll<HTMLImageElement>('#shop-screen img')).every(i=>i.complete&&i.naturalWidth>0));
  await expect(page.locator(`.shop-item[data-skill="${shopId}"] .shop-illustration img`)).toHaveCount(1);
- await page.screenshot({path:'artifacts/stage3/smoke-shop.png'});
+ await page.screenshot({path:testInfo.outputPath('smoke-shop.png')});
  await page.locator(`.shop-item[data-skill="${shopId}"] button`).click();
  expect(await page.evaluate(id=>(window as any).__relicGame.combat.runBuild.relics.includes(id),shopId)).toBe(true);
  expect(errors).toEqual([]);

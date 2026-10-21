@@ -1,7 +1,7 @@
 import {test,expect} from '@playwright/test';
 import {mkdirSync} from 'node:fs';
 
-test('Gigapack real combat: lightning, same-shot warp, poison, dash smoke and queued fireworks',async({page})=>{
+test('Gigapack real combat: lightning, same-shot warp, poison, dash smoke and queued fireworks',async({page},testInfo)=>{
  test.setTimeout(60000);mkdirSync('artifacts/gigapack',{recursive:true});
  await page.setViewportSize({width:844,height:390});
  const errors:string[]=[];const missing:string[]=[];
@@ -76,7 +76,7 @@ test('Gigapack real combat: lightning, same-shot warp, poison, dash smoke and qu
    return changed;
   });
   expect(changedPixels,`${id}: atlas pixels must reach the actual framebuffer`).toBeGreaterThan(20);
-  await page.screenshot({path:`artifacts/gigapack/${id}.png`});
+  await page.screenshot({path:testInfo.outputPath(`${id}.png`)});
  }
  const paused=await page.evaluate(()=>{const g=(window as any).__gigaGame,c=g.combat;g.pause('检查暂停');const elapsed=c.elapsed;g.step(.2);return c.elapsed===elapsed;});
  expect(paused).toBe(true);expect(errors).toEqual([]);expect(missing).toEqual([]);

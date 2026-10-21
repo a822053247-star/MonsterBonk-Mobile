@@ -3,6 +3,7 @@ import type { BaseAttackId } from './fusion';
 import { resolveAttackRules, type RelicId, type EvolutionId } from './relics';
 import type { RelicContext } from './content/content-types';
 import { FLAME_SWEEP } from './flame-sweep';
+import {weaponCapabilities,inheritWeaponCapabilities,assertFusionPreservesRelics,type WeaponCapabilities} from './content/weapon-traits';
 
 export const MAX_WEAPON_LEVEL = 5;
 
@@ -24,6 +25,18 @@ export interface EquippedAttack {
 }
 
 export class RunBuild {
+  private inheritedCapabilities=new Map<BaseAttackId,WeaponCapabilities>();
+  capabilities(id:BaseAttackId){return this.inheritedCapabilities.get(id)??weaponCapabilities(id,this.skillRanks);}
+  get relicContext():RelicContext{return {weapons:this.attacks.map(a=>a.attackId),ranks:this.skillRanks,capabilities:this.attacks.map(a=>this.capabilities(a.attackId))};}
+  /** Metadata seam only; the future merge engine must declare actual retained event delivery. */
+  registerFusionCapabilities(result:BaseAttackId,parents:readonly BaseAttackId[],retainedEvents:readonly string[]){
+    const merged=inheritWeaponCapabilities(parents.map(id=>this.capabilities(id)));
+    const events=['primary-hit','primary-cast','primary-projectile','explosion','kill','hp-loss','dash','level-choice','coin-earned',...new Set(parents.flatMap(id=>this.capabilities(id).origins).map(id=>`origin:${id}`))];
+    const keep=this.attacks.filter(a=>!parents.includes(a.attackId)).map(a=>this.capabilities(a.attackId));
+    assertFusionPreservesRelics({relics:this.relics,weapons:parents.map(id=>this.capabilities(id)),events},
+      {relics:this.relics,weapons:[...keep,merged],events:retainedEvents});
+    this.inheritedCapabilities.set(result,merged);return merged;
+  }
   skillRanks: RelicContext['ranks'] = {};
   private equipped: EquippedAttack[] = [];
   private ownedRelics: RelicId[] = [];
@@ -34,6 +47,7 @@ export class RunBuild {
   get attacks(): readonly EquippedAttack[] { return this.equipped; }
 
   reset(species: SpeciesId) {
+    this.inheritedCapabilities.clear();
     this.species = species;
     this.ownedRelics = [];
     this.chosenEvolution = undefined;
@@ -41,7 +55,7 @@ export class RunBuild {
   }
 
   rules(attackId: BaseAttackId) {
-    return resolveAttackRules(attackId, this.relics, this.attacks.length, this.attacks.find(a => a.attackId === attackId)?.level ?? 1, this.evolution, { weapons: this.attacks.map(a => a.attackId), ranks: this.skillRanks });
+    return resolveAttackRules(attackId, this.relics, this.attacks.length, this.attacks.find(a => a.attackId === attackId)?.level ?? 1, this.evolution, this.relicContext);
   }
 
   upgrade(attackId: BaseAttackId) {

@@ -1,0 +1,66 @@
+[WebServer] (node:51196) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:50688) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:49708) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 46 tests using 1 worker
+
+(node:48940) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:48940) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  1 [chromium] › tests\behavior-relics.spec.ts:32:28 › mirror-prism: registry, prerequisites, real mechanic and bounded recursion (25ms)
+  ok  2 [chromium] › tests\behavior-relics.spec.ts:32:28 › returning-crown: registry, prerequisites, real mechanic and bounded recursion (11ms)
+  ok  3 [chromium] › tests\behavior-relics.spec.ts:32:28 › tidal-magnet: registry, prerequisites, real mechanic and bounded recursion (11ms)
+  ok  4 [chromium] › tests\behavior-relics.spec.ts:32:28 › hive-fuse: registry, prerequisites, real mechanic and bounded recursion (13ms)
+  ok  5 [chromium] › tests\behavior-relics.spec.ts:32:28 › ember-sigil: registry, prerequisites, real mechanic and bounded recursion (13ms)
+  ok  6 [chromium] › tests\behavior-relics.spec.ts:32:28 › spore-crown: registry, prerequisites, real mechanic and bounded recursion (13ms)
+  ok  7 [chromium] › tests\behavior-relics.spec.ts:32:28 › back-mirror: registry, prerequisites, real mechanic and bounded recursion (8ms)
+  ok  8 [chromium] › tests\behavior-relics.spec.ts:32:28 › slaughter-drum: registry, prerequisites, real mechanic and bounded recursion (4ms)
+  ok  9 [chromium] › tests\behavior-relics.spec.ts:32:28 › wet-vines: registry, prerequisites, real mechanic and bounded recursion (6ms)
+  ok 10 [chromium] › tests\behavior-relics.spec.ts:32:28 › blood-pact: registry, prerequisites, real mechanic and bounded recursion (6ms)
+  ok 11 [chromium] › tests\behavior-relics.spec.ts:106:1 › one real browser smoke: projectile, zone, status and automatic card/shop/build art (3.9s)
+  ok 12 [chromium] › tests\gigapack-21-30-smoke.spec.ts:3:1 › one real browser flow: aftershock, satellite, homing star shower and existing XP magnet (1.8s)
+  ok 13 [chromium] › tests\gigapack-21-30.spec.ts:29:28 › resonant-aftershock: exact spec, actual trigger and edge conditions (11ms)
+  ok 14 [chromium] › tests\gigapack-21-30.spec.ts:29:28 › reverse-tide: exact spec, actual trigger and edge conditions (7ms)
+  ok 15 [chromium] › tests\gigapack-21-30.spec.ts:29:28 › charge-chamber: exact spec, actual trigger and edge conditions (44ms)
+  ok 16 [chromium] › tests\gigapack-21-30.spec.ts:29:28 › azure-ward: exact spec, actual trigger and edge conditions (54ms)
+  ok 17 [chromium] › tests\gigapack-21-30.spec.ts:29:28 › swift-weave: exact spec, actual trigger and edge conditions (30ms)
+  ok 18 [chromium] › tests\gigapack-21-30.spec.ts:29:28 › pristine-halo: exact spec, actual trigger and edge conditions (5ms)
+  ok 19 [chromium] › tests\gigapack-21-30.spec.ts:29:28 › blazing-satellite: exact spec, actual trigger and edge conditions (5ms)
+  ok 20 [chromium] › tests\gigapack-21-30.spec.ts:29:28 › prism-shower: exact spec, actual trigger and edge conditions (4ms)
+  ok 21 [chromium] › tests\gigapack-21-30.spec.ts:29:28 › scarlet-reprisal: exact spec, actual trigger and edge conditions (5ms)
+  ok 22 [chromium] › tests\gigapack-21-30.spec.ts:29:28 › starlit-magnet: exact spec, actual trigger and edge conditions (5ms)
+  ok 23 [chromium] › tests\gigapack-21-30.spec.ts:95:1 › ten exact new png/txt resources and all parsed rectangles exist; no guessed grid (16ms)
+  ok 24 [chromium] › tests\gigapack-21-30.spec.ts:101:1 › future fusion must retain owned relics, parent tags, original identities and trigger events (8ms)
+  ok 25 [chromium] › tests\gigapack-21-30.spec.ts:115:49 › charged spark really crosses the first victim and hits a second without duplicate hits (9ms)
+  ok 26 [chromium] › tests\gigapack-21-30.spec.ts:115:49 › charged bubble really crosses the first victim and hits a second without duplicate hits (12ms)
+  ok 27 [chromium] › tests\gigapack-21-30.spec.ts:121:1 › new derived damage cannot feed other relics and saturated projectile budget cannot spawn shards (6ms)
+  ok 28 [chromium] › tests\gigapack-21-30.spec.ts:130:1 › distinct-target windows retain the latest hit time for a repeatedly hit target (4ms)
+  ok 29 [chromium] › tests\gigapack-relics.spec.ts:23:28 › storm-relay: trigger, limits, derived exclusion and lifecycle (9ms)
+  ok 30 [chromium] › tests\gigapack-relics.spec.ts:23:28 › void-vessel: trigger, limits, derived exclusion and lifecycle (5ms)
+  ok 31 [chromium] › tests\gigapack-relics.spec.ts:23:28 › warp-eye: trigger, limits, derived exclusion and lifecycle (7ms)
+  ok 32 [chromium] › tests\gigapack-relics.spec.ts:23:28 › reaper-decree: trigger, limits, derived exclusion and lifecycle (13ms)
+  ok 33 [chromium] › tests\gigapack-relics.spec.ts:23:28 › rhythm-seal: trigger, limits, derived exclusion and lifecycle (8ms)
+  ok 34 [chromium] › tests\gigapack-relics.spec.ts:23:28 › alchemist-ledger: trigger, limits, derived exclusion and lifecycle (9ms)
+  ok 35 [chromium] › tests\gigapack-relics.spec.ts:23:28 › venom-insignia: trigger, limits, derived exclusion and lifecycle (11ms)
+  ok 36 [chromium] › tests\gigapack-relics.spec.ts:23:28 › heart-keeper: trigger, limits, derived exclusion and lifecycle (8ms)
+  ok 37 [chromium] › tests\gigapack-relics.spec.ts:23:28 › smokescreen-feather: trigger, limits, derived exclusion and lifecycle (7ms)
+  ok 38 [chromium] › tests\gigapack-relics.spec.ts:23:28 › levelup-salute: trigger, limits, derived exclusion and lifecycle (19ms)
+  ok 39 [chromium] › tests\gigapack-relics.spec.ts:101:1 › all 11 spritesheets match real metadata bounds, frame ordering, PNG dimensions and 15 FPS guide (227ms)
+  ok 40 [chromium] › tests\gigapack-relics.spec.ts:110:1 › saturated VFX cannot cancel damage; derived budget cannot be bypassed (3ms)
+  ok 41 [chromium] › tests\gigapack-relics.spec.ts:118:1 › decree identity cannot execute a reused pool slot; pending salute clears on death (4ms)
+  ok 42 [chromium] › tests\gigapack-smoke.spec.ts:4:1 › Gigapack real combat: lightning, same-shot warp, poison, dash smoke and queued fireworks (2.0s)
+  ok 43 [chromium] › tests\vfx-presets.spec.ts:5:1 › builtins resolve real attack/effect IDs and custom presets bind without renderer classes (8ms)
+  ok 44 [chromium] › tests\vfx-presets.spec.ts:22:1 › invalid authoring data fails registration, including nonfinite and out of atlas values (15ms)
+  ok 45 [chromium] › tests\vfx-presets.spec.ts:37:1 › presentation durations are clamped to combat clocks and cannot outlive expired events (1ms)
+  ok 46 [chromium] › tests\vfx-presets.spec.ts:45:1 › runtime content errors retain the last working preset without throwing (3ms)
+
+  46 passed (16.0s)
+npm notice
+npm notice New major version of npm available! 10.9.2 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice
