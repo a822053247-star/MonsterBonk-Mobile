@@ -1,0 +1,5 @@
+
+> monsterbonk-mobile@0.4.0 content:check
+> node scripts/run-content-check.mjs
+
+Content valid: 1 factory relic(s); legacy IDs reserved; generated icons ready.

@@ -52,7 +52,7 @@ export interface Enemy extends Moving { wetTime?: number; steamReadyAt?: number;
 export interface Projectile extends Moving { relicSource?: RelicDamageSource; vx: number; vz: number; life: number; damage: number; distance: number; sourceId?: number; species?: SpeciesId; attackId?: BaseAttackId; attackRules?: AttackRules; homing?: boolean; generation?: number; bornTick?: number; ignoreEnemyId?: number; burst?: boolean; age?: number; elemental?: boolean; fusionIds?: FusionId[]; hitIds?: number[]; pierces?: number; bounces?: number; scatter?: boolean; baseDamage?: number; damageIds?: number[]; hopTargetId?: number; hopDelay?: number; hopElapsed?: number; hopDuration?: number; hopFromX?: number; hopFromZ?: number }
 export interface Shockwave { active: boolean; x: number; z: number; age: number; radius: number; previousRadius: number; maxRadius: number; damage: number; hitIds: Int32Array }
 export interface ExperienceOrb extends Moving { value: number; magnetized: boolean }
-export interface CombatEffect extends Point { active: boolean; time: number; duration: number; kind: 'hit' | 'death' | 'collect' | 'hurt' | 'burst' | 'water' | 'thorn' | 'steam'; enemyKind: EnemyKind; radius?: number; fusionId?: FusionId; enemyId?: number; chainDepth?: number; anchorX?: number; anchorZ?: number; moveX?: number; moveZ?: number }
+export interface CombatEffect extends Point { active: boolean; time: number; duration: number; kind: 'hit' | 'death' | 'collect' | 'hurt' | 'burst' | 'water' | 'thorn' | 'steam'; enemyKind: EnemyKind; radius?: number; fusionId?: FusionId; enemyId?: number; chainDepth?: number; vfxPresetId?: string; anchorX?: number; anchorZ?: number; moveX?: number; moveZ?: number }
 
 /** Earliest segment / circle intersection, including shots that start inside a circle. */
 export function segmentHit(ax: number, az: number, bx: number, bz: number, x: number, z: number, radius: number) {
@@ -655,7 +655,7 @@ export class Combat {
       for (const attack of attacks) {
         if (ATTACKS[attack.attackId].kind !== 'melee_arc') continue;
         const rules = this.runBuild.rules(attack.attackId);
-        const growth = flameSweepStats(attack.level, this.stats.rangeMultiplier, rules.areaMultiplier);
+        const growth = flameSweepStats(attack.level, this.stats.rangeMultiplier * rules.rangeMultiplier, rules.areaMultiplier);
         if (this.encounters.dying || attack.cooldown > 1e-8) continue;
         const snapshot: WeaponSnapshot = { attackId: 'flame-sweep', damage: FLAME_SWEEP.damage*this.stats.damageMultiplier*rules.damageMultiplier,
           range: growth.radius, rules, fusions: [], sweep: growth, mature: matureFire(attack.attackId, attack.level, this.progression.ranks) };
@@ -664,7 +664,7 @@ export class Combat {
         attack.cooldown = growth.interval*rules.intervalMultiplier/this.stats.attackRateMultiplier;
         attack.cooldownTotal = attack.cooldown; attack.shotsFired++;
       }
-      member.targetId = this.findTarget(member, ATTACKS[attacks[0].attackId].range * this.stats.rangeMultiplier)?.id ?? 0;
+      member.targetId = this.findTarget(member, ATTACKS[attacks[0].attackId].range * this.stats.rangeMultiplier * this.runBuild.rules(attacks[0].attackId).rangeMultiplier)?.id ?? 0;
       this.targetId = member.targetId;
       this.launchClock = Math.max(0, this.launchClock - dt);
       if (this.launchClock <= 1e-8) {
@@ -673,7 +673,7 @@ export class Combat {
             const index = (this.nextWeapon + offset) % attacks.length, attack = attacks[index];
             const weapon = ATTACKS[attack.attackId], rules = this.runBuild.rules(attack.attackId);
             if (weapon.kind !== 'projectile') continue;
-            const range = weapon.range * this.stats.rangeMultiplier;
+            const range = weapon.range * this.stats.rangeMultiplier * rules.rangeMultiplier;
             if (attack.cooldown > 1e-8 || !this.findTarget(member, range)) continue;
             const free = this.projectiles.filter(s => !s.active).length;
             if (free < this.stats.projectileCount + (attack.slot ? this.stats.projectileCount : 0)) {
@@ -749,7 +749,7 @@ export class Combat {
       if (earliest !== Infinity) {
         shot.active = false;
         const x = shot.previousX + (shot.x - shot.previousX) * earliest, z = shot.previousZ + (shot.z - shot.previousZ) * earliest;
-        this.effect(x, z, 'hit');
+        this.effect(x, z, 'hit', 'normal', 0, undefined, undefined, shot.attackRules?.impactVfx);
         if (victim) {
           this.damageEnemy(victim, shot.damage, shot.vx / WEAPON.speed, shot.vz / WEAPON.speed, 'player', this.projectileSource(shot));
           if (shot.burst && ((shot.generation ?? 0) < BURST_SEED.maxGeneration || shot.relicSource?.copied)) this.burstSeed(shot, victim, x, z);
@@ -866,7 +866,7 @@ export class Combat {
     const relicSource = { ...this.projectileSource(parent), kind: 'explosion' as const };
     const childCount = BURST_SEED.childCount + rules.childCountBonus;
     this.bursts++;
-    this.effect(x, z, 'burst', original.kind, radius);
+    this.effect(x, z, 'burst', original.kind, radius, undefined, undefined, rules.impactVfx);
     for (const enemy of this.enemies) {
       if (!enemy.active || enemy.spawnTime > 0 || enemy.id === original.id) continue;
       const dx = enemy.x - x, dz = enemy.z - z, distance = Math.hypot(dx, dz);
@@ -1048,7 +1048,7 @@ export class Combat {
       // Visual anchor only. AoE and direct damage retain the actual swept contact (x, z).
       this.effect(x, z, shot.attackId === 'bubble' ? 'water' : 'thorn', enemy.kind,
         (deep ? DEEP_BUBBLE.radius : waterChain ? CHAIN_BUBBLE.radius : .6) * rules.areaMultiplier, fusionId,
-        shot.attackId === 'bubble' ? enemy : undefined);
+        shot.attackId === 'bubble' ? enemy : undefined, rules.impactVfx);
       if (shot.attackId === 'bubble') {
         if (enemy.active) enemy.slowTime = rules.slowDuration;
         if (deep || waterChain) {
@@ -1202,7 +1202,7 @@ export class Combat {
         || this.covered(this.melee.x,this.melee.z,enemy.x,enemy.z) || this.covered(member.x,member.z,enemy.x,enemy.z)) continue;
       this.melee.hitIds[i] = enemy.id;
       this.damageEnemy(enemy,attack.damage*attack.rules.directMultiplier*(enemy.rank ? FLAME_SWEEP.eliteMultiplier : 1),aimX,aimZ,'player',source);
-      this.effect(enemy.x,enemy.z,'hit',enemy.kind);
+      this.effect(enemy.x,enemy.z,'hit',enemy.kind,0,undefined,undefined,attack.rules.impactVfx);
       if (this.encounters.dying) { this.melee.active = false; break; }
     }
     return true;
@@ -1517,14 +1517,14 @@ export class Combat {
     Object.assign(orb, { active: true, x, z, previousX: x, previousZ: z, value, magnetized: false });
   }
 
-  private effect(x: number, z: number, kind: CombatEffect['kind'], enemyKind: EnemyKind = 'normal', radius = 0, fusionId?: FusionId, enemy?: Enemy) {
+  private effect(x: number, z: number, kind: CombatEffect['kind'], enemyKind: EnemyKind = 'normal', radius = 0, fusionId?: FusionId, enemy?: Enemy, vfxPresetId?: string) {
     if ((kind === 'burst' || kind === 'steam') && radius >= .6) this.soundEvents |= SKILL_SOUNDS.burst;
     if ((kind === 'water' || kind === 'thorn') && fusionId) this.soundEvents |= SKILL_SOUNDS[kind];
     const important = kind === 'steam' || kind === 'burst' && radius >= .6;
     const effect = this.effects.find(candidate => !candidate.active) ?? (important
       ? this.effects.find(candidate => candidate.kind === 'hit' || candidate.kind === 'collect' || candidate.kind === 'death') : undefined);
     const duration = kind === 'steam' ? .55 : kind === 'burst' ? BURST_SEED.explosionDuration : fusionId === 'deep-bubble' ? DEEP_BUBBLE.duration : fusionId === 'thorn-scatter' ? .375 : kind === 'death' ? 0.55 : 0.32;
-    if (effect) Object.assign(effect, { active: true, x, z, kind, enemyKind, radius, chainDepth: 0, duration, time: duration, fusionId, enemyId: enemy?.id,
+    if (effect) Object.assign(effect, { active: true, x, z, kind, enemyKind, radius, vfxPresetId, chainDepth: 0, duration, time: duration, fusionId, enemyId: enemy?.id,
       anchorX: enemy?.x, anchorZ: enemy?.z, moveX: enemy?.walkX ?? 0, moveZ: enemy?.walkZ ?? 0 });
     return effect;
   }

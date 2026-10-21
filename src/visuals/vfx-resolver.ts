@@ -14,7 +14,7 @@ export function validateVfxPreset(value: unknown): asserts value is VfxPreset {
   if (p.type === 'projectile') valid = number(p.scale, .1, 3) && !!p.trail && color(p.trail.color)
     && number(p.trail.length, 0, 2) && number(p.trail.opacity, 0, 1) && typeof p.low.animated === 'boolean' && typeof p.low.trail === 'boolean';
   if (p.type === 'impact') valid = color(p.secondaryColor) && number(p.radiusScale, .1, 2) && number(p.duration, .01, 2)
-    && typeof p.particles === 'boolean' && typeof p.ring === 'boolean' && typeof p.low.particles === 'boolean' && typeof p.low.animated === 'boolean';
+    && (p.radiusMode === undefined || p.radiusMode === 'event') && typeof p.particles === 'boolean' && typeof p.ring === 'boolean' && typeof p.low.particles === 'boolean' && typeof p.low.animated === 'boolean';
   if (p.type === 'area') valid = color(p.secondaryColor) && ['ring','none'].includes(p.outline) && number(p.radiusScale, .1, 2)
     && p.duration === 'event' && number(p.fade, 0, 1) && number(p.rotationSpeed, -20, 20) && number(p.pulseSpeed, 0, 20) && typeof p.low.mist === 'boolean';
   if (!valid) throw new Error(`Invalid VFX configuration: ${p.id}`);
@@ -74,7 +74,10 @@ export class VfxResolver {
     }
   }
   projectile(attack?: BaseAttackId) { return attack ? this.projectiles.get(attack) : undefined; }
-  impact(kind: CombatEffect['kind']) { return this.impacts.get(kind); }
+  impact(kind: CombatEffect['kind'], id?: string) {
+    const preset = id ? this.presets.get(id) : undefined;
+    return preset?.type === 'impact' ? preset : this.impacts.get(kind);
+  }
   area(kind: CombatEffect['kind']) { return this.areas.get(kind); }
 }
 

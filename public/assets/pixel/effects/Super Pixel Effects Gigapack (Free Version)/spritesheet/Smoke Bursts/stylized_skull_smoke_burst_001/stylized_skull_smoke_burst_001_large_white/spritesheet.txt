@@ -1,0 +1,12 @@
+PNG/Smoke Bursts/stylized_skull_smoke_burst_001/stylized_skull_smoke_burst_001_large_white/frame0000.png = 0 0 64 64
+PNG/Smoke Bursts/stylized_skull_smoke_burst_001/stylized_skull_smoke_burst_001_large_white/frame0001.png = 64 0 64 64
+PNG/Smoke Bursts/stylized_skull_smoke_burst_001/stylized_skull_smoke_burst_001_large_white/frame0002.png = 128 0 64 64
+PNG/Smoke Bursts/stylized_skull_smoke_burst_001/stylized_skull_smoke_burst_001_large_white/frame0003.png = 192 0 64 64
+PNG/Smoke Bursts/stylized_skull_smoke_burst_001/stylized_skull_smoke_burst_001_large_white/frame0004.png = 256 0 64 64
+PNG/Smoke Bursts/stylized_skull_smoke_burst_001/stylized_skull_smoke_burst_001_large_white/frame0005.png = 320 0 64 64
+PNG/Smoke Bursts/stylized_skull_smoke_burst_001/stylized_skull_smoke_burst_001_large_white/frame0006.png = 384 0 64 64
+PNG/Smoke Bursts/stylized_skull_smoke_burst_001/stylized_skull_smoke_burst_001_large_white/frame0007.png = 448 0 64 64
+PNG/Smoke Bursts/stylized_skull_smoke_burst_001/stylized_skull_smoke_burst_001_large_white/frame0008.png = 512 0 64 64
+PNG/Smoke Bursts/stylized_skull_smoke_burst_001/stylized_skull_smoke_burst_001_large_white/frame0009.png = 576 0 64 64
+PNG/Smoke Bursts/stylized_skull_smoke_burst_001/stylized_skull_smoke_burst_001_large_white/frame0010.png = 640 0 64 64
+PNG/Smoke Bursts/stylized_skull_smoke_burst_001/stylized_skull_smoke_burst_001_large_white/frame0011.png = 704 0 64 64

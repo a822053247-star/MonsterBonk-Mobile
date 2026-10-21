@@ -1,0 +1,11 @@
+
+Running 4 tests using 1 worker
+
+(node:51480) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 1 [chromium] › tests\content-factory-ui.spec.ts:6:31 › factory reward, fifth shop and actual radius lifecycle at 844 (5.7s)
+  ok 2 [chromium] › tests\content-factory-ui.spec.ts:6:31 › factory reward, fifth shop and actual radius lifecycle at 568 (5.1s)
+  ok 3 [chromium] › tests\content-factory-ui.spec.ts:81:1 › missing shared VFX textures retain battle input and bounded tidal outline (3.3s)
+  ok 4 [chromium] › tests\content-factory-ui.spec.ts:91:1 › dedicated PNG failure falls back to a generated pixel icon without blocking a card (2.9s)
+
+  4 passed (19.1s)

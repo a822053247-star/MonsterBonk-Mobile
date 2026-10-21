@@ -1,0 +1,202 @@
+
+Running 24 tests using 2 workers
+
+(node:58136) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:62900) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  2 [chromium] › tests\content-factory.spec.ts:28:1 › production and synthetic relics register, generate cards/icons and reuse registered handlers (28ms)
+  ok  3 [chromium] › tests\content-factory.spec.ts:47:1 › invalid content reports duplicate IDs, references, metadata, copy, handlers, assets and mode leaks (15ms)
+  ok  4 [chromium] › tests\content-factory.spec.ts:64:1 › content CLI rejects an invalid file with a nonzero exit and an actionable error (341ms)
+  ok  5 [chromium] › tests\content-factory.spec.ts:72:1 › requirements, unique grants, reset and legacy pools use existing progression (15ms)
+  ok  6 [chromium] › tests\content-factory.spec.ts:83:1 › actual bubble area collision grows, base bubble gains no area, fire and grass stay identical (28ms)
+  ok  7 [chromium] › tests\content-factory.spec.ts:102:1 › automatic water cooldown increases by ten percent and in-flight snapshots remain stable (7ms)
+  ok  8 [chromium] › tests\content-factory.spec.ts:109:1 › fifth-wave shop uses the legal factory reward, same price, buy and duplicate guard (13ms)
+(node:3552) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  1 [chromium] › tests\content-factory-ui.spec.ts:6:31 › factory reward, fifth shop and actual radius lifecycle at 844 (1.2m)
+  ok  9 [webkit] › tests\content-factory-ui.spec.ts:6:31 › factory reward, fifth shop and actual radius lifecycle at 844 (1.2m)
+  ok 10 [chromium] › tests\content-factory-ui.spec.ts:6:31 › factory reward, fifth shop and actual radius lifecycle at 568 (21.8s)
+  ok 11 [webkit] › tests\content-factory-ui.spec.ts:6:31 › factory reward, fifth shop and actual radius lifecycle at 568 (32.3s)
+  x  12 [chromium] › tests\content-factory-ui.spec.ts:82:1 › missing shared VFX textures retain battle input and bounded tidal outline (37.4s)
+(node:63568) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 13 [webkit] › tests\content-factory-ui.spec.ts:82:1 › missing shared VFX textures retain battle input and bounded tidal outline (28.8s)
+  x  15 [webkit] › tests\content-factory-ui.spec.ts:92:1 › dedicated PNG failure falls back to a generated pixel icon without blocking a card (35.6s)
+  x  14 [chromium] › tests\content-factory-ui.spec.ts:92:1 › dedicated PNG failure falls back to a generated pixel icon without blocking a card (38.1s)
+(node:67192) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:46084) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  17 [chromium] › tests\content-factory-ui.spec.ts:107:1 › tidal impact shares the fixed pools and keeps actual elite and Boss warnings legible (35.9s)
+(node:63048) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  16 [webkit] › tests\content-factory-ui.spec.ts:107:1 › tidal impact shares the fixed pools and keeps actual elite and Boss warnings legible (38.5s)
+  ok 18 [webkit] › tests\content-factory.spec.ts:28:1 › production and synthetic relics register, generate cards/icons and reuse registered handlers (23ms)
+  ok 19 [webkit] › tests\content-factory.spec.ts:47:1 › invalid content reports duplicate IDs, references, metadata, copy, handlers, assets and mode leaks (16ms)
+  ok 20 [webkit] › tests\content-factory.spec.ts:64:1 › content CLI rejects an invalid file with a nonzero exit and an actionable error (283ms)
+  ok 21 [webkit] › tests\content-factory.spec.ts:72:1 › requirements, unique grants, reset and legacy pools use existing progression (11ms)
+  ok 22 [webkit] › tests\content-factory.spec.ts:83:1 › actual bubble area collision grows, base bubble gains no area, fire and grass stay identical (22ms)
+  ok 23 [webkit] › tests\content-factory.spec.ts:102:1 › automatic water cooldown increases by ten percent and in-flight snapshots remain stable (8ms)
+  ok 24 [webkit] › tests\content-factory.spec.ts:109:1 › fifth-wave shop uses the legal factory reward, same price, buy and duplicate guard (7ms)
+
+
+  1) [chromium] › tests\content-factory-ui.spec.ts:82:1 › missing shared VFX textures retain battle input and bounded tidal outline 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: page.goto: Test timeout of 30000ms exceeded.
+    Call log:
+      - navigating to "http://127.0.0.1:5173/vfx-timeline-harness?world=fixed", waiting until "load"
+
+
+       at vfx-timeline-harness.ts:72
+
+      70 |     };
+      71 |   </script></body></html>`}));
+    > 72 |   await page.goto('/vfx-timeline-harness?world=fixed');await page.locator('#start-fusion').click();
+         |              ^
+      73 |   await page.evaluate(battery=>{const g=(window as any).game;g.sleep();g.wake=()=>{};g.quality.setMode(battery?'battery':'high');g.applyGraphics()},battery);
+      74 |   await expect.poll(()=>page.evaluate(missing=>{
+      75 |     const v=(window as any).game.combatView;
+        at openTimeline (E:\study\game\MonsterBonk Mobile\tests\vfx-timeline-harness.ts:72:14)
+        at E:\study\game\MonsterBonk Mobile\tests\content-factory-ui.spec.ts:83:3
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    artifacts\content-supplement-output\content-factory-ui-missing-ae60b-t-and-bounded-tidal-outline-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: artifacts\content-supplement-output\content-factory-ui-missing-ae60b-t-and-bounded-tidal-outline-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    artifacts\content-supplement-output\content-factory-ui-missing-ae60b-t-and-bounded-tidal-outline-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace artifacts\content-supplement-output\content-factory-ui-missing-ae60b-t-and-bounded-tidal-outline-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [chromium] › tests\content-factory-ui.spec.ts:92:1 › dedicated PNG failure falls back to a generated pixel icon without blocking a card 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: page.evaluate: Test timeout of 30000ms exceeded.
+
+      93 |   await page.route('**/assets/test-unavailable.png',r=>r.abort());
+      94 |   await page.goto('/');
+    > 95 |   await page.evaluate(async()=>{
+         |              ^
+      96 |     const {bindUpgradeArt}=await import('/src/upgrade-art.ts' as string);
+      97 |     const {tidePrism}=await import('/src/content/relics/tide-prism.ts' as string);
+      98 |     const root=document.createElement('div');root.id='content-icon-fallback';
+        at E:\study\game\MonsterBonk Mobile\tests\content-factory-ui.spec.ts:95:14
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    artifacts\content-supplement-output\content-factory-ui-dedicat-b91b0-con-without-blocking-a-card-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: artifacts\content-supplement-output\content-factory-ui-dedicat-b91b0-con-without-blocking-a-card-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    artifacts\content-supplement-output\content-factory-ui-dedicat-b91b0-con-without-blocking-a-card-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace artifacts\content-supplement-output\content-factory-ui-dedicat-b91b0-con-without-blocking-a-card-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) [chromium] › tests\content-factory-ui.spec.ts:107:1 › tidal impact shares the fixed pools and keeps actual elite and Boss warnings legible 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 48
+    Received: 1
+
+      123 |     w.draw();const after={...g.renderer.info.memory};return {before,after,effects:c.effects.length,shots:c.projectiles.length,reactions:g.combatView.inspect().reactions};
+      124 |   });
+    > 125 |   expect(budget.after).toEqual(budget.before);expect(budget.reactions.outlines).toBe(budget.effects);
+          |                                                                                 ^
+      126 |   expect(budget.reactions.outlines).toBeLessThanOrEqual(budget.reactions.outlineCapacity);
+      127 |   if(browserName==='chromium')writeFileSync(`${directory}/budgets-warnings.json`,JSON.stringify({evidence,budget},null,2));
+      128 | });
+        at E:\study\game\MonsterBonk Mobile\tests\content-factory-ui.spec.ts:125:81
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    artifacts\content-supplement-output\content-factory-ui-tidal-i-98ee9-e-and-Boss-warnings-legible-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: artifacts\content-supplement-output\content-factory-ui-tidal-i-98ee9-e-and-Boss-warnings-legible-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    artifacts\content-supplement-output\content-factory-ui-tidal-i-98ee9-e-and-Boss-warnings-legible-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace artifacts\content-supplement-output\content-factory-ui-tidal-i-98ee9-e-and-Boss-warnings-legible-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  4) [webkit] › tests\content-factory-ui.spec.ts:92:1 › dedicated PNG failure falls back to a generated pixel icon without blocking a card 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: page.goto: Test timeout of 30000ms exceeded.
+    Call log:
+      - navigating to "http://127.0.0.1:5173/", waiting until "load"
+
+
+      92 | test('dedicated PNG failure falls back to a generated pixel icon without blocking a card',async({page})=>{
+      93 |   await page.route('**/assets/test-unavailable.png',r=>r.abort());
+    > 94 |   await page.goto('/');
+         |              ^
+      95 |   await page.evaluate(async()=>{
+      96 |     const {bindUpgradeArt}=await import('/src/upgrade-art.ts' as string);
+      97 |     const {tidePrism}=await import('/src/content/relics/tide-prism.ts' as string);
+        at E:\study\game\MonsterBonk Mobile\tests\content-factory-ui.spec.ts:94:14
+
+    Error Context: artifacts\content-supplement-output\content-factory-ui-dedicat-b91b0-con-without-blocking-a-card-webkit\error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    artifacts\content-supplement-output\content-factory-ui-dedicat-b91b0-con-without-blocking-a-card-webkit\trace.zip
+    Usage:
+
+        npx playwright show-trace artifacts\content-supplement-output\content-factory-ui-dedicat-b91b0-con-without-blocking-a-card-webkit\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  5) [webkit] › tests\content-factory-ui.spec.ts:107:1 › tidal impact shares the fixed pools and keeps actual elite and Boss warnings legible 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 48
+    Received: 1
+
+      123 |     w.draw();const after={...g.renderer.info.memory};return {before,after,effects:c.effects.length,shots:c.projectiles.length,reactions:g.combatView.inspect().reactions};
+      124 |   });
+    > 125 |   expect(budget.after).toEqual(budget.before);expect(budget.reactions.outlines).toBe(budget.effects);
+          |                                                                                 ^
+      126 |   expect(budget.reactions.outlines).toBeLessThanOrEqual(budget.reactions.outlineCapacity);
+      127 |   if(browserName==='chromium')writeFileSync(`${directory}/budgets-warnings.json`,JSON.stringify({evidence,budget},null,2));
+      128 | });
+        at E:\study\game\MonsterBonk Mobile\tests\content-factory-ui.spec.ts:125:81
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    artifacts\content-supplement-output\content-factory-ui-tidal-i-98ee9-e-and-Boss-warnings-legible-webkit\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: artifacts\content-supplement-output\content-factory-ui-tidal-i-98ee9-e-and-Boss-warnings-legible-webkit\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    artifacts\content-supplement-output\content-factory-ui-tidal-i-98ee9-e-and-Boss-warnings-legible-webkit\trace.zip
+    Usage:
+
+        npx playwright show-trace artifacts\content-supplement-output\content-factory-ui-tidal-i-98ee9-e-and-Boss-warnings-legible-webkit\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  5 failed
+    [chromium] › tests\content-factory-ui.spec.ts:82:1 › missing shared VFX textures retain battle input and bounded tidal outline 
+    [chromium] › tests\content-factory-ui.spec.ts:92:1 › dedicated PNG failure falls back to a generated pixel icon without blocking a card 
+    [chromium] › tests\content-factory-ui.spec.ts:107:1 › tidal impact shares the fixed pools and keeps actual elite and Boss warnings legible 
+    [webkit] › tests\content-factory-ui.spec.ts:92:1 › dedicated PNG failure falls back to a generated pixel icon without blocking a card 
+    [webkit] › tests\content-factory-ui.spec.ts:107:1 › tidal impact shares the fixed pools and keeps actual elite and Boss warnings legible 
+  19 passed (3.7m)

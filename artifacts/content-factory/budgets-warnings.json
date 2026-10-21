@@ -1,0 +1,58 @@
+{
+  "evidence": [
+    {
+      "kind": "elite",
+      "pixels": {
+        "baseline": 1019,
+        "retained": 1019,
+        "ratio": 1,
+        "visible": true
+      }
+    },
+    {
+      "kind": "lane",
+      "pixels": {
+        "baseline": 4190,
+        "retained": 4190,
+        "ratio": 1,
+        "visible": true
+      }
+    },
+    {
+      "kind": "cone",
+      "pixels": {
+        "baseline": 13329,
+        "retained": 13329,
+        "ratio": 1,
+        "visible": true
+      }
+    }
+  ],
+  "budget": {
+    "before": {
+      "geometries": 53,
+      "textures": 25
+    },
+    "after": {
+      "geometries": 53,
+      "textures": 25
+    },
+    "effects": 48,
+    "shots": 24,
+    "reactions": {
+      "loaded": true,
+      "failed": false,
+      "count": 1,
+      "capacity": 48,
+      "url": "/assets/kenney_particle-pack/PNG%20(Transparent)/smoke_08.png",
+      "frames": [
+        0
+      ],
+      "alpha": [
+        0.23999999463558197
+      ],
+      "outlines": 1,
+      "outlineCapacity": 48
+    }
+  }
+}

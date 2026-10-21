@@ -1,0 +1,13 @@
+PNG/Explosions/epic_explosion_001/epic_explosion_001_small_orange/frame0000.png = 0 0 64 64
+PNG/Explosions/epic_explosion_001/epic_explosion_001_small_orange/frame0001.png = 64 0 64 64
+PNG/Explosions/epic_explosion_001/epic_explosion_001_small_orange/frame0002.png = 128 0 64 64
+PNG/Explosions/epic_explosion_001/epic_explosion_001_small_orange/frame0003.png = 192 0 64 64
+PNG/Explosions/epic_explosion_001/epic_explosion_001_small_orange/frame0004.png = 256 0 64 64
+PNG/Explosions/epic_explosion_001/epic_explosion_001_small_orange/frame0005.png = 320 0 64 64
+PNG/Explosions/epic_explosion_001/epic_explosion_001_small_orange/frame0006.png = 384 0 64 64
+PNG/Explosions/epic_explosion_001/epic_explosion_001_small_orange/frame0007.png = 448 0 64 64
+PNG/Explosions/epic_explosion_001/epic_explosion_001_small_orange/frame0008.png = 512 0 64 64
+PNG/Explosions/epic_explosion_001/epic_explosion_001_small_orange/frame0009.png = 576 0 64 64
+PNG/Explosions/epic_explosion_001/epic_explosion_001_small_orange/frame0010.png = 640 0 64 64
+PNG/Explosions/epic_explosion_001/epic_explosion_001_small_orange/frame0011.png = 704 0 64 64
+PNG/Explosions/epic_explosion_001/epic_explosion_001_small_orange/frame0012.png = 768 0 64 64

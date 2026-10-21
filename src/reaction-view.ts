@@ -32,11 +32,11 @@ export class ReactionView {
       this.mist.put(0, enemy.x, .55, enemy.z, .65, .45, .24, '#73dfff', this.orientation);
     }
     for (const effect of effects) {
-      const impact = resolver.impact(effect.kind);
+      const impact = resolver.impact(effect.kind, effect.vfxPresetId);
       if (effect.active && impact?.ring && this.rings.count < COMBAT_LIMITS.effects) {
         const p = visualProgress(effect, impact.duration);
         if (p < 1) {
-          const index = this.rings.count++, radius = Math.min(3.8, Math.max(.5, effect.radius ?? .6) * impact.radiusScale) * (.5 + p * .5);
+          const index = this.rings.count++, radius = (impact.radiusMode === 'event' ? (effect.radius ?? .6) : Math.min(3.8, Math.max(.5, effect.radius ?? .6) * impact.radiusScale)) * (.5 + p * .5);
           this.pose.position.set(effect.x, .065, effect.z); this.pose.rotation.set(-Math.PI / 2, 0, 0);
           this.pose.scale.set(radius, radius, 1); this.pose.updateMatrix();
           this.rings.setMatrixAt(index, this.pose.matrix); this.rings.setColorAt(index, this.color.set(impact.secondaryColor));

@@ -1,0 +1,90 @@
+{
+  "purpose": "Control experiment: current combat with new factory reward excluded before seeded shuffling, compared with unmodified baseline. Production results are separate.",
+  "campaign": [
+    {
+      "species": "yanrong",
+      "policy": "chain",
+      "movement": "forager",
+      "seed": 42,
+      "equal": true
+    },
+    {
+      "species": "bubblesalamander",
+      "policy": "focused",
+      "movement": "forager",
+      "seed": 42,
+      "equal": true
+    },
+    {
+      "species": "bubblesalamander",
+      "policy": "chain",
+      "movement": "forager",
+      "seed": 42,
+      "equal": true
+    },
+    {
+      "species": "bubblesalamander",
+      "policy": "survival",
+      "movement": "forager",
+      "seed": 42,
+      "equal": true
+    },
+    {
+      "species": "yanrong",
+      "policy": "chain",
+      "movement": "forager",
+      "seed": 901,
+      "equal": true
+    },
+    {
+      "species": "bubblesalamander",
+      "policy": "focused",
+      "movement": "stationary",
+      "seed": 901,
+      "equal": true
+    },
+    {
+      "species": "bubblesalamander",
+      "policy": "focused",
+      "movement": "forager",
+      "seed": 901,
+      "equal": true
+    },
+    {
+      "species": "bubblesalamander",
+      "policy": "chain",
+      "movement": "forager",
+      "seed": 901,
+      "equal": true
+    },
+    {
+      "species": "yanrong",
+      "policy": "focused",
+      "movement": "forager",
+      "seed": 20261021,
+      "equal": true
+    },
+    {
+      "species": "bubblesalamander",
+      "policy": "focused",
+      "movement": "forager",
+      "seed": 20261021,
+      "equal": true
+    },
+    {
+      "species": "bubblesalamander",
+      "policy": "chain",
+      "movement": "forager",
+      "seed": 20261021,
+      "equal": true
+    },
+    {
+      "species": "bubblesalamander",
+      "policy": "survival",
+      "movement": "forager",
+      "seed": 20261021,
+      "equal": true
+    }
+  ],
+  "wavesIdentical": true
+}

@@ -1,6 +1,9 @@
 import type { BaseAttackId } from './fusion';
+import { FACTORY_RELIC_METADATA, factoryRelic } from './content/relic-registry';
+import { applyRelicDefinition } from './content/relic-effects';
+import type { RelicContext } from './content/content-types';
 
-export const RELICS = {
+export const LEGACY_RELICS = {
   'draft-boiling-core': { title: '沸腾核心', benefit: '水泡铺湿润，火系命中引发蒸爆 · 半径 2.5', tradeoff: '消耗湿润；同一目标间隔 0.6 秒，蒸爆不再触发蒸爆', icon: 'wave', color: '#ffd49b' },
   'overload-core': { title: '过载核心', benefit: '范围半径 +50%', tradeoff: '所有武器攻击间隔 +20%', icon: 'wave', color: '#ffb45f' },
   'hunter-eye': { title: '追猎之眼', benefit: '派生弹轻微追踪', tradeoff: '派生弹伤害 -20%', icon: 'compass', color: '#e7c67a' },
@@ -15,7 +18,9 @@ export const RELICS = {
   'draft-echo-bone-dice': { title: '回声骨骰', benefit: '每第 5 次施放，复制前次攻击的 50% 伤害', tradeoff: '复制一枚弹或一次横扫；不计次数，受派生预算限制', icon: 'orbit', color: '#a7edf0' },
   'draft-slaughter-hourglass': { title: '屠戮沙漏', benefit: '4 秒内击杀 8 敌，攻速 +30% 持续 3 秒', tradeoff: '触发后冷却 8 秒，期间不累积；增益不叠加', icon: 'dash', color: '#ffb45f' },
 } as const;
+export const RELICS = { ...LEGACY_RELICS, ...FACTORY_RELIC_METADATA };
 export type RelicId = keyof typeof RELICS;
+export const isRelicId = (id: string): id is RelicId => Object.prototype.hasOwnProperty.call(RELICS, id);
 export const TRIGGER_RELIC_RULES = {
   martyr: { radius: 1.35, damage: .5, maxGeneration: 2, eventsPerTick: 32 },
   kindling: { duration: 2, interval: .5, damage: .1, maxStacks: 3, radiusPerStack: .15 },
@@ -45,6 +50,7 @@ export const EVOLUTIONS = {
   'pursuit-route': { title: '追猎火种', benefit: '派生火种追踪敌人', tradeoff: '火种爆炸半径 -25%，放弃狂暴路线', icon: 'compass', color: '#f3de9a' },
 } as const;
 export type EvolutionId = keyof typeof EVOLUTIONS;
+export const isEvolutionId = (id: string): id is EvolutionId => Object.prototype.hasOwnProperty.call(EVOLUTIONS, id);
 
 /** Late-game damage growth is deliberately weaker than the old universal +20% per rank.
  * Level one remains unchanged; coverage/piercing/slow/arc are the reward for investing. */
@@ -55,15 +61,17 @@ export const WEAPON_DAMAGE_PER_LEVEL: Readonly<Record<BaseAttackId, number>> = {
 /** Snapshot these rules on a volley; upgrades never rewrite an in-flight attack. */
 export interface AttackRules {
   damageMultiplier: number; directMultiplier: number; intervalMultiplier: number;
+  rangeMultiplier: number; impactVfx?: string;
   areaMultiplier: number; childCountBonus: number; childDamageMultiplier: number;
   childHoming: boolean; slowDuration: number; chainRangeMultiplier: number;
   chainDecay: number; pierceBonus: number;
 }
 
-export function resolveAttackRules(attack: BaseAttackId, relics: readonly RelicId[], weaponCount: number, level = 1, evolution?: EvolutionId): AttackRules {
+export function resolveAttackRules(attack: BaseAttackId, relics: readonly RelicId[], weaponCount: number, level = 1, evolution?: EvolutionId, context?: RelicContext): AttackRules {
   const has = (id: RelicId) => relics.includes(id);
   const spark = attack === 'spark';
-  return {
+  const rules: AttackRules = {
+    rangeMultiplier: 1,
     damageMultiplier: (1 + WEAPON_DAMAGE_PER_LEVEL[attack] * (level - 1)) * (has('specialist-badge') && weaponCount === 1 ? 1.45 : 1),
     directMultiplier: has('tidal-pearl') ? .85 : 1,
     intervalMultiplier: (has('overload-core') ? 1.2 : 1) * (spark && evolution === 'berserk-route' ? 1.25 : 1),
@@ -77,4 +85,9 @@ export function resolveAttackRules(attack: BaseAttackId, relics: readonly RelicI
     chainDecay: has('echo-rune') ? .7 : 1,
     pierceBonus: attack === 'leaf' && level >= 3 ? 1 : 0,
   };
+  if (context) for (const id of relics) {
+    const definition = factoryRelic(id);
+    if (definition) applyRelicDefinition(rules, definition, attack, context);
+  }
+  return rules;
 }

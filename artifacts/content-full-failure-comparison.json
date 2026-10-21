@@ -1,0 +1,399 @@
+{
+  "baselineFailed": 28,
+  "currentFailedSoFar": 78,
+  "common": [
+    [
+      "chromium",
+      "combat-clarity-ui.spec.ts",
+      "fully fused three-weapon build stays readable with CD indicators and pooled impact visuals"
+    ],
+    [
+      "chromium",
+      "creature-animation-ui.spec.ts",
+      "actual collision displacement controls animation and animated/static visuals have identical combat and positions"
+    ],
+    [
+      "chromium",
+      "elemental-fusion-ui.spec.ts",
+      "deep atlas loads, plays flight and one-shot impact, damages and slows in actual game"
+    ],
+    [
+      "chromium",
+      "elemental-fusion-ui.spec.ts",
+      "missing elemental textures and icons preserve procedural effects, readable cards and damage"
+    ],
+    [
+      "chromium",
+      "elemental-fusion-ui.spec.ts",
+      "paopaoyuan development entry uses one animated creature, real cards, automatic fusions and bounded colored effects"
+    ],
+    [
+      "chromium",
+      "elemental-fusion-ui.spec.ts",
+      "yacishou development entry uses one animated creature, real cards, automatic fusions and bounded colored effects"
+    ],
+    [
+      "chromium",
+      "fusion-ui.spec.ts",
+      "missing atlas and icons keep procedural attack/explosion and readable cards"
+    ],
+    [
+      "chromium",
+      "fusion-ui.spec.ts",
+      "real fusion cards and impacts render child/explosion frames without duplicate hit flashes on both phone layouts"
+    ],
+    [
+      "chromium",
+      "game.spec.ts",
+      "main menu renders a real 3D world and starts exploration without errors"
+    ],
+    [
+      "chromium",
+      "hud-art.spec.ts",
+      "forest HUD keeps live values, weapon artwork and safe touch targets on landscape phones"
+    ],
+    [
+      "chromium",
+      "infinite-world-ui.spec.ts",
+      "teleporting across many chunks does not accumulate chunk groups or materials"
+    ],
+    [
+      "chromium",
+      "random-world-ui.spec.ts",
+      "different seeds render different regions and fit phone replay controls"
+    ],
+    [
+      "chromium",
+      "upgrades.spec.ts",
+      "new spells coexist, max HP updates HUD and a fresh run clears all skills"
+    ],
+    [
+      "chromium",
+      "upgrades.spec.ts",
+      "the last remaining skill is valid and full mastery stops creating empty dialogs"
+    ],
+    [
+      "webkit",
+      "combat-clarity-ui.spec.ts",
+      "fully fused three-weapon build stays readable with CD indicators and pooled impact visuals"
+    ],
+    [
+      "webkit",
+      "creature-animation-ui.spec.ts",
+      "actual collision displacement controls animation and animated/static visuals have identical combat and positions"
+    ],
+    [
+      "webkit",
+      "elemental-fusion-ui.spec.ts",
+      "deep atlas loads, plays flight and one-shot impact, damages and slows in actual game"
+    ],
+    [
+      "webkit",
+      "elemental-fusion-ui.spec.ts",
+      "missing elemental textures and icons preserve procedural effects, readable cards and damage"
+    ],
+    [
+      "webkit",
+      "elemental-fusion-ui.spec.ts",
+      "paopaoyuan development entry uses one animated creature, real cards, automatic fusions and bounded colored effects"
+    ],
+    [
+      "webkit",
+      "elemental-fusion-ui.spec.ts",
+      "yacishou development entry uses one animated creature, real cards, automatic fusions and bounded colored effects"
+    ],
+    [
+      "webkit",
+      "fusion-ui.spec.ts",
+      "missing atlas and icons keep procedural attack/explosion and readable cards"
+    ],
+    [
+      "webkit",
+      "fusion-ui.spec.ts",
+      "real fusion cards and impacts render child/explosion frames without duplicate hit flashes on both phone layouts"
+    ],
+    [
+      "webkit",
+      "game.spec.ts",
+      "main menu renders a real 3D world and starts exploration without errors"
+    ],
+    [
+      "webkit",
+      "hud-art.spec.ts",
+      "forest HUD keeps live values, weapon artwork and safe touch targets on landscape phones"
+    ],
+    [
+      "webkit",
+      "infinite-world-ui.spec.ts",
+      "teleporting across many chunks does not accumulate chunk groups or materials"
+    ],
+    [
+      "webkit",
+      "random-world-ui.spec.ts",
+      "different seeds render different regions and fit phone replay controls"
+    ],
+    [
+      "webkit",
+      "upgrades.spec.ts",
+      "new spells coexist, max HP updates HUD and a fresh run clears all skills"
+    ],
+    [
+      "webkit",
+      "upgrades.spec.ts",
+      "the last remaining skill is valid and full mastery stops creating empty dialogs"
+    ]
+  ],
+  "additionalToInvestigate": [
+    [
+      "chromium",
+      "25d.spec.ts",
+      "mobile touches follow all screen directions with fixed orientation and ground height"
+    ],
+    [
+      "chromium",
+      "build-depth-ui.spec.ts",
+      "rare choices expose costs, and pause shows levels, all six relics and the exclusive route"
+    ],
+    [
+      "chromium",
+      "challenge-ui.spec.ts",
+      "new entry, wave HUD and victory controls fit two phone landscape safe areas"
+    ],
+    [
+      "chromium",
+      "companion-animation.spec.ts",
+      "actual companion GPU frames change independently with stable size and release every texture"
+    ],
+    [
+      "chromium",
+      "companion-animation.spec.ts",
+      "legacy Yanrong leader visibly walks through frames, keeps heading when stopping"
+    ],
+    [
+      "chromium",
+      "companion-animation.spec.ts",
+      "missing companion atlases keep original static PNGs visible without disabling movement"
+    ],
+    [
+      "chromium",
+      "creature-animation-ui.spec.ts",
+      "shared atlases render independent real frames/mirrors without shared UV mutations and release all leases"
+    ],
+    [
+      "chromium",
+      "creature-animation-ui.spec.ts",
+      "visible GPU pixels change across real walking/idle frames, with stable foot, size and frame sequence"
+    ],
+    [
+      "chromium",
+      "creature-selection.spec.ts",
+      "choose bubblesalamander directly from menu and keep only that creature through restart"
+    ],
+    [
+      "chromium",
+      "creature-selection.spec.ts",
+      "selection dialog, cards and start targets fit both phone safe areas and closing does not start a run"
+    ],
+    [
+      "chromium",
+      "elemental-assets.spec.ts",
+      "all extracted cells and four icons decode with transparent safe margins"
+    ],
+    [
+      "chromium",
+      "elemental-fusion-ui.spec.ts",
+      "thorn-scatter individual skill renders audited pixels, icon and real damage; lifecycle clears batch"
+    ],
+    [
+      "chromium",
+      "elemental-fusion-ui.spec.ts",
+      "unknown developer value preserves Yanrong and old three-party ignores developer species and new cards"
+    ],
+    [
+      "chromium",
+      "enemy-motion-ui.spec.ts",
+      "PNG walk visibly changes at a fixed collision anchor and always faces the camera"
+    ],
+    [
+      "chromium",
+      "enemy-motion-ui.spec.ts",
+      "draft-crystal-swarm shows eight distinct GPU headings with independent mirrored UVs and holds direction at rest"
+    ],
+    [
+      "chromium",
+      "enemy-motion-ui.spec.ts",
+      "each new enemy independently falls back to its static PNG when its direction atlas is missing"
+    ],
+    [
+      "chromium",
+      "enemy-motion-ui.spec.ts",
+      "normal shows eight distinct GPU headings with independent mirrored UVs and holds direction at rest"
+    ],
+    [
+      "chromium",
+      "enemy-motion-ui.spec.ts",
+      "three species render every direction at 844 without per-enemy textures"
+    ],
+    [
+      "chromium",
+      "enemy-pixel.spec.ts",
+      "real depth buffer handles transparent cutouts, foreground cover and visible per-instance hit flash"
+    ],
+    [
+      "chromium",
+      "enemy-pixel.spec.ts",
+      "tank never uses removed blue geometry in legacy mode or after PNG failure"
+    ],
+    [
+      "chromium",
+      "flame-sweep-ui.spec.ts",
+      "reused source frames share a cast origin, freeze and reset without GPU growth"
+    ],
+    [
+      "chromium",
+      "fox-model.spec.ts",
+      "real game model has phone size, movement blending, pause and restart without resource growth"
+    ],
+    [
+      "chromium",
+      "fusion-ui.spec.ts",
+      "new and preserved menu entries fit both phone safe areas with unobstructed touch targets"
+    ],
+    [
+      "chromium",
+      "game.spec.ts",
+      "pause freezes simulation and resets held input; menu can restart cleanly"
+    ],
+    [
+      "chromium",
+      "game.spec.ts",
+      "real multitouch keeps joystick and dash independent on mobile"
+    ],
+    [
+      "chromium",
+      "horn-ui.spec.ts",
+      "telegraph has real instanced geometry, trial upgrades freeze and resume without losing horns"
+    ],
+    [
+      "chromium",
+      "infinite-world-ui.spec.ts",
+      "endless exploration shares the EXACT six-wave build, species, upgrades and shop flow of start challenge"
+    ],
+    [
+      "chromium",
+      "infinite-world-ui.spec.ts",
+      "trees stones and cacti stop the player while flowers and grass remain walkable"
+    ],
+    [
+      "chromium",
+      "pixel-party.spec.ts",
+      "pixel view and original fallback produce identical party movement, collisions, attacks and XP"
+    ],
+    [
+      "chromium",
+      "pixel-party.spec.ts",
+      "same-species sprites share textures and disposal releases leases, materials and groups"
+    ],
+    [
+      "chromium",
+      "presentation.spec.ts",
+      "audio waits for a gesture; settings persist and gameplay remains paused on closing"
+    ],
+    [
+      "chromium",
+      "presentation.spec.ts",
+      "small landscape HUD and settings fit safe areas with thumb-size touch targets"
+    ],
+    [
+      "chromium",
+      "random-world-ui.spec.ts",
+      "a replay link reproduces the rendered terrain, collision map and seed across reloads"
+    ],
+    [
+      "chromium",
+      "random-world-ui.spec.ts",
+      "pinned seeds remain pinned on new adventures; fixed override still uses the curated sample"
+    ],
+    [
+      "chromium",
+      "result-art.spec.ts",
+      "real victory shows crown, exact current scores and complete build without invented reward"
+    ],
+    [
+      "chromium",
+      "result-art.spec.ts",
+      "victory motion is one shot and reduced motion removes it without delaying actions"
+    ],
+    [
+      "chromium",
+      "run-flow-ui.spec.ts",
+      "complete six-wave UI with shopping, healing, refresh, victory, clean restart, defeat and legacy return"
+    ],
+    [
+      "chromium",
+      "run-panels.spec.ts",
+      "pause remains readable and operable at 4k"
+    ],
+    [
+      "chromium",
+      "shockwave-art.spec.ts",
+      "Kenney shockwave follows combat clocks, stays pooled and clears with the scene"
+    ],
+    [
+      "chromium",
+      "shop-art.spec.ts",
+      "new relics show supplied icons and can be bought from the actual shop"
+    ],
+    [
+      "chromium",
+      "upgrade-art.spec.ts",
+      "all 31 real IDs are covered, element variants follow equipped weapons, categories stay data-driven"
+    ],
+    [
+      "chromium",
+      "upgrade-art.spec.ts",
+      "remaining three supplied relic icons and their limits remain readable on mobile"
+    ],
+    [
+      "chromium",
+      "upgrades.spec.ts",
+      "XP opens three valid cards, freezes the entire simulation and touch picks once"
+    ],
+    [
+      "chromium",
+      "vfx-lifecycle.spec.ts",
+      "steam requires real wet hits and boiling core; failed assets still allow damage, pause, resume and clean restart"
+    ],
+    [
+      "chromium",
+      "vfx-lifecycle.spec.ts",
+      "test-only preset changes atlas animation and geometry; bad presets retain identical pixels and bounded resources"
+    ],
+    [
+      "chromium",
+      "vfx-live-entry.spec.ts",
+      "spark presets run from the shipped entry with natural auto attacks"
+    ],
+    [
+      "chromium",
+      "vfx-presets-ui.spec.ts",
+      "real spark, bubble and wet-fire steam render through presets and keep lifecycle/budgets"
+    ],
+    [
+      "chromium",
+      "vfx-presets.spec.ts",
+      "invalid authoring data fails registration, including nonfinite and out of atlas values"
+    ],
+    [
+      "webkit",
+      "vfx-lifecycle.spec.ts",
+      "steam requires real wet hits and boiling core; failed assets still allow damage, pause, resume and clean restart"
+    ],
+    [
+      "webkit",
+      "vfx-presets.spec.ts",
+      "invalid authoring data fails registration, including nonfinite and out of atlas values"
+    ]
+  ],
+  "baselineNotFailedSoFar": []
+}

@@ -1,0 +1,12 @@
+PNG/Explosions/symmetrical_explosion_004/symmetrical_explosion_004_large_orange/frame0000.png = 0 0 96 96
+PNG/Explosions/symmetrical_explosion_004/symmetrical_explosion_004_large_orange/frame0001.png = 96 0 96 96
+PNG/Explosions/symmetrical_explosion_004/symmetrical_explosion_004_large_orange/frame0002.png = 192 0 96 96
+PNG/Explosions/symmetrical_explosion_004/symmetrical_explosion_004_large_orange/frame0003.png = 288 0 96 96
+PNG/Explosions/symmetrical_explosion_004/symmetrical_explosion_004_large_orange/frame0004.png = 384 0 96 96
+PNG/Explosions/symmetrical_explosion_004/symmetrical_explosion_004_large_orange/frame0005.png = 480 0 96 96
+PNG/Explosions/symmetrical_explosion_004/symmetrical_explosion_004_large_orange/frame0006.png = 576 0 96 96
+PNG/Explosions/symmetrical_explosion_004/symmetrical_explosion_004_large_orange/frame0007.png = 672 0 96 96
+PNG/Explosions/symmetrical_explosion_004/symmetrical_explosion_004_large_orange/frame0008.png = 768 0 96 96
+PNG/Explosions/symmetrical_explosion_004/symmetrical_explosion_004_large_orange/frame0009.png = 864 0 96 96
+PNG/Explosions/symmetrical_explosion_004/symmetrical_explosion_004_large_orange/frame0010.png = 960 0 96 96
+PNG/Explosions/symmetrical_explosion_004/symmetrical_explosion_004_large_orange/frame0011.png = 1056 0 96 96

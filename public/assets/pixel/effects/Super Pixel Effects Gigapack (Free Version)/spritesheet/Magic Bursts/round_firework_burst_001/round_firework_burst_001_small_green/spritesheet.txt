@@ -1,0 +1,15 @@
+PNG/Magic Bursts/round_firework_burst_001/round_firework_burst_001_small_green/frame0000.png = 0 0 48 48
+PNG/Magic Bursts/round_firework_burst_001/round_firework_burst_001_small_green/frame0001.png = 48 0 48 48
+PNG/Magic Bursts/round_firework_burst_001/round_firework_burst_001_small_green/frame0002.png = 96 0 48 48
+PNG/Magic Bursts/round_firework_burst_001/round_firework_burst_001_small_green/frame0003.png = 144 0 48 48
+PNG/Magic Bursts/round_firework_burst_001/round_firework_burst_001_small_green/frame0004.png = 192 0 48 48
+PNG/Magic Bursts/round_firework_burst_001/round_firework_burst_001_small_green/frame0005.png = 0 48 48 48
+PNG/Magic Bursts/round_firework_burst_001/round_firework_burst_001_small_green/frame0006.png = 48 48 48 48
+PNG/Magic Bursts/round_firework_burst_001/round_firework_burst_001_small_green/frame0007.png = 96 48 48 48
+PNG/Magic Bursts/round_firework_burst_001/round_firework_burst_001_small_green/frame0008.png = 144 48 48 48
+PNG/Magic Bursts/round_firework_burst_001/round_firework_burst_001_small_green/frame0009.png = 192 48 48 48
+PNG/Magic Bursts/round_firework_burst_001/round_firework_burst_001_small_green/frame0010.png = 0 96 48 48
+PNG/Magic Bursts/round_firework_burst_001/round_firework_burst_001_small_green/frame0011.png = 48 96 48 48
+PNG/Magic Bursts/round_firework_burst_001/round_firework_burst_001_small_green/frame0012.png = 96 96 48 48
+PNG/Magic Bursts/round_firework_burst_001/round_firework_burst_001_small_green/frame0013.png = 144 96 48 48
+PNG/Magic Bursts/round_firework_burst_001/round_firework_burst_001_small_green/frame0014.png = 192 96 48 48

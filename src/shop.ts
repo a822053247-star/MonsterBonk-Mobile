@@ -1,3 +1,4 @@
+import { factoryRelic } from './content/relic-registry';
 import type { Combat } from './combat';
 import { WEAPON_CARDS, type SkillDefinition, type SkillId } from './progression';
 
@@ -24,7 +25,7 @@ export class RunShop {
     this.roll();
   }
 
-  private get candidates() { return this.combat.progression.skills.filter(s => this.combat.progression.canGrant(s.id)); }
+  private get candidates() { return this.combat.progression.skills.filter(s => this.combat.progression.canGrant(s.id) && (factoryRelic(s.id)?.rewards.shop ?? true)); }
   private choose(list: readonly SkillDefinition[], used: Set<SkillId>) {
     const candidates = list.filter(s => !used.has(s.id));
     return candidates[Math.min(candidates.length - 1, Math.floor(this.random() * candidates.length))];

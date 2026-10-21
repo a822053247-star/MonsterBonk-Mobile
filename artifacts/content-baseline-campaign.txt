@@ -1,0 +1,49 @@
+
+> monsterbonk-mobile@0.4.0 balance:campaign
+> node scripts/run-campaign-balance.mjs
+
+yanrong focused stationary 42 94.63 lost wave 2 HP 0 kills 161 level 4
+yanrong focused circle 42 135.62 lost wave 3 HP 0 kills 233 level 6
+yanrong focused forager 42 395.15 won wave 6 HP 113 kills 1455 level 22
+yanrong chain forager 42 454.15 won wave 6 HP 27 kills 1719 level 23
+yanrong survival forager 42 455 lost wave 6 HP 33 kills 1678 level 23
+bubblesalamander focused stationary 42 50.88 lost wave 1 HP 0 kills 55 level 2
+bubblesalamander focused circle 42 106.13 lost wave 2 HP 0 kills 138 level 4
+bubblesalamander focused forager 42 423.93 won wave 6 HP 53 kills 1553 level 23
+bubblesalamander chain forager 42 425.57 won wave 6 HP 79 kills 1560 level 21
+bubblesalamander survival forager 42 444.6 lost wave 6 HP 0 kills 1136 level 17
+sproutspike focused stationary 42 104.77 lost wave 2 HP 0 kills 201 level 3
+sproutspike focused circle 42 141.15 lost wave 3 HP 0 kills 330 level 6
+sproutspike focused forager 42 429.88 won wave 6 HP 85 kills 1634 level 23
+sproutspike chain forager 42 393.12 won wave 6 HP 120 kills 1470 level 22
+sproutspike survival forager 42 235.15 lost wave 4 HP 0 kills 721 level 13
+yanrong focused stationary 901 153.07 lost wave 3 HP 0 kills 367 level 5
+yanrong focused circle 901 160.28 lost wave 3 HP 0 kills 385 level 8
+yanrong focused forager 901 389.1 won wave 6 HP 23 kills 1353 level 21
+yanrong chain forager 901 390.47 won wave 6 HP 47 kills 1456 level 21
+yanrong survival forager 901 437.03 lost wave 6 HP 0 kills 1615 level 23
+bubblesalamander focused stationary 901 104.17 lost wave 2 HP 0 kills 194 level 5
+bubblesalamander focused circle 901 88.17 lost wave 2 HP 0 kills 130 level 4
+bubblesalamander focused forager 901 357.07 lost wave 5 HP 0 kills 1244 level 19
+bubblesalamander chain forager 901 342.28 lost wave 5 HP 0 kills 1250 level 20
+bubblesalamander survival forager 901 252.82 lost wave 4 HP 0 kills 434 level 8
+sproutspike focused stationary 901 111.45 lost wave 2 HP 0 kills 230 level 5
+sproutspike focused circle 901 134.73 lost wave 2 HP 0 kills 306 level 7
+sproutspike focused forager 901 428.32 won wave 6 HP 100 kills 1611 level 23
+sproutspike chain forager 901 405.15 won wave 6 HP 47 kills 1483 level 22
+sproutspike survival forager 901 446.25 lost wave 6 HP 0 kills 1678 level 23
+yanrong focused stationary 20261021 110.45 lost wave 2 HP 0 kills 223 level 5
+yanrong focused circle 20261021 143.17 lost wave 3 HP 0 kills 286 level 6
+yanrong focused forager 20261021 417.18 won wave 6 HP 60 kills 1595 level 23
+yanrong chain forager 20261021 385.22 won wave 6 HP 108 kills 1452 level 22
+yanrong survival forager 20261021 455 lost wave 6 HP 41 kills 1662 level 22
+bubblesalamander focused stationary 20261021 48.52 lost wave 1 HP 0 kills 52 level 2
+bubblesalamander focused circle 20261021 108.55 lost wave 2 HP 0 kills 214 level 5
+bubblesalamander focused forager 20261021 425.78 lost wave 6 HP 0 kills 1544 level 22
+bubblesalamander chain forager 20261021 391.53 won wave 6 HP 7 kills 1398 level 21
+bubblesalamander survival forager 20261021 455 lost wave 6 HP 55 kills 1562 level 22
+sproutspike focused stationary 20261021 107.13 lost wave 2 HP 0 kills 217 level 4
+sproutspike focused circle 20261021 134.88 lost wave 2 HP 0 kills 313 level 6
+sproutspike focused forager 20261021 377.22 lost wave 6 HP 0 kills 1416 level 21
+sproutspike chain forager 20261021 404.95 won wave 6 HP 76 kills 1528 level 23
+sproutspike survival forager 20261021 411.98 lost wave 6 HP 0 kills 1494 level 22

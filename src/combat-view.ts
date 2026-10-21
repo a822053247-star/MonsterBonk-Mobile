@@ -298,7 +298,7 @@ export class CombatView {
         x: THREE.MathUtils.lerp(target.previousX, target.x, alpha),
         z: THREE.MathUtils.lerp(target.previousZ, target.z, alpha),
       } : undefined);
-      const preset = this.combat.usesRunBuild ? this.vfx.impact(effect.kind) : undefined;
+      const preset = this.combat.usesRunBuild ? this.vfx.impact(effect.kind, effect.vfxPresetId) : undefined;
       feedback?.embers(effect, preset);
       const clip = elementalClip(effect.fusionId);
       if (clip?.impact.length && this.fusionPixels?.loaded && (!preset || this.detail > 2 || preset.low.animated)) {

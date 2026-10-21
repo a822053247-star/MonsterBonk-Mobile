@@ -1,6 +1,7 @@
 import { CREATURES, type SpeciesId } from './party';
 import type { BaseAttackId } from './fusion';
 import { resolveAttackRules, type RelicId, type EvolutionId } from './relics';
+import type { RelicContext } from './content/content-types';
 import { FLAME_SWEEP } from './flame-sweep';
 
 export const MAX_WEAPON_LEVEL = 5;
@@ -23,6 +24,7 @@ export interface EquippedAttack {
 }
 
 export class RunBuild {
+  skillRanks: RelicContext['ranks'] = {};
   private equipped: EquippedAttack[] = [];
   private ownedRelics: RelicId[] = [];
   private chosenEvolution?: EvolutionId;
@@ -39,7 +41,7 @@ export class RunBuild {
   }
 
   rules(attackId: BaseAttackId) {
-    return resolveAttackRules(attackId, this.relics, this.attacks.length, this.attacks.find(a => a.attackId === attackId)?.level ?? 1, this.evolution);
+    return resolveAttackRules(attackId, this.relics, this.attacks.length, this.attacks.find(a => a.attackId === attackId)?.level ?? 1, this.evolution, { weapons: this.attacks.map(a => a.attackId), ranks: this.skillRanks });
   }
 
   upgrade(attackId: BaseAttackId) {

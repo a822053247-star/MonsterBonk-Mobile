@@ -10,7 +10,7 @@ export interface ProjectileVfx extends Base {
 }
 export interface ImpactVfx extends Base {
   type: 'impact'; secondaryColor: string; radiusScale: number;
-  height?: number;
+  height?: number; radiusMode?: 'event';
   /** Maximum visual seconds, clamped to the real event's remaining lifecycle. */
   duration: number; particles: boolean; ring: boolean; animation?: AtlasAnimation;
   low: { particles: boolean; animated: boolean };
@@ -39,4 +39,7 @@ export const VFX_PRESETS: readonly VfxPreset[] = [
     animation: { atlas: 'fire', row: 2, frames: [0,1,2,3], fps: 12.5 }, low: { particles: true, animated: true } },
   { id: 'steam-area', type: 'area', color: '#80caff', secondaryColor: '#55aaff', outline: 'none', height: 1.1, rise: 1.2,
     radiusScale: 1, duration: 'event', fade: .8, rotationSpeed: 0, pulseSpeed: 0, low: { mist: true } },
+  { id: 'tidal-ring', type: 'impact', color: '#70d9ff', secondaryColor: '#329de5', radiusScale: 1, radiusMode: 'event', height: 1.55,
+    duration: .32, particles: true, ring: true,
+    animation: { atlas: 'elemental', row: 0, frames: [3,4,5,6,7], fps: 20 }, low: { particles: false, animated: true } },
 ];
