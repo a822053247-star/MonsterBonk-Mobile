@@ -293,12 +293,18 @@ export class Game {
     document.getElementById('quality-description')!.textContent = this.preferences.quality === 'battery'
       ? '降低清晰度与装饰数量，以 30 帧为目标。' : this.preferences.quality === 'high'
       ? '更清晰的画面，以 60 帧为目标；负载较高时仍会降低像素比。' : '根据运行负载调整清晰度，必要时转为 30 帧目标。';
+    if (this.partyPrototype && this.prototypeVariant === 'infinite') {
+      document.getElementById('quality-description')!.textContent =
+        '无尽草场保持屏幕原生分辨率和清晰像素边缘；画质选项仅调整粒子数量与目标帧率。';
+    }
   }
 
   private saveSettings() { savePreferences(this.preferences); this.syncSettings(); }
 
   private applyGraphics() {
-    this.renderer.setPixelRatio(this.quality.pixelRatio(window.devicePixelRatio, window.innerWidth, window.innerHeight));
+    const hdPixelWorld = this.partyPrototype && this.prototypeVariant === 'infinite';
+    this.renderer.setPixelRatio(hdPixelWorld ? window.devicePixelRatio || 1 :
+      this.quality.pixelRatio(window.devicePixelRatio, window.innerWidth, window.innerHeight));
     this.combatView.detail = this.quality.particles;
     for (const name of ['grass', 'flower', 'whiteFlower', 'pinkFlower', 'stem']) {
       const mesh = this.world.group.getObjectByName(`scenery-${name}`) as THREE.InstancedMesh | undefined;
@@ -349,6 +355,7 @@ export class Game {
     this.runRuleset = ruleset;
     this.partyPrototype = partyPrototype;
     this.prototypeVariant = partyPrototype ? variant : 'sample';
+    this.applyGraphics();
     // Endless exploration changes ONLY the world, not the six-wave fusion combat rules.
     this.combat.fusionEnabled = partyPrototype && (variant === 'fusion' || variant === 'infinite');
     this.combatView.setFusion(this.combat.fusionEnabled, this.selectedSpecies !== 'yanrong');

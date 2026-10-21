@@ -845,8 +845,8 @@ h1>em{font-size:12px;line-height:1;letter-spacing:4px;display:inline-block;backg
 
 /* Reference-led HUD V2: portrait medallion, horizontal ornamented HP, XP below. */
 .hud{
-  --hud-card-width:clamp(440px,30.5vw,625px);
-  --hud-card-height:clamp(145px,9.3vw,186px);
+  --hud-card-width:clamp(340px,24vw,480px);
+  --hud-card-height:clamp(112px,7.3vw,148px);
   padding:calc(14px + var(--safe-top)) calc(14px + var(--safe-right)) calc(14px + var(--safe-bottom)) calc(14px + var(--safe-left));
 }
 .hud .hud-top{position:relative;z-index:3;gap:10px;align-items:flex-start}
@@ -893,7 +893,7 @@ h1>em{font-size:12px;line-height:1;letter-spacing:4px;display:inline-block;backg
   pointer-events:none;margin:0;
 }
 .hud #health-value{
-  display:block;font-size:clamp(22px,1.8vw,37px);line-height:1;font-weight:950;
+  display:block;font-size:clamp(22px,1.65vw,32px);line-height:1;font-weight:950;
   letter-spacing:.3px;color:#fff9ed;font-variant-numeric:tabular-nums;
   text-shadow:-2px -2px #20211d,2px -2px #20211d,-2px 2px #20211d,2px 2px #20211d,0 2px 4px #081714;
 }
@@ -943,18 +943,18 @@ h1>em{font-size:12px;line-height:1;letter-spacing:4px;display:inline-block;backg
 .hud #run-gold{display:none!important}
 .hud.encounter-active .run-status{visibility:visible}
 
-/* Big, square, gold-rimmed top-right actions, matching the reference. */
+/* Compact top-right actions with readable icons and comfortable touch targets. */
 .hud .hud-actions{gap:clamp(7px,.55vw,13px);margin-left:auto;flex-shrink:0}
 .hud .hud-actions .icon-button{
-  width:clamp(65px,5.25vw,108px);height:clamp(65px,5.25vw,108px);
-  min-width:clamp(65px,5.25vw,108px);min-height:clamp(65px,5.25vw,108px);
+  width:clamp(48px,3.8vw,78px);height:clamp(48px,3.8vw,78px);
+  min-width:clamp(48px,3.8vw,78px);min-height:clamp(48px,3.8vw,78px);
   border:2px solid #c5a168;border-radius:12px;
   background:linear-gradient(145deg,#23483dde,#102c29ef);color:#fff8e6;
   box-shadow:inset 0 0 0 2px #d8bb7430,0 2px 8px #071f1c66;
-  font-size:clamp(21px,1.4vw,30px);font-weight:950;
+  font-size:clamp(16px,1.1vw,23px);font-weight:950;
 }
 .hud .hud-actions .speed-button.accelerated{background:linear-gradient(145deg,#6f512c,#4e371f);color:#fff6df}
-.hud .hud-actions .icon{width:clamp(30px,2vw,44px);height:clamp(30px,2vw,44px)}
+.hud .hud-actions .icon{width:clamp(23px,1.5vw,30px);height:clamp(23px,1.5vw,30px)}
 
 /* Non-verbal critical-health feedback: blood-red meter and gentle embers around the medallion. */
 .hud .health-track.low-health{border-color:#e8a065;box-shadow:0 0 0 2px #613626,0 0 14px #f23537b6,inset 0 2px 4px #141919}
@@ -994,24 +994,24 @@ h1>em{font-size:12px;line-height:1;letter-spacing:4px;display:inline-block;backg
 
 /* Landscape tablet and phone: proportionally downscale and avoid blocking play. */
 @media(max-width:1250px) and (orientation:landscape){
-  .hud{--hud-card-width:clamp(280px,31vw,390px);--hud-card-height:clamp(100px,10vw,130px)}
+  .hud{--hud-card-width:clamp(240px,25vw,320px);--hud-card-height:clamp(84px,8.2vw,108px)}
   .hud .health-title>span{font-size:17px}
   .hud .health-track{border-width:2px;border-radius:10px}
-  .hud #health-value{font-size:23px}
+  .hud #health-value{font-size:21px}
   .hud .xp-row{margin-top:-13px;height:23px;font-size:11px;gap:5px}
   .hud .xp-track{height:17px;border-width:1px}
   .hud .xp-row>span:last-child{min-width:50px;font-size:10px}
   .hud .run-status{min-width:176px;min-height:80px;padding:7px 15px}
   .hud #run-wave{font-size:21px}
   .hud #timer{font-size:32px}
-  .hud .hud-actions .icon-button{width:56px;height:56px;min-width:56px;min-height:56px;font-size:17px;border-radius:8px}
+  .hud .hud-actions .icon-button{width:48px;height:48px;min-width:48px;min-height:48px;font-size:16px;border-radius:8px}
   .hud .hud-actions .icon{width:23px;height:23px}
   .hud .encounter-status{top:calc(124px + var(--safe-top))}
 }
 @media(max-width:900px) and (orientation:landscape){
-  .hud{--hud-card-width:250px;--hud-card-height:98px}
+  .hud{--hud-card-width:218px;--hud-card-height:82px}
   .hud .health-title{top:77%}.hud .health-title>span{font-size:14px}
-  .hud #health-value{font-size:19px}
+  .hud #health-value{font-size:18px}
   .hud .health-track{top:42%;height:34%;border-width:2px}
   .hud .health-values{top:42%;height:34%}
   .hud .xp-row{margin-top:-12px;height:19px;gap:3px;padding-right:3px}
@@ -1023,12 +1023,12 @@ h1>em{font-size:12px;line-height:1;letter-spacing:4px;display:inline-block;backg
   .hud #run-wave{font-size:16px}
   .hud #timer{font-size:25px}
   .hud .hud-actions{gap:5px}
-  .hud .hud-actions .icon-button{width:48px;height:48px;min-width:48px;min-height:48px;font-size:14px}
+  .hud .hud-actions .icon-button{width:44px;height:44px;min-width:44px;min-height:44px;font-size:14px}
   .hud .hud-actions .icon{width:20px;height:20px}
   .hud .encounter-status{top:calc(130px + var(--safe-top))}
 }
 @media(max-width:700px) and (orientation:landscape){
-  .hud{--hud-card-width:183px;--hud-card-height:79px}
+  .hud{--hud-card-width:172px;--hud-card-height:70px}
   .hud .health-panel .portrait{left:3%;width:29%;height:78%}
   .hud .health-title{left:5%;top:80%}
   .hud .health-title>span{font-size:10px;padding:2px 3px}
@@ -1038,7 +1038,7 @@ h1>em{font-size:12px;line-height:1;letter-spacing:4px;display:inline-block;backg
   .hud .xp-row{margin-left:33%;width:64%;margin-top:-8px;height:15px}
   .hud .xp-track{height:11px}
   .hud .xp-row>span:last-child{font-size:8px;min-width:35px}
-  .hud .run-status{top:118px;left:50%;min-height:57px;min-width:118px;padding:5px 9px}
+  .hud .run-status{top:96px;left:50%;min-height:57px;min-width:118px;padding:5px 9px}
   .hud #run-wave{font-size:13px}
   .hud #timer{font-size:22px}
   .hud .hud-actions{gap:4px}
@@ -1096,16 +1096,16 @@ h1>em{font-size:12px;line-height:1;letter-spacing:4px;display:inline-block;backg
 .hud .hud-bottom-row{
   position:relative;z-index:8;display:grid;grid-template-columns:32% minmax(0,1fr);
   align-items:center;column-gap:1%;
-  width:98%;margin:-18px 0 0 1%;height:39px;
+  width:98%;margin:-14px 0 0 1%;height:33px;
   min-width:0;pointer-events:none;
 }
 .hud .hud-bottom-row .xp-row{
   display:flex;align-items:center;min-width:0;width:100%;
-  height:31px;margin:0;padding:0 6px 0 2px;gap:7px;
+  height:27px;margin:0;padding:0 6px 0 2px;gap:7px;
   background:#122725d8;border:1px solid #658c6b7d;border-radius:18px;
 }
 .hud .hud-bottom-row .xp-track{
-  flex:1 1 0;min-width:15px;height:23px;overflow:hidden;
+  flex:1 1 0;min-width:15px;height:18px;overflow:hidden;
 }
 .hud .hud-bottom-row #level-value{
   position:static;display:block;flex:none;padding:0 2px 0 0;
@@ -1115,21 +1115,21 @@ h1>em{font-size:12px;line-height:1;letter-spacing:4px;display:inline-block;backg
 }
 .hud .hud-bottom-row .hud-gold{
   display:inline-flex;align-items:center;justify-content:flex-end;align-self:center;
-  height:37px;min-height:37px;width:100%;max-width:none;
+  height:33px;min-height:33px;width:100%;max-width:none;
   gap:6px;margin:0;padding:3px 8px 3px 6px;
   font-size:17px;border-width:1px;border-radius:19px;
 }
-.hud .hud-bottom-row .hud-gold img{width:27px;height:27px}
+.hud .hud-bottom-row .hud-gold img{width:25px;height:25px}
 .hud .hud-bottom-row #hud-coins{font-size:inherit}
 
 /* Slightly reduce the wave plaque and clock; retain the visual hierarchy. */
 .hud .run-status{
-  min-width:clamp(190px,13.5vw,280px);
-  min-height:clamp(78px,5.3vw,110px);
-  padding:8px 18px 10px;
+  min-width:clamp(158px,11vw,224px);
+  min-height:clamp(64px,4.3vw,90px);
+  padding:6px 14px 8px;
 }
-.hud #run-wave{font-size:clamp(21px,1.75vw,35px)}
-.hud #timer{font-size:clamp(31px,2.4vw,49px)}
+.hud #run-wave{font-size:clamp(18px,1.45vw,29px)}
+.hud #timer{font-size:clamp(26px,1.95vw,40px)}
 @media(max-width:1250px) and (orientation:landscape){
   .hud .health-panel .portrait{left:5%;top:17%;width:24%;height:68%}
   .hud .hud-bottom-row{width:98%;margin:-12px 0 0 1%;height:28px;column-gap:1%}
@@ -1138,9 +1138,9 @@ h1>em{font-size:12px;line-height:1;letter-spacing:4px;display:inline-block;backg
   .hud .hud-bottom-row #level-value{font-size:12px;padding:0}
   .hud .hud-bottom-row .hud-gold{height:28px;min-height:28px;padding:1px 6px 1px 4px;gap:4px;font-size:12px}
   .hud .hud-bottom-row .hud-gold img{width:21px;height:21px}
-  .hud .run-status{min-width:163px;min-height:71px;padding:6px 12px}
-  .hud #run-wave{font-size:19px}
-  .hud #timer{font-size:28px}
+  .hud .run-status{min-width:148px;min-height:64px;padding:5px 10px}
+  .hud #run-wave{font-size:18px}
+  .hud #timer{font-size:26px}
 }
 @media(max-width:900px) and (orientation:landscape){
   .hud .hud-bottom-row{width:98%;margin:-11px 0 0 1%;height:24px;column-gap:1%}
@@ -1149,9 +1149,9 @@ h1>em{font-size:12px;line-height:1;letter-spacing:4px;display:inline-block;backg
   .hud .hud-bottom-row #level-value{font-size:10px}
   .hud .hud-bottom-row .hud-gold{height:24px;min-height:24px;padding:1px 4px 1px 3px;font-size:10px;gap:3px}
   .hud .hud-bottom-row .hud-gold img{width:17px;height:17px}
-  .hud .run-status{min-width:131px;min-height:61px;padding:5px 9px}
-  .hud #run-wave{font-size:15px}
-  .hud #timer{font-size:23px}
+  .hud .run-status{min-width:118px;min-height:56px;padding:4px 8px}
+  .hud #run-wave{font-size:14px}
+  .hud #timer{font-size:22px}
 }
 @media(max-width:700px) and (orientation:landscape){
   .hud .health-panel .portrait{left:5%;top:18%;width:24%;height:66%}

@@ -71,24 +71,26 @@ test('main HUD only shows wave and elapsed timer; levels and XP progress stay sy
       wave:rect('.run-status'),button:rect('#pause'),
       statsVisible:getComputedStyle(document.querySelector('.combat-stats')!).display};
   });
-  expect(layout.health.width).toBeGreaterThanOrEqual(510);
-  expect(layout.portrait.height).toBeGreaterThan(95);
+  expect(layout.health.width).toBeGreaterThanOrEqual(390);
+  expect(layout.health.width).toBeLessThanOrEqual(440);
+  expect(layout.portrait.height).toBeGreaterThan(75);
   expect(layout.portrait.width).toBeLessThan(layout.health.width * .27);
-  expect(layout.bar.width).toBeGreaterThan(290);
+  expect(layout.bar.width).toBeGreaterThan(240);
   expect(layout.bar.height).toBeGreaterThan(40);
   expect(Math.abs((layout.level.y+layout.level.height/2)-(layout.xp.y+layout.xp.height/2))).toBeLessThan(5);
   expect(Math.abs((layout.gold.y+layout.gold.height/2)-(layout.xp.y+layout.xp.height/2))).toBeLessThan(5);
   expect(layout.gold.x+layout.gold.width).toBeLessThanOrEqual(layout.xp.x+1);
   expect(layout.gold.x+layout.gold.width/2).toBeLessThan(layout.bar.x);
-  expect(layout.coin.width).toBeGreaterThanOrEqual(27);
+  expect(layout.coin.width).toBeGreaterThanOrEqual(24);
   // Both coin and number sit against the right-hand padding of their own pill.
   expect(layout.gold.x+layout.gold.width-(layout.amount.x+layout.amount.width)).toBeGreaterThanOrEqual(0);
   expect(layout.gold.x+layout.gold.width-(layout.amount.x+layout.amount.width)).toBeLessThan(13);
   expect(layout.coin.x+layout.coin.width).toBeLessThan(layout.amount.x);
   expect(layout.xp.y).toBeGreaterThan(layout.bar.y);
-  expect(layout.wave.height).toBeGreaterThan(75);
-  expect(layout.wave.height).toBeLessThan(115);
-  expect(layout.button.width).toBeGreaterThanOrEqual(85);
+  expect(layout.wave.height).toBeGreaterThan(64);
+  expect(layout.wave.height).toBeLessThan(90);
+  expect(layout.button.width).toBeGreaterThanOrEqual(60);
+  expect(layout.button.width).toBeLessThan(75);
   expect(layout.statsVisible).toBe('none');
   await page.screenshot({path:'artifacts/hud-readable-normal-desktop.png'});
 });

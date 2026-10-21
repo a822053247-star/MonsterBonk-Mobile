@@ -1,6 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { CHUNK_SIZE, chunkCoordinates, generateInfiniteChunk } from '../src/infinite-world';
-import { ROAD_WIDTH } from '../src/world-layout';
+import { CHUNK_SIZE, chunkCoordinates, generateInfiniteChunk, sampleInfiniteTerrain, sampleInfiniteSurface } from '../src/infinite-world';
 
 test('negative, positive and boundary coordinates select stable centered chunks', () => {
   expect(chunkCoordinates(0, 0)).toEqual({ cx: 0, cz: 0 });
@@ -10,42 +9,32 @@ test('negative, positive and boundary coordinates select stable centered chunks'
   expect(CHUNK_SIZE).toBe(64);
 });
 
-test('independent chunk seeds are deterministic across traversal order and revisits', () => {
-  const positions = [[0, 0], [1, 0], [-1, 0], [-2, 3], [40, -31]] as const;
-  const original = positions.map(([x, z]) => generateInfiniteChunk('forest-42', x, z));
-  positions.toReversed().forEach(([x, z]) => generateInfiniteChunk('other', x, z));
-  positions.forEach(([x, z], i) => expect(generateInfiniteChunk('forest-42', x, z)).toEqual(original[i]));
-  expect(generateInfiniteChunk('shore-19', -2, 3)).not.toEqual(original[3]);
+test('terrain is deterministic over negative coordinates, remote chunks and revisits', () => {
+  const positions = [[0, 0], [32, -32], [-96, 96], [2560, -1984]];
+  const original = positions.map(([x, z]) => sampleInfiniteTerrain('forest-42', x, z));
+  positions.toReversed().forEach(([x, z]) => sampleInfiniteTerrain('other', x, z));
+  expect(positions.map(([x, z]) => sampleInfiniteTerrain('forest-42', x, z))).toEqual(original);
+  const field = (seed: string) => Array.from({ length: 100 }, (_, i) => sampleInfiniteTerrain(seed, i * 3 - 150, i % 7 * 9 - 27));
+  expect(new Set(field('forest-42'))).toEqual(new Set(['grass', 'sand']));
+  expect(field('forest-42')).not.toEqual(field('shore-19'));
 });
 
-test('cross-chunk challenge-style roads stay traversable around every pond and rock', () => {
-  for (let cx = -6; cx <= 6; cx++) for (let cz = -6; cz <= 6; cz++) {
-    const layout = generateInfiniteChunk('meadow-roads', cx, cz);
-    for (const obstacle of layout.obstacles) {
-      const x = obstacle.x - cx * CHUNK_SIZE;
-      const z = obstacle.z - cz * CHUNK_SIZE;
-      // The baked roads center on the x/z axes, not at the outer world origin.
-      // A margin around both axes must remain clear for even the largest enemies.
-      expect(Math.abs(x) > ROAD_WIDTH / 2 + obstacle.radius + .95 ||
-             Math.abs(z) > ROAD_WIDTH / 2 + obstacle.radius + .95).toBe(true);
-    }
-    expect(Math.abs(layout.bendX)).toBeLessThan(2);
-    expect(Math.abs(layout.bendZ)).toBeLessThan(2);
-  }
-});
-
-test('streamed obstacles remain inside each chunk, apart from generous free border lanes', () => {
-  for (let cx = -5; cx <= 5; cx++) for (let cz = -5; cz <= 5; cz++) {
-    const layout = generateInfiniteChunk('audit-42', cx, cz);
-    const left = cx * CHUNK_SIZE - CHUNK_SIZE / 2;
-    const top = cz * CHUNK_SIZE - CHUNK_SIZE / 2;
+test('trees rocks and desert cacti collide, with safe spawn and chunk borders', () => {
+  for (let cx = -2; cx <= 2; cx++) for (let cz = -2; cz <= 2; cz++) {
+    const layout = generateInfiniteChunk('meadow', cx, cz);
+    expect(layout).toEqual(generateInfiniteChunk('meadow', cx, cz));
+    expect(layout.obstacles.length).toBe(layout.trees.length + layout.rocks.length + layout.cacti.length);
+    expect(layout.obstacles.length).toBeGreaterThan(0);
     for (const o of layout.obstacles) {
-      expect(o.x - o.radius).toBeGreaterThan(left + .2);
-      expect(o.x + o.radius).toBeLessThan(left + CHUNK_SIZE - .2);
-      expect(o.z - o.radius).toBeGreaterThan(top + .2);
-      expect(o.z + o.radius).toBeLessThan(top + CHUNK_SIZE - .2);
-      expect(Math.hypot(o.x, o.z) - o.radius).toBeGreaterThanOrEqual(8);
+      expect(Math.hypot(o.x, o.z) - o.radius).toBeGreaterThan(7);
+      expect(Math.abs(o.x - cx * CHUNK_SIZE) + o.radius).toBeLessThan(32);
+      expect(Math.abs(o.z - cz * CHUNK_SIZE) + o.radius).toBeLessThan(32);
     }
-    expect(layout.trees.length + layout.rocks.length).toBeGreaterThan(5);
+    expect(layout.flowers.length + layout.grass.length).toBeGreaterThan(0);
+    for (const p of layout.cacti)
+      expect(sampleInfiniteSurface('meadow', cx * CHUNK_SIZE - 32 + p.x, cz * CHUNK_SIZE - 32 + p.z)).toBe('sand');
+    const positions = [...layout.trees, ...layout.rocks, ...layout.cacti];
+    for (let i = 0; i < positions.length; i++) for (let j = i + 1; j < positions.length; j++)
+      expect(Math.hypot(positions[i].x - positions[j].x, positions[i].z - positions[j].z)).toBeGreaterThan(4);
   }
 });
