@@ -2,12 +2,13 @@ import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 // The supplied JSON is the content source. Only its obsolete root is remapped.
-const specPath = process.argv[2] ?? 'docs/monsterbonk_gigapack_relics_11_20_spec.json';
+const specPath = process.argv[2];
 const count = Number(process.argv[3] ?? 10);
-const spec = JSON.parse(readFileSync(specPath, 'utf8'));
+const specs = specPath ? [JSON.parse(readFileSync(specPath, 'utf8'))]
+  : ['11_20','21_30'].map(batch=>JSON.parse(readFileSync(`docs/monsterbonk_gigapack_relics_${batch}_spec.json`,'utf8')));
 const root = 'assets/pixel/effects/Super Pixel Effects Gigapack (Free Version)/';
 const clips = {};
-for (const relic of spec.relics.slice(0, count)) for (const clip of relic.vfx) {
+for (const spec of specs) for (const relic of spec.relics.slice(0, specPath ? count : spec.version.includes('21-30') ? count : 10)) for (const clip of Array.isArray(relic.vfx)?relic.vfx:[relic.vfx]) {
   const url = root + clip.spritesheet.replace(/^effects\//, '');
   const metadata = root + clip.metadata.replace(/^effects\//, '');
   const png = readFileSync(resolve('public', url));

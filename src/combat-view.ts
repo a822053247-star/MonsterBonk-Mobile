@@ -221,6 +221,7 @@ export class CombatView {
       }
     }
     for (const shot of this.combat.projectiles) {
+      if(this.gigapack.handlesProjectile(shot.vfxPresetId))continue;
       if (!shot.active || this.combat.hp <= 0) continue;
       const x = THREE.MathUtils.lerp(shot.previousX, shot.x, alpha), z = THREE.MathUtils.lerp(shot.previousZ, shot.z, alpha), angle = Math.atan2(shot.vx, shot.vz);
       const attack = shot.species || this.combat.fusionEnabled ? shot.attackId ?? (shot.species ? CREATURES[shot.species].skill : undefined) : undefined;

@@ -1,4 +1,4 @@
-import type { Combat, CombatEffect, Enemy, Projectile } from './combat';
+import type { Combat, CombatEffect, Enemy, Projectile, WeaponSnapshot } from './combat';
 import { WEAPON } from './combat';
 import type { BaseAttackId } from './fusion';
 import type { RelicDamageSource, RelicId } from './relics';
@@ -12,6 +12,8 @@ export interface RelicHooks {
   reserve(): boolean; covered(x:number,z:number,tx:number,tz:number): boolean;
   move(enemy:Enemy,dx:number,dz:number):void;
   source(damage:number):RelicDamageSource;
+  launch(parent:Projectile,x:number,z:number,dx:number,dz:number,damage:number,preset:string):Projectile|undefined;
+  copy(attack:WeaponSnapshot,damage:number):void;
 }
 interface Zone { active:boolean; kind:'mine'|'fire-zone'|'poison-zone'; x:number;z:number;age:number;next:number;duration:number;interval:number;radius:number;damage:number;source?:RelicDamageSource }
 
@@ -44,7 +46,7 @@ export class CombatRelicBehaviors {
   }
   private derived(source:RelicDamageSource):RelicDamageSource{return {...source,behavior:true,copied:true,generation:source.generation+1};}
   private primary(shot:Projectile){const s=shot.relicSource;return (shot.generation??0)===0&&!shot.returning&&!s?.behavior&&!s?.copied&&(!s||s.kind==='hit');}
-  private launch(parent:Projectile,x:number,z:number,dx:number,dz:number,damage:number,preset?:string){
+  launch(parent:Projectile,x:number,z:number,dx:number,dz:number,damage:number,preset?:string){
     const shot=this.c.projectiles.find(p=>!p.active&&p!==parent);
     if(!shot||!this.hooks.reserve()||this.c.encounters.dying)return;
     const length=Math.max(.001,Math.hypot(dx,dz)),source=parent.relicSource!;
@@ -57,6 +59,7 @@ export class CombatRelicBehaviors {
     return shot;
   }
   projectileHit(shot:Projectile,enemy:Enemy,x:number,z:number){
+    this.gigapack.projectileHit(shot,enemy,x,z);
     if(!this.primary(shot)||this.c.encounters.dying)return;
     const source=shot.relicSource!,root=source.rootDamage??shot.damage;
     const mirror=this.rule('mirror-prism','refract');
@@ -125,6 +128,7 @@ export class CombatRelicBehaviors {
     const rule=this.rule('wet-vines','wet-bind');return Math.min(this.gigapack.slowFactor(enemy),rule&&(enemy.vineUntil??0)>this.c.elapsed ? enemy.rank==='boss'?rule.bossSlow:rule.slow : 1);
   }
   kill(enemy:Enemy,damage:number,source:RelicDamageSource|undefined,origin:'player'|'spore'){
+    if(source?.suppressRelics)return;
     this.gigapack.kill(enemy,source,origin);
     if(!this.c.usesRunBuild||origin!=='player')return;
     const blood=this.rule('blood-pact','blood');

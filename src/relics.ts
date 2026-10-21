@@ -32,6 +32,12 @@ export const TRIGGER_RELIC_RULES = {
 
 /** Unique attack lineage, separate from the caster ID and fusion-child generation. */
 export interface RelicDamageSource {
+  weaponTags?:readonly import('./content/weapon-traits').WeaponTag[];
+  baseWeaponDamage?:number;
+  primary?:boolean;
+  castId?:number;
+  volley?:{id:number;showerTriggered?:boolean};
+  suppressRelics?:boolean;
   behavior?: boolean;
   rootId: number;
   attackId: BaseAttackId;
@@ -40,7 +46,7 @@ export interface RelicDamageSource {
   rootDamage?: number;
   mature?: boolean;
   reaction?: 'steam';
-  chain?: { nodes: number; refracted?: boolean };
+  chain?: { nodes: number; refracted?: boolean; aftershock?:boolean };
   copied?: boolean;
   generation: number;
   rules: AttackRules;

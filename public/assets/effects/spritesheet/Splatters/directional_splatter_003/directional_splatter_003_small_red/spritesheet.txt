@@ -1,7 +1,0 @@
-PNG/Splatters/directional_splatter_003/directional_splatter_003_small_red/frame0000.png = 0 0 24 24
-PNG/Splatters/directional_splatter_003/directional_splatter_003_small_red/frame0001.png = 24 0 24 24
-PNG/Splatters/directional_splatter_003/directional_splatter_003_small_red/frame0002.png = 48 0 24 24
-PNG/Splatters/directional_splatter_003/directional_splatter_003_small_red/frame0003.png = 72 0 24 24
-PNG/Splatters/directional_splatter_003/directional_splatter_003_small_red/frame0004.png = 96 0 24 24
-PNG/Splatters/directional_splatter_003/directional_splatter_003_small_red/frame0005.png = 0 24 24 24
-PNG/Splatters/directional_splatter_003/directional_splatter_003_small_red/frame0006.png = 24 24 24 24

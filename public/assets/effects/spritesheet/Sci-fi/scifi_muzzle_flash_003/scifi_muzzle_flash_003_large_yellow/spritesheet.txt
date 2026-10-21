@@ -1,8 +1,0 @@
-PNG/Sci-fi/scifi_muzzle_flash_003/scifi_muzzle_flash_003_large_yellow/frame0000.png = 0 0 96 48
-PNG/Sci-fi/scifi_muzzle_flash_003/scifi_muzzle_flash_003_large_yellow/frame0001.png = 96 0 96 48
-PNG/Sci-fi/scifi_muzzle_flash_003/scifi_muzzle_flash_003_large_yellow/frame0002.png = 0 48 96 48
-PNG/Sci-fi/scifi_muzzle_flash_003/scifi_muzzle_flash_003_large_yellow/frame0003.png = 96 48 96 48
-PNG/Sci-fi/scifi_muzzle_flash_003/scifi_muzzle_flash_003_large_yellow/frame0004.png = 0 96 96 48
-PNG/Sci-fi/scifi_muzzle_flash_003/scifi_muzzle_flash_003_large_yellow/frame0005.png = 96 96 96 48
-PNG/Sci-fi/scifi_muzzle_flash_003/scifi_muzzle_flash_003_large_yellow/frame0006.png = 0 144 96 48
-PNG/Sci-fi/scifi_muzzle_flash_003/scifi_muzzle_flash_003_large_yellow/frame0007.png = 96 144 96 48

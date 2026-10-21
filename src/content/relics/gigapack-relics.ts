@@ -1,6 +1,7 @@
+import {advancedCopy,ADVANCED_FIELDS,type AdvancedRelicBehavior} from './advanced-relics';
 import type { RelicDefinition, Requirements, ContentTag } from '../content-types';
 
-export type GigapackBehavior =
+export type GigapackBehavior = AdvancedRelicBehavior
   | {handler:'storm-relay'; window:number; sameHits:number; damage:number; count:number; radius:number; cooldown:number}
   | {handler:'void-vessel'; cooldown:number; radius:number; damage:number}
   | {handler:'warp-eye'; every:number; range:number; exit:number}
@@ -43,9 +44,11 @@ export function gigapackCopy(b:GigapackBehavior){
     case 'heart-keeper':return {benefit:'连续无伤10杀储存1心瓣，最多3；实际掉血后消耗1瓣恢复4生命',tradeoff:'受伤重置当前连杀；恢复不超过生命上限，仅实际治疗播放心形动画'};
     case 'smokescreen-feather':return {benefit:'冲刺起点留下半径1.6、持续1.5秒烟幕；敌人减速40%并残留0.5秒',tradeoff:'冷却7秒，最多1处；精英减速20%，首领免疫，不伤害或打断攻击'};
     case 'levelup-salute':return {benefit:'确认升级后，恢复战斗时礼炮命中8范围内最多4名可见敌，各70%主武器基础伤害',tradeoff:'最多等待1次，不再派生；无敌人等待3秒后作废，菜单或结束时清除'};
+    default:return advancedCopy(b);
   }
 }
 export const GIGAPACK_FIELDS = {
+  ...ADVANCED_FIELDS,
   'storm-relay':['window','sameHits','damage','count','radius','cooldown'],
   'void-vessel':['cooldown','radius','damage'],'warp-eye':['every','range','exit'],
   'reaper-decree':['kills','cooldown','range','delay','damage'],
