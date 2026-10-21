@@ -1,4 +1,5 @@
-/** Only existing shared atlases are selectable: presets never allocate GPU resources. */
+import { GIGAPACK_PRESETS } from './gigapack-presets';
+/** Presets describe visuals; renderers own bounded shared atlas resources. */
 export interface AtlasAnimation {
   atlas: 'fire' | 'elemental'; row: number; childRow?: number; frames: readonly number[]; fps: number;
 }
@@ -52,4 +53,5 @@ export const VFX_PRESETS: readonly VfxPreset[] = [
     duration:'event',fade:.4,rotationSpeed:.3,pulseSpeed:3,height:.4,rise:.35,low:{mist:false} },
   { id:'phantom-projectile',type:'projectile',color:'#b78bed',scale:.8,
     trail:{color:'#d9bcff',length:.7,opacity:.4},low:{animated:false,trail:true} },
+  ...GIGAPACK_PRESETS,
 ];

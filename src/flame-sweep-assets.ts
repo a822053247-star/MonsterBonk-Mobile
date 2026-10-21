@@ -10,6 +10,7 @@ export class FlameAtlasBatch {
   readonly mesh: THREE.InstancedMesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>;
   private frames: THREE.InstancedBufferAttribute;
   private alpha: THREE.InstancedBufferAttribute;
+  private rects?: THREE.InstancedBufferAttribute;
   private pose = new THREE.Object3D();
   private color = new THREE.Color();
   private spin = new THREE.Quaternion();
@@ -19,26 +20,29 @@ export class FlameAtlasBatch {
   private disposed = false;
   loaded = false;
   failed = false;
-  constructor(readonly url: string, readonly capacity: number, columns: number, rows: number) {
+  constructor(readonly url: string, readonly capacity: number, columns: number, rows: number,
+    private atlas?:{width:number;height:number;frames:readonly (readonly number[])[]}) {
     const geometry = new THREE.PlaneGeometry(1,1);
     this.frames = new THREE.InstancedBufferAttribute(new Float32Array(capacity),1);
     this.alpha = new THREE.InstancedBufferAttribute(new Float32Array(capacity),1);
     this.frames.setUsage(THREE.DynamicDrawUsage); this.alpha.setUsage(THREE.DynamicDrawUsage);
     geometry.setAttribute('flameFrame',this.frames); geometry.setAttribute('flameAlpha',this.alpha);
+    if(atlas){this.rects=new THREE.InstancedBufferAttribute(new Float32Array(capacity*4),4);this.rects.setUsage(THREE.DynamicDrawUsage);geometry.setAttribute('flameRect',this.rects);}
     const material = new THREE.MeshBasicMaterial({ transparent:true, depthWrite:false, depthTest:true,
       toneMapped:false, alphaTest:2/255, side:THREE.DoubleSide });
     material.forceSinglePass = true;
     material.onBeforeCompile = shader => {
       shader.vertexShader = 'attribute float flameFrame; attribute float flameAlpha; varying float flameOpacity;\n'+shader.vertexShader;
+      shader.vertexShader = (atlas?'attribute vec4 flameRect;\n':'')+shader.vertexShader;
       shader.vertexShader = shader.vertexShader.replace('#include <uv_vertex>',`#include <uv_vertex>
         flameOpacity = flameAlpha;
         #ifdef USE_MAP
-          vMapUv = (vMapUv+vec2(mod(flameFrame,${columns}.0),${rows-1}.0-floor(flameFrame/${columns}.0)))/vec2(${columns}.0,${rows}.0);
+          ${atlas?'vMapUv = flameRect.xy + vMapUv * flameRect.zw;':`vMapUv = (vMapUv+vec2(mod(flameFrame,${columns}.0),${rows-1}.0-floor(flameFrame/${columns}.0)))/vec2(${columns}.0,${rows}.0);`}
         #endif`);
       shader.fragmentShader = 'varying float flameOpacity;\n'+shader.fragmentShader;
       shader.fragmentShader = shader.fragmentShader.replace('#include <color_fragment>','#include <color_fragment>\n diffuseColor.a *= flameOpacity;');
     };
-    material.customProgramCacheKey = () => `flame-sweep-assets-${columns}-${rows}`;
+    material.customProgramCacheKey = () => `flame-sweep-assets-${atlas?'rect':`${columns}-${rows}`}`;
     this.mesh = new THREE.InstancedMesh(geometry,material,capacity);
     this.mesh.name = columns===rows ? 'SweepFireAtlas' : 'SweepSmallSparks';
     this.mesh.count = 0; this.mesh.visible = false; this.mesh.frustumCulled = false;
@@ -60,12 +64,14 @@ export class FlameAtlasBatch {
     this.pose.quaternion.copy(ground?this.ground:orientation).multiply(this.spin.setFromAxisAngle(this.axis,rotation));
     this.pose.updateMatrix();this.mesh.setMatrixAt(index,this.pose.matrix);this.mesh.setColorAt(index,this.color.set(color));
     this.frames.setX(index,frame);this.alpha.setX(index,alpha);
+    if(this.atlas&&this.rects){const [x,y,w,h]=this.atlas.frames[frame];this.rects.setXYZW(index,x/this.atlas.width,1-(y+h)/this.atlas.height,w/this.atlas.width,h/this.atlas.height);}
   }
   finish(){
     this.mesh.visible=this.mesh.count>0;
     if(!this.mesh.count)return;
     this.mesh.instanceMatrix.needsUpdate=true;this.mesh.instanceColor!.needsUpdate=true;
     this.frames.needsUpdate=this.alpha.needsUpdate=true;
+    if(this.rects)this.rects.needsUpdate=true;
   }
   inspect(){return {loaded:this.loaded,failed:this.failed,count:this.mesh.count,capacity:this.capacity,url:this.url,
     frames:Array.from(this.frames.array.slice(0,this.mesh.count)),alpha:Array.from(this.alpha.array.slice(0,this.mesh.count))};}

@@ -31,8 +31,9 @@ export function validateRelicContent(values: readonly unknown[], refs: ContentRe
       if (!fields) fail('unknown behavior handler');
       else for (const field of fields) {
         const value = (d.behavior as unknown as Record<string,unknown>)[field];
-        if (typeof value !== 'number' || !Number.isFinite(value) || value <= 0 || value > 10) fail(`invalid behavior parameter ${field}`);
-        if (['every','cap','count','kills','healCap'].includes(field) && !Number.isInteger(value)) fail(`integer required: ${field}`);
+        const limit = field === 'degrees' ? 360 : field === 'cooldown' ? 60 : 10;
+        if (typeof value !== 'number' || !Number.isFinite(value) || value <= 0 || value > limit) fail(`invalid behavior parameter ${field}`);
+        if (['every','cap','count','kills','healCap','sameHits','coins','experience'].includes(field) && !Number.isInteger(value)) fail(`integer required: ${field}`);
       }
     }
     if (!validModifiers) fail('missing modifiers');

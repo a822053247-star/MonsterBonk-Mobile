@@ -1,6 +1,7 @@
 import type { RelicDefinition, Requirements, ContentTag } from '../content-types';
+import { gigapackCopy, GIGAPACK_FIELDS, type GigapackBehavior } from './gigapack-relics';
 
-export type RelicBehavior =
+export type RelicBehavior = GigapackBehavior
   | { handler: 'refract'; damage: number; count: number }
   | { handler: 'return'; damage: number }
   | { handler: 'pull'; distance: number; cooldown: number }
@@ -47,11 +48,13 @@ export function behaviorCopy(b: RelicBehavior) {
     case 'kill-wave':return {benefit:`${b.window}秒内${b.kills}杀触发半径${b.radius}冲击波`,tradeoff:`${pct(b.damage)}原伤；冷却${b.cooldown}秒，冲击波不再蓄杀`};
     case 'wet-bind':return {benefit:`飞叶消耗湿润 · 强减速${b.duration}秒`,tradeoff:`同目标冷却${b.cooldown}秒；Boss仅弱减速`};
     case 'blood':return {benefit:`生命≤${pct(b.threshold)}时间隔×${b.interval}；击杀恢复${b.heal}`,tradeoff:`最大生命-${pct(1-b.maxHp)}；每秒最多恢复${b.healCap}点`};
+    default:return gigapackCopy(b);
   }
 }
 
 /** Known handler schemas are shared by authoring validation and event dispatch. */
 export const BEHAVIOR_FIELDS = {
+  ...GIGAPACK_FIELDS,
   refract:['damage','count'],return:['damage'],pull:['distance','cooldown'],mine:['every','delay','radius','damage','cap'],
   'fire-zone':['duration','interval','damage','cooldown','cap','radius'],'poison-zone':['duration','interval','damage','cooldown','cap','radius'],
   'back-shot':['every','damage'],'kill-wave':['window','kills','radius','damage','cooldown'],

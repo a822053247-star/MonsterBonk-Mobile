@@ -1,4 +1,6 @@
 import * as THREE from 'three';
+import { GigapackView } from './gigapack-view';
+import { GIGAPACK_BINDINGS } from './visuals/gigapack-presets';
 import { COMBAT_CLARITY, WATER_IMPACT_VISUAL, impactVisualPosition, impactSize, readableEffects } from './combat-clarity';
 import { enemyPose } from './enemy-motion';
 import { grassBlobPose, grassBlobRoll, grassCrowdMotionScale } from './grass-blob';
@@ -23,6 +25,7 @@ import { instanceOpacity } from './visuals/instance-opacity';
 
 /** All enemies and effects use shared instanced batches: no per-kill GPU allocations. */
 export class CombatView {
+  private gigapack=new GigapackView();
   readonly vfx = new VfxResolver();
   readonly group = new THREE.Group();
   private grassBlobs = new GrassBlobView();
@@ -67,6 +70,7 @@ export class CombatView {
   private specialEnemies: SpecialEnemyView;
 
   constructor(private combat: Combat) {
+    this.group.add(this.gigapack.group);
     this.group.add(this.shockwaveView.group,this.grassBlobs.group);
     this.specialEnemies = new SpecialEnemyView(combat,kind=>this.pixelEnemies?.height(kind)??ENEMY_PIXEL_HEIGHTS[kind]); this.group.add(this.specialEnemies.group);
     this.encounters=new EncounterView(combat); this.group.add(this.encounters.group);
@@ -132,7 +136,7 @@ export class CombatView {
     if (this.pixelEnemies) { this.pixelEnemies.group.visible = true; this.pixelEnemies.begin(); }
   }
 
-  updateView(camera: THREE.Camera, viewportHeight: number, frustumHeight: number) { this.grassBlobs.setView(camera); this.specialEnemies.setView(camera,viewportHeight,frustumHeight); this.flameSweep?.setView(camera); this.shockwaveView.setView(camera); this.encounters.setView(camera); this.pixelEnemies?.setView(camera, viewportHeight, frustumHeight); this.firePixels?.setView(camera); this.fusionPixels?.setView(camera); this.feedback?.setView(camera); this.reactions?.setView(camera); }
+  updateView(camera: THREE.Camera, viewportHeight: number, frustumHeight: number) { this.gigapack.setView(camera); this.grassBlobs.setView(camera); this.specialEnemies.setView(camera,viewportHeight,frustumHeight); this.flameSweep?.setView(camera); this.shockwaveView.setView(camera); this.encounters.setView(camera); this.pixelEnemies?.setView(camera, viewportHeight, frustumHeight); this.firePixels?.setView(camera); this.fusionPixels?.setView(camera); this.feedback?.setView(camera); this.reactions?.setView(camera); }
 
   setFusion(enabled: boolean, _elemental = false) {
     if(enabled)this.grassBlobs.enable();
@@ -148,6 +152,7 @@ export class CombatView {
   }
 
   render(alpha: number, time: number, player: { x: number; z: number } = { x: this.combat.anchorX, z: this.combat.anchorZ }) {
+    this.gigapack.render(this.combat,this.combat.effects);
     this.grassBlobs.render(this.combat);
     this.flameSweep?.render(this.combat,player);
     this.encounters.render(alpha);
@@ -288,6 +293,7 @@ export class CombatView {
     const visibleEffects = this.combat.usesRunBuild ? readableEffects(this.combat.effects) : this.combat.effects;
     this.reactions?.render(this.combat.usesRunBuild && this.combat.hp > 0 ? visibleEffects : [], this.combat.usesRunBuild && this.combat.hp > 0 ? this.combat.enemies : [], this.detail, this.vfx);
     for (const effect of visibleEffects) {
+      if(effect.vfxPresetId&&GIGAPACK_BINDINGS[effect.vfxPresetId])continue;
       if (!effect.active || this.combat.hp <= 0) continue;
       if (this.combat.usesRunBuild && effect.kind === 'collect') continue;
       const progress = 1 - effect.time / effect.duration;
@@ -370,9 +376,9 @@ export class CombatView {
     this.trailAlpha.needsUpdate = true;
   }
 
-  clear() { this.reactions?.clear(); this.grassBlobs.clear(); this.specialEnemies.clear(); this.flameSweep?.clear(); this.shockwaveView.clear(); this.encounters.clear(); for (const mesh of this.batches) mesh.count = 0; this.pixelEnemies?.begin(); this.pixelEnemies?.resetDirections(); this.firePixels?.begin(); this.fusionPixels?.begin(); this.feedback?.begin(); }
+  clear() { this.gigapack.clear(); this.reactions?.clear(); this.grassBlobs.clear(); this.specialEnemies.clear(); this.flameSweep?.clear(); this.shockwaveView.clear(); this.encounters.clear(); for (const mesh of this.batches) mesh.count = 0; this.pixelEnemies?.begin(); this.pixelEnemies?.resetDirections(); this.firePixels?.begin(); this.fusionPixels?.begin(); this.feedback?.begin(); }
   inspectElemental() { return this.fusionPixels?.inspect(); }
   inspectFusion() { return this.firePixels?.inspect(); }
-  inspect() { return { reactions:this.reactions?.inspect(), grass:this.grassBlobs.inspect(), enabled: this.pixelsEnabled, ...this.pixelEnemies?.inspect(), specialEnemies:this.specialEnemies.inspect(), melee:this.flameSweep?.inspect(), encounters:this.encounters.inspect(), feedback:this.feedback?.inspect() }; }
-  dispose() { this.reactions?.dispose(); this.reactions = undefined; this.grassBlobs.dispose(); this.specialEnemies.dispose(); this.flameSweep?.dispose(); this.flameSweep = undefined; this.shockwaveView.dispose(); this.encounters.dispose(); this.pixelEnemies?.dispose(); this.pixelEnemies = undefined; this.firePixels?.dispose(); this.firePixels = undefined; this.fusionPixels?.dispose(); this.fusionPixels = undefined; this.feedback?.dispose(); this.feedback = undefined; }
+  inspect() { return { gigapack:this.gigapack.inspect(), reactions:this.reactions?.inspect(), grass:this.grassBlobs.inspect(), enabled: this.pixelsEnabled, ...this.pixelEnemies?.inspect(), specialEnemies:this.specialEnemies.inspect(), melee:this.flameSweep?.inspect(), encounters:this.encounters.inspect(), feedback:this.feedback?.inspect() }; }
+  dispose() { this.gigapack.dispose(); this.reactions?.dispose(); this.reactions = undefined; this.grassBlobs.dispose(); this.specialEnemies.dispose(); this.flameSweep?.dispose(); this.flameSweep = undefined; this.shockwaveView.dispose(); this.encounters.dispose(); this.pixelEnemies?.dispose(); this.pixelEnemies = undefined; this.firePixels?.dispose(); this.firePixels = undefined; this.fusionPixels?.dispose(); this.fusionPixels = undefined; this.feedback?.dispose(); this.feedback = undefined; }
 }

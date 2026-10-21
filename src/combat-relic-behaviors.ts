@@ -4,8 +4,9 @@ import type { BaseAttackId } from './fusion';
 import type { RelicDamageSource, RelicId } from './relics';
 import { factoryRelic } from './content/relic-registry';
 import type { RelicBehavior } from './content/relics/behavior-relics';
+import { CombatGigapackRelics } from './combat-gigapack-relics';
 
-interface Hooks {
+export interface RelicHooks {
   damage(enemy: Enemy, damage: number, source: RelicDamageSource): void;
   visual(x: number,z: number,kind: CombatEffect['kind'],radius: number,preset: string,duration?: number): CombatEffect | undefined;
   reserve(): boolean; covered(x:number,z:number,tx:number,tz:number): boolean;
@@ -25,16 +26,18 @@ export class CombatRelicBehaviors {
   private kills:number[]=[];
   private heals:number[]=[];
   private casts=0;
-  constructor(private c:Combat,private hooks:Hooks) {}
+  readonly gigapack:CombatGigapackRelics;
+  constructor(private c:Combat,private hooks:RelicHooks) { this.gigapack=new CombatGigapackRelics(c,hooks); }
   rule<T extends RelicBehavior['handler']>(id:RelicId,handler:T):Extract<RelicBehavior,{handler:T}>|undefined {
     if(!this.c.usesRunBuild||!this.c.runBuild.relics.includes(id))return;
     const b=factoryRelic(id)?.behavior;
     return b?.handler===handler ? b as Extract<RelicBehavior,{handler:T}> : undefined;
   }
-  reset(){for(const zone of this.zones)zone.active=false;this.hits=this.pullReady=this.fireReady=this.poisonReady=this.drumReady=this.casts=0;this.kills=[];this.heals=[];}
+  reset(preserveRunRelics=false){if(preserveRunRelics)this.gigapack.clearTransient();else this.gigapack.reset();for(const zone of this.zones)zone.active=false;this.hits=this.pullReady=this.fireReady=this.poisonReady=this.drumReady=this.casts=0;this.kills=[];this.heals=[];}
   maxHpFactor(){return this.rule('blood-pact','blood')?.maxHp??1;}
   intervalFactor(){const b=this.rule('blood-pact','blood');return b&&this.c.hp<=this.c.maxHp*b.threshold ? b.interval : 1;}
-  cast(attackId:BaseAttackId,melee:boolean){
+  cast(attackId:BaseAttackId,melee:boolean,damage=0){
+    this.gigapack.cast(attackId,melee,damage);
     const rule=this.rule('back-mirror','back-shot');if(!rule||melee||++this.casts%rule.every!==0)return;
     const parent=this.c.projectiles.find(p=>p.active&&p.attackId===attackId&&p.age===0&&this.primary(p));
     if(parent)this.launch(parent,this.c.anchorX,this.c.anchorZ,-parent.vx,-parent.vz,(parent.relicSource?.rootDamage??parent.damage)*rule.damage,'phantom-projectile');
@@ -119,9 +122,10 @@ export class CombatRelicBehaviors {
     }
   }
   slowFactor(enemy:Enemy){
-    const rule=this.rule('wet-vines','wet-bind');return rule&&(enemy.vineUntil??0)>this.c.elapsed ? enemy.rank==='boss'?rule.bossSlow:rule.slow : 1;
+    const rule=this.rule('wet-vines','wet-bind');return Math.min(this.gigapack.slowFactor(enemy),rule&&(enemy.vineUntil??0)>this.c.elapsed ? enemy.rank==='boss'?rule.bossSlow:rule.slow : 1);
   }
   kill(enemy:Enemy,damage:number,source:RelicDamageSource|undefined,origin:'player'|'spore'){
+    this.gigapack.kill(enemy,source,origin);
     if(!this.c.usesRunBuild||origin!=='player')return;
     const blood=this.rule('blood-pact','blood');
     if(blood){
@@ -154,6 +158,7 @@ export class CombatRelicBehaviors {
     this.hooks.visual(x,z,kind==='mine'?'burst':'steam',radius,preset,duration);
   }
   update(dt:number){
+    this.gigapack.update(dt);
     for(const zone of this.zones){
       if(!zone.active||this.c.encounters.dying)continue;
       zone.age+=dt;

@@ -110,6 +110,7 @@ export class RunFlow {
     const amount = Math.max(0, combat.goldEarned - this.collectedGold);
     this.collectedGold = combat.goldEarned;
     this.coins += amount; this.earned += amount;
+    combat.relicBehaviors.gigapack.earnedCoins(amount,this.wave);
   }
 
   update(dt: number, combat: Combat, player: { x: number; z: number }) {
@@ -223,6 +224,7 @@ export class RunFlow {
     this.escorts = []; this.arrivalClock = 0;
     this.completedWaves++;
     this.coins += this.definition.reward; this.earned += this.definition.reward;
+    combat.relicBehaviors.gigapack.earnedCoins(sporeBonus+this.definition.reward,this.wave);
     if (seamless) { this.advanceWave(); return; }
     this.phase = this.wave === RUN_WAVES.length ? 'won' : 'intermission';
     if (this.phase === 'intermission') this.intermissionRemaining = WAVE_INTERMISSION_SECONDS;

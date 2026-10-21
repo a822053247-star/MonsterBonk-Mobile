@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { GIGAPACK_BINDINGS } from './visuals/gigapack-presets';
 import type { CombatEffect, Enemy } from './combat';
 import { FlameAtlasBatch } from './flame-sweep-assets';
 import { COMBAT_LIMITS } from './combat';
@@ -32,6 +33,7 @@ export class ReactionView {
       this.mist.put(0, enemy.x, .55, enemy.z, .65, .45, .24, '#73dfff', this.orientation);
     }
     for (const effect of effects) {
+      if(effect.vfxPresetId&&GIGAPACK_BINDINGS[effect.vfxPresetId])continue;
       const impact = resolver.impact(effect.kind, effect.vfxPresetId);
       if (effect.active && impact?.ring && this.rings.count < COMBAT_LIMITS.effects) {
         const p = visualProgress(effect, impact.duration);

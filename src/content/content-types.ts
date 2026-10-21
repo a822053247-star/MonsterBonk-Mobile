@@ -3,7 +3,9 @@ import type { RelicBehavior } from './relics/behavior-relics';
 
 export const CONTENT_SKILLS = ['damage','haste','multishot','vitality','movement','range','orbit','shockwave','split-on-hit','area','chain','bubble-weapon','spark-weapon','leaf-weapon','flame-sweep-weapon'] as const;
 export type ContentSkillId = typeof CONTENT_SKILLS[number];
-export const CONTENT_TAGS = ['water','fire','grass','area','projectile','melee'] as const;
+export const CONTENT_TAGS = ['water','fire','grass','area','projectile','melee',
+  'chain','multiweapon','defense','retaliation','position','on-kill','execute','on-cast','cone',
+  'economy','experience','cross-element','kill-streak','healing','dash','control','level-up','multi-target'] as const;
 export type ContentTag = typeof CONTENT_TAGS[number];
 export interface Requirements { weapon?: BaseAttackId; weapons?: readonly BaseAttackId[]; anyWeapons?: readonly BaseAttackId[]; projectile?: boolean; skills?: readonly ContentSkillId[] }
 export const MODIFIER_STATS = ['damageMultiplier','intervalMultiplier','areaMultiplier','rangeMultiplier'] as const;

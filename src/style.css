@@ -179,6 +179,7 @@ h1>em{font-size:12px;line-height:1;letter-spacing:4px;display:inline-block;backg
 .trial-entry small{font-size:9px;font-weight:normal;letter-spacing:0}.trial-entry .icon{width:20px;height:20px}
 .mode-entries{display:flex;gap:10px;align-items:center}.practice-entry{background:#d6e5b0}.result-challenge{margin:14px 0 0;color:#ffe0a3;font-size:12px;line-height:1.7}.victorious{border-color:#e6cc8b99}
 .party-prototype .dash-control{display:none}
+.party-prototype.fusion-prototype .dash-control{display:flex}
 .party-status{position:absolute;left:calc(20px + var(--safe-left));top:calc(126px + var(--safe-top));display:flex;flex-direction:column;gap:5px;padding:9px 12px;border:1px solid #d7eac18a;border-radius:8px;background:#244c37d9;color:#f3f6db;font-size:10px;pointer-events:none}
 .party-status span{font-size:9px;color:#d0e5ca}
 @media(max-height:380px) and (orientation:landscape){.party-status{top:calc(105px + var(--safe-top));padding:6px 8px;font-size:9px}.party-status span{font-size:8px}.party-prototype .welcome{left:65%;max-width:40%;white-space:normal}.party-prototype .welcome h2{font-size:16px}.party-prototype .welcome .eyebrow{display:none}}
