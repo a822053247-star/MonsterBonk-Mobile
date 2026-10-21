@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { createSampleWorld } from './world-sample';
 import { fixedWorldLayout } from './world-layout';
 import { generateWorld } from './world-generator';
-import { createInfiniteWorld } from './infinite-world';
+import { createInfiniteWorld, type InfiniteTreasureChest } from './infinite-world';
 
 export const WORLD_RADIUS = 33;
 export interface Obstacle { x: number; z: number; radius: number }
@@ -11,6 +11,8 @@ export interface World {
   readonly sampleActive: boolean;
   readonly infiniteActive: boolean;
   readonly revision: number;
+  readonly treasureChests: readonly InfiniteTreasureChest[];
+  openTreasureChest(id: string): boolean;
   setSample(enabled: boolean, newMap?: boolean): void;
   setInfinite(enabled: boolean, newMap?: boolean): void;
   update(x: number, z: number): void;
@@ -64,6 +66,8 @@ export function createWorld(): World {
     get sampleActive() { return sample.group.visible; },
     get infiniteActive() { return infinite.group.visible; },
     get revision() { return revision; },
+    get treasureChests() { return infinite.group.visible ? infinite.treasureChests : []; },
+    openTreasureChest(id) { return infinite.group.visible && infinite.openTreasureChest(id); },
     setSample(enabled, newMap = false) {
       if (disposed) return;
       if (enabled) {
@@ -77,7 +81,10 @@ export function createWorld(): World {
     },
     setInfinite(enabled, newMap = false) {
       if (disposed) return;
-      if (enabled && newMap && infiniteRun && !pinnedSeed) infinite.setSeed(freshSeed());
+      if (enabled && newMap) {
+        if (infiniteRun && !pinnedSeed) infinite.setSeed(freshSeed());
+        infinite.resetTreasureChests();
+      }
       if (enabled) { infiniteRun = true; infinite.update(0, 0); }
       requestedInfinite = enabled;
       if (enabled) requested = false;
