@@ -114,6 +114,37 @@ test('real kills earn gold once and cannot be recycled into duplicates',()=>{
   run.waveElapsed=65;run.resolveBoundary(c);expect(run.coins).toBe(36);
 });
 
+test('treasure rewards scale by wave and cap farmable coins, healing, and free upgrades', () => {
+  const { run } = fixture();
+  expect(run.treasureCoinReward).toBe(30);
+  expect(run.treasureHealRemaining).toBe(70);
+  expect(run.canClaimTreasureUpgrade).toBe(true);
+
+  expect(run.grantTreasureCoins(30)).toBe(30);
+  run.waveIndex = 4;
+  expect(run.treasureCoinReward).toBe(50);
+  expect(run.grantTreasureCoins(50)).toBe(50);
+  expect(run.treasureCoinReward).toBe(20);
+  expect(run.grantTreasureCoins(50)).toBe(20);
+  expect(run.treasureCoinReward).toBe(0);
+  expect(run.grantTreasureCoins(20)).toBe(0);
+  expect(run.coins).toBe(100);
+
+  expect(run.grantTreasureHealing(35)).toBe(35);
+  expect(run.grantTreasureHealing(35)).toBe(35);
+  expect(run.grantTreasureHealing(35)).toBe(0);
+  expect(run.treasureHealRemaining).toBe(0);
+  expect(run.claimTreasureUpgrade()).toBe(true);
+  expect(run.claimTreasureUpgrade()).toBe(false);
+
+  const fresh = fixture().run;
+  expect(fresh.treasureCoinReward).toBe(30);
+  expect(fresh.treasureHealRemaining).toBe(70);
+  expect(fresh.canClaimTreasureUpgrade).toBe(true);
+});
+
+
+
 test('the fifth-wave shop still has atomic purchases, stale tokens and insufficient-fund protection',()=>{
   const f=fixture(),s=fifthShop(f),token=s.token;
   expect(s.items[0].price).toBe(35);
