@@ -98,7 +98,7 @@ export function createUI(root: HTMLElement) {
         <p id="treasure-description">三选一 · 奖励会计入本局构筑与商店。</p>
         <div class="treasure-rewards">
           <button id="treasure-coins" class="treasure-reward treasure-reward-coins" type="button">
-            <span class="treasure-reward-icon" aria-hidden="true">${icon('coins')}</span>
+            <span class="treasure-reward-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M8.5 9h7M8.5 12h7M8.5 15h7"/></svg></span>
             <strong id="treasure-coins-title">金币袋 +30</strong>
             <span id="treasure-coins-description">第 1 波 · 本局宝箱金币上限 100。</span>
           </button>
