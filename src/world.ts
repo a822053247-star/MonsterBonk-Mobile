@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { createSampleWorld } from './world-sample';
 import { fixedWorldLayout } from './world-layout';
 import { generateWorld } from './world-generator';
+import { ARENA_HALF_EXTENT } from './arena-boundary';
 import { createInfiniteWorld } from './infinite-world';
 
 export const WORLD_RADIUS = 33;
@@ -11,7 +12,7 @@ function createArenaBoundary() {
   group.name = '闯关区域隔离';
 
   // Keep the visible fence just outside the existing movement limit.
-  const half = WORLD_RADIUS - 0.5;
+  const half = ARENA_HALF_EXTENT + 0.2;
   const length = half * 2;
   const outsideStart = half + 0.2;
   const outsideLimit = 64;
