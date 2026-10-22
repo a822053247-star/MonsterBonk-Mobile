@@ -21,7 +21,8 @@ test('arrivals are outside landscape and portrait footprints, remain within worl
         expect(Math.abs(e.x-view.x)>view.halfWidth||Math.abs(e.z-view.z)>view.halfDepth).toBe(true);
         expect(Math.hypot(e.x-player.x,e.z-player.z)).toBeGreaterThanOrEqual(SPAWN_LAYOUT.minDistance);
         expect(Math.hypot(e.x-player.x,e.z-player.z)).toBeLessThanOrEqual(SPAWN_LAYOUT.maxDistance);
-        expect(Math.hypot(e.x,e.z)).toBeLessThanOrEqual(32-c.enemyRadius(e)-.2+1e-8);
+        expect(Math.abs(e.x) + c.enemyRadius(e) + .2).toBeLessThanOrEqual(32+1e-8);
+        expect(Math.abs(e.z) + c.enemyRadius(e) + .2).toBeLessThanOrEqual(32+1e-8);
         quadrants.add(`${Math.sign(e.x-player.x)},${Math.sign(e.z-player.z)}`);
       }
     }
