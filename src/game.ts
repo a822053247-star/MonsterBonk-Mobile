@@ -916,9 +916,13 @@ export class Game {
       && this.run.remaining <= ENDLESS_FLAG_WARNING_SECONDS;
     this.welcome.classList.toggle('flag-wave-warning', flagWarning);
     if (flagWarning && this.run) {
-      this.welcome.querySelector('h2')!.textContent = '警报！旗帜大波即将来袭';
-      this.welcome.querySelector('p')!.textContent =
+      const warningTitle = '警报！旗帜大波即将来袭';
+      const warningDetail =
         `剩余 ${Math.ceil(this.run.remaining)} 秒 · 第 ${this.run.wave + 1} 波（第 ${this.run.cycle} 轮）· 快速怪、重甲、爆孢与晶屑混编，保持移动！`;
+      const titleNode = this.welcome.querySelector('h2')!;
+      const detailNode = this.welcome.querySelector('p')!;
+      if (titleNode.textContent !== warningTitle) titleNode.textContent = warningTitle;
+      if (detailNode.textContent !== warningDetail) detailNode.textContent = warningDetail;
       this.welcome.classList.remove('faded');
     } else if (this.challenge) {
       const resting = this.challenge.phase === 'rest';
