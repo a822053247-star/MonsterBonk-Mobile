@@ -23,6 +23,7 @@ test.beforeEach(async ({ page }) => {
 async function open(page: Page) {
   await page.goto('/fusion-harness?world=fixed'); await page.waitForFunction(() => 'game' in window);
   await page.locator('#start-fusion').tap();
+  await expect.poll(async () => (await state(page)).mode).toBe('playing');
   await expect.poll(async () => (await state(page)).fusionVisual?.loaded).toBe(true);
   await expect.poll(async () => (await state(page)).partyVisual.members.filter(m => m?.loaded).length).toBe(1);
 }
