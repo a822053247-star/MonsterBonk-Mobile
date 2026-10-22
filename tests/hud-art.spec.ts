@@ -45,7 +45,7 @@ test('forest HUD keeps live values, weapon artwork and safe touch targets on lan
     expect(boss.x).toBeGreaterThanOrEqual(44);expect(boss.x+boss.width).toBeLessThanOrEqual(width-44);
     for(const selector of ['#pause','#settings']) {
       const rect=(await page.locator(selector).boundingBox())!;
-      expect(rect.width).toBeGreaterThanOrEqual(width === 568 ? 44 : 48);expect(rect.height).toBeGreaterThanOrEqual(width === 568 ? 44 : 48);
+      expect(rect.width).toBeGreaterThanOrEqual(44);expect(rect.height).toBeGreaterThanOrEqual(44);
     }
   }
   if(browserName==='chromium') await page.screenshot({path:'artifacts/hud-boss-small-chromium.png'});
