@@ -42,7 +42,7 @@ test('default startup waits for the intended pixel creature, enemy sprites and m
   const current = await state(page);
   expect(current.partyVisual.leader).toBe('pixel');
   expect(current).toMatchObject({ partyPrototype: true, prototypeVariant: 'fusion' });
-  expect(await page.evaluate(() => (window as unknown as Fixture).game.monster.root.visible)).toBe(false);
+  expect(await page.evaluate(() => (window as any).game.monster.root.visible)).toBe(false);
 });
 
 async function learn(page: Page) {
