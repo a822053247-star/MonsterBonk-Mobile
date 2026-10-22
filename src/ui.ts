@@ -9,6 +9,7 @@ import { upgradePreview, type Progression, type SkillId } from './progression';
 import { FUSION_ASSET_ROOT, type ElementalFusionId } from './fusion-pixels';
 import { bindUpgradeArt, uiArtUrl, upgradeArt } from './upgrade-art';
 import { shopArt } from './shop-art';
+import { formatEndlessRecordTime, readEndlessRecord, type EndlessRecord, type EndlessRunResult } from './endless-record';
 
 const icons = {
   settings: '<path d="M4 6h16M4 12h16M4 18h16"/><circle cx="9" cy="6" r="2" fill="currentColor"/><circle cx="15" cy="12" r="2" fill="currentColor"/><circle cx="9" cy="18" r="2" fill="currentColor"/>',
@@ -44,6 +45,7 @@ export function createUI(root: HTMLElement) {
         <h1>幻兽<br/><span>幸存者</span></h1>
         <p class="menu-description">一只焰绒，从火花到爆裂火种。<br/>自动迎战，升级组合你的魔法。</p>
         <div class="main-modes" aria-label="选择挑战玩法"><button id="start-fusion" class="mode-card campaign-mode">${icon('battle')}<span><strong>闯关挑战</strong></span>${icon('arrow')}</button><button id="start-infinite" class="mode-card infinite-mode">${icon('spark')}<span><strong>无尽挑战</strong></span>${icon('arrow')}</button></div>
+        <div id="endless-best-menu" class="endless-best-menu" aria-label="无尽个人最佳">无尽个人最佳 · 首次挑战后记录</div>
         <div class="menu-actions menu-utilities"><button id="choose-creature" class="secondary creature-select-entry" aria-label="选择出战幻兽">选择幻兽</button><button id="help" class="secondary" aria-label="操作指南">${icon('help')}<span>操作指南</span></button><button id="menu-settings" class="secondary settings-entry" aria-label="画质与声音设置">${icon('settings')}</button></div>
         
       </div>
@@ -81,7 +83,7 @@ export function createUI(root: HTMLElement) {
     <section id="gameover-screen" class="modal-screen" role="dialog" aria-modal="true" aria-labelledby="result-heading" aria-label="本局结束" data-outcome="defeat" hidden>
       <div class="modal result-card">
         <header class="result-header"><span class="result-insignia" aria-hidden="true"><span class="result-art-fallback">${icon('leaf')}</span><img id="result-victory-art" data-upgrade-art="result-victory" src="${uiArtUrl('result/victory-crown.png')}" alt="" draggable="false" hidden/><img id="result-defeat-art" data-upgrade-art="result-defeat" src="${uiArtUrl('result/defeat-badge.png')}" alt="" draggable="false"/></span><div><span id="result-eyebrow" class="eyebrow">冒险战报</span><h2 id="result-heading">本局结束</h2><p id="result-message"></p></div></header>
-        <div class="result-report" style="--result-panel-url:url('${uiArtUrl('result/battle-report-panel.png')}')"><img class="result-panel-art" data-upgrade-art="result-panel" src="${uiArtUrl('result/battle-report-panel.png')}" alt="" draggable="false"/><div class="result-body"><div class="result-overview"><div class="result-stats"><div><strong id="result-time">00:00</strong><span>生存时间</span></div><div><strong id="result-kills">0</strong><span>击败怪物</span></div><div><strong id="result-xp">0</strong><span>获得经验</span></div></div><div id="result-challenge" class="result-challenge" hidden></div><p id="result-run"></p></div>
+        <div class="result-report" style="--result-panel-url:url('${uiArtUrl('result/battle-report-panel.png')}')"><img class="result-panel-art" data-upgrade-art="result-panel" src="${uiArtUrl('result/battle-report-panel.png')}" alt="" draggable="false"/><div class="result-body"><div class="result-overview"><div class="result-stats"><div><strong id="result-time">00:00</strong><span>生存时间</span></div><div><strong id="result-kills">0</strong><span>击败怪物</span></div><div><strong id="result-xp">0</strong><span>获得经验</span></div></div><div id="result-challenge" class="result-challenge" hidden></div><p id="result-run"></p><section id="endless-record-result" class="endless-record-result" hidden aria-live="polite"><strong id="endless-record-title"></strong><p id="endless-record-current"></p><p id="endless-record-best"></p></section></div>
           <section id="result-build" class="build-summary" aria-label="最终构筑" tabindex="0"><h3>最终构筑</h3><div id="result-weapons" class="build-weapon-list"></div><div id="result-skills" class="build-detail"></div><div id="result-fusions" class="build-detail"></div><div id="result-relics" class="build-detail"></div></section></div></div>
         <footer class="result-actions"><button id="gameover-restart" class="primary">再次挑战 ${icon('arrow')}</button><button id="gameover-menu" class="text-button">返回菜单</button></footer>
       </div>
@@ -112,6 +114,35 @@ export function createUI(root: HTMLElement) {
   `;
   bindFireIcons(root);
   bindUpgradeArt(root);
+  renderEndlessBestMenu();
+}
+
+export function renderEndlessBestMenu() {
+  const panel = document.getElementById('endless-best-menu');
+  if (!panel) return;
+  const record = readEndlessRecord();
+  panel.textContent = record.runsPlayed
+    ? `无尽个人最佳 · 第 ${record.bestWave} 波 / 第 ${record.bestCycle} 轮 · Boss ${record.bestBossesDefeated} · ${formatEndlessRecordTime(record.bestSurvivalSeconds)}`
+    : '无尽个人最佳 · 首次挑战后记录';
+}
+
+export function renderEndlessBestResult(
+  result: EndlessRunResult,
+  record: EndlessRecord,
+  newRecords: readonly string[],
+) {
+  const panel = document.getElementById('endless-record-result');
+  if (!panel) return;
+  panel.hidden = false;
+  panel.classList.toggle('new-record', newRecords.length > 0);
+  document.getElementById('endless-record-title')!.textContent = newRecords.length
+    ? `新纪录！${newRecords.join('、')}`
+    : '本局结束 · 无尽个人最佳';
+  document.getElementById('endless-record-current')!.textContent =
+    `本局：第 ${result.wave} 波 · 第 ${result.cycle} 轮 · 击败 Boss ${result.bossesDefeated} 个 · ${formatEndlessRecordTime(result.survivalSeconds)}`;
+  document.getElementById('endless-record-best')!.textContent =
+    `最佳：第 ${record.bestWave} 波 · 第 ${record.bestCycle} 轮 · 击败 Boss ${record.bestBossesDefeated} 个 · ${formatEndlessRecordTime(record.bestSurvivalSeconds)}`;
+  renderEndlessBestMenu();
 }
 
 export function renderUpgradeCards(progression: Progression, version: number) {
