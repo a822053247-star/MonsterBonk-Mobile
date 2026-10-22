@@ -11,6 +11,7 @@ test.beforeEach(async ({ page }) => {
 async function start(page: Page) {
   await page.goto('/infinite-harness?seed=forest-42');
   await page.locator('#start-infinite').click();
+  await page.waitForFunction(() => (window as any).game?.inspect().mode === 'playing');
   await page.waitForFunction(() => (window as any).game?.inspect().world.layout === 'infinite-pixel-meadow');
 }
 
@@ -20,6 +21,7 @@ test('endless exploration shares combat/build systems but uses endless survival 
   await page.locator('#choose-creature').click();
   await page.locator('[data-creature="sproutspike"]').click();
   await page.locator('#start-selected-creature').click();
+  await page.waitForFunction(() => (window as any).game?.inspect().mode === 'playing');
   const snapshot = () => page.evaluate(() => {
     const g = (window as any).game;
     const combat = g.combat;
