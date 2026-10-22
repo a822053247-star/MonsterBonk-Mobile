@@ -453,7 +453,7 @@ export class Game {
     (document.activeElement as HTMLElement | null)?.blur();
     this.welcome.classList.remove('faded');
     this.welcome.querySelector('h2')!.textContent = endless ? '无尽挑战，向远方出发。' : this.combat.fusionEnabled && species !== 'yanrong' ? `${CREATURES[species].name}，准备出发。` : this.combat.fusionEnabled ? '一簇火花，生长成烈焰。' : partyPrototype ? '草场已就绪，出发吧。' : this.challenge ? '三波迎战，冲出一条路。' : this.combat.isTrial ? '犄角已就绪，冲出一条路。' : '小小魔法，准备就绪。';
-    this.welcome.querySelector('p')!.textContent = endless ? '与闯关挑战相同的六波战斗、升级及商店 · 地图无边界，可持续探索' : this.combat.fusionEnabled && species !== 'yanrong' ? `${CREATURES[species].name}出战 · 摇杆移动 · 自动攻击 · 升级三选一` : this.combat.fusionEnabled ? '六波自动战斗 · 升级形成融合 · 前四波连续迎战，第五波后才可购物' : partyPrototype && variant === 'legacy-party' ? '三兽兼容模式 · 主控移动，伙伴跟随并自动攻击' : partyPrototype ? '摇杆操控焰绒 · 自动攻击 · 沿泥路绕过林地与水岸' : this.challenge ? '击败三波即可通关 · 冲锋命中 6 次、打断 2 次各加一星' : this.combat.isTrial ? '冲刺命中可击退和打断 · 留意黄色扑击预警线' : '移动躲避敌人，焰绒会自动施法 · 靠近拾取经验';
+    this.welcome.querySelector('p')!.textContent = endless ? '六波循环生存 · 第五波旗帜大波与商店 · 第六波 Boss 循环' : this.combat.fusionEnabled && species !== 'yanrong' ? `${CREATURES[species].name}出战 · 摇杆移动 · 自动攻击 · 升级三选一` : this.combat.fusionEnabled ? '六波自动战斗 · 升级形成融合 · 前四波连续迎战，第五波后才可购物' : partyPrototype && variant === 'legacy-party' ? '三兽兼容模式 · 主控移动，伙伴跟随并自动攻击' : partyPrototype ? '摇杆操控焰绒 · 自动攻击 · 沿泥路绕过林地与水岸' : this.challenge ? '击败三波即可通关 · 冲锋命中 6 次、打断 2 次各加一星' : this.combat.isTrial ? '冲刺命中可击退和打断 · 留意黄色扑击预警线' : '移动躲避敌人，焰绒会自动施法 · 靠近拾取经验';
     this.accumulator = 0;
     this.placeCamera(true);
     this.updateHUD();
