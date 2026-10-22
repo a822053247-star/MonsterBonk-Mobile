@@ -40,7 +40,7 @@ test('forest HUD keeps live values, weapon artwork and safe touch targets on lan
     const boss=(await page.locator('#encounter-status').boundingBox())!;
     for(const selector of ['.health-block','.hud-actions','#joystick']) {
       const other=(await page.locator(selector).boundingBox())!;
-      expect(boss.x>=other.x+other.width || boss.x+boss.width<=other.x || boss.y>=other.y+other.height || boss.y+boss.height<=other.y).toBe(true);
+      expect(boss.x>=other.x+other.width || boss.x+boss.width<=other.x || boss.y>=other.y+other.height || boss.y+boss.height<=other.y, `HUD overlap at width ${width} with ${selector}: boss=${JSON.stringify(boss)}, other=${JSON.stringify(other)}`).toBe(true);
     }
     expect(boss.x).toBeGreaterThanOrEqual(44);expect(boss.x+boss.width).toBeLessThanOrEqual(width-44);
     for(const selector of ['#pause','#settings']) {
