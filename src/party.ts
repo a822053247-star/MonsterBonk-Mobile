@@ -1,3 +1,4 @@
+import { clampToRectangularBoundary, isInsideRectangularBoundary } from './arena-boundary';
 import type { SkillStats } from './progression';
 
 export type SpeciesId = 'yanrong' | 'bubblesalamander' | 'sproutspike';
@@ -82,7 +83,7 @@ export class PartySystem {
   }
 
   private clear(x: number, z: number, obstacles: readonly PartyObstacle[], boundary: number, index: number) {
-    if (Math.hypot(x, z) > boundary - RADIUS) return false;
+    if (!isInsideRectangularBoundary(x, z, boundary, RADIUS)) return false;
     if (obstacles.some(o => Math.hypot(x - o.x, z - o.z) < o.radius + RADIUS + 0.04)) return false;
     if (Math.hypot(x - this.leader.x, z - this.leader.z) < 1.15) return false;
     for (let i = 1; i < index; i++) {
@@ -152,8 +153,7 @@ export class PartySystem {
             member.z = obstacle.z + (d > 0.001 ? oz / d : 0) * limit;
           }
         }
-        const d = Math.hypot(member.x, member.z), limit = boundary - RADIUS;
-        if (d > limit) { member.x *= limit / d; member.z *= limit / d; }
+        clampToRectangularBoundary(member, boundary, RADIUS);
       }
       const moved = Math.hypot(member.x - member.previousX, member.z - member.previousZ);
       member.blockedTime = distance > 0.8 && moved < 0.025 * dt ? member.blockedTime + dt : 0;
