@@ -7,8 +7,8 @@ export class PositionAoeView {
   readonly group = new THREE.Group();
   readonly vortex = new WaterAtlas('abyss-vortex', 4, 2, 'position-aoe', 2);
   readonly beams = new WaterAtlas('ice-radiance', 3, 2, 'position-aoe', 32, false);
-  private spores = new WaterAtlas('spore-trail', 4, 2, 'position-aoe', 16);
-  private impact = new WaterAtlas('recall-impact', 4, 2, 'position-aoe', 2);
+  readonly spores = new WaterAtlas('spore-trail', 4, 2, 'position-aoe', 16);
+  readonly impact = new WaterAtlas('recall-impact', 4, 2, 'position-aoe', 2);
   private atlases = [this.vortex, this.beams, this.spores, this.impact];
   constructor(private tide: WaterAtlas, private field: WaterAtlas) {
     this.group.name = 'PositionAoe'; this.group.add(...this.atlases.map(a => a.mesh));

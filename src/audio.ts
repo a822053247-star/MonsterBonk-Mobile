@@ -1,4 +1,4 @@
-import { SKILL_SOUNDS, SKILL_SOUND_PRIORITY, SOUND_RULES, synthesizeSound, type Sound } from './sound-design';
+import { SKILL_SOUNDS, SKILL_SOUND_PRIORITY, SOUND_RULES, synthesizeSound, isCombinationImpact, type Sound } from './sound-design';
 type MusicTrack = 'original' | 'grassland' | 'boss';
 const MUSIC_FILES = { grassland: 'bgm-grassland.ogg', boss: 'BossBattle.ogg' } as const;
 /** Wave music and synthesized effects share the existing volume/lifecycle controls. */
@@ -144,7 +144,7 @@ export class GameAudio {
   playSkills(events: number) {
     const now = this.context?.currentTime ?? 0;
     for (const kind of SKILL_SOUND_PRIORITY) {
-      if (now - this.lastSkill < .18 && kind !== 'hourglass' && kind !== 'echo' && kind !== 'nova') continue;
+      if (now - this.lastSkill < .18 && kind !== 'hourglass' && kind !== 'echo' && kind !== 'nova' && !isCombinationImpact(kind)) continue;
       if ((events & SKILL_SOUNDS[kind]) && this.play(kind)) {
         this.lastSkill = now; this.quietUntil = now + .09; return;
       }
@@ -168,7 +168,7 @@ export class GameAudio {
   play(kind: Sound): boolean {
     const ctx = this.context;
     const background = kind === 'cast' || kind === 'hit' || kind === 'collect';
-    const important = kind === 'nova' || kind === 'harvest' || kind === 'harvest-big' || kind === 'harvest-epic';
+    const important = isCombinationImpact(kind) || kind === 'nova' || kind === 'harvest' || kind === 'harvest-big' || kind === 'harvest-epic';
     const limit = background ? 4 : important || kind === 'hurt' || kind === 'level' ? 8 : 6;
     if (!ctx || ctx.state !== 'running' || !this.running || !this.sound) return false;
     if (background && ctx.currentTime < this.quietUntil) return false;
@@ -192,7 +192,7 @@ export class GameAudio {
     this.playedSounds.set(kind, count + 1);
     this.voices.add(source); this.voiceKinds.set(source, kind);
     source.onended = () => { this.voices.delete(source); this.voiceKinds.delete(source); source.disconnect(); }; source.start(); this.played++;
-    if (kind === 'nova' || kind === 'harvest-big' || kind === 'harvest-epic') {
+    if (kind === 'nova' || kind === 'collapse-impact' || kind === 'tide-finish' || kind === 'harvest-big' || kind === 'harvest-epic') {
       this.quietUntil = Math.max(this.quietUntil, ctx.currentTime + .12);
       if (this.music && this.musicGain) {
         this.musicGain.gain.cancelScheduledValues(ctx.currentTime);

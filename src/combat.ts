@@ -155,8 +155,10 @@ export class Combat {
   });
   readonly waterEvolution = new WaterEvolution({
     enemies: () => this.enemies, origin: () => ({ x: this.anchorX, z: this.anchorZ }), nextCastId: () => ++this.nextRelicCast,
-    source: (damage, castId) => {
-      const source = this.newRelicSource('bubble', this.runBuild.rules('bubble'), damage);
+    orbs: () => this.orbs, trails: () => this.positionAoe.casts,
+    source: (damage, castId, element) => {
+      const attack = element === 'spore' ? 'leaf' : 'bubble';
+      const source = this.newRelicSource(attack, this.runBuild.rules(attack), damage);
       source.castId = castId; source.primary = false; source.kind = 'explosion';
       source.areaBudget = { nodes: 0, hits: new Map(), shared: { nodes: 0 } }; return source;
     },
@@ -344,6 +346,7 @@ export class Combat {
 
   private removeEvolvedBaseCasts() {
     for (const cast of [...this.waterAoe.casts, ...this.positionAoe.casts]) {
+      if (cast.kind === 'spore-trail' && this.progression.ranks['undertow-pyre'] > 0) continue;
       if (cast.active && consumedByEvolution(cast.kind, this.progression.ranks)) { cast.active = false; cast.source = undefined; }
     }
   }
@@ -925,6 +928,8 @@ export class Combat {
       for (const id of WATER_EVOLUTION_IDS) if ((ranks[id] ?? 0) > 0) {
         baseRanks[WATER_EVOLUTIONS[id].main] = 0; baseRanks[WATER_EVOLUTIONS[id].support] = 0;
       }
+      // The evolved footprint component retains the existing bounded walking/DOT simulation.
+      if ((ranks['undertow-pyre'] ?? 0) > 0) baseRanks['spore-trail'] = ranks['spore-trail'];
       this.removeEvolvedBaseCasts();
       this.waterAoe.update(dt, baseRanks, this.stats.damageMultiplier);
       this.positionAoe.update(dt, baseRanks, this.stats.damageMultiplier);

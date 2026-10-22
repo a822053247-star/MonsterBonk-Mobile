@@ -100,8 +100,8 @@ const PAIR_SKILLS:readonly SkillDefinition[]=[
 ];
 const WATER_EVOLUTION_CARDS: readonly SkillDefinition[] = WATER_EVOLUTION_IDS.map(id => ({
   id, title: WATER_EVOLUTIONS[id].title, benefit: WATER_EVOLUTIONS[id].benefit,
-  description: WATER_EVOLUTIONS[id].description + ' 条件：' + WATER_EVOLUTIONS[id].requirement + '；选择后接替两项基础攻击，本局生效。精英受到70%、首领受到40%伤害。',
-  category: 'evolution', maxRank: 1, icon: 'wave', color: '#88deff', effect: { type: 'spell', levels: [{}] },
+  description: WATER_EVOLUTIONS[id].description + ' 条件：' + WATER_EVOLUTIONS[id].requirement + '；选择后接替两项基础攻击，材料锁定，本局不能再用于其他进化。精英受到70%、首领受到40%伤害。',
+  category: 'evolution', maxRank: 1, icon: id === 'undertow-pyre' ? 'leaf' : 'wave', color: id === 'undertow-pyre' ? '#c6ec65' : '#88deff', effect: { type: 'spell', levels: [{}] },
 }));
 const RUN_SKILLS = [...BUILD_SKILLS.map(skill => WEAPON_CARDS[skill.id] ? { ...skill, maxRank: 5 } : skill), ...RARE_SKILLS, ...PAIR_SKILLS, ...WATER_EVOLUTION_CARDS];
 const ALL_SKILLS = RUN_SKILLS;

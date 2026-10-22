@@ -251,7 +251,10 @@ export function renderBuildSummary(build: RunBuild | undefined, fusions: readonl
   document.getElementById('build-weapons')!.innerHTML += waterEvolutions.map(id => `<div class="build-weapon" data-element="water"><span class="build-weapon-art"><img data-upgrade-art="build-weapon" src="${uiArtUrl(`upgrade/illustrations/skills/${id}.png`)}" alt=""/></span><div class="build-weapon-copy"><span class="build-weapon-role">水系组合进化</span><strong>${WATER_EVOLUTIONS[id].title}</strong><small>${WATER_EVOLUTIONS[id].benefit}</small></div></div>`).join('');
   document.getElementById('build-evolution')!.textContent += waterEvolutions.length ? ' 已激活组合：' + waterEvolutions.map(id => WATER_EVOLUTIONS[id].title).join('、') : ' 水系主技能5级＋搭配技能3级，可在升级中选择组合进化。';
   const recipes = WATER_EVOLUTION_IDS.filter(id => !(build.skillRanks[id]! > 0));
-  if (recipes.length) document.getElementById('build-evolution')!.textContent += ' 配方：' + recipes.map(id => `${WATER_EVOLUTIONS[id].title}（${WATER_EVOLUTIONS[id].requirement}）`).join('；');
+  if (recipes.length) document.getElementById('build-evolution')!.textContent += ' 配方：' + recipes.map(id => {
+    const r = WATER_EVOLUTIONS[id], locked = consumedByEvolution(r.main, build.skillRanks) || consumedByEvolution(r.support, build.skillRanks);
+    return `${r.title}（${r.requirement}${locked ? ' · 材料已用于其他进化' : ''}）`;
+  }).join('；');
   bindUpgradeArt(panel);
 }
 

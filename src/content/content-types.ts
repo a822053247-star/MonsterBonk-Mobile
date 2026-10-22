@@ -2,7 +2,7 @@ import type { BaseAttackId } from '../fusion';
 import type { RelicBehavior } from './relics/behavior-relics';
 import {weaponCapabilities,type WeaponCapabilities,type WeaponTag} from './weapon-traits';
 
-export const CONTENT_SKILLS = ['damage','haste','multishot','vitality','movement','range','orbit','shockwave','split-on-hit','area','chain','bubble-weapon','spark-weapon','leaf-weapon','flame-sweep-weapon','screen-nova','screen-barrage','azure-burst','star-tide','still-sea','returning-ring','abyss-vortex','ice-radiance','spore-trail','tidal-recall','tsunami-sanctuary','astral-wheel','abyss-crown'] as const;
+export const CONTENT_SKILLS = ['damage','haste','multishot','vitality','movement','range','orbit','shockwave','split-on-hit','area','chain','bubble-weapon','spark-weapon','leaf-weapon','flame-sweep-weapon','screen-nova','screen-barrage','azure-burst','star-tide','still-sea','returning-ring','abyss-vortex','ice-radiance','spore-trail','tidal-recall','tsunami-sanctuary','astral-wheel','abyss-crown','undertow-pyre','deep-collapse','frost-prism','all-tides'] as const;
 export type ContentSkillId = typeof CONTENT_SKILLS[number];
 export const CONTENT_TAGS = ['water','fire','grass','area','projectile','melee',
   'chain','multiweapon','defense','retaliation','position','on-kill','execute','on-cast','cone',

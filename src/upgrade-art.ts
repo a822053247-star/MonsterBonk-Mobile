@@ -35,6 +35,10 @@ const LEGACY_UPGRADE_ART = {
   'tsunami-sanctuary': ['skills/tsunami-sanctuary.png'],
   'astral-wheel': ['skills/astral-wheel.png'],
   'abyss-crown': ['skills/abyss-crown.png'],
+  'undertow-pyre': ['skills/undertow-pyre.png'],
+  'deep-collapse': ['skills/deep-collapse.png'],
+  'frost-prism': ['skills/frost-prism.png'],
+  'all-tides': ['skills/all-tides.png'],
   'split-on-hit': ['skills/split-on-hit-fire.png'],
   area: ['skills/area-expansion.png'],
   chain: ['skills/chain-bounce-water.png'],
@@ -74,7 +78,7 @@ export function upgradeArt(skill: Pick<SkillDefinition, 'id' | 'category'>, base
       ...(equipped.includes('leaf') ? ['skills/chain-bounce-grass.png'] : []),
     ];
   }
-  const element = definition?.art.palette ?? (skill.id === 'spark-weapon' || skill.id === 'flame-sweep-weapon' ? 'fire' : ['bubble-weapon', 'azure-burst', 'star-tide', 'still-sea', 'returning-ring', 'abyss-vortex', 'ice-radiance', 'tidal-recall', 'tsunami-sanctuary', 'astral-wheel', 'abyss-crown'].includes(skill.id) ? 'water' : skill.id === 'leaf-weapon' || skill.id === 'spore-trail' ? 'grass' : undefined);
+  const element = definition?.art.palette ?? (skill.id === 'spark-weapon' || skill.id === 'flame-sweep-weapon' ? 'fire' : ['bubble-weapon', 'azure-burst', 'star-tide', 'still-sea', 'returning-ring', 'abyss-vortex', 'ice-radiance', 'tidal-recall', 'tsunami-sanctuary', 'astral-wheel', 'abyss-crown', 'deep-collapse', 'frost-prism', 'all-tides'].includes(skill.id) ? 'water' : skill.id === 'leaf-weapon' || (skill.id === 'spore-trail' || skill.id === 'undertow-pyre') ? 'grass' : undefined);
   const category = skill.category ?? 'normal';
   // All offers share the same parchment geometry and content safe areas.
   // Category/element are conveyed through dynamic labels, gems and ink colors.
@@ -91,7 +95,7 @@ export function bindUpgradeArt(root: HTMLElement, definitions: readonly RelicDef
     if (image.dataset.artBound === 'true') return;
     image.dataset.artBound = 'true';
     // Dedicated illustrations can be high resolution; generated pixel icons retain nearest sampling.
-    if (/\/(?:screen-nova|screen-barrage|azure-burst|star-tide|still-sea|returning-ring|abyss-vortex|ice-radiance|spore-trail|tidal-recall|tsunami-sanctuary|astral-wheel|abyss-crown)\.png$/.test(image.src)
+    if (/\/(?:screen-nova|screen-barrage|azure-burst|star-tide|still-sea|returning-ring|abyss-vortex|ice-radiance|spore-trail|tidal-recall|tsunami-sanctuary|astral-wheel|abyss-crown|undertow-pyre|deep-collapse|frost-prism|all-tides)\.png$/.test(image.src)
       || definitions.some(d => d.art.png && image.src === new URL(relicIcon(d.art, import.meta.env.BASE_URL), document.baseURI).href)) image.style.imageRendering = 'auto';
     const sync = () => {
       const ready = image.complete && image.naturalWidth > 0;

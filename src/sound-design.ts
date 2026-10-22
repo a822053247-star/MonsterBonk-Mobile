@@ -1,8 +1,20 @@
-export const SKILL_SOUNDS = { burst: 1, water: 2, thorn: 4, sweep: 8, shockwave: 16, echo: 32, hourglass: 64, nova: 128 } as const;
+export const SKILL_SOUNDS = { burst: 1, water: 2, thorn: 4, sweep: 8, shockwave: 16, echo: 32, hourglass: 64, nova: 128,
+  'vortex-charge': 256, 'collapse-impact': 512, 'spore-ignite': 1024, 'prism-shot': 2048, 'prism-reflect': 4096, 'tide-return': 8192, 'tide-finish': 16384 } as const;
+export const COMBINATION_SOUNDS = ['vortex-charge', 'collapse-impact', 'spore-ignite', 'prism-shot', 'prism-reflect', 'tide-return', 'tide-finish'] as const;
+export type CombinationSound = typeof COMBINATION_SOUNDS[number];
+export function isCombinationSound(kind: string): kind is CombinationSound { return (COMBINATION_SOUNDS as readonly string[]).includes(kind); }
+export function isCombinationImpact(kind: string) { return kind === 'collapse-impact' || kind === 'spore-ignite' || kind === 'tide-finish'; }
 export type SkillSound = keyof typeof SKILL_SOUNDS;
 export type Sound = 'cast' | 'hit' | 'hurt' | 'collect' | 'dash' | 'jump' | 'level' | 'harvest' | 'harvest-big' | 'harvest-epic' | SkillSound;
-export const SKILL_SOUND_PRIORITY: readonly SkillSound[] = ['nova', 'hourglass', 'echo', 'shockwave', 'sweep', 'burst', 'water', 'thorn'];
+export const SKILL_SOUND_PRIORITY: readonly SkillSound[] = ['nova', 'tide-finish', 'collapse-impact', 'spore-ignite', 'prism-reflect', 'prism-shot', 'tide-return', 'vortex-charge', 'hourglass', 'echo', 'shockwave', 'sweep', 'burst', 'water', 'thorn'];
 export const SOUND_RULES: Record<Sound, { seconds: number; interval: number; volume: number; from: number; to: number; noise: number }> = {
+  'vortex-charge': { seconds: .95, interval: .8, volume: .34, from: 95, to: 340, noise: .36 },
+  'collapse-impact': { seconds: .7, interval: .45, volume: .62, from: 190, to: 42, noise: .5 },
+  'spore-ignite': { seconds: .36, interval: .2, volume: .46, from: 245, to: 68, noise: .72 },
+  'prism-shot': { seconds: .2, interval: .18, volume: .28, from: 1100, to: 620, noise: .08 },
+  'prism-reflect': { seconds: .28, interval: .18, volume: .32, from: 1500, to: 860, noise: .05 },
+  'tide-return': { seconds: .45, interval: .28, volume: .34, from: 220, to: 620, noise: .48 },
+  'tide-finish': { seconds: .75, interval: .5, volume: .6, from: 165, to: 46, noise: .38 },
   nova: { seconds: .65, interval: .45, volume: .65, from: 150, to: 42, noise: .5 },
   harvest: { seconds: .19, interval: .16, volume: .4, from: 180, to: 75, noise: .35 },
   'harvest-big': { seconds: .34, interval: .24, volume: .5, from: 145, to: 52, noise: .45 },
@@ -25,6 +37,7 @@ export const SOUND_RULES: Record<Sound, { seconds: number; interval: number; vol
 
 /** Cached, bounded samples; local noise never consumes the combat random stream. */
 export function synthesizeSound(kind: Sound, rate: number) {
+  if (isCombinationSound(kind)) return synthesizeCombination(kind, rate);
   if (kind === 'nova' || kind === 'harvest' || kind === 'harvest-big' || kind === 'harvest-epic') return synthesizeHarvest(kind, rate);
   const rule = SOUND_RULES[kind], data = new Float32Array(Math.ceil(rate * rule.seconds));
   let phase = 0, noise = 0, seed = 7919;
@@ -41,6 +54,39 @@ export function synthesizeSound(kind: Sound, rate: number) {
     if (kind === 'level' || kind === 'hourglass') tone = (Math.sin(phase) + Math.sin(phase * 1.25) * .4 + Math.sin(phase * 1.5) * .3) / 1.7;
     const envelope = Math.min(1, t / .006) * (1 - progress) ** 2;
     data[i] = (tone * (1 - rule.noise) + noise * rule.noise) * envelope * rule.volume;
+  }
+  return data;
+}
+
+/** One cached mono voice per phase: no per-ray sources, external files or combat RNG. */
+function synthesizeCombination(kind: CombinationSound, rate: number) {
+  const rule = SOUND_RULES[kind], data = new Float32Array(Math.ceil(rate * rule.seconds));
+  const impact = isCombinationImpact(kind), crystal = kind === 'prism-shot' || kind === 'prism-reflect';
+  let phase = 0, noise = 0, seed = 20261022;
+  const smooth = 1 - Math.exp(-2 * Math.PI * (crystal ? 4200 : 1400) / rate);
+  for (let i = 0; i < data.length; i++) {
+    const t = i / rate, p = i / data.length;
+    seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0;
+    noise += ((seed / 2147483648 - 1) - noise) * smooth;
+    const frequency = impact ? rule.to + (rule.from - rule.to) * Math.exp(-t * 30) : rule.from + (rule.to - rule.from) * p;
+    phase += 2 * Math.PI * frequency / rate;
+    let signal: number;
+    if (crystal) {
+      const ping = Math.sin(phase) * .65 + Math.sin(phase * 2.41) * .2;
+      const bounce = kind === 'prism-reflect' && t > .055 ? Math.sin(2 * Math.PI * 1860 * (t - .055)) * Math.exp(-(t - .055) * 35) * .22 : 0;
+      signal = ping * Math.exp(-t * 12) + bounce + noise * rule.noise;
+    } else if (impact) {
+      const body = (Math.sin(phase) * .65 + Math.sin(phase * 2) * .25 + Math.sin(phase * 3) * .14) * Math.exp(-t * 6);
+      const crack = noise * rule.noise * (Math.exp(-t * 55) + .3 * Math.exp(-t * 9));
+      const fire = kind === 'spore-ignite' ? noise * Math.max(0, Math.sin(t * 180)) * Math.exp(-t * 11) * .5 : 0;
+      const chord = kind === 'tide-finish' ? (Math.sin(t * 2 * Math.PI * 660) + Math.sin(t * 2 * Math.PI * 990) * .5) * Math.exp(-t * 12) * .14 : 0;
+      signal = body + crack + fire + chord;
+    } else {
+      const flutter = .65 + .35 * Math.sin(p * Math.PI * (kind === 'vortex-charge' ? 16 : 7));
+      signal = (Math.sin(phase) * .5 + Math.sin(phase * 2) * .18 + noise * rule.noise) * flutter;
+    }
+    const envelope = Math.min(1, t / (impact ? .003 : crystal ? .004 : .035)) * (1 - p) ** (impact || crystal ? 2 : 1.5);
+    data[i] = Math.tanh(signal * 1.3) * rule.volume * envelope;
   }
   return data;
 }

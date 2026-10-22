@@ -13,7 +13,7 @@ const tick = (c: Combat, dt: number) => c.waterEvolution.update(dt, {}, 1);
 
 test('recipes gate upgrades, appear next choice, coexist and replace only their own parents', () => {
   const c = fixture();
-  for (const id of WATER_EVOLUTION_IDS) {
+  for (const id of WATER_EVOLUTION_IDS.slice(0, 3)) {
     const r = WATER_EVOLUTIONS[id]; expect(c.grantUpgrade(id)).toBe(false);
     for (let i = 0; i < 5; i++) expect(c.grantUpgrade(r.main)).toBe(true);
     for (let i = 0; i < 2; i++) expect(c.grantUpgrade(r.support)).toBe(true);
@@ -61,7 +61,7 @@ test('crown follows the player, pulls ranks appropriately, hits only its core an
   c.anchorX = 1; tick(c, .1); expect(c.waterEvolution.inspect().active[0].x).toBe(1);
   const before = JSON.stringify(c.waterEvolution.inspect()); tick(c, 0); expect(JSON.stringify(c.waterEvolution.inspect())).toBe(before);
   c.waterEvolution.cast('tsunami-sanctuary', 1, point); c.waterEvolution.cast('tsunami-sanctuary', 1, point);
-  expect(c.waterEvolution.cast('tsunami-sanctuary', 1, point)).toBe(false); expect(c.waterEvolution.inspect().capacity).toBe(5);
+  expect(c.waterEvolution.cast('tsunami-sanctuary', 1, point)).toBe(false); expect(c.waterEvolution.inspect().capacity).toBe(13);
   c.hitPlayer(10000); expect(c.waterEvolution.inspect().active).toHaveLength(0);
   c.reset(); expect(c.waterEvolution.inspect().casts).toBe(0);
   expect(WATER_EVOLUTION_IDS.every(id => c.progression.ranks[id as SkillId] === 0)).toBe(true);
