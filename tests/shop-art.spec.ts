@@ -16,6 +16,7 @@ async function open(page: import('@playwright/test').Page) {
   await page.goto('/shop-art-harness?world=fixed');
   await page.waitForFunction(() => 'game' in window);
   await page.locator('#start-fusion').click();
+  await expect.poll(() => page.evaluate(() => (window as any).game.inspect().mode)).toBe('playing');
   await page.evaluate(() => (window as any).openShop());
   await expect(page.locator('#shop-screen')).toBeVisible();
 }
