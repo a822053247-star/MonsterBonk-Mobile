@@ -39,8 +39,8 @@ export class Game {
   private renderer: THREE.WebGLRenderer;
   private scene = new THREE.Scene();
   private camera = new THREE.OrthographicCamera(-15, 15, 8.5, -8.5, 0.1, 180);
-  // Repaired GLB by default; ?character=sprite / ?character=3d retain both fallbacks.
-  private monster = new Monster(new URLSearchParams(window.location.search).get('character') === '3d' ? 'procedural' : new URLSearchParams(window.location.search).get('character') === 'sprite' ? 'sprite' : 'gltf');
+  // Match the production pixel-art presentation by default. Alternate 3D visuals remain opt-in.
+  private monster = new Monster(new URLSearchParams(window.location.search).get('character') === '3d' ? 'procedural' : new URLSearchParams(window.location.search).get('character') === 'gltf' ? 'gltf' : 'sprite');
   private party = new PartySystem();
   private pixelPartyEnabled = new URLSearchParams(window.location.search).get('partyVisual') !== 'legacy';
   private partyView = new PartyView(this.party, this.pixelPartyEnabled);
@@ -408,7 +408,7 @@ export class Game {
     document.getElementById('hud')!.classList.toggle('fusion-prototype', this.combat.fusionEnabled);
     document.getElementById('game-canvas')!.classList.toggle('pixel-party', partyPrototype && this.pixelPartyEnabled);
     this.partyView.group.visible = partyPrototype;
-    this.combatView.setPixelEnemies(partyPrototype && new URLSearchParams(window.location.search).get('enemyVisual') !== 'legacy');
+    this.combatView.setPixelEnemies(new URLSearchParams(window.location.search).get('enemyVisual') !== 'legacy');
     this.challenge = ruleset === 'horn-challenge' ? new Challenge() : undefined;
     this.outcome = null;
     this.audio.setWave();
@@ -865,8 +865,16 @@ export class Game {
     const species = this.party.leader.species;
     const portrait = document.getElementById('creature-portrait') as HTMLImageElement;
     portrait.hidden = false;
-    if (portrait.dataset.species !== species) { portrait.src = `${import.meta.env.BASE_URL}assets/pixel/${PIXEL_CREATURE_ASSETS[species]}`; portrait.dataset.species = species; }
-    (document.querySelector('.health-panel svg.portrait') as SVGElement).style.display = species === 'yanrong' ? '' : 'none';
+    const fallbackPortrait = document.querySelector('.health-panel svg.portrait') as SVGElement;
+    fallbackPortrait.style.display = species === 'yanrong' ? '' : 'none';
+    if (portrait.dataset.species !== species) {
+      portrait.classList.remove('art-loaded');
+      portrait.onload = () => { portrait.classList.add('art-loaded'); fallbackPortrait.style.display = 'none'; };
+      portrait.onerror = () => { portrait.classList.remove('art-loaded'); portrait.hidden = true; fallbackPortrait.style.display = species === 'yanrong' ? '' : 'none'; };
+      portrait.src = `${import.meta.env.BASE_URL}assets/pixel/${PIXEL_CREATURE_ASSETS[species]}`;
+      portrait.dataset.species = species;
+    }
+    if (portrait.complete && portrait.naturalWidth > 0) { portrait.classList.add('art-loaded'); fallbackPortrait.style.display = 'none'; }
     if (title.textContent !== titleText) title.textContent = titleText;
     if (hint.textContent !== hintText) hint.textContent = hintText;
     const hasSpark = this.combat.usesRunBuild ? this.combat.runBuild.has('spark')&&!this.combat.runBuild.consumed('spark') : base === 'spark';
