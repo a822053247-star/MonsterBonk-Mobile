@@ -12,7 +12,8 @@
     "content:check": "node scripts/run-content-check.mjs",
     "balance:weapons": "node scripts/run-weapon-balance.mjs",
     "balance:waves": "node scripts/run-wave-balance.mjs",
-    "balance:campaign": "node scripts/run-campaign-balance.mjs"
+    "balance:campaign": "node scripts/run-campaign-balance.mjs",
+    "balance:new-weapons": "node scripts/run-new-weapon-balance.mjs"
   },
   "dependencies": {
     "three": "0.186.1"

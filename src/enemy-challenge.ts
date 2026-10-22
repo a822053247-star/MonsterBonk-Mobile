@@ -55,6 +55,11 @@ export class EnemyChallenge {
     return this.bossState === 'approach' ? null : this.enraged ? 'enraged-idle' : 'idle';
   }
   clearShots() { for (const s of this.shots) s.active = false; }
+  freezeEnemy(enemy: Enemy) {
+    if (enemy !== this.elite) return;
+    this.elitePulsing = this.pulseDue = false; this.eliteTime = 0;
+    this.eliteCooldown = Math.max(.75, this.eliteCooldown);
+  }
   reset() {
     this.enabled = false; this.wave = 0; this.boss = this.elite = undefined;
     this.bossState = 'approach'; this.forceEnraged = false; this.bossTime = this.eliteTime = this.pattern = 0;

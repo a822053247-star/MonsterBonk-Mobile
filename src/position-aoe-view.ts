@@ -13,7 +13,7 @@ export class PositionAoeView {
   constructor(private tide: WaterAtlas, private field: WaterAtlas) {
     this.group.name = 'PositionAoe'; this.group.add(...this.atlases.map(a => a.mesh));
   }
-  render(combat: PositionAoe, detail: number) {
+  render(combat: PositionAoe, _detail: number) {
     this.clear();
     for (const cast of combat.casts) {
       if (!cast.active) continue;
@@ -21,8 +21,12 @@ export class PositionAoeView {
       if (cast.kind === 'abyss-vortex') {
         this.vortex.put(Math.floor(cast.age * 10) % 8, cast.x, cast.z, cast.radius * 2, .96 * fade, -cast.age * .45);
       } else if (cast.kind === 'spore-trail') {
-        const frame = cast.age > cast.duration - .6 ? 6 + Math.min(1, Math.floor((cast.age - cast.duration + .6) / .3)) : Math.floor(cast.age * (detail <= 2 ? 6 : 10)) % 6;
-        this.spores.put(frame, cast.x, cast.z, cast.radius * 2, .94 * fade, cast.castId * .4, .09);
+        // The authored frames have very different silhouettes: looping them makes
+        // persistent patches strobe. Keep a settled frame and move it slowly;
+        // quality changes must not jump its animation phase either.
+        const trailFade = Math.max(0, Math.min(1, cast.age / .22, (cast.duration - cast.age) / .6));
+        this.spores.put(4, cast.x, cast.z, cast.radius * 2, .78 * trailFade,
+          cast.castId * .4 + cast.age * .08, .09);
       } else if (cast.kind === 'ice-radiance') {
         this.field.put(0, cast.x, cast.z, 2.3, .8 * fade, cast.angle, .07);
         if (cast.mode === 'rays') {

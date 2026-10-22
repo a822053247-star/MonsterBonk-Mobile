@@ -18,6 +18,9 @@ import { ShockwaveView, NovaView } from './shockwave-view';
 import { BarrageView } from './barrage-view';
 import { WaterAoeView } from './water-aoe-view';
 import { PositionAoeView } from './position-aoe-view';
+import { BladeWeaponsView } from './blade-weapons-view';
+import { ThunderWeaponView } from './thunder-weapon-view';
+import { FrostView } from './frost-view';
 import { WaterEvolutionView } from './water-evolution-view';
 import { FlameSweepView } from './flame-sweep-view';
 import { ReactionView } from './reaction-view';
@@ -63,6 +66,9 @@ export class CombatView {
   private barrageView = new BarrageView();
   private waterAoeView = new WaterAoeView();
   private positionAoeView = new PositionAoeView(this.waterAoeView.tide, this.waterAoeView.field);
+  private bladeWeaponsView = new BladeWeaponsView();
+  private thunderWeaponView = new ThunderWeaponView();
+  private frostView = new FrostView();
   private waterEvolutionView = new WaterEvolutionView(this.waterAoeView, this.positionAoeView);
   private waveRings: THREE.InstancedMesh;
   private pounceLanes: THREE.InstancedMesh;
@@ -83,6 +89,9 @@ export class CombatView {
     this.group.add(this.barrageView.group);
     this.group.add(this.waterAoeView.group);
     this.group.add(this.positionAoeView.group);
+    this.group.add(this.bladeWeaponsView.group);
+    this.group.add(this.thunderWeaponView.group);
+    this.group.add(this.frostView.group);
     this.group.add(this.gigapack.group);
     this.group.add(this.shockwaveView.group,this.grassBlobs.group);
     this.specialEnemies = new SpecialEnemyView(combat,kind=>this.pixelEnemies?.height(kind)??ENEMY_PIXEL_HEIGHTS[kind]); this.group.add(this.specialEnemies.group);
@@ -167,6 +176,9 @@ export class CombatView {
   render(alpha: number, time: number, player: { x: number; z: number } = { x: this.combat.anchorX, z: this.combat.anchorZ }) {
     if (this.combat.hp > 0) this.waterAoeView.render(this.combat.waterAoe, this.detail); else this.waterAoeView.clear();
     if (this.combat.hp > 0) this.positionAoeView.render(this.combat.positionAoe, this.detail); else this.positionAoeView.clear();
+    if (this.combat.hp > 0) this.bladeWeaponsView.render(this.combat.blades, alpha, this.detail); else this.bladeWeaponsView.clear();
+    if (this.combat.hp > 0) this.thunderWeaponView.render(this.combat.thunder, this.detail); else this.thunderWeaponView.clear();
+    if (this.combat.hp > 0) this.frostView.render(this.combat, alpha, this.detail); else this.frostView.clear();
     if (this.combat.hp > 0) this.waterEvolutionView.render(this.combat.waterEvolution, this.detail); else this.waterEvolutionView.clear();
     this.novaView.render(this.combat.hp > 0 ? this.combat.areaAttacks.novas : [], this.detail);
     this.barrageView.render(this.combat.hp > 0 ? this.combat.areaAttacks.lanes : [], alpha, this.detail);
@@ -194,17 +206,19 @@ export class CombatView {
       }
       if (enemy.rank === 'boss') continue;
       const tall = enemy.kind === 'fast' ? 1.55 : 1.3;
+      const frozen = (enemy.freezeTime ?? 0) > 0;
       const motion = enemyPose(enemy.kind, enemy.walkPhase ?? 0, enemy.walkAmount ?? 0, this.enemyPose);
-      if(this.combat.encounters.enabled && enemy.kind==='normal' && !enemy.rank) grassBlobPose(enemy,motion);
+      if(this.combat.encounters.enabled && enemy.kind==='normal' && !enemy.rank && !frozen) grassBlobPose(enemy,motion);
+      if (frozen) motion.bob = motion.lean = motion.squash = 0;
       const bob = motion.bob;
       const y = size * tall + bob;
-      const color = enemy.flash > 0 ? '#fff5d6' : this.combat.hasAttackIntents && enemy.intent === 'windup' ? '#ffba5c' : this.combat.hasAttackIntents && enemy.intent === 'recover' ? '#a3ccb5' : type.color;
+      const color = frozen ? '#a4dcff' : enemy.flash > 0 ? '#fff5d6' : this.combat.hasAttackIntents && enemy.intent === 'windup' ? '#ffba5c' : this.combat.hasAttackIntents && enemy.intent === 'recover' ? '#a3ccb5' : type.color;
       const pixel = (this.pixelsEnabled || enemy.kind === 'tank') && this.pixelEnemies?.ready(enemy.kind);
       if (pixel) {
-        const tint = enemy.rank === 'elite' ? '#ffd997' : this.combat.hasAttackIntents && enemy.intent === 'windup' ? '#ffba5c' : this.combat.hasAttackIntents && enemy.intent === 'recover' ? '#a3ccb5' : '#ffffff';
+        const tint = frozen ? '#a4dcff' : enemy.rank === 'elite' ? '#ffd997' : this.combat.hasAttackIntents && enemy.intent === 'windup' ? '#ffba5c' : this.combat.hasAttackIntents && enemy.intent === 'recover' ? '#a3ccb5' : '#ffffff';
         this.enemyMovement.id = enemy.id;
         this.enemyMovement.dx = enemy.walkX ?? 0; this.enemyMovement.dz = enemy.walkZ ?? 0;
-        this.pixelEnemies!.put(enemy.kind, x, z, bob, this.combat.usesRunBuild ? Math.min(1, enemy.flash / .16) * .3 : enemy.flash > 0, tint, motion.lean, motion.squash, enemy.rank==='elite'?1.35:1, 1, this.enemyMovement, this.combat.encounters.enabled && enemy.kind==='normal' && !enemy.rank ? grassBlobRoll(enemy,grassMotionScale) : 0);
+        this.pixelEnemies!.put(enemy.kind, x, z, bob, this.combat.usesRunBuild ? Math.min(1, enemy.flash / .16) * .3 : enemy.flash > 0, tint, motion.lean, motion.squash, enemy.rank==='elite'?1.35:1, 1, this.enemyMovement, this.combat.encounters.enabled && enemy.kind==='normal' && !enemy.rank && !frozen ? grassBlobRoll(enemy,grassMotionScale) : 0, frozen);
       } else if (enemy.kind !== 'tank') this.put(this.body, x, y, z, size, size * tall, size, 0, enemy.facing, 0, color);
       this.put(this.shadows, x, 0.04, z, size * 1.1, size * 0.8, 1, -Math.PI / 2);
       const fx = Math.sin(enemy.facing), fz = Math.cos(enemy.facing);
@@ -241,6 +255,7 @@ export class CombatView {
     for (const shot of this.combat.projectiles) {
       if(this.gigapack.handlesProjectile(shot.vfxPresetId))continue;
       if (!shot.active || this.combat.hp <= 0) continue;
+      if (shot.attackId === 'frost-crystal' && !shot.vfxPresetId) continue;
       const x = THREE.MathUtils.lerp(shot.previousX, shot.x, alpha), z = THREE.MathUtils.lerp(shot.previousZ, shot.z, alpha), angle = Math.atan2(shot.vx, shot.vz);
       const attack = shot.species || this.combat.fusionEnabled ? shot.attackId ?? (shot.species ? CREATURES[shot.species].skill : undefined) : undefined;
       const preset = this.combat.usesRunBuild ? this.vfx.projectile(attack,shot.vfxPresetId) : undefined;
@@ -396,9 +411,9 @@ export class CombatView {
     this.trailAlpha.needsUpdate = true;
   }
 
-  clear() { this.waterEvolutionView.clear(); this.positionAoeView.clear(); this.waterAoeView.clear(); this.barrageView.clear(); this.novaView.clear(); this.gigapack.clear(); this.reactions?.clear(); this.grassBlobs.clear(); this.specialEnemies.clear(); this.flameSweep?.clear(); this.shockwaveView.clear(); this.encounters.clear(); for (const mesh of this.batches) mesh.count = 0; this.pixelEnemies?.begin(); this.pixelEnemies?.resetDirections(); this.firePixels?.begin(); this.fusionPixels?.begin(); this.feedback?.begin(); }
+  clear() { this.frostView.clear(); this.thunderWeaponView.clear(); this.bladeWeaponsView.clear(); this.waterEvolutionView.clear(); this.positionAoeView.clear(); this.waterAoeView.clear(); this.barrageView.clear(); this.novaView.clear(); this.gigapack.clear(); this.reactions?.clear(); this.grassBlobs.clear(); this.specialEnemies.clear(); this.flameSweep?.clear(); this.shockwaveView.clear(); this.encounters.clear(); for (const mesh of this.batches) mesh.count = 0; this.pixelEnemies?.begin(); this.pixelEnemies?.resetDirections(); this.firePixels?.begin(); this.fusionPixels?.begin(); this.feedback?.begin(); }
   inspectElemental() { return this.fusionPixels?.inspect(); }
   inspectFusion() { return this.firePixels?.inspect(); }
-  inspect() { return { waterEvolution: this.waterEvolutionView.inspect(), positionAoe: this.positionAoeView.inspect(), waterAoe: this.waterAoeView.inspect(), barrage: this.barrageView.inspect(), nova: this.novaView.inspect(), gigapack:this.gigapack.inspect(), reactions:this.reactions?.inspect(), grass:this.grassBlobs.inspect(), enabled: this.pixelsEnabled, ...this.pixelEnemies?.inspect(), specialEnemies:this.specialEnemies.inspect(), melee:this.flameSweep?.inspect(), encounters:this.encounters.inspect(), feedback:this.feedback?.inspect() }; }
-  dispose() { this.positionAoeView.dispose(); this.waterAoeView.dispose(); this.barrageView.dispose(); this.novaView.dispose(); this.gigapack.dispose(); this.reactions?.dispose(); this.reactions = undefined; this.grassBlobs.dispose(); this.specialEnemies.dispose(); this.flameSweep?.dispose(); this.flameSweep = undefined; this.shockwaveView.dispose(); this.encounters.dispose(); this.pixelEnemies?.dispose(); this.pixelEnemies = undefined; this.firePixels?.dispose(); this.firePixels = undefined; this.fusionPixels?.dispose(); this.fusionPixels = undefined; this.feedback?.dispose(); this.feedback = undefined; }
+  inspect() { return { frost: this.frostView.inspect(), thunder: this.thunderWeaponView.inspect(), blades: this.bladeWeaponsView.inspect(), waterEvolution: this.waterEvolutionView.inspect(), positionAoe: this.positionAoeView.inspect(), waterAoe: this.waterAoeView.inspect(), barrage: this.barrageView.inspect(), nova: this.novaView.inspect(), gigapack:this.gigapack.inspect(), reactions:this.reactions?.inspect(), grass:this.grassBlobs.inspect(), enabled: this.pixelsEnabled, ...this.pixelEnemies?.inspect(), specialEnemies:this.specialEnemies.inspect(), melee:this.flameSweep?.inspect(), encounters:this.encounters.inspect(), feedback:this.feedback?.inspect() }; }
+  dispose() { this.frostView.dispose(); this.thunderWeaponView.dispose(); this.bladeWeaponsView.dispose(); this.positionAoeView.dispose(); this.waterAoeView.dispose(); this.barrageView.dispose(); this.novaView.dispose(); this.gigapack.dispose(); this.reactions?.dispose(); this.reactions = undefined; this.grassBlobs.dispose(); this.specialEnemies.dispose(); this.flameSweep?.dispose(); this.flameSweep = undefined; this.shockwaveView.dispose(); this.encounters.dispose(); this.pixelEnemies?.dispose(); this.pixelEnemies = undefined; this.firePixels?.dispose(); this.firePixels = undefined; this.fusionPixels?.dispose(); this.fusionPixels = undefined; this.feedback?.dispose(); this.feedback = undefined; }
 }

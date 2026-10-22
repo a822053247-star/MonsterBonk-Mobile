@@ -4,6 +4,9 @@ import { meetsRequirements, type ContentSkillId } from './content/content-types'
 import type { RunBuild } from './run-build';
 import type { BaseAttackId } from './fusion';
 import { flameSweepStats } from './flame-sweep';
+import { bladeStats, isBlade } from './blade-weapons';
+import { thunderStats } from './thunder-weapon';
+import { frostStats } from './frost-combat';
 import { WATER_AOE_IDS, WATER_NAMES, waterStats, type WaterSkill } from './water-aoe';
 import { POSITION_IDS, POSITION_NAMES, positionStats, type PositionSkill } from './position-aoe';
 import { WATER_EVOLUTION_IDS, WATER_EVOLUTIONS, isWaterEvolution, evolutionReady, consumedByEvolution } from './water-evolution';
@@ -56,7 +59,7 @@ const CHAIN_CARD: SkillDefinition = { id: 'chain', title: '连锁弹射', benefi
 export const WATER_SKILLS: readonly SkillDefinition[] = [...SKILLS, AREA_CARD, CHAIN_CARD];
 export const GRASS_SKILLS: readonly SkillDefinition[] = [...SKILLS, { ...FUSION_SKILLS[FUSION_SKILLS.length - 1], title: '命中分裂', benefit: '飞叶弹命中散射三枚荆棘', description: '飞叶弹自动融合为荆棘散射；派生荆棘不会再次分裂。', icon: 'leaf', color: '#b4ea86' }, CHAIN_CARD];
 const BUBBLE_WEAPON: SkillDefinition = { id: 'bubble-weapon', title: '获得水泡弹', benefit: '增加独立自动攻击 · 命中减速', description: '装备第二种武器。水泡弹独立索敌、自动释放，命中使敌人减速 30%，持续 1.5 秒。副武器初始攻击间隔为基础的 1.6 倍。', maxRank: 1, icon: 'wave', color: '#55c9ed', effect: { type: 'spell', levels: [{}] } };
-export const WEAPON_CARDS: Partial<Record<SkillId, BaseAttackId>> = { 'spark-weapon': 'spark', 'bubble-weapon': 'bubble', 'leaf-weapon': 'leaf', 'flame-sweep-weapon': 'flame-sweep' };
+export const WEAPON_CARDS: Partial<Record<SkillId, BaseAttackId>> = { 'spark-weapon': 'spark', 'bubble-weapon': 'bubble', 'leaf-weapon': 'leaf', 'flame-sweep-weapon': 'flame-sweep', 'thorn-wheel-weapon': 'thorn-wheel', 'tidal-blade-weapon': 'tidal-blade', 'thunder-bud-weapon': 'thunder-bud', 'frost-crystal-weapon': 'frost-crystal' };
 const WATER_AOE_DESCRIPTIONS: Record<WaterSkill, string> = {
   'azure-burst': '自动瞄准附近密集敌群，短暂聚光后对圆内造成一次水系伤害并施加湿润。每4.5秒释放；升级扩大范围并提高伤害。',
   'star-tide': '从施法位置向外扩张水环，仅圆环经过时命中，同一圈不重复伤害。3级双环、5级三环，并轻推普通怪；每5.5秒释放。',
@@ -81,6 +84,10 @@ const POSITION_CARDS: readonly SkillDefinition[] = POSITION_IDS.map(id => ({
   effect: { type: 'spell', levels: [{}, {}, {}, {}, {}] },
 }));
 const BUILD_SKILLS: readonly SkillDefinition[] = [...SKILLS, ...WATER_AOE_CARDS, ...POSITION_CARDS,
+  { ...BUBBLE_WEAPON, id: 'frost-crystal-weapon', title: '获得霜晶弹', benefit: '冰晶减速 · 与水系命中组合冻结', description: '自动发射16伤害冰晶，霜寒使普通敌人减速35%，持续1.6秒。湿润与霜寒相遇时消耗湿润：普通怪冻结1.25秒，精英0.45秒；首领只减速。先水后冰或先冰后水均可触发，解冻后抗性2.5秒。3级可额外穿透1名、5级2名；每级伤害+14%、间隔略缩短。副武器受槽位间隔系数影响。', icon: 'wave', color: '#9de5ff' },
+  { ...BUBBLE_WEAPON, id: 'thunder-bud-weapon', title: '获得雷芽连锁', benefit: '黄色雷芽放电 · 最多连击3个不同目标', description: '每1.3秒自动锁定附近敌人，短暂蓄电后造成22点电系伤害，再跳向3.2范围内的其他敌人。每跳保留82%伤害，升级逐步提高至90%；同次施放不重复命中，最高级最多6个目标。升级提高伤害、跳跃距离并缩短间隔。障碍和出生保护阻挡选敌；分枝、分裂、连锁不额外复制攻击。', icon: 'spark', color: '#ffe26b' },
+  { ...BUBBLE_WEAPON, id: 'thorn-wheel-weapon', title: '获得环刃荆轮', benefit: '双荆轮绕身切割 · 3级增加第三枚', description: '两枚荆轮沿轨道切割，每次命中伤害14；同一敌人每0.55秒最多受一次主荆轮伤害。3级三枚、4级轻推普通怪、5级周期扩圈。轨道中心留空隙，不提供护盾；不穿障碍。攻速加快公转，分枝、分裂、连锁不复制荆轮。精英承受70%、首领40%伤害。', icon: 'orbit', color: '#b6db65' },
+  { ...BUBBLE_WEAPON, id: 'tidal-blade-weapon', title: '获得回旋潮刃', benefit: '宽刃穿透敌群 · 往返各命中一次', description: '自动朝附近敌人掷出水刃，伤害26、射程8、间隔2.1秒。飞至远端后追随角色返回；同一敌人去程和回程各命中一次并减速。升级扩大刃面、增加射程并缩短间隔；障碍阻挡伤害，不阻止回收。分枝、分裂、连锁不复制水刃。精英承受70%、首领40%伤害。', icon: 'wave', color: '#72dfff' },
   { id: 'screen-barrage', title: '星雨弹幕', benefit: '每5秒释放12道弹幕 · 环形/扇形/交叉轮换', description: '升级至18/24道，分2/3轮发射。每道最多命中3个目标，穿透伤害保留80%；同次施法对每个目标只直接命中一次。弹幕穿越障碍，精英受到70%、首领受到40%伤害。', maxRank: 3, icon: 'battle', color: '#ffcd87', effect: { type: 'spell', levels: [{}, {}, {}] } },
   { id: 'screen-nova', title: '星陨爆发', benefit: '每12秒轰击当前全屏 · 伤害85', description: '短暂预警后，对爆发瞬间镜头内的敌人造成一次伤害，穿越障碍。精英受到70%、首领受到40%伤害。每级伤害增加25%，可触发有限元素击杀协同。', maxRank: 3, icon: 'wave', color: '#ffcb70', effect: { type: 'spell', levels: [{}, {}, {}] } },
   { ...BUBBLE_WEAPON, id: 'flame-sweep-weapon', title: '获得火焰横扫', benefit: '扇形火浪 · 升级扩大覆盖', description: '向附近敌人展开一片火焰：伤害 36、半径 2.8、180°、间隔 0.72 秒。升级逐步扩大火浪，5 级覆盖一整圈；每次只有一次横扫。对精英和首领造成 70% 伤害；不穿障碍，分枝、分裂和连锁不复制攻击。', icon: 'battle', color: '#ff8c35' },
@@ -201,7 +208,7 @@ export class Progression {
       if (skill.id === 'draft-bubble-spore') return this.build!.hasOrigin('bubble');
       if (skill.id === 'tidal-pearl') return this.build!.hasOrigin('bubble');
       if (skill.id === 'specialist-badge') return this.build!.attacks.length === 1;
-      if (skill.id === 'echo-rune') return (this.ranks.chain > 0 && (this.build!.hasOrigin('bubble') || this.build!.hasOrigin('leaf'))) || this.build!.relics.includes('draft-bubble-spore');
+      if (skill.id === 'echo-rune') return this.build!.hasOrigin('thunder-bud') || (this.ranks.chain > 0 && (this.build!.hasOrigin('bubble') || this.build!.hasOrigin('leaf'))) || this.build!.relics.includes('draft-bubble-spore');
       if (skill.id === 'area') return this.build!.hasOrigin('bubble');
       if (skill.id === 'chain') return this.build!.hasOrigin('bubble') || this.build!.hasOrigin('leaf');
       if (skill.id === 'split-on-hit') return this.build!.hasOrigin('spark') || this.build!.hasOrigin('leaf');
@@ -210,6 +217,26 @@ export class Progression {
       const weapon = WEAPON_CARDS[skill.id];
       if (!weapon || !this.build!.has(weapon)) return skill;
       const title = skill.title.replace('获得', '');
+      if (weapon === 'frost-crystal') {
+        const level = this.build!.attacks.find(a => a.attackId === weapon)!.level;
+        const before = frostStats(level), after = frostStats(level + 1);
+        return { ...skill, title: title + '强化', benefit: `基础伤害 +14% · 额外穿透 ${before.pierces} → ${after.pierces}名`,
+          description: `基础攻击间隔 ${before.interval.toFixed(2)} → ${after.interval.toFixed(2)}秒；最高5级。霜寒与湿润组合冻结，解冻后2.5秒抗性；精英短暂冻结，首领仅减速。` };
+      }
+      if (weapon === 'thunder-bud') {
+        const level = this.build!.attacks.find(a => a.attackId === weapon)!.level;
+        const before = thunderStats(level), after = thunderStats(level + 1);
+        return { ...skill, title: title + '强化', benefit: `${before.targets} → ${after.targets}个目标 · 间隔 ${after.interval.toFixed(2)}秒`,
+          description: `基础伤害每级 +12%；跳跃距离 ${before.hopRange.toFixed(1)} → ${after.hopRange.toFixed(1)}。每跳保留伤害 ${Math.round(before.decay * 100)}% → ${Math.round(after.decay * 100)}%，同次施放不重复命中，最高5级。` };
+      }
+      if (isBlade(weapon)) {
+        const level = this.build!.attacks.find(a => a.attackId === weapon)!.level;
+        const before = bladeStats(weapon, level), after = bladeStats(weapon, level + 1);
+        return { ...skill, title: title + '强化', benefit: weapon === 'thorn-wheel'
+          ? `${before.count} → ${after.count}枚荆轮 · ${after.expand ? '周期扩圈' : after.push ? '命中轻推' : '轨道扩大'}`
+          : `射程 ${before.range.toFixed(1)} → ${after.range.toFixed(1)} · 间隔 ${after.interval.toFixed(1)}秒`,
+          description: `基础伤害每级 +${Math.round(WEAPON_DAMAGE_PER_LEVEL[weapon] * 100)}%。${skill.description}最高5级。` };
+      }
       if (weapon === 'flame-sweep') {
         const level = this.build!.attacks.find(a => a.attackId === weapon)!.level;
         const before = flameSweepStats(level), after = flameSweepStats(level + 1);

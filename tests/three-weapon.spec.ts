@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { Combat, COMBAT_LIMITS } from '../src/combat';
 import { PartySystem, type SpeciesId } from '../src/party';
-import type { SkillId } from '../src/progression';
+import { WEAPON_CARDS, type SkillId } from '../src/progression';
 import type { BaseAttackId } from '../src/fusion';
 import { COMBAT_CLARITY } from '../src/combat-clarity';
 
@@ -56,8 +56,9 @@ test('upgrade pool filters irrelevant modifiers and acquisition keeps side coold
   expect(f.c.progression.skills.some(s => s.id === 'area')).toBe(false);
   f.learn('bubble-weapon');
   expect(f.c.progression.skills.some(s => s.id === 'area')).toBe(true);
-  // Full slots exclude all five unowned flame-sweep ranks as well as the unclaimed single-weapon badge.
-  expect(f.c.progression.maxLevel).toBe(maxLevel - 6);
+  // Full slots exclude all unowned weapon ranks and the single-weapon badge.
+  const unavailableRanks = Object.values(WEAPON_CARDS).filter(id => !f.c.runBuild.hasOrigin(id)).length * 5;
+  expect(f.c.progression.maxLevel).toBe(maxLevel - unavailableRanks - 1);
   expect(f.c.progression.skills.some(s => s.id === 'flame-sweep-weapon')).toBe(false);
   expect(f.c.runBuild.attacks.map(a => a.cooldown)).toEqual([0, .31, .62]);
   f.c.spawn('tank', 9, 0, 0);

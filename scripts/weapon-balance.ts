@@ -47,7 +47,8 @@ export function measureWeapon(weapon: BaseAttackId, level: number, scenario: Bal
     slowTicks+=targets.filter(e=>(e.slowTime??0)>0).length;
   }
   return {weapon,level,scenario,specialized,dps:+(damage/duration).toFixed(2),kills:c.kills,
-    slowUptime:+(slowTicks/(ticks*targets.length)).toFixed(3),sweeps:c.melee.attackInstanceId};
+    slowUptime:+(slowTicks/(ticks*targets.length)).toFixed(3),sweeps:c.melee.attackInstanceId,
+    blades: { ...c.blades.telemetry }, thunder: { ...c.thunder.telemetry }};
 }
 
 export function weaponBalanceMatrix() {

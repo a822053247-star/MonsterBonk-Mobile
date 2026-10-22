@@ -20,7 +20,7 @@ export function chooseRunUpgrade(c: Combat, policy: RunPolicy, species: BalanceS
   return priorities.find(id=>offers.includes(id)) ?? offers[0]!;
 }
 
-export function measureRun(species: BalanceSpecies, policy: RunPolicy, movement: RunMovement, seed=42, maxSeconds=455) {
+export function measureRun(species: BalanceSpecies, policy: RunPolicy, movement: RunMovement, seed=42, maxSeconds=455, chooseUpgrade = chooseRunUpgrade) {
   if(!['yanrong','bubblesalamander','sproutspike'].includes(species) || !['focused','chain','survival'].includes(policy)
     || !['stationary','circle','forager'].includes(movement) || !Number.isSafeInteger(seed) || !Number.isFinite(maxSeconds) || maxSeconds<=0)
     throw new RangeError('Invalid continuous run scenario');
@@ -35,7 +35,7 @@ export function measureRun(species: BalanceSpecies, policy: RunPolicy, movement:
     let guard=0;
     while(c.progression.awaitingChoice) {
       if(++guard>200)throw new Error('Choices did not settle');
-      const id=chooseRunUpgrade(c,policy,species,c.progression.offers);
+      const id=chooseUpgrade(c,policy,species,c.progression.offers);
       if(!c.chooseUpgrade(id))throw new Error('Invalid earned choice');
       choices.push({at:r(seconds),id,source:'level'});
     }
@@ -49,7 +49,7 @@ export function measureRun(species: BalanceSpecies, policy: RunPolicy, movement:
         const shop=run.shop!;
         const offers=shop.items.filter(i=>!i.sold&&i.skill&&i.price<=run.coins).map(i=>i.skill!);
         if(!offers.length)break;
-        const id=chooseRunUpgrade(c,policy,species,offers);
+        const id=chooseUpgrade(c,policy,species,offers);
         const index=shop.items.findIndex(i=>!i.sold&&i.skill===id);
         if(index<0||!run.buy(index,shop.token))break;
         choices.push({at:r(seconds),id,source:'shop'});
@@ -103,5 +103,6 @@ export function measureRun(species: BalanceSpecies, policy: RunPolicy, movement:
   return {species,policy,movement,seed,seconds:r(seconds),phase:run.phase,wave:run.wave,bossDefeated:run.bossDefeated,
     hp:r(c.hp),level:c.progression.level,kills:c.kills,xp:c.progression.totalExperience,firstLevelAt,firstFusionAt,firstCoreAt,firstMatureFireAt,
     choices,relics:c.runBuild.relics,weapons:c.runBuild.attacks.map(a=>({id:a.attackId,level:a.level})),
-    reactions:{...c.relicTelemetry},segments:segments.map(s=>({...s,damage:r(s.damage),nearSeconds:r(s.nearSeconds)}))};
+    reactions:{...c.relicTelemetry},newWeaponEvents:{blades:{...c.blades.telemetry},thunder:{...c.thunder.telemetry}},
+    segments:segments.map(s=>({...s,damage:r(s.damage),nearSeconds:r(s.nearSeconds)}))};
 }

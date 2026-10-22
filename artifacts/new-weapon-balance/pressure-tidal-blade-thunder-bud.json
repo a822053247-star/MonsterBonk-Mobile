@@ -1,0 +1,1217 @@
+{
+  "environment": "Desktop software WebGL at 844x390; renderMs is diagnostic, not physical-phone FPS.",
+  "rows": [
+    {
+      "wave": 1,
+      "count": 36,
+      "extraCalls": 6,
+      "renderMs": 2,
+      "resources": {
+        "geometries": 82,
+        "textures": 36
+      },
+      "resourcesAfter": {
+        "geometries": 82,
+        "textures": 36
+      },
+      "warning": null,
+      "unchanged": true,
+      "atlases": [
+        {
+          "name": "WaterAoe-thorn-wheel",
+          "loaded": true,
+          "failed": false,
+          "count": 0,
+          "capacity": 6,
+          "frames": []
+        },
+        {
+          "name": "WaterAoe-tidal-blade",
+          "loaded": true,
+          "failed": false,
+          "count": 3,
+          "capacity": 12,
+          "frames": [
+            2,
+            2,
+            2
+          ]
+        },
+        {
+          "name": "WaterAoe-thorn-impact",
+          "loaded": true,
+          "failed": false,
+          "count": 0,
+          "capacity": 24,
+          "frames": []
+        },
+        {
+          "name": "WaterAoe-tidal-impact",
+          "loaded": true,
+          "failed": false,
+          "count": 7,
+          "capacity": 24,
+          "frames": [
+            0,
+            3,
+            3,
+            3,
+            3,
+            1,
+            1
+          ]
+        },
+        {
+          "name": "WaterAoe-bud",
+          "loaded": true,
+          "failed": false,
+          "count": 1,
+          "capacity": 4,
+          "frames": [
+            3
+          ]
+        },
+        {
+          "name": "WaterAoe-lightning",
+          "loaded": true,
+          "failed": false,
+          "count": 4,
+          "capacity": 384,
+          "frames": [
+            1,
+            2,
+            2,
+            3
+          ]
+        },
+        {
+          "name": "WaterAoe-spark",
+          "loaded": true,
+          "failed": false,
+          "count": 3,
+          "capacity": 32,
+          "frames": [
+            4,
+            2,
+            0
+          ]
+        },
+        {
+          "name": "WaterAoe-arc",
+          "loaded": true,
+          "failed": false,
+          "count": 3,
+          "capacity": 32,
+          "frames": [
+            2,
+            1,
+            0
+          ]
+        },
+        {
+          "name": "WaterAoe-thorn-wheel",
+          "loaded": true,
+          "failed": false,
+          "count": 0,
+          "capacity": 6,
+          "frames": []
+        },
+        {
+          "name": "WaterAoe-tidal-blade",
+          "loaded": true,
+          "failed": false,
+          "count": 2,
+          "capacity": 12,
+          "frames": [
+            2,
+            2
+          ]
+        },
+        {
+          "name": "WaterAoe-thorn-impact",
+          "loaded": true,
+          "failed": false,
+          "count": 0,
+          "capacity": 24,
+          "frames": []
+        },
+        {
+          "name": "WaterAoe-tidal-impact",
+          "loaded": true,
+          "failed": false,
+          "count": 7,
+          "capacity": 24,
+          "frames": [
+            0,
+            3,
+            3,
+            3,
+            3,
+            1,
+            1
+          ]
+        },
+        {
+          "name": "WaterAoe-bud",
+          "loaded": true,
+          "failed": false,
+          "count": 1,
+          "capacity": 4,
+          "frames": [
+            3
+          ]
+        },
+        {
+          "name": "WaterAoe-lightning",
+          "loaded": true,
+          "failed": false,
+          "count": 4,
+          "capacity": 384,
+          "frames": [
+            1,
+            2,
+            2,
+            3
+          ]
+        },
+        {
+          "name": "WaterAoe-spark",
+          "loaded": true,
+          "failed": false,
+          "count": 3,
+          "capacity": 32,
+          "frames": [
+            4,
+            2,
+            0
+          ]
+        },
+        {
+          "name": "WaterAoe-arc",
+          "loaded": true,
+          "failed": false,
+          "count": 0,
+          "capacity": 32,
+          "frames": []
+        }
+      ]
+    },
+    {
+      "wave": 2,
+      "count": 52,
+      "extraCalls": 6,
+      "renderMs": 0.9000000059604645,
+      "resources": {
+        "geometries": 82,
+        "textures": 36
+      },
+      "resourcesAfter": {
+        "geometries": 82,
+        "textures": 36
+      },
+      "warning": null,
+      "unchanged": true,
+      "atlases": [
+        {
+          "name": "WaterAoe-thorn-wheel",
+          "loaded": true,
+          "failed": false,
+          "count": 0,
+          "capacity": 6,
+          "frames": []
+        },
+        {
+          "name": "WaterAoe-tidal-blade",
+          "loaded": true,
+          "failed": false,
+          "count": 3,
+          "capacity": 12,
+          "frames": [
+            2,
+            2,
+            2
+          ]
+        },
+        {
+          "name": "WaterAoe-thorn-impact",
+          "loaded": true,
+          "failed": false,
+          "count": 0,
+          "capacity": 24,
+          "frames": []
+        },
+        {
+          "name": "WaterAoe-tidal-impact",
+          "loaded": true,
+          "failed": false,
+          "count": 6,
+          "capacity": 24,
+          "frames": [
+            2,
+            2,
+            2,
+            2,
+            1,
+            1
+          ]
+        },
+        {
+          "name": "WaterAoe-bud",
+          "loaded": true,
+          "failed": false,
+          "count": 1,
+          "capacity": 4,
+          "frames": [
+            3
+          ]
+        },
+        {
+          "name": "WaterAoe-lightning",
+          "loaded": true,
+          "failed": false,
+          "count": 4,
+          "capacity": 384,
+          "frames": [
+            2,
+            3,
+            3,
+            0
+          ]
+        },
+        {
+          "name": "WaterAoe-spark",
+          "loaded": true,
+          "failed": false,
+          "count": 3,
+          "capacity": 32,
+          "frames": [
+            4,
+            2,
+            0
+          ]
+        },
+        {
+          "name": "WaterAoe-arc",
+          "loaded": true,
+          "failed": false,
+          "count": 3,
+          "capacity": 32,
+          "frames": [
+            2,
+            1,
+            0
+          ]
+        },
+        {
+          "name": "WaterAoe-thorn-wheel",
+          "loaded": true,
+          "failed": false,
+          "count": 0,
+          "capacity": 6,
+          "frames": []
+        },
+        {
+          "name": "WaterAoe-tidal-blade",
+          "loaded": true,
+          "failed": false,
+          "count": 2,
+          "capacity": 12,
+          "frames": [
+            2,
+            2
+          ]
+        },
+        {
+          "name": "WaterAoe-thorn-impact",
+          "loaded": true,
+          "failed": false,
+          "count": 0,
+          "capacity": 24,
+          "frames": []
+        },
+        {
+          "name": "WaterAoe-tidal-impact",
+          "loaded": true,
+          "failed": false,
+          "count": 6,
+          "capacity": 24,
+          "frames": [
+            2,
+            2,
+            2,
+            2,
+            1,
+            1
+          ]
+        },
+        {
+          "name": "WaterAoe-bud",
+          "loaded": true,
+          "failed": false,
+          "count": 1,
+          "capacity": 4,
+          "frames": [
+            3
+          ]
+        },
+        {
+          "name": "WaterAoe-lightning",
+          "loaded": true,
+          "failed": false,
+          "count": 4,
+          "capacity": 384,
+          "frames": [
+            2,
+            3,
+            3,
+            0
+          ]
+        },
+        {
+          "name": "WaterAoe-spark",
+          "loaded": true,
+          "failed": false,
+          "count": 3,
+          "capacity": 32,
+          "frames": [
+            4,
+            2,
+            0
+          ]
+        },
+        {
+          "name": "WaterAoe-arc",
+          "loaded": true,
+          "failed": false,
+          "count": 0,
+          "capacity": 32,
+          "frames": []
+        }
+      ]
+    },
+    {
+      "wave": 3,
+      "count": 72,
+      "extraCalls": 6,
+      "renderMs": 0.7999999970197678,
+      "resources": {
+        "geometries": 82,
+        "textures": 36
+      },
+      "resourcesAfter": {
+        "geometries": 82,
+        "textures": 36
+      },
+      "warning": null,
+      "unchanged": true,
+      "atlases": [
+        {
+          "name": "WaterAoe-thorn-wheel",
+          "loaded": true,
+          "failed": false,
+          "count": 0,
+          "capacity": 6,
+          "frames": []
+        },
+        {
+          "name": "WaterAoe-tidal-blade",
+          "loaded": true,
+          "failed": false,
+          "count": 3,
+          "capacity": 12,
+          "frames": [
+            2,
+            2,
+            2
+          ]
+        },
+        {
+          "name": "WaterAoe-thorn-impact",
+          "loaded": true,
+          "failed": false,
+          "count": 0,
+          "capacity": 24,
+          "frames": []
+        },
+        {
+          "name": "WaterAoe-tidal-impact",
+          "loaded": true,
+          "failed": false,
+          "count": 9,
+          "capacity": 24,
+          "frames": [
+            3,
+            3,
+            2,
+            2,
+            2,
+            1,
+            1,
+            1,
+            0
+          ]
+        },
+        {
+          "name": "WaterAoe-bud",
+          "loaded": true,
+          "failed": false,
+          "count": 1,
+          "capacity": 4,
+          "frames": [
+            3
+          ]
+        },
+        {
+          "name": "WaterAoe-lightning",
+          "loaded": true,
+          "failed": false,
+          "count": 4,
+          "capacity": 384,
+          "frames": [
+            3,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WaterAoe-spark",
+          "loaded": true,
+          "failed": false,
+          "count": 3,
+          "capacity": 32,
+          "frames": [
+            4,
+            2,
+            0
+          ]
+        },
+        {
+          "name": "WaterAoe-arc",
+          "loaded": true,
+          "failed": false,
+          "count": 3,
+          "capacity": 32,
+          "frames": [
+            2,
+            1,
+            0
+          ]
+        },
+        {
+          "name": "WaterAoe-thorn-wheel",
+          "loaded": true,
+          "failed": false,
+          "count": 0,
+          "capacity": 6,
+          "frames": []
+        },
+        {
+          "name": "WaterAoe-tidal-blade",
+          "loaded": true,
+          "failed": false,
+          "count": 2,
+          "capacity": 12,
+          "frames": [
+            2,
+            2
+          ]
+        },
+        {
+          "name": "WaterAoe-thorn-impact",
+          "loaded": true,
+          "failed": false,
+          "count": 0,
+          "capacity": 24,
+          "frames": []
+        },
+        {
+          "name": "WaterAoe-tidal-impact",
+          "loaded": true,
+          "failed": false,
+          "count": 9,
+          "capacity": 24,
+          "frames": [
+            3,
+            3,
+            2,
+            2,
+            2,
+            1,
+            1,
+            1,
+            0
+          ]
+        },
+        {
+          "name": "WaterAoe-bud",
+          "loaded": true,
+          "failed": false,
+          "count": 1,
+          "capacity": 4,
+          "frames": [
+            3
+          ]
+        },
+        {
+          "name": "WaterAoe-lightning",
+          "loaded": true,
+          "failed": false,
+          "count": 4,
+          "capacity": 384,
+          "frames": [
+            3,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "WaterAoe-spark",
+          "loaded": true,
+          "failed": false,
+          "count": 3,
+          "capacity": 32,
+          "frames": [
+            4,
+            2,
+            0
+          ]
+        },
+        {
+          "name": "WaterAoe-arc",
+          "loaded": true,
+          "failed": false,
+          "count": 0,
+          "capacity": 32,
+          "frames": []
+        }
+      ]
+    },
+    {
+      "wave": 4,
+      "count": 92,
+      "extraCalls": 6,
+      "renderMs": 0.699999988079071,
+      "resources": {
+        "geometries": 82,
+        "textures": 36
+      },
+      "resourcesAfter": {
+        "geometries": 82,
+        "textures": 36
+      },
+      "warning": null,
+      "unchanged": true,
+      "atlases": [
+        {
+          "name": "WaterAoe-thorn-wheel",
+          "loaded": true,
+          "failed": false,
+          "count": 0,
+          "capacity": 6,
+          "frames": []
+        },
+        {
+          "name": "WaterAoe-tidal-blade",
+          "loaded": true,
+          "failed": false,
+          "count": 3,
+          "capacity": 12,
+          "frames": [
+            2,
+            2,
+            2
+          ]
+        },
+        {
+          "name": "WaterAoe-thorn-impact",
+          "loaded": true,
+          "failed": false,
+          "count": 0,
+          "capacity": 24,
+          "frames": []
+        },
+        {
+          "name": "WaterAoe-tidal-impact",
+          "loaded": true,
+          "failed": false,
+          "count": 14,
+          "capacity": 24,
+          "frames": [
+            0,
+            3,
+            3,
+            3,
+            2,
+            2,
+            2,
+            2,
+            2,
+            1,
+            1,
+            1,
+            0,
+            0
+          ]
+        },
+        {
+          "name": "WaterAoe-bud",
+          "loaded": true,
+          "failed": false,
+          "count": 1,
+          "capacity": 4,
+          "frames": [
+            3
+          ]
+        },
+        {
+          "name": "WaterAoe-lightning",
+          "loaded": true,
+          "failed": false,
+          "count": 4,
+          "capacity": 384,
+          "frames": [
+            0,
+            1,
+            1,
+            2
+          ]
+        },
+        {
+          "name": "WaterAoe-spark",
+          "loaded": true,
+          "failed": false,
+          "count": 3,
+          "capacity": 32,
+          "frames": [
+            4,
+            2,
+            0
+          ]
+        },
+        {
+          "name": "WaterAoe-arc",
+          "loaded": true,
+          "failed": false,
+          "count": 3,
+          "capacity": 32,
+          "frames": [
+            2,
+            1,
+            0
+          ]
+        },
+        {
+          "name": "WaterAoe-thorn-wheel",
+          "loaded": true,
+          "failed": false,
+          "count": 0,
+          "capacity": 6,
+          "frames": []
+        },
+        {
+          "name": "WaterAoe-tidal-blade",
+          "loaded": true,
+          "failed": false,
+          "count": 2,
+          "capacity": 12,
+          "frames": [
+            2,
+            2
+          ]
+        },
+        {
+          "name": "WaterAoe-thorn-impact",
+          "loaded": true,
+          "failed": false,
+          "count": 0,
+          "capacity": 24,
+          "frames": []
+        },
+        {
+          "name": "WaterAoe-tidal-impact",
+          "loaded": true,
+          "failed": false,
+          "count": 14,
+          "capacity": 24,
+          "frames": [
+            0,
+            3,
+            3,
+            3,
+            2,
+            2,
+            2,
+            2,
+            2,
+            1,
+            1,
+            1,
+            0,
+            0
+          ]
+        },
+        {
+          "name": "WaterAoe-bud",
+          "loaded": true,
+          "failed": false,
+          "count": 1,
+          "capacity": 4,
+          "frames": [
+            3
+          ]
+        },
+        {
+          "name": "WaterAoe-lightning",
+          "loaded": true,
+          "failed": false,
+          "count": 4,
+          "capacity": 384,
+          "frames": [
+            0,
+            1,
+            1,
+            2
+          ]
+        },
+        {
+          "name": "WaterAoe-spark",
+          "loaded": true,
+          "failed": false,
+          "count": 3,
+          "capacity": 32,
+          "frames": [
+            4,
+            2,
+            0
+          ]
+        },
+        {
+          "name": "WaterAoe-arc",
+          "loaded": true,
+          "failed": false,
+          "count": 0,
+          "capacity": 32,
+          "frames": []
+        }
+      ]
+    },
+    {
+      "wave": 5,
+      "count": 112,
+      "extraCalls": 6,
+      "renderMs": 0.7000000029802322,
+      "resources": {
+        "geometries": 82,
+        "textures": 36
+      },
+      "resourcesAfter": {
+        "geometries": 82,
+        "textures": 36
+      },
+      "warning": null,
+      "unchanged": true,
+      "atlases": [
+        {
+          "name": "WaterAoe-thorn-wheel",
+          "loaded": true,
+          "failed": false,
+          "count": 0,
+          "capacity": 6,
+          "frames": []
+        },
+        {
+          "name": "WaterAoe-tidal-blade",
+          "loaded": true,
+          "failed": false,
+          "count": 3,
+          "capacity": 12,
+          "frames": [
+            2,
+            2,
+            2
+          ]
+        },
+        {
+          "name": "WaterAoe-thorn-impact",
+          "loaded": true,
+          "failed": false,
+          "count": 0,
+          "capacity": 24,
+          "frames": []
+        },
+        {
+          "name": "WaterAoe-tidal-impact",
+          "loaded": true,
+          "failed": false,
+          "count": 16,
+          "capacity": 24,
+          "frames": [
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            1,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "name": "WaterAoe-bud",
+          "loaded": true,
+          "failed": false,
+          "count": 1,
+          "capacity": 4,
+          "frames": [
+            3
+          ]
+        },
+        {
+          "name": "WaterAoe-lightning",
+          "loaded": true,
+          "failed": false,
+          "count": 4,
+          "capacity": 384,
+          "frames": [
+            1,
+            2,
+            2,
+            3
+          ]
+        },
+        {
+          "name": "WaterAoe-spark",
+          "loaded": true,
+          "failed": false,
+          "count": 3,
+          "capacity": 32,
+          "frames": [
+            4,
+            2,
+            0
+          ]
+        },
+        {
+          "name": "WaterAoe-arc",
+          "loaded": true,
+          "failed": false,
+          "count": 3,
+          "capacity": 32,
+          "frames": [
+            2,
+            1,
+            0
+          ]
+        },
+        {
+          "name": "WaterAoe-thorn-wheel",
+          "loaded": true,
+          "failed": false,
+          "count": 0,
+          "capacity": 6,
+          "frames": []
+        },
+        {
+          "name": "WaterAoe-tidal-blade",
+          "loaded": true,
+          "failed": false,
+          "count": 2,
+          "capacity": 12,
+          "frames": [
+            2,
+            2
+          ]
+        },
+        {
+          "name": "WaterAoe-thorn-impact",
+          "loaded": true,
+          "failed": false,
+          "count": 0,
+          "capacity": 24,
+          "frames": []
+        },
+        {
+          "name": "WaterAoe-tidal-impact",
+          "loaded": true,
+          "failed": false,
+          "count": 16,
+          "capacity": 24,
+          "frames": [
+            3,
+            3,
+            3,
+            3,
+            3,
+            3,
+            2,
+            2,
+            2,
+            2,
+            2,
+            2,
+            1,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "name": "WaterAoe-bud",
+          "loaded": true,
+          "failed": false,
+          "count": 1,
+          "capacity": 4,
+          "frames": [
+            3
+          ]
+        },
+        {
+          "name": "WaterAoe-lightning",
+          "loaded": true,
+          "failed": false,
+          "count": 4,
+          "capacity": 384,
+          "frames": [
+            1,
+            2,
+            2,
+            3
+          ]
+        },
+        {
+          "name": "WaterAoe-spark",
+          "loaded": true,
+          "failed": false,
+          "count": 3,
+          "capacity": 32,
+          "frames": [
+            4,
+            2,
+            0
+          ]
+        },
+        {
+          "name": "WaterAoe-arc",
+          "loaded": true,
+          "failed": false,
+          "count": 0,
+          "capacity": 32,
+          "frames": []
+        }
+      ]
+    },
+    {
+      "wave": 6,
+      "count": 72,
+      "extraCalls": 6,
+      "renderMs": 1.1000000089406967,
+      "resources": {
+        "geometries": 83,
+        "textures": 37
+      },
+      "resourcesAfter": {
+        "geometries": 83,
+        "textures": 37
+      },
+      "warning": {
+        "baseline": 2151,
+        "retained": 2151,
+        "ratio": 1
+      },
+      "unchanged": true,
+      "atlases": [
+        {
+          "name": "WaterAoe-thorn-wheel",
+          "loaded": true,
+          "failed": false,
+          "count": 0,
+          "capacity": 6,
+          "frames": []
+        },
+        {
+          "name": "WaterAoe-tidal-blade",
+          "loaded": true,
+          "failed": false,
+          "count": 3,
+          "capacity": 12,
+          "frames": [
+            2,
+            2,
+            2
+          ]
+        },
+        {
+          "name": "WaterAoe-thorn-impact",
+          "loaded": true,
+          "failed": false,
+          "count": 0,
+          "capacity": 24,
+          "frames": []
+        },
+        {
+          "name": "WaterAoe-tidal-impact",
+          "loaded": true,
+          "failed": false,
+          "count": 9,
+          "capacity": 24,
+          "frames": [
+            3,
+            3,
+            2,
+            2,
+            2,
+            1,
+            1,
+            1,
+            0
+          ]
+        },
+        {
+          "name": "WaterAoe-bud",
+          "loaded": true,
+          "failed": false,
+          "count": 1,
+          "capacity": 4,
+          "frames": [
+            3
+          ]
+        },
+        {
+          "name": "WaterAoe-lightning",
+          "loaded": true,
+          "failed": false,
+          "count": 4,
+          "capacity": 384,
+          "frames": [
+            2,
+            3,
+            3,
+            0
+          ]
+        },
+        {
+          "name": "WaterAoe-spark",
+          "loaded": true,
+          "failed": false,
+          "count": 3,
+          "capacity": 32,
+          "frames": [
+            4,
+            2,
+            0
+          ]
+        },
+        {
+          "name": "WaterAoe-arc",
+          "loaded": true,
+          "failed": false,
+          "count": 3,
+          "capacity": 32,
+          "frames": [
+            2,
+            1,
+            0
+          ]
+        },
+        {
+          "name": "WaterAoe-thorn-wheel",
+          "loaded": true,
+          "failed": false,
+          "count": 0,
+          "capacity": 6,
+          "frames": []
+        },
+        {
+          "name": "WaterAoe-tidal-blade",
+          "loaded": true,
+          "failed": false,
+          "count": 2,
+          "capacity": 12,
+          "frames": [
+            2,
+            2
+          ]
+        },
+        {
+          "name": "WaterAoe-thorn-impact",
+          "loaded": true,
+          "failed": false,
+          "count": 0,
+          "capacity": 24,
+          "frames": []
+        },
+        {
+          "name": "WaterAoe-tidal-impact",
+          "loaded": true,
+          "failed": false,
+          "count": 9,
+          "capacity": 24,
+          "frames": [
+            3,
+            3,
+            2,
+            2,
+            2,
+            1,
+            1,
+            1,
+            0
+          ]
+        },
+        {
+          "name": "WaterAoe-bud",
+          "loaded": true,
+          "failed": false,
+          "count": 1,
+          "capacity": 4,
+          "frames": [
+            3
+          ]
+        },
+        {
+          "name": "WaterAoe-lightning",
+          "loaded": true,
+          "failed": false,
+          "count": 4,
+          "capacity": 384,
+          "frames": [
+            2,
+            3,
+            3,
+            0
+          ]
+        },
+        {
+          "name": "WaterAoe-spark",
+          "loaded": true,
+          "failed": false,
+          "count": 3,
+          "capacity": 32,
+          "frames": [
+            4,
+            2,
+            0
+          ]
+        },
+        {
+          "name": "WaterAoe-arc",
+          "loaded": true,
+          "failed": false,
+          "count": 0,
+          "capacity": 32,
+          "frames": []
+        }
+      ]
+    }
+  ]
+}

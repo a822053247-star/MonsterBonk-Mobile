@@ -46,6 +46,10 @@ const LEGACY_UPGRADE_ART = {
   'bubble-weapon': ['skills/bubble-weapon.png'],
   'leaf-weapon': ['skills/leaf-weapon.png'],
   'flame-sweep-weapon': ['skills/flame-sweep-weapon.png'],
+  'thorn-wheel-weapon': ['skills/thorn-wheel-weapon.png'],
+  'tidal-blade-weapon': ['skills/tidal-blade-weapon.png'],
+  'thunder-bud-weapon': ['skills/thunder-bud-weapon.png'],
+  'frost-crystal-weapon': ['skills/frost-crystal-weapon.png'],
   'overload-core': ['relics/overload-core.png'],
   'hunter-eye': ['relics/hunter-eye.png'],
   'shattered-core': ['relics/shattered-core.png'],
@@ -78,12 +82,12 @@ export function upgradeArt(skill: Pick<SkillDefinition, 'id' | 'category'>, base
       ...(equipped.includes('leaf') ? ['skills/chain-bounce-grass.png'] : []),
     ];
   }
-  const element = definition?.art.palette ?? (skill.id === 'spark-weapon' || skill.id === 'flame-sweep-weapon' ? 'fire' : ['bubble-weapon', 'azure-burst', 'star-tide', 'still-sea', 'returning-ring', 'abyss-vortex', 'ice-radiance', 'tidal-recall', 'tsunami-sanctuary', 'astral-wheel', 'abyss-crown', 'deep-collapse', 'frost-prism', 'all-tides'].includes(skill.id) ? 'water' : skill.id === 'leaf-weapon' || (skill.id === 'spore-trail' || skill.id === 'undertow-pyre') ? 'grass' : undefined);
+  const element = definition?.art.palette ?? (skill.id === 'spark-weapon' || skill.id === 'flame-sweep-weapon' ? 'fire' : ['bubble-weapon', 'tidal-blade-weapon', 'azure-burst', 'star-tide', 'still-sea', 'returning-ring', 'abyss-vortex', 'ice-radiance', 'tidal-recall', 'tsunami-sanctuary', 'astral-wheel', 'abyss-crown', 'deep-collapse', 'frost-prism', 'all-tides'].includes(skill.id) ? 'water' : skill.id === 'leaf-weapon' || skill.id === 'thorn-wheel-weapon' || (skill.id === 'spore-trail' || skill.id === 'undertow-pyre') ? 'grass' : undefined);
   const category = skill.category ?? 'normal';
   // All offers share the same parchment geometry and content safe areas.
   // Category/element are conveyed through dynamic labels, gems and ink colors.
   const frame = 'common';
-  return { illustrations: definition ? [relicIcon(definition.art, import.meta.env.BASE_URL)] : illustrations.map(path => uiArtUrl(`upgrade/illustrations/${path}`)), element, category,
+  return { illustrations: definition ? [relicIcon(definition.art, import.meta.env.BASE_URL)] : illustrations.map(path => uiArtUrl(`upgrade/illustrations/${path}`)), element: skill.id === 'frost-crystal-weapon' ? 'ice' : skill.id === 'thunder-bud-weapon' ? 'electric' : element, category,
     frame: uiArtUrl(`upgrade/card-frames/${frame}.png`),
     gem: uiArtUrl(`upgrade/gem-${category === 'relic' ? 'rare' : category === 'evolution' ? 'legendary' : 'common'}.png`),
   };

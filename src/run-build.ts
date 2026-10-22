@@ -1,9 +1,10 @@
 import {WEAPON_PAIR_RECIPES,PAIR_IDS,pairLevel,pairSources,type WeaponPairId} from './weapon-pair-fusion';
 import { CREATURES, type SpeciesId } from './party';
 import type { BaseAttackId } from './fusion';
-import { resolveAttackRules, type RelicId, type EvolutionId } from './relics';
+import { resolveAttackRules, WEAPON_DAMAGE_PER_LEVEL, type RelicId, type EvolutionId } from './relics';
 import type { RelicContext } from './content/content-types';
 import { FLAME_SWEEP } from './flame-sweep';
+import { bladeStats } from './blade-weapons';
 import {weaponCapabilities,inheritWeaponCapabilities,assertFusionPreservesRelics,type WeaponCapabilities} from './content/weapon-traits';
 
 export const MAX_WEAPON_LEVEL = 5;
@@ -14,6 +15,10 @@ export const ATTACKS = {
   bubble: { kind: 'projectile', title: '水泡弹', damage: 15, interval: .62, range: 10.5, color: '#55c9ed' },
   leaf: { kind: 'projectile', title: '飞叶弹', damage: 16, interval: .54, range: 10.5, color: '#70bc52' },
   'flame-sweep': { kind: 'melee_arc', title: '火焰横扫', damage: FLAME_SWEEP.damage, interval: FLAME_SWEEP.interval, range: FLAME_SWEEP.radius, color: '#ff8c35' },
+  'thorn-wheel': { kind: 'orbit_blade', title: '环刃荆轮', damage: 14, interval: Math.PI * 2 / bladeStats('thorn-wheel', 1).speed, range: 4, color: '#b6db65' },
+  'tidal-blade': { kind: 'return_blade', title: '回旋潮刃', damage: 26, interval: 2.1, range: 8, color: '#72dfff' },
+  'thunder-bud': { kind: 'lightning_chain', title: '雷芽连锁', damage: 22, interval: 1.3, range: 9, color: '#ffe26b' },
+  'frost-crystal': { kind: 'projectile', title: '霜晶弹', damage: 16, interval: .72, range: 10.5, color: '#9de5ff' },
 } as const;
 
 export interface EquippedAttack {
@@ -69,7 +74,7 @@ export class RunBuild {
       const recipe=WEAPON_PAIR_RECIPES[attack.pairId];
       rules.pairId=attack.pairId;rules.pairArea=(this.skillRanks.area??0)>0;rules.pairSplit=(this.skillRanks['split-on-hit']??0)>0;rules.pairChain=(this.skillRanks.chain??0)>0;
       if(ruleBase==='spark')rules.areaMultiplier/=1.12;
-      rules.damageMultiplier*=recipe.damage*(1+recipe.growth*(attack.level-3))/(ATTACKS[attackId].damage*(1+({spark:.16,bubble:.18,leaf:.16,'flame-sweep':.12}[ruleBase])*2));
+      rules.damageMultiplier*=recipe.damage*(1+recipe.growth*(attack.level-3))/(ATTACKS[attackId].damage*(1+WEAPON_DAMAGE_PER_LEVEL[ruleBase]*2));
       rules.intervalMultiplier*=recipe.interval/(ATTACKS[attackId].interval*(attack.slot===0?1:attack.slot===1?1.6:1.9));
       rules.slowDuration=recipe.slowDuration*(this.relics.includes('tidal-pearl')?1.6:1);rules.pierceBonus=0;
     }
