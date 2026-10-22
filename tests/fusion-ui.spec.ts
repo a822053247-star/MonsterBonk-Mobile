@@ -26,6 +26,25 @@ async function open(page: Page) {
   await expect.poll(async () => (await state(page)).fusionVisual?.loaded).toBe(true);
   await expect.poll(async () => (await state(page)).partyVisual.members.filter(m => m?.loaded).length).toBe(1);
 }
+test('default startup waits for the intended pixel creature, enemy sprites and matching portrait', async ({ page }) => {
+  await page.goto('/fusion-harness?world=fixed');
+  await page.waitForFunction(() => 'game' in window);
+  expect(await state(page)).toMatchObject({ partyPrototype: true, prototypeVariant: 'fusion' });
+
+  await page.locator('#start-fusion').tap();
+  await expect.poll(async () => (await state(page)).mode).toBe('playing');
+  await expect.poll(async () => (await state(page)).partyVisual.members[0]?.loaded).toBe(true);
+  await expect.poll(async () => (await state(page)).enemyVisual.batches?.filter((batch: { loaded: boolean }) => batch.loaded).length).toBe(6);
+  await expect.poll(async () => page.locator('#creature-portrait').evaluate((image: HTMLImageElement) =>
+    !image.hidden && image.complete && image.naturalWidth > 0 &&
+    new URL(image.currentSrc).pathname.endsWith('/assets/pixel/creatures/yanrong-base.png'))).toBe(true);
+
+  const current = await state(page);
+  expect(current.partyVisual.leader).toBe('pixel');
+  expect(current).toMatchObject({ partyPrototype: true, prototypeVariant: 'fusion' });
+  expect(await page.evaluate(() => (window as unknown as Fixture).game.monster.root.visible)).toBe(false);
+});
+
 async function learn(page: Page) {
   await page.evaluate(() => (window as unknown as Fixture).offer());
   const card = page.locator('[data-skill="split-on-hit"]'); await expect(card).toBeEnabled(); await card.tap();
