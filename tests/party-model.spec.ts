@@ -37,7 +37,8 @@ test('companions follow a moving leader around cover and remain separate within 
     for (const member of party.members.slice(1)) {
       expect(Math.hypot(member.x - leader.x, member.z - leader.z)).toBeLessThan(7.1);
       expect(Math.hypot(member.x - leader.x, member.z - leader.z)).toBeGreaterThan(1.1);
-      expect(Math.hypot(member.x, member.z)).toBeLessThanOrEqual(32.3);
+      expect(Math.abs(member.x) + 0.48).toBeLessThanOrEqual(32.3 + .001);
+      expect(Math.abs(member.z) + 0.48).toBeLessThanOrEqual(32.3 + .001);
       for (const obstacle of obstacles) expect(Math.hypot(member.x - obstacle.x, member.z - obstacle.z)).toBeGreaterThanOrEqual(obstacle.radius + 0.47);
     }
     const a = party.members[1], b = party.members[2];
@@ -51,6 +52,20 @@ test('companions follow a moving leader around cover and remain separate within 
     expect(member.previousX).toBe(member.x);
     expect(member.previousZ).toBe(member.z);
   }
+});
+
+
+test('companions retain access to the rectangular corners', () => {
+  const party = new PartySystem();
+  party.reset(['yanrong', 'bubblesalamander', 'sproutspike']);
+  party.syncLeader({ x: 30.5, z: 30.5 }, 0);
+  Object.assign(party.members[1]!, { x: 31, z: 31, previousX: 31, previousZ: 31 });
+  party.follow(STEP, [], 32.3);
+  const member = party.members[1]!;
+  expect(member.x).toBeGreaterThan(30);
+  expect(member.z).toBeGreaterThan(30);
+  expect(Math.abs(member.x) + 0.48).toBeLessThanOrEqual(32.3 + .001);
+  expect(Math.abs(member.z) + 0.48).toBeLessThanOrEqual(32.3 + .001);
 });
 
 test('three independent emitters use their own origin, target and cooldown without a duplicate player shot', () => {
