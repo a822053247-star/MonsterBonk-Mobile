@@ -39,7 +39,7 @@ export class Game {
   private renderer: THREE.WebGLRenderer;
   private scene = new THREE.Scene();
   private camera = new THREE.OrthographicCamera(-15, 15, 8.5, -8.5, 0.1, 180);
-  // Repaired GLB by default; ?character=sprite / ?character=3d retain both fallbacks.
+  // Legacy single-creature mode keeps the repaired GLB; the default campaign uses the pixel party.
   private monster = new Monster(new URLSearchParams(window.location.search).get('character') === '3d' ? 'procedural' : new URLSearchParams(window.location.search).get('character') === 'sprite' ? 'sprite' : 'gltf');
   private party = new PartySystem();
   private pixelPartyEnabled = new URLSearchParams(window.location.search).get('partyVisual') !== 'legacy';
