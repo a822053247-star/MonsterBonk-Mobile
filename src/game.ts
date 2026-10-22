@@ -44,9 +44,9 @@ export class Game {
   private party = new PartySystem();
   private pixelPartyEnabled = new URLSearchParams(window.location.search).get('partyVisual') !== 'legacy';
   private partyView = new PartyView(this.party, this.pixelPartyEnabled);
-  private partyPrototype = false;
+  private partyPrototype = true;
   private selectedSpecies: SpeciesId = 'yanrong';
-  private prototypeVariant: 'sample' | 'fusion' | 'legacy-party' | 'infinite' = 'sample';
+  private prototypeVariant: 'sample' | 'fusion' | 'legacy-party' | 'infinite' = 'fusion';
   private world: World;
   private combat: Combat;
   private combatView: CombatView;
@@ -76,6 +76,7 @@ export class Game {
   private lastTime = 0;
   private frameId = 0;
   private disposed = false;
+  private starting = false;
   private contextLost = false;
   private portrait = false;
   private toastTimeout = 0;
@@ -384,16 +385,90 @@ export class Game {
     document.getElementById('choose-creature')!.setAttribute('aria-label', `选择出战幻兽，当前${definition.name}`);
   }
 
-  private start(ruleset: Ruleset = this.runRuleset, partyPrototype = this.partyPrototype, newMap = false, variant = this.prototypeVariant) {
-    if (this.portrait || this.contextLost) return;
+  private syncCreaturePortrait(species: SpeciesId) {
+    const portrait = document.getElementById('creature-portrait') as HTMLImageElement;
+    portrait.hidden = false;
+    if (portrait.dataset.species !== species) {
+      portrait.src = import.meta.env.BASE_URL + 'assets/pixel/' + PIXEL_CREATURE_ASSETS[species];
+      portrait.dataset.species = species;
+    }
+    (document.querySelector('.health-panel svg.portrait') as SVGElement).style.display = species === 'yanrong' ? '' : 'none';
+  }
+
+  private pixelBattleAssetsReady(requirePlayer: boolean, requireEnemies: boolean) {
+    const portrait = document.getElementById('creature-portrait') as HTMLImageElement;
+    const player = this.partyView.inspect().members[0];
+    const animationReady = !player?.animation.enabled || player.animation.atlases.every(atlas => atlas.loaded || atlas.failed);
+    const playerReady = !requirePlayer || (!!player?.loaded && animationReady);
+    const batches = this.combatView.inspect().batches ?? [];
+    const enemiesReady = !requireEnemies || (batches.length >= 6 && batches.every(batch => batch.loaded));
+    return portrait.complete && portrait.naturalWidth > 0 && playerReady && enemiesReady;
+  }
+
+  private pixelBattleAssetsFailed(requirePlayer: boolean, requireEnemies: boolean) {
+    const portrait = document.getElementById('creature-portrait') as HTMLImageElement;
+    const player = this.partyView.inspect().members[0];
+    const batches = this.combatView.inspect().batches ?? [];
+    return (portrait.complete && portrait.naturalWidth === 0)
+      || (requirePlayer && !!player?.failed)
+      || (requireEnemies && batches.some(batch => batch.failed));
+  }
+
+  private async waitForPixelBattleAssets(requirePlayer: boolean, requireEnemies: boolean) {
+    const deadline = performance.now() + 10000;
+    while (!this.disposed && performance.now() < deadline) {
+      if (this.pixelBattleAssetsFailed(requirePlayer, requireEnemies)) return false;
+      if (this.pixelBattleAssetsReady(requirePlayer, requireEnemies)) return true;
+      await new Promise<void>(resolve => window.setTimeout(resolve, 16));
+    }
+    return this.pixelBattleAssetsReady(requirePlayer, requireEnemies);
+  }
+
+  private async start(ruleset: Ruleset = this.runRuleset, partyPrototype = this.partyPrototype, newMap = false, variant?: 'sample' | 'fusion' | 'legacy-party' | 'infinite') {
+    if (this.portrait || this.contextLost || this.starting) return;
+    const runVariant = partyPrototype
+      ? variant ?? (this.mode === 'menu' && arguments.length <= 1 ? 'fusion' : arguments.length === 0 ? this.prototypeVariant : 'sample')
+      : 'sample';
+    const pixelBattle = partyPrototype && (runVariant === 'fusion' || runVariant === 'infinite');
+    if (pixelBattle) {
+      const params = new URLSearchParams(window.location.search);
+      const requirePlayer = this.pixelPartyEnabled;
+      const requireEnemies = params.get('enemyVisual') !== 'legacy';
+      this.party.reset([this.selectedSpecies]);
+      const animateLeader = params.get('creatureAnimation') !== 'static';
+      this.partyView.setAnimatedLeader(animateLeader);
+      this.partyView.render(1, 0);
+      if (requireEnemies) this.combatView.setPixelEnemies(true);
+      this.combatView.setFusion(true, this.selectedSpecies !== 'yanrong');
+      this.syncCreaturePortrait(this.selectedSpecies);
+      if (!this.pixelBattleAssetsReady(requirePlayer, requireEnemies)) {
+        this.starting = true;
+        const toast = document.getElementById('toast')!;
+        toast.textContent = '正在加载幻兽与敌人资源…';
+        toast.hidden = false;
+        let ready = false;
+        try {
+          ready = await this.waitForPixelBattleAssets(requirePlayer, requireEnemies);
+        } finally {
+          this.starting = false;
+          toast.hidden = true;
+        }
+        if (this.disposed || this.portrait || this.contextLost) return;
+        if (!ready) {
+          showError('角色或敌人资源加载失败，请刷新页面后重试。');
+          return;
+        }
+      }
+    }
+    if (this.portrait || this.contextLost || this.disposed) return;
     this.runRuleset = ruleset;
     this.partyPrototype = partyPrototype;
-    this.prototypeVariant = partyPrototype ? variant : 'sample';
+    this.prototypeVariant = partyPrototype ? runVariant : 'sample';
     this.applyGraphics();
     // Infinite world and Endless survival are paired here; the formal fusion challenge remains finite.
-    this.combat.fusionEnabled = partyPrototype && (variant === 'fusion' || variant === 'infinite');
+    this.combat.fusionEnabled = partyPrototype && (runVariant === 'fusion' || runVariant === 'infinite');
     this.combatView.setFusion(this.combat.fusionEnabled, this.selectedSpecies !== 'yanrong');
-    const endless = partyPrototype && variant === 'infinite';
+    const endless = partyPrototype && runVariant === 'infinite';
     this.world.setSample(!endless && partyPrototype && new URLSearchParams(window.location.search).get('world') !== 'legacy', newMap);
     this.world.setInfinite(endless, newMap);
     this.combat.infiniteWorld = endless;
@@ -402,7 +477,7 @@ export class Game {
     const species: SpeciesId = this.combat.fusionEnabled ? this.selectedSpecies : 'yanrong';
     document.getElementById('creature-picker')!.hidden = true;
     document.getElementById('menu')!.inert = false;
-    this.party.reset(partyPrototype && variant === 'legacy-party' ? ['yanrong', 'bubblesalamander', 'sproutspike'] : [species]);
+    this.party.reset(partyPrototype && runVariant === 'legacy-party' ? ['yanrong', 'bubblesalamander', 'sproutspike'] : [species]);
     this.input.setMovementOnly(partyPrototype && !this.combat.fusionEnabled);
     document.getElementById('hud')!.classList.toggle('party-prototype', partyPrototype);
     document.getElementById('hud')!.classList.toggle('fusion-prototype', this.combat.fusionEnabled);
@@ -431,7 +506,7 @@ export class Game {
     document.getElementById('shop-screen')!.hidden = true;
     this.party.syncLeader(this.position, this.facing);
     this.party.placeCompanions(this.world.obstacles, ARENA_HALF_EXTENT);
-    this.partyView.setAnimatedLeader((this.combat.fusionEnabled || this.prototypeVariant === 'legacy-party') && new URLSearchParams(window.location.search).get('creatureAnimation') !== 'static');
+    this.partyView.setAnimatedLeader((this.combat.fusionEnabled || runVariant === 'legacy-party') && new URLSearchParams(window.location.search).get('creatureAnimation') !== 'static');
     if (partyPrototype) this.partyView.render(1, 0);
     this.monster.root.visible = !partyPrototype || !this.partyView.hasPixelLeader;
     if (this.trialHornMounted) this.monster.unequipOrgan('head');
@@ -454,7 +529,7 @@ export class Game {
     (document.activeElement as HTMLElement | null)?.blur();
     this.welcome.classList.remove('faded');
     this.welcome.querySelector('h2')!.textContent = endless ? '无尽挑战，向远方出发。' : this.combat.fusionEnabled && species !== 'yanrong' ? `${CREATURES[species].name}，准备出发。` : this.combat.fusionEnabled ? '一簇火花，生长成烈焰。' : partyPrototype ? '草场已就绪，出发吧。' : this.challenge ? '三波迎战，冲出一条路。' : this.combat.isTrial ? '犄角已就绪，冲出一条路。' : '小小魔法，准备就绪。';
-    this.welcome.querySelector('p')!.textContent = endless ? '六波循环生存 · 第五波旗帜大波与商店 · 第六波 Boss 循环' : this.combat.fusionEnabled && species !== 'yanrong' ? `${CREATURES[species].name}出战 · 摇杆移动 · 自动攻击 · 升级三选一` : this.combat.fusionEnabled ? '六波自动战斗 · 升级形成融合 · 前四波连续迎战，第五波后才可购物' : partyPrototype && variant === 'legacy-party' ? '三兽兼容模式 · 主控移动，伙伴跟随并自动攻击' : partyPrototype ? '摇杆操控焰绒 · 自动攻击 · 沿泥路绕过林地与水岸' : this.challenge ? '击败三波即可通关 · 冲锋命中 6 次、打断 2 次各加一星' : this.combat.isTrial ? '冲刺命中可击退和打断 · 留意黄色扑击预警线' : '移动躲避敌人，焰绒会自动施法 · 靠近拾取经验';
+    this.welcome.querySelector('p')!.textContent = endless ? '六波循环生存 · 第五波旗帜大波与商店 · 第六波 Boss 循环' : this.combat.fusionEnabled && species !== 'yanrong' ? `${CREATURES[species].name}出战 · 摇杆移动 · 自动攻击 · 升级三选一` : this.combat.fusionEnabled ? '六波自动战斗 · 升级形成融合 · 前四波连续迎战，第五波后才可购物' : partyPrototype && runVariant === 'legacy-party' ? '三兽兼容模式 · 主控移动，伙伴跟随并自动攻击' : partyPrototype ? '摇杆操控焰绒 · 自动攻击 · 沿泥路绕过林地与水岸' : this.challenge ? '击败三波即可通关 · 冲锋命中 6 次、打断 2 次各加一星' : this.combat.isTrial ? '冲刺命中可击退和打断 · 留意黄色扑击预警线' : '移动躲避敌人，焰绒会自动施法 · 靠近拾取经验';
     this.accumulator = 0;
     this.placeCamera(true);
     this.updateHUD();
@@ -863,10 +938,7 @@ export class Game {
     hint.hidden = !hintText;
     fusionStatus.title = this.combat.fusions.map(f => f.title).join(' / ');
     const species = this.party.leader.species;
-    const portrait = document.getElementById('creature-portrait') as HTMLImageElement;
-    portrait.hidden = false;
-    if (portrait.dataset.species !== species) { portrait.src = `${import.meta.env.BASE_URL}assets/pixel/${PIXEL_CREATURE_ASSETS[species]}`; portrait.dataset.species = species; }
-    (document.querySelector('.health-panel svg.portrait') as SVGElement).style.display = species === 'yanrong' ? '' : 'none';
+    this.syncCreaturePortrait(species);
     if (title.textContent !== titleText) title.textContent = titleText;
     if (hint.textContent !== hintText) hint.textContent = hintText;
     const hasSpark = this.combat.usesRunBuild ? this.combat.runBuild.has('spark')&&!this.combat.runBuild.consumed('spark') : base === 'spark';
