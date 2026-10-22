@@ -26,7 +26,10 @@ test('256 seeds vary regions, trees, rocks and ponds while preserving spawn and 
       expect(map.attempt).toBe(8);
       expect(generateWorld(map.seed)).toEqual(map);
     }
-    expect(sampleObstacles(map.layout).every(o => Math.hypot(o.x, o.z) - o.radius >= 8)).toBe(true);
+    const obstacles = sampleObstacles(map.layout);
+    expect(obstacles.every(o => Math.hypot(o.x, o.z) - o.radius >= 8)).toBe(true);
+    expect(obstacles.every(o => Math.abs(o.x) + o.radius <= 32.3 - .95 + .001)).toBe(true);
+    expect(obstacles.every(o => Math.abs(o.z) + o.radius <= 32.3 - .95 + .001)).toBe(true);
     regions.add(map.layout.regions.map(r => r.kind).join(','));
     water.add(JSON.stringify(map.layout.water)); trees.add(JSON.stringify(map.layout.trees)); rocks.add(JSON.stringify(map.layout.rocks));
   }
