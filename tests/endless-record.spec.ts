@@ -51,7 +51,7 @@ test('flag-wave countdown warns before wave five and changes to the battle annou
   const warning = await page.evaluate(() => {
     const g = (window as any).game; g.sleep();
     g.run.waveIndex = 3;
-    g.run.waveElapsed = g.run.definition.seconds - 5.2;
+    g.run.waveElapsed = g.run.definition.seconds - 4.2;
     g.updateHUD();
     return {
       title: document.querySelector('#welcome h2')!.textContent,
