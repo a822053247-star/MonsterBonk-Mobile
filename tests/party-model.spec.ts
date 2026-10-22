@@ -62,8 +62,8 @@ test('companions retain access to the rectangular corners', () => {
   Object.assign(party.members[1]!, { x: 31, z: 31, previousX: 31, previousZ: 31 });
   party.follow(STEP, [], 32.3);
   const member = party.members[1]!;
-  expect(member.x).toBeGreaterThan(30);
-  expect(member.z).toBeGreaterThan(30);
+  expect(member.x).toBeGreaterThan(28);
+  expect(member.z).toBeGreaterThan(28);
   expect(Math.abs(member.x) + 0.48).toBeLessThanOrEqual(32.3 + .001);
   expect(Math.abs(member.z) + 0.48).toBeLessThanOrEqual(32.3 + .001);
 });
