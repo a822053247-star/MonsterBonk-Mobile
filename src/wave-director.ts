@@ -19,6 +19,29 @@ export interface WaveDirectorPlan {
   readonly sporeFirst: number | null;
   readonly treasureFirst: number | null;
 }
+
+export const ENDLESS_SCALING = {
+  maxPopulation: 128,
+  enemyHealthPerCycle: .10, maxEnemyHealthMultiplier: 1.6,
+  contactDamagePerCycle: .05, maxContactDamageMultiplier: 1.25,
+  spawnRatePerCycle: .04, maxSpawnRateMultiplier: 1.35,
+  bossHealthPerCycle: .18, maxBossHealthMultiplier: 2.2,
+  bossReward: 60,
+} as const;
+
+export type EndlessModifierId = 'fast-advance' | 'armored-line' | 'spore-chain' | 'crystal-surge' | 'treasure-bait';
+export interface EndlessModifierDefinition {
+  readonly id: EndlessModifierId;
+  readonly title: string;
+  readonly description: string;
+}
+export const ENDLESS_MODIFIERS: readonly EndlessModifierDefinition[] = [
+  { id: 'fast-advance', title: '疾芽先锋', description: '快速敌人的编队配额增加，注意走位与冲刺' },
+  { id: 'armored-line', title: '岩甲列阵', description: '重甲敌人的编队配额增加，优先考虑穿透与范围伤害' },
+  { id: 'spore-chain', title: '孢子连锁', description: '爆孢怪更频繁地加入混编，利用爆炸清怪并留意预警' },
+  { id: 'crystal-surge', title: '晶屑狂潮', description: '晶屑虫更早、更频繁出现，考验群体清理能力' },
+  { id: 'treasure-bait', title: '携宝诱饵', description: '本轮每波至少尝试出现一次携宝兽，追击仍有风险' },
+] as const;
 function stage(end: number, beat: DirectorBeat, rate: number, every: number,
   escorts: readonly DirectorEscort[], fastCap: number, tankCap = 0, sporeCap = 0): DirectorStage {
   return { end, beat, fodderPerSecond: rate, population: beat === 'warmup' ? .8 : beat === 'release' ? 1 : .9,
@@ -66,8 +89,21 @@ export const WAVE_DIRECTOR: readonly WaveDirectorPlan[] = [
     stage(90, 'pressure', 4.5, 3.5, [F,F,T,F], 14, 5, 2),
   ], crystalFirst:0, sporeFirst:28, treasureFirst:38 },
 ];
-export function directorStage(wave: number, elapsed: number): DirectorStage {
-  const plan = WAVE_DIRECTOR[wave - 1];
+
+const endlessFlagWave: WaveDirectorPlan = {
+  ...WAVE_DIRECTOR[4],
+  stages: [
+    ...WAVE_DIRECTOR[4].stages.slice(0, 3),
+    stage(75, 'pressure', 6.5, 3, [F,F,T,S,F,T,F], 24, 12, 2),
+    stage(80, 'release', 8, 0, [], 0),
+  ],
+};
+/** Only Endless gets the stronger final surge; the finite campaign keeps its authored pacing. */
+export const ENDLESS_WAVE_DIRECTOR: readonly WaveDirectorPlan[] = WAVE_DIRECTOR.map((plan, index) =>
+  index === 4 ? endlessFlagWave : plan);
+
+export function directorStage(wave: number, elapsed: number, endless = false): DirectorStage {
+  const plan = (endless ? ENDLESS_WAVE_DIRECTOR : WAVE_DIRECTOR)[wave - 1];
   if (!plan) throw new RangeError('Invalid director wave');
   return plan.stages.find(s => elapsed < s.end) ?? plan.stages[plan.stages.length - 1];
 }

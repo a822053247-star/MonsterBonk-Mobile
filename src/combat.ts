@@ -16,6 +16,7 @@ import { CRYSTAL_SWARM, SPORE_BOMBER, TREASURE_RUNNER, type SporeExplosion, type
 import { Progression, SKILL_RULES, type SkillId } from './progression';
 import { HORN, POUNCE, type DashStep, type EnemyIntent, type Ruleset } from './trial';
 import { CREATURES, type PartySystem, type SpeciesId } from './party';
+import { ENDLESS_SCALING } from './wave-director';
 import { GroundNavigation } from './navigation';
 import { BURST_SEED, resolveFusions, DEEP_BUBBLE, CHAIN_BUBBLE, THORN_SCATTER, JUMP_THORN, ELEMENTAL_RULES, type FusionId } from './fusion';
 
@@ -78,6 +79,8 @@ export class Combat {
   /** Enabled by the map prototype; preserved legacy modes keep their steering. */
   useNavigation = false;
   infiniteWorld = false;
+  /** Zero for every non-endless mode; Endless uses zero-based completed cycles. */
+  endlessCycleIndex = 0;
   /** Updated by the camera; absent in headless simulations, which use a fixed footprint. */
   spawnViewport?: SpawnViewport;
   private worldRevision = -1;
@@ -189,7 +192,22 @@ export class Combat {
 
   get isTrial() { return this.ruleset !== 'classic'; }
   get isChallenge() { return this.ruleset === 'horn-challenge'; }
-  enemyMaxHp(kind: EnemyKind) { return this.isTrial && kind === 'fast' ? POUNCE.hp : ENEMY_TYPES[kind].hp; }
+  get endlessEnemyHealthMultiplier() {
+    return Math.min(ENDLESS_SCALING.maxEnemyHealthMultiplier, 1 + Math.max(0, this.endlessCycleIndex) * ENDLESS_SCALING.enemyHealthPerCycle);
+  }
+  get endlessContactDamageMultiplier() {
+    return Math.min(ENDLESS_SCALING.maxContactDamageMultiplier, 1 + Math.max(0, this.endlessCycleIndex) * ENDLESS_SCALING.contactDamagePerCycle);
+  }
+  get endlessBossHealthMultiplier() {
+    return Math.min(ENDLESS_SCALING.maxBossHealthMultiplier, 1 + Math.max(0, this.endlessCycleIndex) * ENDLESS_SCALING.bossHealthPerCycle);
+  }
+  private scaledContactDamage(enemy: Enemy) {
+    const base = enemy.rank === 'boss' ? 24 : enemy.swarm ? SWARM_RULES.contactDamage : ENEMY_TYPES[enemy.kind].damage;
+    return base * this.endlessContactDamageMultiplier;
+  }
+  enemyMaxHp(kind: EnemyKind) {
+    return (this.isTrial && kind === 'fast' ? POUNCE.hp : ENEMY_TYPES[kind].hp) * this.endlessEnemyHealthMultiplier;
+  }
   enemyRadius(enemy: Enemy) { return enemy.radius ?? ENEMY_TYPES[enemy.kind].radius; }
   enemyHealth(enemy: Enemy) { return enemy.maxHp ?? this.enemyMaxHp(enemy.kind); }
   get hasAttackIntents() { return this.isTrial || this.encounters.enabled; }
@@ -241,6 +259,7 @@ export class Combat {
 
   reset(ruleset: Ruleset = this.ruleset) {
     this.soundEvents = 0;
+    this.endlessCycleIndex = 0;
     this.encounters.reset();
     this.clearTransientEffects();
     this.navigation.setCenter(0, 0, true);
@@ -291,7 +310,9 @@ export class Combat {
     enemy.wetTime = enemy.steamReadyAt = 0; enemy.vineUntil=enemy.vineReadyAt=0; enemy.venomUntil=enemy.venomReady=enemy.smokeUntil=0;
     enemy.pairSlowUntil=enemy.pairBurnTime=enemy.pairBurnClock=0;enemy.pairBurnSource=undefined;
     enemy.burnTime = enemy.burnClock = enemy.burnDamage = enemy.burnStacks = 0; enemy.burnSource = undefined;
-    if (this.encounters.enabled) enemy.hp = enemy.maxHp = (kind==='fast'?40:kind==='tank'?FORMAL_ROCK_HP:kind==='draft-spore-bomber'?FORMAL_SPORE_HP:ENEMY_TYPES[kind].hp)*(ENCOUNTER_RULES.waveHealth[this.encounters.wave-1]??1);
+    if (this.encounters.enabled) enemy.hp = enemy.maxHp =
+      (kind==='fast'?40:kind==='tank'?FORMAL_ROCK_HP:kind==='draft-spore-bomber'?FORMAL_SPORE_HP:ENEMY_TYPES[kind].hp)
+      *(ENCOUNTER_RULES.waveHealth[this.encounters.wave-1]??1)*this.endlessEnemyHealthMultiplier;
     this.spawned++;
     return enemy;
   }
@@ -342,7 +363,12 @@ export class Combat {
     const boss = rank === 'boss', radius = boss ? ENCOUNTER_RULES.bossRadius : ENCOUNTER_RULES.eliteRadius;
     const point = this.spawnPosition(player, 6, 8.5, radius);
     const enemy = point ? this.spawn('tank', point.x, point.z, boss ? ENCOUNTER_RULES.bossSpawn : 1.2) : undefined;
-    if (enemy) { enemy.rank = rank; enemy.radius = radius; enemy.hp = enemy.maxHp = boss ? ENCOUNTER_RULES.bossHp : ENCOUNTER_RULES.eliteHp; }
+    if (enemy) {
+      enemy.rank = rank; enemy.radius = radius;
+      enemy.hp = enemy.maxHp = boss
+        ? ENCOUNTER_RULES.bossHp * this.endlessBossHealthMultiplier
+        : ENCOUNTER_RULES.eliteHp * this.endlessEnemyHealthMultiplier;
+    }
     return enemy;
   }
 
@@ -810,12 +836,11 @@ export class Combat {
           const contact = segmentHit(enemy.previousX-this.previousAnchorX,enemy.previousZ-this.previousAnchorZ,
             enemy.x-player.x,enemy.z-player.z,0,0,bodyRadius);
           if(contact!==Infinity && !this.covered(enemy.x,enemy.z,player.x,player.z))
-            contactDamage=Math.max(contactDamage,enemy.rank==='boss'?24:enemy.swarm?SWARM_RULES.contactDamage:ENEMY_TYPES[enemy.kind].damage);
+            contactDamage=Math.max(contactDamage,this.scaledContactDamage(enemy));
         }
         if (this.hasAttackIntents && (enemy.stagger > 0 || enemy.intent === 'windup' || enemy.intent === 'recover')) continue;
         if (this.encounters.enabled && (enemy.rank === 'elite' || enemy.rank === 'boss' && this.encounters.bossState !== 'dash'
           || !enemy.rank && enemy.kind !== 'tank' && enemy.intent !== 'pounce')) continue;
-        const type = ENEMY_TYPES[enemy.kind];
         // Relative sweep catches a fast pounce crossing the player between ticks.
         const pounceHit = this.hasAttackIntents && (enemy.intent === 'pounce' || enemy.rank === 'boss') && segmentHit(enemy.previousX - this.previousAnchorX, enemy.previousZ - this.previousAnchorZ, enemy.x - player.x, enemy.z - player.z, 0, 0, this.enemyRadius(enemy) + 0.62) !== Infinity;
         const radius = this.encounters.enabled && !enemy.rank && enemy.kind === 'normal'
@@ -831,7 +856,7 @@ export class Combat {
           : pounceHit || Math.hypot(enemy.x-player.x,enemy.z-player.z) < radius;
         if (hit && (!this.encounters.enabled || !this.covered(ax,az,player.x,player.z))) {
           if (grass) enemy.grassHit = true;
-          damage = Math.max(damage, enemy.rank === 'boss' ? 24 : enemy.swarm ? SWARM_RULES.contactDamage : type.damage);
+          damage = Math.max(damage, this.scaledContactDamage(enemy));
         }
       }
       if (Math.max(damage,contactDamage) > 0) {
