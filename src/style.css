@@ -1038,7 +1038,7 @@ h1>em{font-size:12px;line-height:1;letter-spacing:4px;display:inline-block;backg
   .hud .hud-actions{gap:5px}
   .hud .hud-actions .icon-button{width:44px;height:44px;min-width:44px;min-height:44px;font-size:14px}
   .hud .hud-actions .icon{width:20px;height:20px}
-  .hud .encounter-status{top:calc(168px + var(--safe-top))}
+  .hud .encounter-status{top:calc(130px + var(--safe-top))}
 }
 @media(max-width:700px) and (orientation:landscape){
   .hud{--hud-card-width:172px;--hud-card-height:70px}
@@ -1199,6 +1199,14 @@ h1>em{font-size:12px;line-height:1;letter-spacing:4px;display:inline-block;backg
 .hud .encounter-status #encounter-health{flex-shrink:0;font-size:10px;line-height:1.2;white-space:nowrap}
 .hud .encounter-status .encounter-track{height:5px;margin:3px 0 0}
 .hud .encounter-status #encounter-hint,.hud .encounter-status #encounter-wave{display:none}
+
+/* This late HUD refinement overrides earlier media rules, so reapply safe boss placement here. */
+@media(max-width:900px) and (orientation:landscape){
+  .hud .encounter-status{top:calc(168px + var(--safe-top));left:calc(50% + 37px + (var(--safe-left) - var(--safe-right)) / 2);right:auto;transform:translateX(-50%);width:min(330px,calc(100vw - var(--safe-left) - var(--safe-right) - 434px))}
+}
+@media(max-width:700px) and (orientation:landscape){
+  .hud .encounter-status{left:auto;right:calc(12px + var(--safe-right));top:calc(186px + var(--safe-top));transform:none;width:min(250px,calc(100vw - var(--safe-left) - var(--safe-right) - 220px))}
+}
 
 .weapon-pair-picker{max-width:850px;margin:auto;padding:8px 20px;color:#fff0c5}.weapon-pair-picker h3{margin:0 0 10px}.weapon-pair-picker>button{margin:12px auto 0;min-height:44px}.weapon-pair-option{width:100%;min-height:72px;padding:8px 16px;margin:8px 0;text-align:left}.weapon-pair-option img{width:58px;height:58px;object-fit:contain}.weapon-pair-option span{display:grid;gap:6px}.weapon-pair-option strong{font-size:14px}.weapon-pair-option small{font-size:10px;line-height:1.4;color:#e3d8b5}.pair-offer h3{font-size:24px;text-align:center}.pair-offer .skill-description{font-size:11px}
 @media(max-height:420px){.weapon-pair-option{min-height:54px;margin:5px 0}.weapon-pair-option img{width:40px;height:40px}.weapon-pair-option strong{font-size:12px}.weapon-pair-picker{overflow-y:auto;max-height:65dvh}.weapon-pair-picker>button{margin-top:8px}}
