@@ -130,7 +130,7 @@ export function generateWorld(input: string | number): GeneratedWorld {
     if (validation.valid) return { seed, version: MAP_VERSION, attempt, fallback: false, layout, validation };
   }
   const fixed = fixedWorldLayout();
-  // The old sample includes distant decorative props outside the playable disk.
+  // The old sample includes decorative props outside the rectangular playable area.
   const layout: WorldLayout = { ...fixed,
     trees: fixed.trees.filter(([x, z]) => isInsideRectangularBoundary(x, z, MAP_BOUNDARY - .95, .65)),
     rocks: fixed.rocks.filter(([x, z]) => isInsideRectangularBoundary(x, z, MAP_BOUNDARY - .95, .8)),
