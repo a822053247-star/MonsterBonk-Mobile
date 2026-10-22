@@ -82,3 +82,59 @@ test('echo copies and the eighth genuine kill emit their own cues', () => {
   }
   expect(c.kills).toBe(8);expect(c.soundEvents&SKILL_SOUNDS.hourglass).toBeGreaterThan(0);
 });
+
+test('harvest layers are bounded deterministic samples with clean endings and an audition clip', () => {
+  const rate = 22050, mix = new Float32Array(rate * 5);
+  const cues: [Sound, number][] = [['hit', .15], ['hit', .35], ['harvest', .65], ['harvest-big', 1.2],
+    ['nova', 1.9], ['harvest-epic', 1.94], ['harvest-epic', 2.5], ['harvest-big', 3.3], ['harvest', 4.1]];
+  for (const kind of ['nova', 'harvest', 'harvest-big', 'harvest-epic'] as const) {
+    const data = synthesizeSound(kind, rate);
+    expect(data).toEqual(synthesizeSound(kind, rate));
+    expect(data.every(v => Number.isFinite(v) && Math.abs(v) <= .7)).toBe(true);
+    expect(data[0]).toBe(0); expect(Math.abs(data[data.length - 1])).toBeLessThan(.001);
+    expect(data.reduce((n, v) => n + v * v, 0) / data.length).toBeGreaterThan(.001);
+  }
+  for (const [kind, time] of cues) synthesizeSound(kind, rate).forEach((v, i) => { const at = Math.round(time * rate) + i; if (at < mix.length) mix[at] += v; });
+  const wav = Buffer.alloc(44 + mix.length * 2);
+  wav.write('RIFF', 0); wav.writeUInt32LE(wav.length - 8, 4); wav.write('WAVEfmt ', 8); wav.writeUInt32LE(16, 16);
+  wav.writeUInt16LE(1, 20); wav.writeUInt16LE(1, 22); wav.writeUInt32LE(rate, 24); wav.writeUInt32LE(rate * 2, 28);
+  wav.writeUInt16LE(2, 32); wav.writeUInt16LE(16, 34); wav.write('data', 36); wav.writeUInt32LE(mix.length * 2, 40);
+  mix.forEach((v, i) => wav.writeInt16LE(Math.round(Math.tanh(v) * .8 * 32767), 44 + i * 2));
+  writeFileSync('artifacts/harvest-audio-preview.wav', wav);
+});
+
+test('actual mass kills trigger impact and harvest cues while spam, mute and pause stay bounded', async ({ page }) => {
+  await page.route('**/harvest-audio-harness', route => route.fulfill({ contentType: 'text/html', body: `<html><body><div id="app"></div><script type="module">
+    import '/src/style.css';import {createUI} from '/src/ui.ts';import {Game} from '/src/game.ts';
+    createUI(document.getElementById('app'));window.game=new Game();
+    </script></body></html>` }));
+  await page.goto('/harvest-audio-harness'); await page.locator('#start-fusion').click();
+  test.skip(!await page.evaluate(() => (window as any).game.audio.inspect().supported), 'This browser runtime does not provide Web Audio');
+  await page.evaluate(() => { const g = (window as any).game; g.sleep(); g.audio.configure(false, true); g.audio.setActive(true); g.audio.unlock(); });
+  await expect.poll(() => page.evaluate(() => (window as any).game.audio.inspect().state)).toBe('running');
+  const result = await page.evaluate(async () => {
+    const g = (window as any).game, c = g.combat, a = g.audio;
+    c.reset(); c.automaticSpawning = false; g.placeCamera(true);
+    for (const attack of c.runBuild.attacks) attack.cooldown = 10000;
+    for (let i = 0; i < 24; i++) c.spawn('normal', g.position.x + 6 + (i % 3) * .1, g.position.z + (i % 4) * .1, 0);
+    c.areaAttacks.castNova();
+    for (let i = 0; i < 28; i++) g.step(1 / 60);
+    const burst = a.inspect();
+    for (let i = 0; i < 100; i++) a.playHarvest(256);
+    const spam = a.inspect();
+    await new Promise(resolve => setTimeout(resolve, 500));
+    a.playHarvest(1); const sustained = a.inspect();
+    a.setActive(false); const paused = a.inspect(); a.playHarvest(64); a.play('nova');
+    const silent = a.inspect();
+    a.configure(false, false); a.setActive(true); a.playHarvest(64); const muted = a.inspect();
+    g.sleep();
+    return { kills: c.kills, burst, spam, sustained, paused, silent, muted };
+  });
+  expect(result.kills).toBe(24);
+  expect(result.burst.playedSounds.nova).toBeGreaterThan(0);
+  expect(result.burst.playedSounds['harvest-epic']).toBeGreaterThan(0);
+  expect(result.spam.played).toBe(result.burst.played); expect(result.spam.voices).toBeLessThanOrEqual(8);
+  expect(result.sustained.playedSounds['harvest-epic']).toBeGreaterThan(result.burst.playedSounds['harvest-epic']);
+  expect(result.paused.voices).toBe(0); expect(result.silent.played).toBe(result.paused.played);
+  expect(result.muted.played).toBe(result.paused.played);
+});

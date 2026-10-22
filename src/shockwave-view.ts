@@ -1,6 +1,61 @@
 import * as THREE from 'three';
 import { COMBAT_LIMITS, type Shockwave } from './combat';
 import { SKILL_RULES } from './progression';
+import { AREA_RULES, type NovaCast } from './area-attacks';
+
+/** Reserved large-attack channel. Geometry fallback is always available, without texture IO. */
+export class NovaView {
+  readonly group = new THREE.Group();
+  private geometry = new THREE.RingGeometry(.9, 1, 64);
+  private flashGeometry = new THREE.CircleGeometry(1, 32);
+  private shardGeometry = new THREE.OctahedronGeometry(1, 0);
+  private pose = new THREE.Object3D();
+  private slots = Array.from({ length: AREA_RULES.visualCapacity }, () => {
+    const ring = new THREE.Mesh(this.geometry, new THREE.MeshBasicMaterial({ color: '#ffcc62', transparent: true, depthWrite: false, side: THREE.DoubleSide, toneMapped: false }));
+    const flash = new THREE.Mesh(this.flashGeometry, new THREE.MeshBasicMaterial({ color: '#fff0b6', transparent: true, depthWrite: false, side: THREE.DoubleSide, blending: THREE.AdditiveBlending, toneMapped: false }));
+    const shards = new THREE.InstancedMesh(this.shardGeometry, new THREE.MeshBasicMaterial({ color: '#ffab4e', transparent: true, depthWrite: false, toneMapped: false }), 32);
+    ring.rotation.x = flash.rotation.x = -Math.PI / 2;
+    ring.renderOrder = flash.renderOrder = shards.renderOrder = 8;
+    shards.frustumCulled = false; shards.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+    this.group.add(ring, flash, shards);
+    return { ring, flash, shards };
+  });
+  constructor() { this.group.name = 'ScreenNovaPriority'; this.clear(); }
+  render(casts: readonly NovaCast[], detail: number) {
+    this.clear();
+    // Simulation accepts more casts than this visual channel can show. Excess visuals are omitted only.
+    casts.filter(c => c.active).slice(0, this.slots.length).forEach((cast, index) => {
+      const slot = this.slots[index], v = cast.view;
+      const warning = !cast.detonated, p = Math.max(0, (cast.age - AREA_RULES.warning) / (AREA_RULES.duration - AREA_RULES.warning));
+      const radius = Math.hypot(v.halfWidth, v.halfDepth);
+      slot.ring.visible = true; slot.ring.position.set(v.x, .16, v.z);
+      slot.ring.scale.setScalar(warning ? 1.5 + cast.age * 2 : Math.max(.1, radius * Math.min(1, p * 2.1)));
+      slot.ring.material.opacity = warning ? .25 + .35 * Math.sin(cast.age * 25) ** 2 : (1 - p) * .8;
+      slot.flash.visible = !warning && p < .42;
+      slot.flash.position.set(v.x, .2, v.z);
+      slot.flash.scale.setScalar(Math.max(.1, radius * Math.min(.65, .15 + p * 2)));
+      slot.flash.material.opacity = Math.max(0, 1 - p / .42) * .55;
+      slot.shards.visible = !warning;
+      slot.shards.count = warning ? 0 : detail <= 2 ? 8 : 32;
+      slot.shards.material.opacity = (1 - p) * .85;
+      for (let i = 0; i < slot.shards.count; i++) {
+        const angle = i * 2.399963, distance = radius * p * (.4 + (i % 5) * .14);
+        this.pose.position.set(v.x + Math.sin(angle) * distance, .4 + Math.sin(p * Math.PI) * (1 + i % 3), v.z + Math.cos(angle) * distance);
+        this.pose.rotation.set(p * 8 + i, angle, p * 4);
+        this.pose.scale.setScalar((.12 + i % 3 * .05) * (1 - p)); this.pose.updateMatrix();
+        slot.shards.setMatrixAt(i, this.pose.matrix);
+      }
+      slot.shards.instanceMatrix.needsUpdate = true;
+    });
+  }
+  clear() { for (const slot of this.slots) { slot.ring.visible = slot.flash.visible = slot.shards.visible = false; slot.shards.count = 0; } }
+  inspect() { return { capacity: this.slots.length, active: this.slots.filter(s => s.ring.visible).length, shards: this.slots.reduce((n, s) => n + s.shards.count, 0) }; }
+  dispose() {
+    this.clear(); this.group.removeFromParent();
+    this.geometry.dispose(); this.flashGeometry.dispose(); this.shardGeometry.dispose();
+    for (const slot of this.slots) { slot.ring.material.dispose(); slot.flash.material.dispose(); slot.shards.material.dispose(); slot.shards.dispose(); }
+  }
+}
 
 /** Fixed pools; every visual follows the simulation's wave clock, including pause. */
 export class ShockwaveView {

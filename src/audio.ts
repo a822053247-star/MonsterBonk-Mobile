@@ -17,6 +17,11 @@ export class GameAudio {
   private requests = new AbortController();
   private buffers = new Map<Sound, AudioBuffer>();
   private voices = new Set<AudioBufferSourceNode>();
+  private voiceKinds = new Map<AudioBufferSourceNode, Sound>();
+  private harvestKills = 0;
+  private harvestUntil = 0;
+  private harvestTier = 0;
+  private harvestNextPulse = 0;
   private running = false;
   private disposed = false;
   private unavailable = false;
@@ -118,10 +123,11 @@ export class GameAudio {
     this.updateGain();
     if (active && (this.music || this.sound) && this.context) void this.context.resume().catch(() => {});
     if (active) void this.syncMusic();
-    if (!active || (!this.music && !this.sound)) {
+    if (!active || !this.sound) {
       for (const voice of this.voices) voice.stop();
-      this.voices.clear();
-      if (this.context) void this.context.suspend().catch(() => {});
+      this.voices.clear(); this.voiceKinds.clear();
+      this.harvestKills = this.harvestTier = this.harvestUntil = this.harvestNextPulse = 0;
+      if ((!active || !this.music) && this.context) void this.context.suspend().catch(() => {});
     }
   }
   configure(music: boolean, sound: boolean) {
@@ -129,25 +135,49 @@ export class GameAudio {
     this.unlock(); this.setActive(this.running);
   }
   private updateGain() {
-    if (this.context && this.musicGain) this.musicGain.gain.setTargetAtTime(this.running && this.music ? 0.24 : 0, this.context.currentTime, 0.05);
+    if (this.context && this.musicGain) {
+      this.musicGain.gain.cancelScheduledValues(this.context.currentTime);
+      this.musicGain.gain.setTargetAtTime(this.running && this.music ? 0.24 : 0, this.context.currentTime, 0.05);
+    }
     if (this.effectsGain) this.effectsGain.gain.value = this.sound ? 0.22 : 0;
   }
   playSkills(events: number) {
     const now = this.context?.currentTime ?? 0;
     for (const kind of SKILL_SOUND_PRIORITY) {
-      if (now - this.lastSkill < .18 && kind !== 'hourglass' && kind !== 'echo') continue;
+      if (now - this.lastSkill < .18 && kind !== 'hourglass' && kind !== 'echo' && kind !== 'nova') continue;
       if ((events & SKILL_SOUNDS[kind]) && this.play(kind)) {
         this.lastSkill = now; this.quietUntil = now + .09; return;
       }
     }
   }
+  /** Aggregate actual kills over real audio time: 10x simulation never produces 10x overlapping voices. */
+  playHarvest(kills: number) {
+    const ctx = this.context;
+    if (!ctx || ctx.state !== 'running' || !this.running || !this.sound || !Number.isFinite(kills) || kills <= 0) return false;
+    if (ctx.currentTime > this.harvestUntil) this.harvestKills = this.harvestTier = 0;
+    this.harvestKills = Math.min(64, this.harvestKills + Math.floor(kills));
+    this.harvestUntil = ctx.currentTime + .65;
+    const tier = this.harvestKills >= 20 ? 3 : this.harvestKills >= 8 ? 2 : this.harvestKills >= 3 ? 1 : 0;
+    if (!tier || tier <= this.harvestTier && ctx.currentTime < this.harvestNextPulse) return false;
+    const kind = tier === 3 ? 'harvest-epic' : tier === 2 ? 'harvest-big' : 'harvest';
+    if (!this.play(kind)) return false;
+    this.harvestTier = tier; this.harvestNextPulse = ctx.currentTime + (tier === 3 ? .45 : .28);
+    this.quietUntil = ctx.currentTime + .1;
+    return true;
+  }
   play(kind: Sound): boolean {
     const ctx = this.context;
     const background = kind === 'cast' || kind === 'hit' || kind === 'collect';
-    const limit = background ? 4 : kind === 'hurt' || kind === 'level' ? 8 : 7;
-    if (!ctx || ctx.state !== 'running' || !this.running || !this.sound || this.voices.size >= limit) return false;
+    const important = kind === 'nova' || kind === 'harvest' || kind === 'harvest-big' || kind === 'harvest-epic';
+    const limit = background ? 4 : important || kind === 'hurt' || kind === 'level' ? 8 : 6;
+    if (!ctx || ctx.state !== 'running' || !this.running || !this.sound) return false;
     if (background && ctx.currentTime < this.quietUntil) return false;
     if (ctx.currentTime - (this.lastSound.get(kind) ?? -Infinity) < SOUND_RULES[kind].interval) return false;
+    if (this.voices.size >= limit) {
+      const expendable = (important || kind === 'hurt' || kind === 'level') && [...this.voiceKinds].find(([, sound]) => sound === 'hit' || sound === 'cast' || sound === 'collect' || sound === 'harvest');
+      if (!expendable) return false;
+      expendable[0].stop(); expendable[0].disconnect(); this.voices.delete(expendable[0]); this.voiceKinds.delete(expendable[0]);
+    }
     this.lastSound.set(kind, ctx.currentTime);
     let buffer = this.buffers.get(kind);
     if (!buffer) {
@@ -160,7 +190,16 @@ export class GameAudio {
     const count = this.playedSounds.get(kind) ?? 0;
     if (kind === 'cast' || kind === 'hit') source.playbackRate.value = [.97, 1.02, 1, .99][count % 4];
     this.playedSounds.set(kind, count + 1);
-    this.voices.add(source); source.onended = () => { this.voices.delete(source); source.disconnect(); }; source.start(); this.played++;
+    this.voices.add(source); this.voiceKinds.set(source, kind);
+    source.onended = () => { this.voices.delete(source); this.voiceKinds.delete(source); source.disconnect(); }; source.start(); this.played++;
+    if (kind === 'nova' || kind === 'harvest-big' || kind === 'harvest-epic') {
+      this.quietUntil = Math.max(this.quietUntil, ctx.currentTime + .12);
+      if (this.music && this.musicGain) {
+        this.musicGain.gain.cancelScheduledValues(ctx.currentTime);
+        this.musicGain.gain.setTargetAtTime(.12, ctx.currentTime, .015);
+        this.musicGain.gain.setTargetAtTime(.24, ctx.currentTime + .22, .08);
+      }
+    }
     return true;
   }
   inspect() { return { music: this.music, sound: this.sound, active: this.running, state: this.unavailable ? 'unavailable' : this.context?.state ?? 'locked', supported: !!(window.AudioContext || (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext), voices: this.voices.size, played: this.played,

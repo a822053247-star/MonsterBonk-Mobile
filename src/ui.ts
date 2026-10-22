@@ -8,6 +8,9 @@ import { flameSweepStats } from './flame-sweep';
 import { upgradePreview, type Progression, type SkillId } from './progression';
 import { FUSION_ASSET_ROOT, type ElementalFusionId } from './fusion-pixels';
 import { bindUpgradeArt, uiArtUrl, upgradeArt } from './upgrade-art';
+import { WATER_AOE_IDS, WATER_NAMES, waterStats } from './water-aoe';
+import { POSITION_IDS, POSITION_NAMES, positionStats } from './position-aoe';
+import { WATER_EVOLUTION_IDS, WATER_EVOLUTIONS, consumedByEvolution, isWaterEvolution } from './water-evolution';
 import { shopArt } from './shop-art';
 import { formatEndlessRecordTime, readEndlessRecord, type EndlessRecord, type EndlessRunResult } from './endless-record';
 
@@ -63,6 +66,7 @@ export function createUI(root: HTMLElement) {
       </div>
     </section>
     <section id="hud" class="hud screen" aria-label="游戏操作与状态" hidden>
+      <div id="area-combo" class="area-combo" role="status" hidden></div>
       <div id="low-health-effect" class="low-health-effect" aria-hidden="true"></div>
       <div class="hud-top">
         <div class="health-block"><div class="health-panel"><img class="health-frame-art" data-upgrade-art="health-frame" src="${uiArtUrl('hud/creature-health-panel.png')}" alt="" draggable="false"/>${portrait}<img id="creature-portrait" class="portrait" data-upgrade-art="portrait" alt="" hidden style="object-fit:contain;image-rendering:pixelated"/><div class="health-copy"><div class="health-values"><strong id="health-value">100 / 100</strong></div><div class="health-track" role="progressbar" aria-label="生命值 HP" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100"><div id="health-fill"></div></div></div></div><div class="combat-stats"><div>${icon('battle')}<span>击败</span><strong id="kill-value">0</strong></div><div>${icon('spark')}<span>经验</span><strong id="xp-value">0</strong></div></div><div class="hud-bottom-row"><div class="hud-gold" aria-label="当前金币"><img src="${uiArtUrl('common/coin.png')}" alt="" draggable="false"/><strong id="hud-coins">0</strong></div><div class="xp-row"><div id="xp-track" class="xp-track" role="progressbar" aria-label="升级经验" aria-valuemin="0" aria-valuemax="8" aria-valuenow="0"><div id="xp-fill"></div></div><span id="level-value">Lv.1</span></div></div></div>
@@ -160,7 +164,7 @@ export function renderUpgradeCards(progression: Progression, version: number) {
     const titlePath = `upgrade-title-${version}-${id}`;
     return `<button type="button" class="skill-card${skill.tradeoff ? ' has-tradeoff' : ''}" data-skill="${id}" data-offer="${version}" data-category="${skill.category ?? 'normal'}" data-element="${art.element ?? ''}" style="--skill-color:${skill.color}" disabled aria-label="${skill.title}：${skill.benefit}，${preview}，${rank} → ${rank + 1}级${skill.tradeoff ? '，代价：' + skill.tradeoff : ''}" aria-description="${skill.description}">
       <img class="skill-frame" data-upgrade-art="frame" src="${art.frame}" alt="" draggable="false"/>
-      <span class="skill-card-meta"><span><img data-upgrade-art="gem" src="${art.gem}" alt="" draggable="false"/>${id==='weapon-pair-fusion'?'武器融合':skill.category === 'relic' ? '稀有道具' : skill.category === 'evolution' ? '互斥进化' : id.endsWith('-weapon') ? (rank ? '武器强化' : '新武器') : rank === 0 && skill.effect.type === 'spell' ? '新技能' : '魔法强化'}</span><span>${id==='weapon-pair-fusion'?'自选配方':`${rank} → ${rank + 1}级`}<small> / ${skill.maxRank}</small></span></span>
+      <span class="skill-card-meta"><span><img data-upgrade-art="gem" src="${art.gem}" alt="" draggable="false"/>${id==='weapon-pair-fusion'?'武器融合':skill.category === 'relic' ? '稀有道具' : skill.category === 'evolution' ? (isWaterEvolution(id) ? '组合进化' : '互斥进化') : id.endsWith('-weapon') ? (rank ? '武器强化' : '新武器') : rank === 0 && skill.effect.type === 'spell' ? '新技能' : '魔法强化'}</span><span>${id==='weapon-pair-fusion'?'自选配方':`${rank} → ${rank + 1}级`}<small> / ${skill.maxRank}</small></span></span>
       <h3 aria-label="${skill.title}">${curvedTitle(skill.title, titlePath, 'skill-title-arc')}</h3>
       <span class="skill-content"><span class="skill-emblem${art.illustrations.length > 1 ? ' multiple-art' : ''}" aria-hidden="true"><span class="skill-art-fallback">${icon(skill.icon)}</span>${art.illustrations.map(url => `<img class="skill-illustration" data-upgrade-art="illustration" src="${url}" alt="" draggable="false"/>`).join('')}</span>
       <strong class="skill-benefit">${skill.benefit}</strong>
@@ -220,13 +224,23 @@ export function renderBuildSummary(build: RunBuild | undefined, fusions: readonl
   const status = document.getElementById('build-status')!;
   status.hidden = true;
   if (!build) return;
-  const evolution = build.evolution ? EVOLUTIONS[build.evolution].title : '未选择进化';
-  const key = JSON.stringify([build.attacks.map(a => [a.attackId, a.level]), build.relics, evolution, fusions.map(f => f.title), resonances]);
+  const evolution = [...(build.evolution ? [EVOLUTIONS[build.evolution].title] : []), ...WATER_EVOLUTION_IDS.filter(id => (build.skillRanks[id] ?? 0) > 0).map(id => WATER_EVOLUTIONS[id].title)].join(' / ') || '未选择进化';
+  const position = POSITION_IDS.filter(id => (build.skillRanks[id] ?? 0) > 0 && !consumedByEvolution(id, build.skillRanks));
+  const water = WATER_AOE_IDS.filter(id => (build.skillRanks[id] ?? 0) > 0 && !consumedByEvolution(id, build.skillRanks));
+  const waterEvolutions = WATER_EVOLUTION_IDS.filter(id => (build.skillRanks[id] ?? 0) > 0);
+  const key = JSON.stringify([build.attacks.map(a => [a.attackId, a.level]), build.relics, evolution, fusions.map(f => f.title), resonances, [...water, ...position, ...waterEvolutions].map(id => [id, build.skillRanks[id]])]);
   status.textContent = `${build.relics.length} 件稀有道具 · ${evolution} · 暂停查看构筑`;
   if (panel.dataset.snapshot === key) return;
   panel.dataset.snapshot = key;
-  document.getElementById('build-weapons')!.innerHTML = buildWeaponRows(build);
+  document.getElementById('build-weapons')!.innerHTML = buildWeaponRows(build) + water.map(id => {
+    const level = build.skillRanks[id]!, stats = waterStats(id, level);
+    return `<div class="build-weapon" data-element="water"><span class="build-weapon-art"><img data-upgrade-art="build-weapon" src="${uiArtUrl(`upgrade/illustrations/skills/${id}.png`)}" alt=""/></span><div class="build-weapon-copy"><span class="build-weapon-role">水系范围技能</span><strong>${WATER_NAMES[id]} ${level}级</strong><small>半径 ${stats.radius.toFixed(1)} · ${stats.damage.toFixed(1)}伤害${id === 'star-tide' ? ` · ${stats.waves}环` : ''}</small></div></div>`;
+  }).join('');
   document.getElementById('build-fusions')!.innerHTML = (fusions.length ? buildTokens(fusions.map(f=>f.title)) : '<p class="build-empty">尚未形成融合，升级时选择适配改造。</p>') + (resonances.length ? `<p>已激活：${buildText(resonances.join(' / '))}</p>` : '');
+  document.getElementById('build-weapons')!.innerHTML += position.map(id => {
+    const level = build.skillRanks[id]!, stats = positionStats(id, level);
+    return `<div class="build-weapon" data-element="${id === 'spore-trail' ? 'grass' : 'water'}"><span class="build-weapon-art"><img data-upgrade-art="build-weapon" src="${uiArtUrl(`upgrade/illustrations/skills/${id}.png`)}" alt=""/></span><div class="build-weapon-copy"><span class="build-weapon-role">走位范围技能</span><strong>${POSITION_NAMES[id]} ${level}级</strong><small>范围 ${stats.radius.toFixed(1)} · ${stats.damage.toFixed(1)}伤害</small></div></div>`;
+  }).join('');
   document.getElementById('build-relics')!.innerHTML = build.relics.length ? build.relics.map(id => {
     const relic = RELICS[id];
     const inactive = id === 'specialist-badge' && build.attacks.length > 1 ? '（副武器已装备，加成失效）' : '';
@@ -234,6 +248,10 @@ export function renderBuildSummary(build: RunBuild | undefined, fusions: readonl
     return `<article class="build-relic"><img class="build-relic-icon" data-upgrade-art="build-relic" src="${art.illustrations[0]}" alt=""/><strong>${buildText(relic.title+inactive)}</strong><p>${buildText(relic.benefit)}</p><p class="build-tradeoff">代价：${buildText(relic.tradeoff)}</p></article>`;
   }).join('') : '<p class="build-empty">尚未获得稀有道具，升级时偶尔出现。</p>';
   document.getElementById('build-evolution')!.textContent = build.evolution ? `${evolution}：${EVOLUTIONS[build.evolution].benefit}；${EVOLUTIONS[build.evolution].tradeoff}` : '火花弹获得命中分裂后，可出现互斥进化路线。';
+  document.getElementById('build-weapons')!.innerHTML += waterEvolutions.map(id => `<div class="build-weapon" data-element="water"><span class="build-weapon-art"><img data-upgrade-art="build-weapon" src="${uiArtUrl(`upgrade/illustrations/skills/${id}.png`)}" alt=""/></span><div class="build-weapon-copy"><span class="build-weapon-role">水系组合进化</span><strong>${WATER_EVOLUTIONS[id].title}</strong><small>${WATER_EVOLUTIONS[id].benefit}</small></div></div>`).join('');
+  document.getElementById('build-evolution')!.textContent += waterEvolutions.length ? ' 已激活组合：' + waterEvolutions.map(id => WATER_EVOLUTIONS[id].title).join('、') : ' 水系主技能5级＋搭配技能3级，可在升级中选择组合进化。';
+  const recipes = WATER_EVOLUTION_IDS.filter(id => !(build.skillRanks[id]! > 0));
+  if (recipes.length) document.getElementById('build-evolution')!.textContent += ' 配方：' + recipes.map(id => `${WATER_EVOLUTIONS[id].title}（${WATER_EVOLUTIONS[id].requirement}）`).join('；');
   bindUpgradeArt(panel);
 }
 
@@ -288,10 +306,10 @@ export function renderRunResult(run: RunFlow | undefined, combat: Combat) {
   const learned = combat.progression.skills.filter(skill => !skill.category && !skill.id.endsWith('-weapon') && combat.progression.ranks[skill.id] > 0);
   document.getElementById('result-skills')!.innerHTML = `<h4>技能强化</h4>${buildTokens(learned.map(skill => `${skill.title} ${combat.progression.ranks[skill.id]}级`))}`;
   document.getElementById('result-fusions')!.innerHTML = `<h4>技能融合</h4>${buildTokens(combat.fusions.map(f=>f.title))}` + (combat.resonances.length ? `<p>共鸣：${buildText(combat.resonances.join(' / '))}</p>` : '') + `<p class="build-chain-summary">连锁击杀 <strong>${combat.relicTelemetry.chainKills}</strong> · 蒸爆 <strong>${combat.relicTelemetry.steamBursts}</strong> 次</p>`;
-  document.getElementById('result-relics')!.innerHTML = `<h4>稀有道具与进化</h4>${buildTokens([...(build?.relics.map(id=>RELICS[id].title) ?? []),...(build?.evolution ? [EVOLUTIONS[build.evolution].title] : [])])}`;
+  document.getElementById('result-relics')!.innerHTML = `<h4>稀有道具与进化</h4>${buildTokens([...(build?.relics.map(id=>RELICS[id].title) ?? []),...(build?.evolution ? [EVOLUTIONS[build.evolution].title] : []),...WATER_EVOLUTION_IDS.filter(id => (build?.skillRanks[id] ?? 0) > 0).map(id => WATER_EVOLUTIONS[id].title)])}`;
   document.getElementById('result-skills')!.hidden = !learned.length;
   document.getElementById('result-fusions')!.hidden = !combat.fusions.length && !combat.resonances.length && !combat.relicTelemetry.chainKills && !combat.relicTelemetry.steamBursts;
-  document.getElementById('result-relics')!.hidden = !build?.relics.length && !build?.evolution;
+  document.getElementById('result-relics')!.hidden = !build?.relics.length && !build?.evolution && !WATER_EVOLUTION_IDS.some(id => (build?.skillRanks[id] ?? 0) > 0);
   bindUpgradeArt(panel);
 }
 
@@ -312,13 +330,19 @@ export function renderHudWeaponIcons(combat: Combat) {
   const root = document.getElementById('hud-extra-weapons')!;
   const attacks = combat.usesRunBuild ? combat.runBuild.attacks.map(attack => attack.attackId) : [combat.baseAttack];
   const pairs=combat.usesRunBuild?combat.runBuild.attacks.filter(a=>a.pairId):[];
+  const water = combat.usesRunBuild ? WATER_AOE_IDS.filter(id => combat.progression.ranks[id] > 0 && !consumedByEvolution(id, combat.progression.ranks)) : [];
+  const position = combat.usesRunBuild ? POSITION_IDS.filter(id => combat.progression.ranks[id] > 0 && !consumedByEvolution(id, combat.progression.ranks)) : [];
+  const waterEvolutions = combat.usesRunBuild ? WATER_EVOLUTION_IDS.filter(id => combat.progression.ranks[id] > 0) : [];
   const ids = attacks.filter(id => !pairs.some(a=>a.attackId===id)&&id !== 'spark' && !combat.fusions.some(fusion => fusion.baseAttack === id));
-  root.hidden = !ids.length&&!pairs.length;
-  const key = ids.join(',')+pairs.map(a=>a.pairId).join(',');
+  root.hidden = !ids.length&&!pairs.length&&!water.length&&!position.length&&!waterEvolutions.length;
+  const key = ids.join(',')+pairs.map(a=>a.pairId).join(',') + [...water, ...position, ...waterEvolutions].map(id => id + combat.progression.ranks[id]).join(',');
   if (root.dataset.weapons === key) return;
   root.dataset.weapons = key;
   root.innerHTML = ids.map(id => `<span class="hud-weapon-icon" title="${ATTACKS[id].title}">${icon(id === 'bubble' ? 'wave' : id === 'flame-sweep' ? 'battle' : 'leaf')}<img data-upgrade-art="hud-weapon" src="${uiArtUrl(`upgrade/illustrations/skills/${id}-weapon.png`)}" alt="" draggable="false"/></span>`).join('');
   root.innerHTML+=pairs.map(a=>`<span class="hud-weapon-icon" title="${combat.runBuild.title(a)} ${a.level}级；来源：${a.sources!.map(id=>ATTACKS[id].title).join('+')}"><img data-upgrade-art="hud-weapon" src="${import.meta.env.BASE_URL}${pairIcon(a.pairId!)}" alt="${combat.runBuild.title(a)}"/></span>`).join('');
+  root.innerHTML += water.map(id => `<span class="hud-weapon-icon" title="${WATER_NAMES[id]} ${combat.progression.ranks[id]}级"><img data-upgrade-art="hud-weapon" src="${uiArtUrl(`upgrade/illustrations/skills/${id}.png`)}" alt="${WATER_NAMES[id]}"/></span>`).join('');
+  root.innerHTML += position.map(id => `<span class="hud-weapon-icon" title="${POSITION_NAMES[id]} ${combat.progression.ranks[id]}级"><img data-upgrade-art="hud-weapon" src="${uiArtUrl(`upgrade/illustrations/skills/${id}.png`)}" alt="${POSITION_NAMES[id]}"/></span>`).join('');
+  root.innerHTML += waterEvolutions.map(id => `<span class="hud-weapon-icon" title="${WATER_EVOLUTIONS[id].title} · 组合进化"><img data-upgrade-art="hud-weapon" src="${uiArtUrl(`upgrade/illustrations/skills/${id}.png`)}" alt="${WATER_EVOLUTIONS[id].title}"/></span>`).join('');
   bindUpgradeArt(root);
 }
 

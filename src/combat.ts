@@ -1,4 +1,8 @@
 import { ARENA_HALF_EXTENT, clampToRectangularBoundary, isInsideRectangularBoundary } from './arena-boundary';
+import { AreaAttacks, AREA_RULES, BARRAGE_RULES } from './area-attacks';
+import { WaterAoe } from './water-aoe';
+import { PositionAoe } from './position-aoe';
+import { WaterEvolution, WATER_EVOLUTION_IDS, WATER_EVOLUTIONS, consumedByEvolution, isWaterEvolution } from './water-evolution';
 import {WEAPON_PAIR_RECIPES,sourceHasAttack,type WeaponPairId} from './weapon-pair-fusion';
 import { CombatRelicBehaviors } from './combat-relic-behaviors';
 import { COMBAT_CLARITY } from './combat-clarity';
@@ -84,6 +88,84 @@ export class Combat {
   endlessCycleIndex = 0;
   /** Updated by the camera; absent in headless simulations, which use a fixed footprint. */
   spawnViewport?: SpawnViewport;
+  /** Unshaken camera footprint, supplied by Game before each simulation step. */
+  attackViewport?: SpawnViewport;
+  areaFeedback = { serial: 0, kills: 0, time: 0 };
+  readonly areaAttacks = new AreaAttacks({
+    nextCastId: () => ++this.nextRelicCast,
+    enemies: () => this.enemies,
+    origin: () => ({ x: this.anchorX, z: this.anchorZ }),
+    aim: () => { const target = this.findTarget({ x: this.anchorX, z: this.anchorZ });
+      return target ? Math.atan2(target.x - this.anchorX, target.z - this.anchorZ) : 0; },
+    intersection: (lane, enemy) => segmentHit(lane.previousX, lane.previousZ, lane.x, lane.z, enemy.x, enemy.z, this.enemyRadius(enemy) + BARRAGE_RULES.radius),
+    view: () => this.attackViewport ?? this.spawnViewport ?? { x: this.anchorX, z: this.anchorZ, halfWidth: 14, halfDepth: 12 },
+    source: (damage, castId) => {
+      const source = this.newRelicSource(this.baseAttack, this.runBuild.rules(this.baseAttack), damage);
+      // An area cast is derived: it may deliver bounded elemental kill reactions, not primary-cast copies.
+      source.castId = castId; source.primary = false; source.kind = 'explosion';
+      source.areaBudget = { nodes: 0, hits: new Map() };
+      return source;
+    },
+    damage: (enemy, damage, source) => this.damageEnemy(enemy, damage, 0, 0, 'player', source),
+    feedback: (kills, explosion) => {
+      if (explosion) this.soundEvents |= SKILL_SOUNDS.nova;
+      if (kills >= 8) this.areaFeedback = { serial: this.areaFeedback.serial + 1, kills, time: this.elapsed };
+    },
+  });
+  readonly waterAoe = new WaterAoe({
+    enemies: () => this.enemies,
+    origin: () => ({ x: this.anchorX, z: this.anchorZ }),
+    nextCastId: () => ++this.nextRelicCast,
+    source: (damage, castId) => {
+      const source = this.newRelicSource('bubble', this.runBuild.rules('bubble'), damage);
+      source.castId = castId; source.primary = false; source.kind = 'explosion';
+      source.areaBudget = { nodes: 0, hits: new Map(), shared: { nodes: 0 } };
+      return source;
+    },
+    damage: (enemy, damage, source) => {
+      this.damageEnemy(enemy, damage, 0, 0, 'player', source);
+    },
+    control: (enemy, slow, dx, dz) => {
+      if (slow) enemy.slowTime = Math.max(enemy.slowTime ?? 0, .6);
+      if (!enemy.rank && (dx || dz)) this.moveEnemy(enemy, dx, dz, this.enemyRadius(enemy));
+    },
+    sound: kind => { this.soundEvents |= SKILL_SOUNDS[kind]; },
+    feedback: kills => { this.areaFeedback = { serial: this.areaFeedback.serial + 1, kills, time: this.elapsed }; },
+  });
+  readonly positionAoe = new PositionAoe({
+    enemies: () => this.enemies, orbs: () => this.orbs,
+    origin: () => ({ x: this.anchorX, z: this.anchorZ }),
+    spellCenter: () => {
+      const field = this.waterAoe.casts.filter(c => c.active && c.kind === 'still-sea' && Math.hypot(c.x - this.anchorX, c.z - this.anchorZ) <= 14)
+        .sort((a, b) => Math.hypot(a.x - this.anchorX, a.z - this.anchorZ) - Math.hypot(b.x - this.anchorX, b.z - this.anchorZ))[0];
+      return field ? { x: field.x, z: field.z } : { x: this.anchorX, z: this.anchorZ };
+    },
+    aim: () => { const target = this.findTarget({ x: this.anchorX, z: this.anchorZ }); return target ? Math.atan2(target.z - this.anchorZ, target.x - this.anchorX) : 0; },
+    nextCastId: () => ++this.nextRelicCast,
+    source: (damage, castId, element) => {
+      const attack = element === 'spore' ? 'leaf' : 'bubble';
+      const source = this.newRelicSource(attack, this.runBuild.rules(attack), damage);
+      source.castId = castId; source.primary = false; source.kind = 'explosion';
+      source.areaBudget = { nodes: 0, hits: new Map(), shared: { nodes: 0 } }; return source;
+    },
+    damage: (enemy, damage, source) => this.damageEnemy(enemy, damage, 0, 0, 'player', source),
+    move: (enemy, dx, dz) => this.moveEnemy(enemy, dx, dz, this.enemyRadius(enemy)),
+    sound: kind => { this.soundEvents |= SKILL_SOUNDS[kind]; },
+    feedback: kills => { this.areaFeedback = { serial: this.areaFeedback.serial + 1, kills, time: this.elapsed }; },
+  });
+  readonly waterEvolution = new WaterEvolution({
+    enemies: () => this.enemies, origin: () => ({ x: this.anchorX, z: this.anchorZ }), nextCastId: () => ++this.nextRelicCast,
+    source: (damage, castId) => {
+      const source = this.newRelicSource('bubble', this.runBuild.rules('bubble'), damage);
+      source.castId = castId; source.primary = false; source.kind = 'explosion';
+      source.areaBudget = { nodes: 0, hits: new Map(), shared: { nodes: 0 } }; return source;
+    },
+    damage: (enemy, damage, source) => this.damageEnemy(enemy, damage, 0, 0, 'player', source),
+    move: (enemy, dx, dz) => this.moveEnemy(enemy, dx, dz, this.enemyRadius(enemy)),
+    slow: enemy => { enemy.slowTime = Math.max(enemy.slowTime ?? 0, .6); },
+    sound: kind => { this.soundEvents |= SKILL_SOUNDS[kind]; },
+    feedback: kills => { this.areaFeedback = { serial: this.areaFeedback.serial + 1, kills, time: this.elapsed }; },
+  });
   private worldRevision = -1;
   fusionEnabled = false;
   automaticSpawning = true;
@@ -133,6 +215,7 @@ export class Combat {
   readonly projectiles: Projectile[] = Array.from({ length: COMBAT_LIMITS.projectiles }, () => ({ active: false, x: 0, z: 0, previousX: 0, previousZ: 0, vx: 0, vz: 0, life: 0, damage: 0, distance: 0 }));
   readonly orbs: ExperienceOrb[] = Array.from({ length: COMBAT_LIMITS.orbs }, () => ({ active: false, x: 0, z: 0, previousX: 0, previousZ: 0, value: 0, magnetized: false }));
   readonly effects: CombatEffect[] = Array.from({ length: COMBAT_LIMITS.effects }, () => ({ active: false, x: 0, z: 0, time: 0, duration: 0, kind: 'hit', enemyKind: 'normal' }));
+  readonly areaDeaths: CombatEffect[] = Array.from({ length: COMBAT_LIMITS.enemies }, () => ({ active: false, x: 0, z: 0, time: 0, duration: .55, kind: 'death', enemyKind: 'normal' }));
   readonly shockwaves: Shockwave[] = Array.from({ length: COMBAT_LIMITS.shockwaves }, () => ({ active: false, x: 0, z: 0, age: 0, radius: 0, previousRadius: 0, maxRadius: 0, damage: 0, hitIds: new Int32Array(COMBAT_LIMITS.enemies) }));
   readonly relicBehaviors = new CombatRelicBehaviors(this, {
     launch:(parent,x,z,dx,dz,damage,preset)=>this.relicBehaviors.launch(parent,x,z,dx,dz,damage,preset),
@@ -241,6 +324,7 @@ export class Combat {
     const previousSweep = flameSweepStats(this.runBuild.attacks.find(a => a.attackId === 'flame-sweep')?.level ?? 1);
     const intervals = new Map(this.runBuild.attacks.map(a => [a.attackId, this.runBuild.rules(a.attackId).intervalMultiplier]));
     if (!(fromChoice ? this.progression.pick(id) : this.progression.grant(id))) return false;
+    if (isWaterEvolution(id)) this.removeEvolvedBaseCasts();
     for (const attack of this.runBuild.attacks) {
       const interval = this.runBuild.rules(attack.attackId).intervalMultiplier;
       let ratio = previous.attackRateMultiplier / this.stats.attackRateMultiplier * interval / (intervals.get(attack.attackId) ?? interval);
@@ -258,7 +342,19 @@ export class Combat {
     return true;
   }
 
+  private removeEvolvedBaseCasts() {
+    for (const cast of [...this.waterAoe.casts, ...this.positionAoe.casts]) {
+      if (cast.active && consumedByEvolution(cast.kind, this.progression.ranks)) { cast.active = false; cast.source = undefined; }
+    }
+  }
+
   reset(ruleset: Ruleset = this.ruleset) {
+    this.positionAoe.reset();
+    this.waterEvolution.reset();
+    this.waterAoe.reset();
+    this.areaAttacks.reset();
+    this.areaFeedback = { serial: 0, kills: 0, time: 0 };
+    this.attackViewport = undefined;
     this.soundEvents = 0;
     this.endlessCycleIndex = 0;
     this.encounters.reset();
@@ -551,6 +647,7 @@ export class Combat {
     for (const effect of this.effects) {
       if (effect.active) { effect.time -= dt; effect.active = effect.time > 0; }
     }
+    for (const effect of this.areaDeaths) if (effect.active) { effect.time -= dt; effect.active = effect.time > 0; }
     this.updateBurns(dt);
     this.relicBehaviors.update(dt);
     if (this.encounters.dying) return;
@@ -820,6 +917,19 @@ export class Combat {
     this.drainRelicEvents();
     this.updateEchoes();
     this.updateSkills(dt, player);
+    if (!this.encounters.dying) this.areaAttacks.update(dt, this.usesRunBuild ? this.progression.ranks['screen-nova'] : 0,
+      this.stats.damageMultiplier, this.usesRunBuild ? this.progression.ranks['screen-barrage'] : 0);
+    if (!this.encounters.dying) {
+      const ranks: Partial<Record<SkillId, number>> = this.usesRunBuild ? this.progression.ranks : {};
+      const baseRanks: Partial<Record<SkillId, number>> = { ...ranks };
+      for (const id of WATER_EVOLUTION_IDS) if ((ranks[id] ?? 0) > 0) {
+        baseRanks[WATER_EVOLUTIONS[id].main] = 0; baseRanks[WATER_EVOLUTIONS[id].support] = 0;
+      }
+      this.removeEvolvedBaseCasts();
+      this.waterAoe.update(dt, baseRanks, this.stats.damageMultiplier);
+      this.positionAoe.update(dt, baseRanks, this.stats.damageMultiplier);
+      this.waterEvolution.update(dt, ranks, this.stats.damageMultiplier);
+    }
     if (!this.encounters.dying) this.updateSporeExplosions(player);
     if (this.encounters.enabled) this.encounters.advanceHazards(dt,this,player,{x:this.previousAnchorX,z:this.previousAnchorZ});
     // Resolve hits after magic: an enemy killed on this tick cannot bite.
@@ -889,6 +999,11 @@ export class Combat {
     this.hp = Math.max(0,this.hp-damage); this.invulnerability=protection; this.hurtFlash=PLAYER_FEEDBACK.hurtDuration;
     this.relicBehaviors.gigapack.afterDamage();
     if(this.hp<=0){
+      this.positionAoe.clear();
+      this.waterEvolution.clear();
+      this.waterAoe.clear();
+      this.areaAttacks.clear();
+      for (const death of this.areaDeaths) death.active = false;
       this.relicBehaviors.gigapack.clearTransient();
       this.salvo=undefined;
       for(const p of this.projectiles)if(p.attackRules?.pairId)p.active=false;
@@ -1021,6 +1136,12 @@ export class Combat {
   }
 
   clearTransientEffects(preserveRunRelics=false) {
+    this.positionAoe.clear();
+    this.waterEvolution.clear();
+    this.waterAoe.clear();
+    this.areaAttacks.clear();
+    this.areaFeedback.kills = 0;
+    for (const effect of this.areaDeaths) effect.active = false;
     this.relicBehaviors.reset(preserveRunRelics);
     this.soundEvents = 0;
     this.clearSpecialEvents();
@@ -1391,19 +1512,29 @@ export class Combat {
     if ((sourceHasAttack(source,'spark') || sourceHasAttack(source,'flame-sweep')) && this.runBuild.relics.includes('draft-martyr-core') && source.generation < (source.mature ? REACTION_RULES.mature.generations : TRIGGER_RELIC_RULES.martyr.maxGeneration)
       && (source.kind !== 'burn' || source.mature) && (!source.mature || reserveReaction(source))) {
       source.martyrHits.add(enemy.id);
-      this.relicEvents.push({ ...common, type: 'martyr', damage: martyrDamage(source, damage, !!source.mature),
+      this.enqueueRelicEvent({ ...common, type: 'martyr', damage: martyrDamage(source, damage, !!source.mature),
         radius: TRIGGER_RELIC_RULES.martyr.radius * source.rules.areaMultiplier * this.consumeKindling(enemy),
         source: { ...source, kind: 'explosion', generation: source.generation + 1 } });
     }
     if (sourceHasAttack(source,'leaf') && source.kind !== 'testament' && this.runBuild.relics.includes('draft-thorn-testament')) {
-      this.relicEvents.push({ ...common, type: 'testament', damage: damage * TRIGGER_RELIC_RULES.testament.damage,
+      this.enqueueRelicEvent({ ...common, type: 'testament', damage: damage * TRIGGER_RELIC_RULES.testament.damage,
         radius: TRIGGER_RELIC_RULES.testament.range, source: { ...source, kind: 'testament' } });
     }
     if (sourceHasAttack(source,'bubble') && source.kind !== 'bubble-spore' && this.runBuild.relics.includes('draft-bubble-spore') && this.elapsed+1e-8 >= this.bubbleReadyAt) {
       this.bubbleReadyAt = this.elapsed+TRIGGER_RELIC_RULES.bubble.cooldown;
-      this.relicEvents.push({ ...common, type: 'bubble', damage: damage*TRIGGER_RELIC_RULES.bubble.damage,
+      this.enqueueRelicEvent({ ...common, type: 'bubble', damage: damage*TRIGGER_RELIC_RULES.bubble.damage,
         radius: TRIGGER_RELIC_RULES.bubble.range, source: { ...source, kind: 'bubble-spore' } });
     }
+  }
+
+  /** Large-cast descendants share a fixed event budget; existing attack queues retain their rules. */
+  private enqueueRelicEvent(event: Combat['relicEvents'][number]) {
+    const budget = event.source.areaBudget?.shared ?? event.source.areaBudget;
+    if (budget) {
+      if (budget.nodes >= AREA_RULES.chainNodes) return;
+      budget.nodes++;
+    }
+    this.relicEvents.push(event);
   }
 
   /** First-ready order, 32 complete events per tick. Future propagation never blocks ready events. */
@@ -1498,6 +1629,11 @@ export class Combat {
   private damageEnemy(enemy: Enemy, damage: number, dx: number, dz: number, origin: 'player' | 'spore' = 'player', source?: RelicDamageSource) {
     if (!enemy.active || enemy.spawnTime > 0 || enemy.hp <= 0) return;
     if (!Number.isFinite(damage) || damage <= 0) return;
+    if (source?.areaBudget) {
+      const hits = source.areaBudget.hits, count = hits.get(enemy.id) ?? 0;
+      if (count >= 2 || !hits.has(enemy.id) && hits.size >= COMBAT_LIMITS.enemies) return;
+      hits.set(enemy.id, count + 1);
+    }
     if (this.usesRunBuild && source && !source.suppressRelics) {
       source.rootDamage ??= damage;
       this.relicBehaviors.hit(enemy,source);
@@ -1507,7 +1643,7 @@ export class Combat {
         && this.runBuild.relics.includes('draft-boiling-core') && this.elapsed + 1e-8 >= (enemy.steamReadyAt ?? 0)
         && source.generation < REACTION_RULES.mature.generations && reserveReaction(source)) {
         enemy.wetTime = 0; enemy.steamReadyAt = this.elapsed + REACTION_RULES.steam.cooldown;
-        this.relicEvents.push({ type: 'steam', x: enemy.x, z: enemy.z, enemyId: enemy.id, enemyKind: enemy.kind,
+        this.enqueueRelicEvent({ type: 'steam', x: enemy.x, z: enemy.z, enemyId: enemy.id, enemyKind: enemy.kind,
           readyAt: this.elapsed, damage: source.rootDamage * REACTION_RULES.steam.damage,
           radius: REACTION_RULES.steam.radius * source.rules.areaMultiplier,
           source: { ...source, kind: 'steam', reaction: 'steam', generation: source.generation + 1 } });
@@ -1573,7 +1709,10 @@ export class Combat {
           if (experience) this.swarmExperienceRemainder = 0;
         }
         if (experience) this.dropExperience(enemy.x, enemy.z, experience);
-        this.effect(enemy.x, enemy.z, 'death', enemy.kind, 0, undefined, enemy);
+        if (source?.areaBudget) {
+          const death = this.areaDeaths.find(e => !e.active) ?? this.areaDeaths.reduce((a, b) => a.time < b.time ? a : b);
+          Object.assign(death, { active: true, x: enemy.x, z: enemy.z, time: .55, duration: .55, enemyKind: enemy.kind, enemyId: enemy.id, moveX: enemy.walkX, moveZ: enemy.walkZ });
+        } else this.effect(enemy.x, enemy.z, 'death', enemy.kind, 0, undefined, enemy);
       }
     }
     if(origin==='player'&&source)this.relicBehaviors.gigapack.hit(enemy,source,damage);
@@ -1661,6 +1800,7 @@ export class Combat {
       build: { enabled: this.usesRunBuild, species: this.runBuild.species, relics: [...this.runBuild.relics], evolution: this.runBuild.evolution ?? null, attacks: this.runBuild.attacks.map(attack => ({ ...attack })) },
       melee: { ...this.melee, hitIds: Array.from(this.melee.hitIds).filter(Boolean) },
       firing: { weapon: this.salvo?.attackId ?? null, remaining: this.salvo ? this.salvo.total - this.salvo.index : 0, gap: this.launchClock },
+      waterEvolution: this.waterEvolution.inspect(), positionAoe: this.positionAoe.inspect(), waterAoe: this.waterAoe.inspect(), areaAttacks: this.areaAttacks.inspect(), areaFeedback: { ...this.areaFeedback },
       hp: this.hp, kills: this.kills, goldEarned: this.goldEarned, xp: this.xp, shotsFired: this.shotsFired, hits: this.hits,
       fusion: { enabled: this.fusionEnabled, active: this.fusion?.id ?? null, recipes: this.fusions.map(f => f.id), bursts: this.bursts, childShots: this.childShots, children: this.projectiles.filter(shot => shot.active && shot.generation === 1).length },
       spawned: this.spawned, collected: this.collected, invulnerability: this.invulnerability,

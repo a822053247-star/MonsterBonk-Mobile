@@ -464,6 +464,7 @@ export class Game {
   private pause(reason: string) {
     if (this.mode !== 'playing') return;
     this.mode = 'paused';
+    document.getElementById('area-combo')!.hidden = true;
     this.input.setEnabled(false);
     this.velocity.set(0, 0);
     this.previousPosition.copy(this.position);
@@ -634,7 +635,7 @@ export class Game {
         trail.mesh.scale.setScalar(1.3 - trail.remaining);
       }
     });
-    const shots = this.combat.shotsFired, hits = this.combat.hits, collected = this.combat.collected, hp = this.combat.hp;
+    const shots = this.combat.shotsFired, hits = this.combat.hits, collected = this.combat.collected, hp = this.combat.hp, kills = this.combat.kills;
     this.dashAttack.active = dashing;
     this.dashAttack.fromX = this.previousPosition.x; this.dashAttack.fromZ = this.previousPosition.z;
     this.dashAttack.dx = this.dashDirection.x; this.dashAttack.dz = this.dashDirection.y;
@@ -643,9 +644,11 @@ export class Game {
       this.party.syncLeader(this.position, this.facing);
       if (this.prototypeVariant === 'legacy-party') this.party.follow(dt, this.world.obstacles, ARENA_HALF_EXTENT);
     }
+    this.combat.attackViewport = this.cameraFootprint();
     this.combat.update(dt, this.position, this.dashAttack);
     if (this.partyPrototype && this.combat.hp > 0) this.partyView.stepAnimation(dt, (this.position.x - this.previousPosition.x) / dt, (this.position.z - this.previousPosition.z) / dt);
     this.audio.playSkills(this.combat.soundEvents);
+    this.audio.playHarvest(this.combat.kills - kills);
     if (this.combat.hits > hits) this.audio.play('hit');
     if (this.combat.shotsFired > shots) this.audio.play('cast');
     if (this.combat.collected > collected) this.audio.play('collect');
@@ -842,6 +845,10 @@ export class Game {
 
 
   private updateHUD() {
+    const combo = document.getElementById('area-combo')!;
+    const feedback = this.combat.areaFeedback;
+    combo.hidden = this.mode !== 'playing' || feedback.kills < 8 || this.combat.elapsed - feedback.time > 1.35;
+    if (!combo.hidden) combo.textContent = `${feedback.kills} 连斩！`;
     renderEncounterStatus(this.combat,this.run);
     renderWeaponCooldowns(this.combat);
     renderHudWeaponIcons(this.combat);
@@ -1004,10 +1011,21 @@ export class Game {
     this.camera.position.copy(this.cameraTarget);
     // Position and look point share one smoothed anchor, so pitch never changes.
     this.camera.lookAt(this.cameraAnchor);
-    this.combat.spawnViewport = { x: this.cameraAnchor.x, z: this.cameraAnchor.z - this.cameraAnchor.y / Math.tan(VIEW_25D.pitch),
-      halfWidth: (this.camera.right - this.camera.left) / 2, halfDepth: (this.camera.top - this.camera.bottom) / (2 * Math.sin(VIEW_25D.pitch)) };
+    // Shake only the rendered camera. Target selection uses the stable anchor footprint below.
+    const impactAge = this.combat.elapsed - this.combat.areaFeedback.time;
+    if (this.mode === 'playing' && this.combat.areaFeedback.kills >= 8 && impactAge >= 0 && impactAge < .24) {
+      const strength = .07 * (1 - impactAge / .24);
+      this.camera.position.x += Math.sin(impactAge * 157) * strength;
+      this.camera.position.y += Math.cos(impactAge * 119) * strength * .5;
+    }
+    this.combat.spawnViewport = this.cameraFootprint();
     this.combatView.updateView(this.camera, window.innerHeight, this.camera.top - this.camera.bottom);
     this.partyView.setCamera(this.camera);
+  }
+
+  private cameraFootprint() {
+    return { x: this.cameraAnchor.x, z: this.cameraAnchor.z - this.cameraAnchor.y / Math.tan(VIEW_25D.pitch),
+      halfWidth: (this.camera.right - this.camera.left) / 2, halfDepth: (this.camera.top - this.camera.bottom) / (2 * Math.sin(VIEW_25D.pitch)) };
   }
 
   private frame = (time: number) => {

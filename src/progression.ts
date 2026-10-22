@@ -4,6 +4,9 @@ import { meetsRequirements, type ContentSkillId } from './content/content-types'
 import type { RunBuild } from './run-build';
 import type { BaseAttackId } from './fusion';
 import { flameSweepStats } from './flame-sweep';
+import { WATER_AOE_IDS, WATER_NAMES, waterStats, type WaterSkill } from './water-aoe';
+import { POSITION_IDS, POSITION_NAMES, positionStats, type PositionSkill } from './position-aoe';
+import { WATER_EVOLUTION_IDS, WATER_EVOLUTIONS, isWaterEvolution, evolutionReady, consumedByEvolution } from './water-evolution';
 import { RELICS, EVOLUTIONS, isRelicId, isEvolutionId, WEAPON_DAMAGE_PER_LEVEL, type RelicId, type EvolutionId } from './relics';
 
 export type SkillId = ContentSkillId | RelicId | EvolutionId | PairSkillId;
@@ -54,7 +57,32 @@ export const WATER_SKILLS: readonly SkillDefinition[] = [...SKILLS, AREA_CARD, C
 export const GRASS_SKILLS: readonly SkillDefinition[] = [...SKILLS, { ...FUSION_SKILLS[FUSION_SKILLS.length - 1], title: '命中分裂', benefit: '飞叶弹命中散射三枚荆棘', description: '飞叶弹自动融合为荆棘散射；派生荆棘不会再次分裂。', icon: 'leaf', color: '#b4ea86' }, CHAIN_CARD];
 const BUBBLE_WEAPON: SkillDefinition = { id: 'bubble-weapon', title: '获得水泡弹', benefit: '增加独立自动攻击 · 命中减速', description: '装备第二种武器。水泡弹独立索敌、自动释放，命中使敌人减速 30%，持续 1.5 秒。副武器初始攻击间隔为基础的 1.6 倍。', maxRank: 1, icon: 'wave', color: '#55c9ed', effect: { type: 'spell', levels: [{}] } };
 export const WEAPON_CARDS: Partial<Record<SkillId, BaseAttackId>> = { 'spark-weapon': 'spark', 'bubble-weapon': 'bubble', 'leaf-weapon': 'leaf', 'flame-sweep-weapon': 'flame-sweep' };
-const BUILD_SKILLS: readonly SkillDefinition[] = [...SKILLS,
+const WATER_AOE_DESCRIPTIONS: Record<WaterSkill, string> = {
+  'azure-burst': '自动瞄准附近密集敌群，短暂聚光后对圆内造成一次水系伤害并施加湿润。每4.5秒释放；升级扩大范围并提高伤害。',
+  'star-tide': '从施法位置向外扩张水环，仅圆环经过时命中，同一圈不重复伤害。3级双环、5级三环，并轻推普通怪；每5.5秒释放。',
+  'still-sea': '在敌群脚下留下固定领域，每0.5秒伤害并减速。多个同类领域重叠不叠加跳伤。升级延长持续时间、扩大范围并提高伤害。',
+  'returning-ring': '持续围绕角色的水流光环，每0.5秒伤害并减速圆内敌人，随角色移动。升级提高范围和伤害；不提供无敌或护盾。',
+};
+const WATER_AOE_CARDS: readonly SkillDefinition[] = WATER_AOE_IDS.map(id => ({
+  id, title: WATER_NAMES[id], benefit: id === 'azure-burst' ? '自动锁定敌群 · 圆形震爆' : id === 'star-tide' ? '扩张水环 · 升级增加波次' : id === 'still-sea' ? '持续范围伤害 · 减速领域' : '随身水环 · 持续伤害与减速',
+  description: WATER_AOE_DESCRIPTIONS[id] + ' 水系命中可配合现有元素协同；精英受到70%、首领受到40%伤害，首领减速效果减弱。',
+  maxRank: 5, icon: 'wave', color: '#88deff', effect: { type: 'spell', levels: [{}, {}, {}, {}, {}] },
+}));
+const POSITION_DESCRIPTIONS: Record<PositionSkill, string> = {
+  'abyss-vortex': '每6秒在附近敌群中心召唤漩涡，每0.5秒伤害。持续吸引普通怪，精英受弱吸引，首领不被拖动。升级提高伤害、范围与持续时间。',
+  'ice-radiance': '每4.5秒从附近静海法阵或角色位置释放攻击，放射光束与扩张圆环交替。光束间留有空隙；每次对同一目标只伤害一次。升级从8道增加到16道。',
+  'spore-trail': '移动约1.2米留下绿色毒焰区域，持续跳伤；站立不生成。同类足迹重叠不叠加跳伤，最多保留16块，满池时替换最旧足迹。升级扩大范围并延长残留。',
+  'tidal-recall': '每7秒释放外扩后回收的水浪，两阶段各命中一次。回收水浪向角色收束，扫过的经验球进入原有吸引流程，经验值不额外复制。升级提高范围与伤害。',
+};
+const POSITION_CARDS: readonly SkillDefinition[] = POSITION_IDS.map(id => ({
+  id, title: POSITION_NAMES[id], benefit: id === 'abyss-vortex' ? '漩涡聚怪 · 精英弱吸引' : id === 'ice-radiance' ? '光束与圆环交替' : id === 'spore-trail' ? '移动留下毒焰足迹' : '往返水浪 · 回收经验',
+  description: POSITION_DESCRIPTIONS[id] + ' 精英承受70%、首领承受40%伤害；派生协同受预算限制。',
+  maxRank: 5, icon: id === 'spore-trail' ? 'leaf' : 'wave', color: id === 'spore-trail' ? '#c6ec65' : '#88deff',
+  effect: { type: 'spell', levels: [{}, {}, {}, {}, {}] },
+}));
+const BUILD_SKILLS: readonly SkillDefinition[] = [...SKILLS, ...WATER_AOE_CARDS, ...POSITION_CARDS,
+  { id: 'screen-barrage', title: '星雨弹幕', benefit: '每5秒释放12道弹幕 · 环形/扇形/交叉轮换', description: '升级至18/24道，分2/3轮发射。每道最多命中3个目标，穿透伤害保留80%；同次施法对每个目标只直接命中一次。弹幕穿越障碍，精英受到70%、首领受到40%伤害。', maxRank: 3, icon: 'battle', color: '#ffcd87', effect: { type: 'spell', levels: [{}, {}, {}] } },
+  { id: 'screen-nova', title: '星陨爆发', benefit: '每12秒轰击当前全屏 · 伤害85', description: '短暂预警后，对爆发瞬间镜头内的敌人造成一次伤害，穿越障碍。精英受到70%、首领受到40%伤害。每级伤害增加25%，可触发有限元素击杀协同。', maxRank: 3, icon: 'wave', color: '#ffcb70', effect: { type: 'spell', levels: [{}, {}, {}] } },
   { ...BUBBLE_WEAPON, id: 'flame-sweep-weapon', title: '获得火焰横扫', benefit: '扇形火浪 · 升级扩大覆盖', description: '向附近敌人展开一片火焰：伤害 36、半径 2.8、180°、间隔 0.72 秒。升级逐步扩大火浪，5 级覆盖一整圈；每次只有一次横扫。对精英和首领造成 70% 伤害；不穿障碍，分枝、分裂和连锁不复制攻击。', icon: 'battle', color: '#ff8c35' },
   { ...FUSION_SKILLS[FUSION_SKILLS.length - 1], benefit: '火花爆炸分裂 / 飞叶弹散射', description: '所有已装备火花弹自动形成爆裂火种，飞叶弹形成荆棘散射；派生最多一代，可与连锁共存。' },
   AREA_CARD, CHAIN_CARD,
@@ -70,7 +98,12 @@ const PAIR_SKILLS:readonly SkillDefinition[]=[
   {id:'weapon-pair-fusion',title:'双武器融合',benefit:'选择配方 · 两把合为一把',description:'两把不同基础武器达到3级可自愿融合，释放一个槽位，保留技能和遗物。取消可返回普通升级。',maxRank:1,icon:'battle',color:'#f4d69c',effect:{type:'spell',levels:[{}]}},
   ...PAIR_IDS.map(id=>({id:`${id}-weapon` as PairSkillId,title:WEAPON_PAIR_RECIPES[id].title+'强化',benefit:'融合武器直接伤害提升',description:`每级伤害较3级基础增加${Math.round(WEAPON_PAIR_RECIPES[id].growth*100)}%；最高5级。保留来源、技能与遗物，攻击间隔不随等级缩短。`,maxRank:5,icon:'battle' as const,color:'#f4d69c',effect:{type:'spell' as const,levels:[{},{},{},{},{}]}}))
 ];
-const RUN_SKILLS = [...BUILD_SKILLS.map(skill => WEAPON_CARDS[skill.id] ? { ...skill, maxRank: 5 } : skill), ...RARE_SKILLS, ...PAIR_SKILLS];
+const WATER_EVOLUTION_CARDS: readonly SkillDefinition[] = WATER_EVOLUTION_IDS.map(id => ({
+  id, title: WATER_EVOLUTIONS[id].title, benefit: WATER_EVOLUTIONS[id].benefit,
+  description: WATER_EVOLUTIONS[id].description + ' 条件：' + WATER_EVOLUTIONS[id].requirement + '；选择后接替两项基础攻击，本局生效。精英受到70%、首领受到40%伤害。',
+  category: 'evolution', maxRank: 1, icon: 'wave', color: '#88deff', effect: { type: 'spell', levels: [{}] },
+}));
+const RUN_SKILLS = [...BUILD_SKILLS.map(skill => WEAPON_CARDS[skill.id] ? { ...skill, maxRank: 5 } : skill), ...RARE_SKILLS, ...PAIR_SKILLS, ...WATER_EVOLUTION_CARDS];
 const ALL_SKILLS = RUN_SKILLS;
 export const EXPERIENCE = { initial: 8, increment: 4 } as const;
 export const MAX_LEVEL = 1 + SKILLS.reduce((total, skill) => total + skill.maxRank, 0);
@@ -101,9 +134,20 @@ export function upgradePreview(skill: SkillDefinition, ranks: SkillRanks) {
     return `${format(before[stat])} → ${format(after[stat])}`;
   }
   if (skill.category === 'relic') return '稀有道具 · 本局生效';
+  if (isWaterEvolution(skill.id)) return WATER_EVOLUTIONS[skill.id].requirement + ' · 组合进化';
   if (skill.category === 'evolution') return '互斥进化 · 本局不可切换';
+  if (WATER_AOE_IDS.includes(skill.id as WaterSkill)) {
+    const rank = ranks[skill.id], next = waterStats(skill.id as WaterSkill, rank + 1);
+    return `${rank ? rank + '级' : '未习得'} → ${rank + 1}级 · 半径 ${next.radius.toFixed(1)} · ${next.damage.toFixed(1)}伤害${skill.id === 'star-tide' ? ' · ' + next.waves + '环' : ''}`;
+  }
   if (WEAPON_CARDS[skill.id]) return skill.title.includes('强化') ? `武器 ${ranks[skill.id]} → ${ranks[skill.id] + 1}级` : `空副武器槽 → ${skill.title.replace('获得', '')} · 独立自动攻击`;
+  if (POSITION_IDS.includes(skill.id as PositionSkill)) {
+    const rank = ranks[skill.id], stats = positionStats(skill.id as PositionSkill, rank + 1);
+    return `${rank ? rank + '级' : '未习得'} → ${rank + 1}级 · 范围 ${stats.radius.toFixed(1)}${skill.id === 'ice-radiance' ? ' · ' + stats.beams + '道' : ' · ' + stats.damage.toFixed(1) + '伤害'}`;
+  }
   if (skill.id === 'orbit') return `${before.orbitCount ? `${before.orbitCount} 颗` : '未习得'} → ${after.orbitCount} 颗 · ${after.orbitDamage} 伤害`;
+  if (skill.id === 'screen-nova') return `${ranks[skill.id] ? 85 * (1 + .25 * (ranks[skill.id] - 1)) + ' 伤害' : '未习得'} → ${85 * (1 + .25 * ranks[skill.id])} 全屏伤害 · 12秒/次`;
+  if (skill.id === 'screen-barrage') return `${ranks[skill.id] ? 12 + (ranks[skill.id] - 1) * 6 + ' 道' : '未习得'} → ${12 + ranks[skill.id] * 6} 道 · ${ranks[skill.id] + 1}轮 · 5秒/次`;
   if (skill.id === 'split-on-hit' && skill.description.includes('所有已装备')) return '已装备火花 / 飞叶弹 → 对应融合';
   if (skill.id === 'split-on-hit') return skill.icon === 'leaf' ? '飞叶弹 → 荆棘散射 · 自动融合' : '火花弹 → 爆裂火种 · 自动融合';
   if (skill.id === 'area' || skill.id === 'chain') return '未习得 → 自动融合';
@@ -138,6 +182,8 @@ export class Progression {
   get skills() {
     if (!this.build || !this.fusionSkills) return this.pool;
     return this.pool.filter(skill => {
+      if (isWaterEvolution(skill.id)) return evolutionReady(skill.id, this.ranks);
+      if (consumedByEvolution(skill.id, this.ranks)) return false;
       if(skill.id==='weapon-pair-fusion')return this.build!.availablePairs().length>0;
       const pair=PAIR_IDS.find(id=>skill.id===`${id}-weapon`);
       if(pair)return this.build!.attacks.some(a=>a.pairId===pair&&a.level<5);
@@ -235,7 +281,7 @@ export class Progression {
     const weapon = WEAPON_CARDS[id];
     if (weapon && (!this.build || !(this.build.has(weapon) ? this.build.upgrade(weapon) : this.build.acquire(weapon)))) return false;
     if (skill.category === 'relic' && (!isRelicId(id) || !this.build?.addRelic(id))) return false;
-    if (skill.category === 'evolution' && (!isEvolutionId(id) || !this.build?.evolve(id))) return false;
+    if (skill.category === 'evolution' && !isWaterEvolution(id) && (!isEvolutionId(id) || !this.build?.evolve(id))) return false;
     if (this.coreReward(id)) this.rollsWithoutCore = 0;
     this.ranks[id]++;
     return true;
@@ -268,6 +314,9 @@ export class Progression {
     // Exhaustion can leave only rare choices; do not trap an earned level-up.
     if (!this.currentOffers.length && candidates.length) this.currentOffers = [candidates[0]];
     if(this.build.availablePairs().length){this.currentOffers=this.currentOffers.filter(id=>id!=='weapon-pair-fusion').slice(0,2);this.currentOffers.push('weapon-pair-fusion');}
+    // A completed AOE recipe should be reviewable on the next earned choice.
+    const waterEvolution = candidates.find(isWaterEvolution);
+    if (waterEvolution && !this.currentOffers.includes(waterEvolution)) this.currentOffers = [...this.currentOffers.slice(0, 2), waterEvolution];
   }
 
   private coreReward(id: SkillId) {

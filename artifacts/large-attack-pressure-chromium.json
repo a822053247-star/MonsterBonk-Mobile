@@ -1,0 +1,28 @@
+{
+  "high": {
+    "capacity": 96,
+    "cores": 96,
+    "trails": 96,
+    "batches": 2
+  },
+  "low": {
+    "capacity": 96,
+    "cores": 96,
+    "trails": 0,
+    "batches": 2
+  },
+  "unchanged": true,
+  "freeze": true,
+  "memoryBefore": {
+    "geometries": 64,
+    "textures": 15
+  },
+  "memoryAfter": {
+    "geometries": 64,
+    "textures": 15
+  },
+  "fullCalls": 39,
+  "cpuAverageMs": 1.1659999999403954,
+  "cpuMaxMs": 2.100000001490116,
+  "cleared": true
+}

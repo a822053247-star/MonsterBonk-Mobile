@@ -32,6 +32,8 @@ export const TRIGGER_RELIC_RULES = {
 
 /** Unique attack lineage, separate from the caster ID and fusion-child generation. */
 export interface RelicDamageSource {
+  /** Shared by a large cast and every derived source; bounded across enemy pool reuse. */
+  areaBudget?: { nodes: number; hits: Map<number, number>; shared?: { nodes: number } };
   weaponTags?:readonly import('./content/weapon-traits').WeaponTag[];
   baseWeaponDamage?:number;
   primary?:boolean;
