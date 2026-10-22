@@ -12,6 +12,7 @@ test('treasure capture visibly grants a free real shop refresh, then normal pric
   await page.goto('/special-growth-ui-harness?world=fixed');
   await page.waitForFunction(() => 'game' in window);
   await page.locator('#start-fusion').click();
+  await expect.poll(() => page.evaluate(() => (window as any).game.inspect().mode)).toBe('playing');
   await page.evaluate(() => {
     const g = (window as any).game;
     g.sleep();
