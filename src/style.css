@@ -1038,7 +1038,7 @@ h1>em{font-size:12px;line-height:1;letter-spacing:4px;display:inline-block;backg
   .hud .hud-actions{gap:5px}
   .hud .hud-actions .icon-button{width:44px;height:44px;min-width:44px;min-height:44px;font-size:14px}
   .hud .hud-actions .icon{width:20px;height:20px}
-  .hud .encounter-status{top:calc(130px + var(--safe-top))}
+  .hud .encounter-status{top:calc(168px + var(--safe-top))}
 }
 @media(max-width:700px) and (orientation:landscape){
   .hud{--hud-card-width:172px;--hud-card-height:70px}
