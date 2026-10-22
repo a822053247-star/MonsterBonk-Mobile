@@ -40,6 +40,7 @@ const portrait = `<svg class="portrait" viewBox="0 0 80 80" aria-hidden="true"><
 export function createUI(root: HTMLElement) {
   root.innerHTML = `
     <canvas id="game-canvas" aria-label="幻兽幸存者游戏场景"></canvas>
+    <div id="world-loading" class="world-loading" role="status" aria-live="polite" hidden><strong>正在进入草场…</strong><span>地图准备好后即刻出发</span></div>
     <div class="vignette" aria-hidden="true"></div>
     <div id="damage-overlay" class="damage-overlay" aria-hidden="true"></div>
     <section id="menu" class="menu screen" aria-label="主菜单">
@@ -162,7 +163,7 @@ export function renderUpgradeCards(progression: Progression, version: number) {
     const art = upgradeArt(skill, progression.fusionBase, progression.build?.attacks.map(a=>a.attackId));
     if(id==='weapon-pair-fusion')art.illustrations=[`${import.meta.env.BASE_URL}${pairIcon(progression.build!.availablePairs()[0])}`];
     const preview = id==='weapon-pair-fusion'?'自愿融合 · 保留技能与遗物':id.endsWith('-weapon') && rank === 0
-      ? `未装备 → ${rank + 1}级` : upgradePreview(skill, progression.ranks) ?? '';
+      ? `未装备 → ${rank + 1}级` : upgradePreview(skill, progression.ranks, !!progression.build) ?? '';
     const titlePath = `upgrade-title-${version}-${id}`;
     return `<button type="button" class="skill-card${skill.tradeoff ? ' has-tradeoff' : ''}" data-skill="${id}" data-offer="${version}" data-category="${skill.category ?? 'normal'}" data-element="${art.element ?? ''}" style="--skill-color:${skill.color}" disabled aria-label="${skill.title}：${skill.benefit}，${preview}，${rank} → ${rank + 1}级${skill.tradeoff ? '，代价：' + skill.tradeoff : ''}" aria-description="${skill.description}">
       <img class="skill-frame" data-upgrade-art="frame" src="${art.frame}" alt="" draggable="false"/>

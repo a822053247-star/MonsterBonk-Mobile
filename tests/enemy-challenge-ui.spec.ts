@@ -79,3 +79,22 @@ test('final timer cannot grant victory and failed Boss assets stay an honest vis
   await expect(page.locator('#result-message')).toContainText('未能在 90 秒内击败');
   expect(await page.evaluate(()=>(window as any).game.run.bossDefeated)).toBe(false);
 });
+
+test('campaign charge warning matches the longer travel and dense fans render on short phones at low detail',async({page})=>{
+  await open(page);
+  for(const width of [568,844]) {
+    await page.setViewportSize({width,height:width===568?320:390});
+    const result=await page.evaluate(()=>{
+      const w=window as any,g=w.game,c=g.combat,e=c.encounters,b=e.boss;
+      g.combatView.detail=1;e.bossState='dash-windup';e.bossTime=.3;e.aimX=-1;e.aimZ=0;w.draw();
+      const lane=g.combatView.encounters.lane;
+      const warning={visible:lane.visible,length:lane.scale.y,center:lane.position.x};
+      e.clearShots();b.hp=b.maxHp/2;e.bossState='spread-windup';e.bossTime=.79;
+      const aim=[e.aimX,e.aimZ];e.movement(b,.02,g.position,c,0,0);w.draw();
+      return {warning,bossX:b.x,aim,locked:[e.aimX,e.aimZ],shots:g.combatView.inspect().encounters.shots,capacity:e.shots.length};
+    });
+    expect(result.warning.visible).toBe(true);expect(result.warning.length).toBeCloseTo(12.75);
+    expect(result.warning.center).toBeCloseTo(result.bossX-12.75/2);
+    expect(result.shots).toBe(9);expect(result.capacity).toBe(16);expect(result.locked).toEqual(result.aim);
+  }
+});

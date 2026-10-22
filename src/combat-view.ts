@@ -190,7 +190,7 @@ export class CombatView {
     this.gigapack.render(this.combat,this.combat.effects);
     this.grassBlobs.render(this.combat);
     this.flameSweep?.render(this.combat,player);
-    this.encounters.render(alpha);
+    this.encounters.render(alpha, this.detail);
     this.specialEnemies.render(alpha);
     for (const mesh of this.batches) mesh.count = 0;
     this.pixelEnemies?.begin();
@@ -268,20 +268,21 @@ export class CombatView {
       const pair=shot.attackRules?.pairId;
       const color = pair?(pair==='steam-comet'?'#b9edff':pair==='blazing-thorn'?'#ffae43':'#6de3af'):preset?.color ?? (attack ? ATTACKS[attack].color : '#a594f2');
       const bubble = attack === 'bubble', leaf = attack === 'leaf';
-      const child = shot.generation === 1, scale = (child ? BURST_SEED.childSize : 1) * (preset?.scale ?? 1);
+      const child = (shot.generation??0)>0, physicalScale=this.combat.projectileRadius(shot)/.2;
+      const scale = this.combat.usesRunBuild ? physicalScale : (child ? BURST_SEED.childSize : 1) * (preset?.scale ?? 1);
       const clip = shot.vfxPresetId || pair ? undefined : elementalClip(shot.fusionIds?.[0] ?? (child && leaf ? 'thorn-scatter' : undefined));
       if (clip && this.fusionPixels?.loaded && (!preset || this.detail > 2 || preset.low.animated)) {
         const frame = clipFrame(clip.flight, shot.age ?? 0, clip.flightFPS, true)!;
         const arc = shot.hopTargetId ? Math.sin(Math.PI * Math.min(1, (shot.hopElapsed ?? 0) / (shot.hopDuration || .12))) * .55 : 0;
-        this.fusionPixels.put(clip.row, frame, x, 1.15 + arc, z, (child ? COMBAT_CLARITY.childSize : COMBAT_CLARITY.projectileSize) * (preset?.scale ?? 1), shot.vx, shot.vz, false, clip.row === 2 ? (shot.age ?? 0) * 8 : 0);
+        this.fusionPixels.put(clip.row, frame, x, 1.15 + arc, z, COMBAT_CLARITY.projectileSize * (this.combat.usesRunBuild?physicalScale:(child?COMBAT_CLARITY.childSize/COMBAT_CLARITY.projectileSize:1)*(preset?.scale??1)), shot.vx, shot.vz, false, clip.row === 2 ? (shot.age ?? 0) * 8 : 0);
       }
       else if (!pair && preset?.animation && (this.detail > 2 || preset.low.animated)
         && (preset.animation.atlas === 'fire' ? this.firePixels : this.fusionPixels)?.loaded) {
         const a = preset.animation, batch = a.atlas === 'fire' ? this.firePixels! : this.fusionPixels!;
         batch.put(child ? a.childRow ?? a.row : a.row, clipFrame(a.frames, shot.age ?? 0, a.fps, true)!, x, 1.15, z,
-          (child ? COMBAT_CLARITY.childSize : COMBAT_CLARITY.projectileSize) * preset.scale, shot.vx, shot.vz, false, 0, preset.color);
+          COMBAT_CLARITY.projectileSize * (this.combat.usesRunBuild?physicalScale:(child?COMBAT_CLARITY.childSize/COMBAT_CLARITY.projectileSize:1)*preset.scale), shot.vx, shot.vz, false, 0, preset.color);
       }
-      else if (!pair && !preset && this.combat.fusionEnabled && !bubble && !leaf && this.firePixels?.loaded) this.firePixels.put(child ? 1 : 0, Math.floor((shot.age ?? 0) * 12) % 4, x, 1.15, z, child ? COMBAT_CLARITY.childSize : COMBAT_CLARITY.projectileSize, shot.vx, shot.vz);
+      else if (!pair && !preset && this.combat.fusionEnabled && !bubble && !leaf && this.firePixels?.loaded) this.firePixels.put(child ? 1 : 0, Math.floor((shot.age ?? 0) * 12) % 4, x, 1.15, z, COMBAT_CLARITY.projectileSize*(this.combat.usesRunBuild?physicalScale:(child?COMBAT_CLARITY.childSize/COMBAT_CLARITY.projectileSize:1)), shot.vx, shot.vz);
       else {
         this.put(this.bolts, x, 1.15, z, (bubble ? 0.34 : 0.22) * scale, (leaf ? 0.09 : bubble ? 0.34 : 0.22) * scale, (bubble ? 0.34 : leaf ? 0.65 : 0.48) * scale, 0, angle, 0, color);
         this.put(this.boltCores, x + Math.sin(angle) * 0.12, 1.15, z + Math.cos(angle) * 0.12, 0.12 * scale, 0.12 * scale, 0.3 * scale, 0, angle);

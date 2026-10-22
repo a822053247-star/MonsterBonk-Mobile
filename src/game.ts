@@ -445,7 +445,8 @@ export class Game {
     this.monster.body.visible = true;
     this.trails.forEach((trail) => { trail.remaining = 0; trail.mesh.visible = false; });
     this.mode = 'playing';
-    this.input.setEnabled(true);
+    this.input.setEnabled(!this.world.loading);
+    document.getElementById('world-loading')!.hidden = !this.world.loading;
     document.getElementById('menu')!.hidden = true;
     document.getElementById('hud')!.hidden = false;
     document.getElementById('pause-screen')!.hidden = true;
@@ -487,11 +488,12 @@ export class Game {
   }
 
   private showMenu() {
+    document.getElementById('world-loading')!.hidden = true;
     this.combat.runBuild.clearPairFusions();
     this.audio.setWave();
     this.run = undefined; this.combat.automaticSpawning = true;
     document.getElementById('shop-screen')!.hidden = true;
-    this.world.setSample(false);
+    this.world.setSample(new URLSearchParams(window.location.search).get('world') !== 'legacy');
     this.combat.infiniteWorld = false;
     this.combat.useNavigation = false;
     this.monster.root.visible = false;
@@ -553,7 +555,7 @@ export class Game {
   }
 
   private step(dt: number) {
-    if (this.mode !== 'playing') return;
+    if (this.mode !== 'playing' || this.world.loading) return;
     if (this.run?.phase === 'intermission') {
       this.run.updateRest(dt, this.combat);
       this.syncRunPhase();
@@ -1034,6 +1036,19 @@ export class Game {
     const rawDt = this.lastTime ? (time - this.lastTime) / 1000 : 0;
     const dt = rawDt ? Math.min(rawDt, STEP * 5) : STEP;
     this.lastTime = time;
+    if (this.mode === 'playing' && this.world.loading) {
+      this.input.setEnabled(false);
+      this.audio.setActive(false);
+      this.accumulator = 0;
+      this.frameId = window.requestAnimationFrame(this.frame);
+      return;
+    }
+    const enteringWorld = this.mode === 'playing' && !document.getElementById('world-loading')!.hidden;
+    if (enteringWorld) {
+      this.input.setEnabled(true);
+      this.audio.setActive(true);
+      this.renderTime = 0;
+    }
     if (this.mode === 'shop') { this.run?.updateRest(dt); this.frameId = window.requestAnimationFrame(this.frame); return; }
     if (this.quality.sample(rawDt)) this.applyGraphics();
     const speed = this.mode === 'playing' ? this.preferences.gameSpeed : 1;
@@ -1064,6 +1079,7 @@ export class Game {
       this.world.update(this.position.x, this.position.z);
       this.monster.root.visible = this.mode !== 'menu' && (!this.partyPrototype || !this.partyView.hasPixelLeader);
       this.renderer.render(this.scene, this.camera);
+      if (enteringWorld) document.getElementById('world-loading')!.hidden = true;
     }
     if (this.mode === 'menu' || this.mode === 'playing') this.frameId = window.requestAnimationFrame(this.frame);
   };

@@ -9,6 +9,9 @@ button:disabled{cursor:default}
 button:hover:not(:disabled){filter:brightness(1.06)}
 button:active:not(:disabled){transform:translateY(2px)}
 [hidden]{display:none!important}
+.world-loading{position:absolute;inset:0;z-index:8;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:#173c32;color:#deef9e}
+.world-loading strong{font-size:20px;letter-spacing:2px}
+.world-loading span{font-size:13px;color:#d2dfce}
 .icon{width:24px;height:24px;flex-shrink:0;vertical-align:middle}
 #game-canvas{display:block;width:100%;height:100%;position:absolute;inset:0;outline:0}
 #game-canvas.pixel-party{image-rendering:pixelated}
@@ -409,6 +412,16 @@ h1>em{font-size:12px;line-height:1;letter-spacing:4px;display:inline-block;backg
 .shop-illustration>img{display:none;min-width:0;max-width:100%;width:100%;height:100%;object-fit:contain;image-rendering:pixelated}
 .shop-illustration>img.art-loaded{display:block}
 .shop-illustration.multiple-art>img{width:50%}
+/* Trim the stray left-edge shard from the ring illustration, keeping the source intact. */
+.skill-card[data-skill="returning-ring"] .skill-illustration,
+.shop-item[data-skill="returning-ring"] .shop-illustration>img{
+  width:auto;max-width:100%;clip-path:inset(0 0 0 20%);transform:translateX(-6%);
+}
+/* Remove the neighbouring artwork along the ice illustration's left edge. */
+.skill-card[data-skill="ice-radiance"] .skill-illustration,
+.shop-item[data-skill="ice-radiance"] .shop-illustration>img{
+  width:auto;max-width:100%;clip-path:inset(0 0 0 10%);transform:translateX(-3%);
+}
 .shop-art-fallback{display:flex;align-items:center;justify-content:center;width:100%;height:100%;min-height:24px;color:#86aa71}
 .shop-art-fallback>.icon{width:40px;height:40px;max-height:100%}
 .shop-illustration.art-ready>.shop-art-fallback{display:none}

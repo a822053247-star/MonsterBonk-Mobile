@@ -5,7 +5,7 @@ import { sourceHasAttack } from './weapon-pair-fusion';
 export const FROST_RULES = { chillDuration: 1.6, chillSlow: .65, freeze: 1.25, eliteFreeze: .45, immunity: 2.5, effects: 48 } as const;
 export function frostStats(level: number) {
   const n = Math.max(0, Math.min(4, Math.floor(level) - 1));
-  return { pierces: n >= 4 ? 2 : n >= 2 ? 1 : 0, interval: .72 - n * .02 };
+  return { pierces: n >= 4 ? 2 : n >= 2 ? 1 : 0, interval: .70 - n * .02 };
 }
 interface FrostEvent { active: boolean; kind: 'impact' | 'freeze' | 'thaw' | 'resist'; x: number; z: number; age: number; seed: number }
 

@@ -6,7 +6,7 @@ export default defineConfig({
   build: {
     target: ['es2020', 'safari15'],
     rolldownOptions: {
-      input: { main: 'index.html', crownthorn: 'crownthorn-preview.html', relicEffects: 'relic-effects-preview.html', buildChain: 'build-chain-preview.html' },
+      input: { main: 'index.html', crownthorn: 'crownthorn-preview.html', bossSkills: 'boss-skills-preview.html', relicEffects: 'relic-effects-preview.html', buildChain: 'build-chain-preview.html', eliteQuake: 'elite-quake-preview.html' },
       output: { manualChunks: (id) => id.replaceAll('\\', '/').includes('/node_modules/three/') ? 'three' : undefined },
     },
   },

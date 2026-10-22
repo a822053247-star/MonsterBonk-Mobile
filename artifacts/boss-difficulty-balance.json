@@ -1,0 +1,648 @@
+{
+  "method": "Existing scripts/run-balance.ts measureRun(species, focused, forager, seed), 455 combat seconds; real earned upgrades and affordable shop purchases; 60 Hz obstacle-free simulation; not human win-rate evidence.",
+  "rules": {
+    "before": {
+      "spread": 5,
+      "enragedSpread": 5,
+      "dashDistance": 9.75,
+      "pattern": [
+        "spread",
+        "dash",
+        "summon"
+      ]
+    },
+    "after": {
+      "spread": 7,
+      "enragedSpread": 9,
+      "dashDistance": 12.75,
+      "pattern": [
+        "spread",
+        "dash",
+        "summon",
+        "dash"
+      ]
+    }
+  },
+  "before": [
+    {
+      "species": "yanrong",
+      "seed": 42,
+      "phase": "won",
+      "wave": 6,
+      "hp": 84,
+      "bossDefeated": true,
+      "bossSegments": [
+        {
+          "start": 365.02,
+          "end": 375.02,
+          "damage": 0,
+          "hits": 0
+        },
+        {
+          "start": 375.02,
+          "end": 390.03,
+          "damage": 24,
+          "hits": 1
+        },
+        {
+          "start": 390.03,
+          "end": 400.03,
+          "damage": 12,
+          "hits": 1
+        },
+        {
+          "start": 400.03,
+          "end": 413.13,
+          "damage": 0,
+          "hits": 0
+        }
+      ]
+    },
+    {
+      "species": "bubblesalamander",
+      "seed": 42,
+      "phase": "lost",
+      "wave": 5,
+      "hp": 0,
+      "bossDefeated": false,
+      "bossSegments": []
+    },
+    {
+      "species": "sproutspike",
+      "seed": 42,
+      "phase": "won",
+      "wave": 6,
+      "hp": 76,
+      "bossDefeated": true,
+      "bossSegments": [
+        {
+          "start": 365.02,
+          "end": 375.02,
+          "damage": 0,
+          "hits": 0
+        },
+        {
+          "start": 375.02,
+          "end": 390.03,
+          "damage": 0,
+          "hits": 0
+        },
+        {
+          "start": 390.03,
+          "end": 400.03,
+          "damage": 0,
+          "hits": 0
+        },
+        {
+          "start": 400.03,
+          "end": 415.03,
+          "damage": 12,
+          "hits": 1
+        },
+        {
+          "start": 415.03,
+          "end": 418.97,
+          "damage": 12,
+          "hits": 1
+        }
+      ]
+    },
+    {
+      "species": "yanrong",
+      "seed": 901,
+      "phase": "lost",
+      "wave": 6,
+      "hp": 0,
+      "bossDefeated": false,
+      "bossSegments": [
+        {
+          "start": 365,
+          "end": 375,
+          "damage": 0,
+          "hits": 0
+        },
+        {
+          "start": 375,
+          "end": 390.02,
+          "damage": 12,
+          "hits": 1
+        },
+        {
+          "start": 390.02,
+          "end": 400.02,
+          "damage": 0,
+          "hits": 0
+        },
+        {
+          "start": 400.02,
+          "end": 415.02,
+          "damage": 0,
+          "hits": 0
+        },
+        {
+          "start": 415.02,
+          "end": 427.02,
+          "damage": 0,
+          "hits": 0
+        },
+        {
+          "start": 427.02,
+          "end": 443.02,
+          "damage": 12,
+          "hits": 1
+        },
+        {
+          "start": 443.02,
+          "end": 447.03,
+          "damage": 21,
+          "hits": 2
+        }
+      ]
+    },
+    {
+      "species": "bubblesalamander",
+      "seed": 901,
+      "phase": "lost",
+      "wave": 4,
+      "hp": 0,
+      "bossDefeated": false,
+      "bossSegments": []
+    },
+    {
+      "species": "sproutspike",
+      "seed": 901,
+      "phase": "won",
+      "wave": 6,
+      "hp": 92,
+      "bossDefeated": true,
+      "bossSegments": [
+        {
+          "start": 365.02,
+          "end": 375.02,
+          "damage": 0,
+          "hits": 0
+        },
+        {
+          "start": 375.02,
+          "end": 390.03,
+          "damage": 0,
+          "hits": 0
+        },
+        {
+          "start": 390.03,
+          "end": 400.03,
+          "damage": 0,
+          "hits": 0
+        },
+        {
+          "start": 400.03,
+          "end": 415.03,
+          "damage": 28,
+          "hits": 2
+        },
+        {
+          "start": 415.03,
+          "end": 427.03,
+          "damage": 0,
+          "hits": 0
+        },
+        {
+          "start": 427.03,
+          "end": 427.88,
+          "damage": 0,
+          "hits": 0
+        }
+      ]
+    },
+    {
+      "species": "yanrong",
+      "seed": 20261021,
+      "phase": "won",
+      "wave": 6,
+      "hp": 104,
+      "bossDefeated": true,
+      "bossSegments": [
+        {
+          "start": 365.02,
+          "end": 375.02,
+          "damage": 0,
+          "hits": 0
+        },
+        {
+          "start": 375.02,
+          "end": 390.03,
+          "damage": 0,
+          "hits": 0
+        },
+        {
+          "start": 390.03,
+          "end": 400.03,
+          "damage": 0,
+          "hits": 0
+        },
+        {
+          "start": 400.03,
+          "end": 415.03,
+          "damage": 12,
+          "hits": 1
+        },
+        {
+          "start": 415.03,
+          "end": 427.03,
+          "damage": 0,
+          "hits": 0
+        },
+        {
+          "start": 427.03,
+          "end": 443.03,
+          "damage": 24,
+          "hits": 1
+        },
+        {
+          "start": 443.03,
+          "end": 449.03,
+          "damage": 0,
+          "hits": 0
+        },
+        {
+          "start": 449.03,
+          "end": 450.7,
+          "damage": 0,
+          "hits": 0
+        }
+      ]
+    },
+    {
+      "species": "bubblesalamander",
+      "seed": 20261021,
+      "phase": "fighting",
+      "wave": 6,
+      "hp": 49,
+      "bossDefeated": false,
+      "bossSegments": [
+        {
+          "start": 365.02,
+          "end": 375.02,
+          "damage": 0,
+          "hits": 0
+        },
+        {
+          "start": 375.02,
+          "end": 390.03,
+          "damage": 12,
+          "hits": 1
+        },
+        {
+          "start": 390.03,
+          "end": 400.03,
+          "damage": 12,
+          "hits": 1
+        },
+        {
+          "start": 400.03,
+          "end": 415.03,
+          "damage": 0,
+          "hits": 0
+        },
+        {
+          "start": 415.03,
+          "end": 427.03,
+          "damage": 0,
+          "hits": 0
+        },
+        {
+          "start": 427.03,
+          "end": 443.03,
+          "damage": 12,
+          "hits": 1
+        },
+        {
+          "start": 443.03,
+          "end": 449.03,
+          "damage": 0,
+          "hits": 0
+        },
+        {
+          "start": 449.03,
+          "end": 455,
+          "damage": 0,
+          "hits": 0
+        }
+      ]
+    },
+    {
+      "species": "sproutspike",
+      "seed": 20261021,
+      "phase": "lost",
+      "wave": 5,
+      "hp": 0,
+      "bossDefeated": false,
+      "bossSegments": []
+    }
+  ],
+  "after": [
+    {
+      "species": "yanrong",
+      "seed": 42,
+      "phase": "won",
+      "wave": 6,
+      "hp": 108,
+      "bossDefeated": true,
+      "bossSegments": [
+        {
+          "start": 365.02,
+          "end": 375.02,
+          "damage": 0,
+          "hits": 0
+        },
+        {
+          "start": 375.02,
+          "end": 390.03,
+          "damage": 12,
+          "hits": 1
+        },
+        {
+          "start": 390.03,
+          "end": 399.02,
+          "damage": 0,
+          "hits": 0
+        }
+      ]
+    },
+    {
+      "species": "bubblesalamander",
+      "seed": 42,
+      "phase": "lost",
+      "wave": 5,
+      "hp": 0,
+      "bossDefeated": false,
+      "bossSegments": []
+    },
+    {
+      "species": "sproutspike",
+      "seed": 42,
+      "phase": "won",
+      "wave": 6,
+      "hp": 4,
+      "bossDefeated": true,
+      "bossSegments": [
+        {
+          "start": 365.02,
+          "end": 375.02,
+          "damage": 0,
+          "hits": 0
+        },
+        {
+          "start": 375.02,
+          "end": 390.03,
+          "damage": 0,
+          "hits": 0
+        },
+        {
+          "start": 390.03,
+          "end": 400.03,
+          "damage": 0,
+          "hits": 0
+        },
+        {
+          "start": 400.03,
+          "end": 415.03,
+          "damage": 0,
+          "hits": 0
+        },
+        {
+          "start": 415.03,
+          "end": 427.03,
+          "damage": 24,
+          "hits": 1
+        },
+        {
+          "start": 427.03,
+          "end": 443.03,
+          "damage": 60,
+          "hits": 3
+        },
+        {
+          "start": 443.03,
+          "end": 449.03,
+          "damage": 12,
+          "hits": 1
+        },
+        {
+          "start": 449.03,
+          "end": 454.37,
+          "damage": 0,
+          "hits": 0
+        }
+      ]
+    },
+    {
+      "species": "yanrong",
+      "seed": 901,
+      "phase": "lost",
+      "wave": 6,
+      "hp": 0,
+      "bossDefeated": false,
+      "bossSegments": [
+        {
+          "start": 365,
+          "end": 375,
+          "damage": 0,
+          "hits": 0
+        },
+        {
+          "start": 375,
+          "end": 390.02,
+          "damage": 36,
+          "hits": 2
+        },
+        {
+          "start": 390.02,
+          "end": 400.02,
+          "damage": 0,
+          "hits": 0
+        },
+        {
+          "start": 400.02,
+          "end": 415.02,
+          "damage": 0,
+          "hits": 0
+        },
+        {
+          "start": 415.02,
+          "end": 421.3,
+          "damage": 9,
+          "hits": 1
+        }
+      ]
+    },
+    {
+      "species": "bubblesalamander",
+      "seed": 901,
+      "phase": "lost",
+      "wave": 4,
+      "hp": 0,
+      "bossDefeated": false,
+      "bossSegments": []
+    },
+    {
+      "species": "sproutspike",
+      "seed": 901,
+      "phase": "fighting",
+      "wave": 6,
+      "hp": 56,
+      "bossDefeated": false,
+      "bossSegments": [
+        {
+          "start": 365.02,
+          "end": 375.02,
+          "damage": 0,
+          "hits": 0
+        },
+        {
+          "start": 375.02,
+          "end": 390.03,
+          "damage": 0,
+          "hits": 0
+        },
+        {
+          "start": 390.03,
+          "end": 400.03,
+          "damage": 0,
+          "hits": 0
+        },
+        {
+          "start": 400.03,
+          "end": 415.03,
+          "damage": 8,
+          "hits": 1
+        },
+        {
+          "start": 415.03,
+          "end": 427.03,
+          "damage": 20,
+          "hits": 1
+        },
+        {
+          "start": 427.03,
+          "end": 443.03,
+          "damage": 28,
+          "hits": 2
+        },
+        {
+          "start": 443.03,
+          "end": 449.03,
+          "damage": 8,
+          "hits": 1
+        },
+        {
+          "start": 449.03,
+          "end": 455,
+          "damage": 0,
+          "hits": 0
+        }
+      ]
+    },
+    {
+      "species": "yanrong",
+      "seed": 20261021,
+      "phase": "won",
+      "wave": 6,
+      "hp": 44,
+      "bossDefeated": true,
+      "bossSegments": [
+        {
+          "start": 365.02,
+          "end": 375.02,
+          "damage": 0,
+          "hits": 0
+        },
+        {
+          "start": 375.02,
+          "end": 390.03,
+          "damage": 0,
+          "hits": 0
+        },
+        {
+          "start": 390.03,
+          "end": 400.03,
+          "damage": 12,
+          "hits": 1
+        },
+        {
+          "start": 400.03,
+          "end": 415.03,
+          "damage": 0,
+          "hits": 0
+        },
+        {
+          "start": 415.03,
+          "end": 427.03,
+          "damage": 48,
+          "hits": 2
+        },
+        {
+          "start": 427.03,
+          "end": 438.62,
+          "damage": 36,
+          "hits": 2
+        }
+      ]
+    },
+    {
+      "species": "bubblesalamander",
+      "seed": 20261021,
+      "phase": "lost",
+      "wave": 6,
+      "hp": 0,
+      "bossDefeated": false,
+      "bossSegments": [
+        {
+          "start": 365.02,
+          "end": 375.02,
+          "damage": 12,
+          "hits": 1
+        },
+        {
+          "start": 375.02,
+          "end": 390.03,
+          "damage": 12,
+          "hits": 1
+        },
+        {
+          "start": 390.03,
+          "end": 400.03,
+          "damage": 0,
+          "hits": 0
+        },
+        {
+          "start": 400.03,
+          "end": 415.03,
+          "damage": 36,
+          "hits": 2
+        },
+        {
+          "start": 415.03,
+          "end": 427.03,
+          "damage": 12,
+          "hits": 1
+        },
+        {
+          "start": 427.03,
+          "end": 432.57,
+          "damage": 13,
+          "hits": 2
+        }
+      ]
+    },
+    {
+      "species": "sproutspike",
+      "seed": 20261021,
+      "phase": "lost",
+      "wave": 5,
+      "hp": 0,
+      "bossDefeated": false,
+      "bossSegments": []
+    }
+  ]
+}

@@ -9,9 +9,9 @@ export function bladeStats(id: BladeId, level: number) {
   const n = Math.max(0, Math.min(4, Math.floor(level) - 1));
   return id === 'thorn-wheel'
     ? { count: n >= 2 ? 3 : 2, radius: 2.4 + n * .15, bladeRadius: .6 + n * .04,
-      speed: 2.4 + n * .12, range: 0, interval: 0, push: n >= 3, expand: n >= 4 }
-    : { count: 1, radius: 0, bladeRadius: .65 + n * .07, speed: 12,
-      range: 8 + n * .65, interval: 2.1 - n * .1, push: false, expand: false };
+      speed: 1.2 + n * .06, range: 0, interval: 0, push: n >= 3, expand: n >= 4 }
+    : { count: 1, radius: 0, bladeRadius: .70 + n * .10, speed: 12,
+      range: 8 + n * .65, interval: 2.0 - n * .09, push: false, expand: false };
 }
 export interface BladeSpec { level: number; tempo: number }
 interface BladeCast {
@@ -91,7 +91,7 @@ export class BladeWeapons {
       dx: dx / length, dz: dz / length, distance: 0, returning: false,
       duration: id === 'thorn-wheel' ? Math.PI * 2 / (stats.speed * tempo) : 4,
       rotation: 0, radius: id === 'thorn-wheel' ? attack.range : 0,
-      bladeRadius: stats.bladeRadius * Math.min(1.6, attack.rules.areaMultiplier), count: stats.count,
+      bladeRadius: stats.bladeRadius * Math.min(1.4, attack.rules.areaMultiplier), count: stats.count,
       speed: stats.speed * (id === 'thorn-wheel' ? tempo : 1), range: attack.range,
       expand: stats.expand, push: stats.push, copied, damage: attack.damage * attack.rules.directMultiplier,
       source: this.host.source(attack, copied) });
@@ -122,7 +122,7 @@ export class BladeWeapons {
   private stepWheel(cast: BladeCast, index: number, dt: number, origin: { x: number; z: number }) {
     const oldAge = cast.age;
     cast.age = Math.min(cast.duration, cast.age + dt);
-    const radiusAt = (age: number) => cast.radius + (cast.expand ? .85 * Math.sin(Math.PI * age / cast.duration) ** 4 : 0);
+    const radiusAt = (age: number) => cast.radius + (cast.expand ? .6 * Math.sin(Math.PI * age / cast.duration) ** 4 : 0);
     for (let j = 0; j < cast.count; j++) {
       if (this.host.stopped()) return;
       const pose = this.wheels[index + j], phase = j / cast.count * Math.PI * 2;
@@ -130,7 +130,7 @@ export class BladeWeapons {
       const ax = cast.x + Math.cos(before) * radiusAt(oldAge), az = cast.z + Math.sin(before) * radiusAt(oldAge);
       const bx = origin.x + Math.cos(after) * radiusAt(cast.age), bz = origin.z + Math.sin(after) * radiusAt(cast.age);
       Object.assign(pose, { active: true, previousX: ax, previousZ: az, x: bx, z: bz,
-        angle: -cast.age * 6 - phase, size: cast.bladeRadius * 2, copied: cast.copied });
+        angle: -cast.age * 3 - phase, size: cast.bladeRadius * 2, copied: cast.copied });
       this.contacts(cast, ax, az, bx, bz, origin);
     }
     cast.x = origin.x; cast.z = origin.z; cast.rotation = cast.age * cast.speed;
@@ -172,7 +172,7 @@ export class BladeWeapons {
       ids[i] = e.id; cast.hitAt[i] = this.elapsed + .55;
       if (wheel && !cast.copied) { this.wheelIds[i] = e.id; this.wheelReady[i] = this.elapsed + .55; }
       if (!wheel) e.slowTime = Math.max(e.slowTime ?? 0, cast.source!.rules.slowDuration);
-      this.host.damage(e, cast.damage * (e.rank === 'boss' ? .4 : e.rank === 'elite' ? .7 : 1), cast.source!);
+      this.host.damage(e, cast.damage * (e.rank === 'boss' ? (wheel ? .55 : .60) : e.rank === 'elite' ? (wheel ? .7 : .75) : 1), cast.source!);
       this.telemetry.hits++;
       if (!wheel) this.telemetry[cast.returning ? 'returnHits' : 'outboundHits']++;
       if (wheel && cast.push && e.active && !e.rank) {

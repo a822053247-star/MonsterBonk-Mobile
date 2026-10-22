@@ -8,7 +8,7 @@ export const ICE_LIMITS = { rings: 2, trails: 24, stride: 1, tick: .5, ringDurat
 export function iceSkillStats(id: IceSkill, rank: number) {
   const n = Math.max(0, Math.min(4, Math.floor(rank) - 1));
   return id === 'shatter-ring'
-    ? { damage: 24 * (1 + .2 * n), radius: 3.4 + .3 * n, duration: .6, interval: 5 - .2 * n }
+    ? { damage: 26 * (1 + .2 * n), radius: 3.2 + .3 * n, duration: .6, interval: 5 - .2 * n }
     : { damage: 5 * (1 + .2 * n), radius: .6 + .05 * n, duration: 3 + .4 * n, interval: .5 };
 }
 interface Point { x: number; z: number }
@@ -86,7 +86,7 @@ export class IceSkills {
           || this.host.covered(ring.x, ring.z, enemy.x, enemy.z)) continue;
         ring.hits[i] = enemy.id;
         const frozen = (enemy.freezeTime ?? 0) > 0;
-        const damage = ring.damage * (frozen ? 1.5 : 1) * this.rankFactor(enemy);
+        const damage = ring.damage * (frozen ? 1.5 : 1) * this.rankFactor(enemy, true);
         this.host.damage(enemy, damage, { ...ring.source!, rootDamage: damage });
         this.telemetry.ringHits++; if (frozen) this.telemetry.shatters++;
       }
@@ -106,7 +106,7 @@ export class IceSkills {
           if (!best || patch.damage > best.damage) best = patch;
         }
         if (best) {
-          const damage = best.damage * this.rankFactor(enemy);
+          const damage = best.damage * this.rankFactor(enemy, false);
           this.host.damage(enemy, damage, { ...best.source!, rootDamage: damage }); this.telemetry.trailHits++;
         }
       }
@@ -117,7 +117,7 @@ export class IceSkills {
     }
   }
   private eligible(enemy: Enemy) { return enemy.active && enemy.spawnTime <= 0 && enemy.hp > 0; }
-  private rankFactor(enemy: Enemy) { return enemy.rank === 'boss' ? .4 : enemy.rank === 'elite' ? .7 : 1; }
+  private rankFactor(enemy: Enemy, ring: boolean) { return enemy.rank === 'boss' ? (ring ? .55 : .45) : enemy.rank === 'elite' ? .7 : 1; }
   clear() {
     for (const c of [...this.rings, ...this.trails]) { c.active = false; c.source = undefined; }
     this.previous = undefined; this.distance = 0; this.nextTick = this.elapsed + ICE_LIMITS.tick; this.ringClock = 0;

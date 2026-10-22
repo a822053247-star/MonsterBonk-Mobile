@@ -2,12 +2,12 @@ import type { Enemy } from './combat';
 import type { RelicDamageSource } from './relics';
 
 export const DREAM_RULES = { markDuration: 4, resonanceDuration: 4, resonanceCap: 6, linkRange: 4,
-  linkTargets: 3, transfer: .65, bloom: 1.6, bloomRadius: 2.2, effects: 64, queued: 64, wavesPerTick: 32 } as const;
+  linkTargets: 3, transfer: .65, bloom: 1.6, bloomRadius: 2.6, effects: 64, queued: 64, wavesPerTick: 32 } as const;
 export const isDreamWeapon = (id?: string) => id === 'dream-dart' || id === 'resonance-seed';
 export function seedPierces(level: number) { return 2 + (level >= 3 ? 1 : 0) + (level >= 5 ? 1 : 0); }
 export function dreamEchoStats(rank: number) {
   const n = Math.max(0, Math.min(4, Math.floor(rank) - 1));
-  return { damage: 16 * (1 + n * .2), radius: 2 + n * .12, interval: 4.6 - n * .2, extension: 1 + n * .15 };
+  return { damage: 18 * (1 + n * .2), radius: 2 + n * .12, interval: 4.6 - n * .2, extension: 1 + n * .15 };
 }
 interface DreamHost {
   enemies(): readonly Enemy[]; origin(): { x: number; z: number }; stopped(): boolean;
@@ -45,7 +45,7 @@ export class DreamCombat {
       enemy.dreamStacks = Math.min(3, (enemy.dreamStacks ?? 0) + 1); enemy.dreamTime = DREAM_RULES.markDuration;
       if (enemy.dreamStacks === 3) {
         enemy.dreamStacks = 0; enemy.dreamTime = 0;
-        const radius = DREAM_RULES.bloomRadius * Math.min(1.6, source.rules.areaMultiplier);
+        const radius = Math.min(3.6, DREAM_RULES.bloomRadius * Math.min(1.6, source.rules.areaMultiplier));
         if (this.enqueue({ kind: 'bloom', x: enemy.x, z: enemy.z, radius, damage: damage * DREAM_RULES.bloom,
           source: this.derived(source, 'bloom') })) {
           this.telemetry.blooms++; this.effect('bloom', enemy.x, enemy.z, radius); this.host.sound();
@@ -106,7 +106,7 @@ export class DreamCombat {
           const event = this.effect('link', wave.x, wave.z, 0);
           if (event) { event.tx = enemy.x; event.tz = enemy.z; }
         }
-        const damage = wave.damage * (enemy.rank === 'boss' ? .4 : enemy.rank === 'elite' ? .7 : 1);
+        const damage = wave.damage * (enemy.rank === 'boss' ? (wave.kind === 'pulse' ? .55 : .5) : enemy.rank === 'elite' ? .7 : 1);
         this.host.damage(enemy, damage, { ...wave.source, rootDamage: damage });
         if (wave.kind === 'pulse' && enemy.active && (enemy.resonanceTime ?? 0) > 0) {
           enemy.resonanceTime = Math.min(DREAM_RULES.resonanceCap, enemy.resonanceTime! + wave.extension!);

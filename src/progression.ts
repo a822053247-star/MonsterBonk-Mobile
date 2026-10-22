@@ -1,7 +1,8 @@
 import {WEAPON_PAIR_RECIPES,PAIR_IDS,type PairSkillId,type WeaponPairId} from './weapon-pair-fusion';
+import { buildExperienceThreshold } from './balance';
 import { factoryRelic } from './content/relic-registry';
 import { meetsRequirements, type ContentSkillId } from './content/content-types';
-import type { RunBuild } from './run-build';
+import { ATTACKS, type RunBuild } from './run-build';
 import type { BaseAttackId } from './fusion';
 import { flameSweepStats } from './flame-sweep';
 import { bladeStats, isBlade } from './blade-weapons';
@@ -88,27 +89,27 @@ const POSITION_CARDS: readonly SkillDefinition[] = POSITION_IDS.map(id => ({
 const ICE_CARDS: readonly SkillDefinition[] = ICE_SKILL_IDS.map(id => ({
   id, title: ICE_SKILL_NAMES[id], benefit: id === 'shatter-ring' ? '扩散冰环 · 冻结目标额外伤害' : '移动铺冰 · 持续伤害与减速',
   description: (id === 'shatter-ring'
-    ? '每5秒从角色位置释放碎冰震环，对扫过的敌人造成24伤害，同次只命中一次；已冻结目标额外承受50%伤害，保留剩余冻结时间。升级提高伤害和范围，缩短间隔。'
+    ? '每5秒从角色位置释放碎冰震环，对扫过的敌人造成26伤害，同次只命中一次；已冻结目标额外承受50%伤害，保留剩余冻结时间。升级提高伤害和范围，缩短间隔。'
     : '移动每1米留下一段冰川滑痕，持续3秒，每0.5秒造成5伤害并施加霜寒。站立不铺冰，重叠区域不叠加跳伤；最多24段，满池替换最旧冰痕。升级提高伤害、宽度和持续时间。')
     + ' 冰系命中可与湿润组合冻结；精英承受70%、首领40%伤害。独立技能，不占武器槽，最高5级。',
   maxRank: 5, icon: 'wave', color: '#9de5ff', effect: { type: 'spell', levels: [{}, {}, {}, {}, {}] },
 }));
 const BUILD_SKILLS: readonly SkillDefinition[] = [...SKILLS, ...WATER_AOE_CARDS, ...POSITION_CARDS, ...ICE_CARDS,
-  { ...BUBBLE_WEAPON, id: 'dream-dart-weapon', title: '获得绯梦弹', benefit: '叠加梦印 · 三层绽放', description: '自动发射14伤害粉色光弹，命中添加1层梦印，持续4秒；同一目标积满3层后清空梦印，绽放造成160%本次命中伤害，半径2.2。绽放不会继续叠梦印。武器最高5级，每级伤害+14%；占用武器槽。', icon: 'spark', color: '#ff80c7' },
+  { ...BUBBLE_WEAPON, id: 'dream-dart-weapon', title: '获得绯梦弹', benefit: '叠加梦印 · 三层绽放', description: '自动发射14伤害粉色光弹，命中添加1层梦印，持续4秒；同一目标积满3层后清空梦印，绽放造成160%本次命中伤害，半径2.6。绽放不会继续叠梦印。武器最高5级，每级伤害+14%；占用武器槽。', icon: 'spark', color: '#ff80c7' },
   { ...BUBBLE_WEAPON, id: 'resonance-seed-weapon', title: '获得共鸣花种', benefit: '穿透挂印 · 击杀传伤', description: '自动发射15伤害花种，穿透3个目标，施加4秒共鸣印记。带印敌人被击败时，向4米内最多3名带共鸣印记的敌人传递65%花种命中伤害。传伤击杀不会再次传递，障碍阻挡。3级穿透4个、5级5个目标，每级伤害+14%；占用武器槽。', icon: 'leaf', color: '#f797df' },
-  { id: 'sakura-echo', title: '绯樱回响', benefit: '梦印扩圈 · 延长共鸣', description: '每4.6秒选取10米内带梦印或共鸣印记的敌人，优先梦印较多者，释放16伤害粉色脉冲。基础半径2，每层梦印增加0.55；不消耗梦印。命中仍存活的共鸣目标时，印记延长1秒，剩余时长最多6秒。升级提高伤害、范围、延长时间并缩短间隔；最高5级，不占武器槽。粉色派生范围伤害对精英70%、首领40%。', maxRank: 5, icon: 'spark', color: '#ff91d1', effect: { type: 'spell', levels: [{}, {}, {}, {}, {}] } },
+  { id: 'sakura-echo', title: '绯樱回响', benefit: '梦印扩圈 · 延长共鸣', description: '每4.6秒选取10米内带梦印或共鸣印记的敌人，优先梦印较多者，释放18伤害粉色脉冲。基础半径2，每层梦印增加0.55；不消耗梦印。命中仍存活的共鸣目标时，印记延长1秒，剩余时长最多6秒。升级提高伤害、范围、延长时间并缩短间隔；最高5级，不占武器槽。粉色派生范围伤害对精英70%、首领40%。', maxRank: 5, icon: 'spark', color: '#ff91d1', effect: { type: 'spell', levels: [{}, {}, {}, {}, {}] } },
   { ...BUBBLE_WEAPON, id: 'frost-crystal-weapon', title: '获得霜晶弹', benefit: '冰晶减速 · 与水系命中组合冻结', description: '自动发射16伤害冰晶，霜寒使普通敌人减速35%，持续1.6秒。湿润与霜寒相遇时消耗湿润：普通怪冻结1.25秒，精英0.45秒；首领只减速。先水后冰或先冰后水均可触发，解冻后抗性2.5秒。3级可额外穿透1名、5级2名；每级伤害+14%、间隔略缩短。副武器受槽位间隔系数影响。', icon: 'wave', color: '#9de5ff' },
-  { ...BUBBLE_WEAPON, id: 'thunder-bud-weapon', title: '获得雷芽连锁', benefit: '黄色雷芽放电 · 最多连击3个不同目标', description: '每1.3秒自动锁定附近敌人，短暂蓄电后造成22点电系伤害，再跳向3.2范围内的其他敌人。每跳保留82%伤害，升级逐步提高至90%；同次施放不重复命中，最高级最多6个目标。升级提高伤害、跳跃距离并缩短间隔。障碍和出生保护阻挡选敌；分枝、分裂、连锁不额外复制攻击。', icon: 'spark', color: '#ffe26b' },
+  { ...BUBBLE_WEAPON, id: 'thunder-bud-weapon', title: '获得雷芽连锁', benefit: '黄色雷芽放电 · 最多连击3个不同目标', description: '每1.25秒自动锁定附近敌人，短暂蓄电后造成22点电系伤害，再跳向3.2范围内的其他敌人。每跳保留80%伤害，升级逐步提高至88%；同次施放不重复命中，最高级最多6个目标。升级提高伤害、跳跃距离并缩短间隔。障碍和出生保护阻挡选敌；分枝、分裂、连锁不额外复制攻击。', icon: 'spark', color: '#ffe26b' },
   { ...BUBBLE_WEAPON, id: 'thorn-wheel-weapon', title: '获得环刃荆轮', benefit: '双荆轮绕身切割 · 3级增加第三枚', description: '两枚荆轮沿轨道切割，每次命中伤害14；同一敌人每0.55秒最多受一次主荆轮伤害。3级三枚、4级轻推普通怪、5级周期扩圈。轨道中心留空隙，不提供护盾；不穿障碍。攻速加快公转，分枝、分裂、连锁不复制荆轮。精英承受70%、首领40%伤害。', icon: 'orbit', color: '#b6db65' },
-  { ...BUBBLE_WEAPON, id: 'tidal-blade-weapon', title: '获得回旋潮刃', benefit: '宽刃穿透敌群 · 往返各命中一次', description: '自动朝附近敌人掷出水刃，伤害26、射程8、间隔2.1秒。飞至远端后追随角色返回；同一敌人去程和回程各命中一次并减速。升级扩大刃面、增加射程并缩短间隔；障碍阻挡伤害，不阻止回收。分枝、分裂、连锁不复制水刃。精英承受70%、首领40%伤害。', icon: 'wave', color: '#72dfff' },
-  { id: 'screen-barrage', title: '星雨弹幕', benefit: '每5秒释放12道弹幕 · 环形/扇形/交叉轮换', description: '升级至18/24道，分2/3轮发射。每道最多命中3个目标，穿透伤害保留80%；同次施法对每个目标只直接命中一次。弹幕穿越障碍，精英受到70%、首领受到40%伤害。', maxRank: 3, icon: 'battle', color: '#ffcd87', effect: { type: 'spell', levels: [{}, {}, {}] } },
-  { id: 'screen-nova', title: '星陨爆发', benefit: '每12秒轰击当前全屏 · 伤害85', description: '短暂预警后，对爆发瞬间镜头内的敌人造成一次伤害，穿越障碍。精英受到70%、首领受到40%伤害。每级伤害增加25%，可触发有限元素击杀协同。', maxRank: 3, icon: 'wave', color: '#ffcb70', effect: { type: 'spell', levels: [{}, {}, {}] } },
-  { ...BUBBLE_WEAPON, id: 'flame-sweep-weapon', title: '获得火焰横扫', benefit: '扇形火浪 · 升级扩大覆盖', description: '向附近敌人展开一片火焰：伤害 36、半径 2.8、180°、间隔 0.72 秒。升级逐步扩大火浪，5 级覆盖一整圈；每次只有一次横扫。对精英和首领造成 70% 伤害；不穿障碍，分枝、分裂和连锁不复制攻击。', icon: 'battle', color: '#ff8c35' },
+  { ...BUBBLE_WEAPON, id: 'tidal-blade-weapon', title: '获得回旋潮刃', benefit: '宽刃穿透敌群 · 往返各命中一次', description: '自动朝附近敌人掷出水刃，伤害28、射程8、间隔2秒。飞至远端后追随角色返回；同一敌人去程和回程各命中一次并减速。升级扩大刃面、增加射程并缩短间隔；障碍阻挡伤害，不阻止回收。分枝、分裂、连锁不复制水刃。精英承受70%、首领40%伤害。', icon: 'wave', color: '#72dfff' },
+  { id: 'screen-barrage', title: '星雨弹幕', benefit: '每5.5秒释放12道弹幕 · 环形/扇形/交叉轮换', description: '升级至18/24道，分2/3轮发射。每道最多命中3个目标，穿透伤害保留80%；同次施法对每个目标只直接命中一次。弹幕穿越障碍，精英受到70%、首领受到40%伤害。', maxRank: 3, icon: 'battle', color: '#ffcd87', effect: { type: 'spell', levels: [{}, {}, {}] } },
+  { id: 'screen-nova', title: '星陨爆发', benefit: '每12秒轰击当前全屏 · 伤害90', description: '短暂预警后，对爆发瞬间镜头内的敌人造成一次伤害，穿越障碍。精英受到70%、首领受到40%伤害。每级伤害增加25%，可触发有限元素击杀协同。', maxRank: 3, icon: 'wave', color: '#ffcb70', effect: { type: 'spell', levels: [{}, {}, {}] } },
+  { ...BUBBLE_WEAPON, id: 'flame-sweep-weapon', title: '获得火焰横扫', benefit: '扇形火浪 · 升级扩大覆盖', description: '向附近敌人展开一片火焰：伤害 34、半径 2.8、180°、间隔 0.76 秒。升级逐步扩大火浪，5 级覆盖一整圈；每次只有一次横扫。对精英和首领造成 70% 伤害；不穿障碍，分枝、分裂和连锁不复制攻击。', icon: 'battle', color: '#ff8c35' },
   { ...FUSION_SKILLS[FUSION_SKILLS.length - 1], benefit: '火花爆炸分裂 / 飞叶弹散射', description: '所有已装备火花弹自动形成爆裂火种，飞叶弹形成荆棘散射；派生最多一代，可与连锁共存。' },
   AREA_CARD, CHAIN_CARD,
-  { ...BUBBLE_WEAPON, description: '独立自动释放水泡弹，命中减速 30%，持续 1.5 秒。副武器一 / 二的攻击间隔分别为基础的 1.6 / 1.9 倍。' },
-  { ...BUBBLE_WEAPON, id: 'spark-weapon', title: '获得火花弹', benefit: '增加火系独立自动攻击', description: '装备火花弹，基础伤害 18。获得命中分裂后自动融合爆裂火种。副武器间隔按槽位为基础的 1.6 / 1.9 倍。', icon: 'spark', color: '#ff9849' },
-  { ...BUBBLE_WEAPON, id: 'leaf-weapon', title: '获得飞叶弹', benefit: '增加草系独立自动攻击 · 穿透', description: '装备飞叶弹，基础伤害 16，可穿透一名额外敌人。支持命中分裂与连锁弹射，副武器间隔按槽位为基础的 1.6 / 1.9 倍。', icon: 'leaf', color: '#70bc52' },
+  { ...BUBBLE_WEAPON, description: '独立自动释放水泡弹，命中减速 30%，持续 1.5 秒。副武器一 / 二的攻击间隔分别为基础的 1.35 / 1.55 倍。' },
+  { ...BUBBLE_WEAPON, id: 'spark-weapon', title: '获得火花弹', benefit: '增加火系独立自动攻击', description: '装备火花弹，基础伤害 18。获得命中分裂后自动融合爆裂火种。副武器间隔按槽位为基础的 1.35 / 1.55 倍。', icon: 'spark', color: '#ff9849' },
+  { ...BUBBLE_WEAPON, id: 'leaf-weapon', title: '获得飞叶弹', benefit: '增加草系独立自动攻击 · 穿透', description: '装备飞叶弹，基础伤害 16，可穿透一名额外敌人。支持命中分裂与连锁弹射，副武器间隔按槽位为基础的 1.35 / 1.55 倍。', icon: 'leaf', color: '#70bc52' },
 ];
 const RARE_SKILLS: readonly SkillDefinition[] = [
   ...Object.entries(RELICS).map(([id, data]) => ({ ...data, id: id as RelicId, category: 'relic' as const, description: 'description' in data ? data.description : '获得后本局持续生效，同一道具不能重复获得。', maxRank: 1, effect: { type: 'spell' as const, levels: [{}] } })),
@@ -120,10 +121,58 @@ const PAIR_SKILLS:readonly SkillDefinition[]=[
 ];
 const WATER_EVOLUTION_CARDS: readonly SkillDefinition[] = WATER_EVOLUTION_IDS.map(id => ({
   id, title: WATER_EVOLUTIONS[id].title, benefit: WATER_EVOLUTIONS[id].benefit,
-  description: WATER_EVOLUTIONS[id].description + ' 条件：' + WATER_EVOLUTIONS[id].requirement + '；选择后接替两项基础攻击，材料锁定，本局不能再用于其他进化。精英受到70%、首领受到40%伤害。',
+  description: WATER_EVOLUTIONS[id].description + ' 条件：' + WATER_EVOLUTIONS[id].requirement + `；选择后接替两项基础攻击，材料锁定，本局不能再用于其他进化。精英受到70%、首领受到${id === 'astral-wheel' || id === 'frost-prism' ? 50 : 55}%伤害。`,
   category: 'evolution', maxRank: 1, icon: id === 'undertow-pyre' ? 'leaf' : 'wave', color: id === 'undertow-pyre' ? '#c6ec65' : '#88deff', effect: { type: 'spell', levels: [{}] },
 }));
-const RUN_SKILLS = [...BUILD_SKILLS.map(skill => WEAPON_CARDS[skill.id] ? { ...skill, maxRank: 5 } : skill), ...RARE_SKILLS, ...PAIR_SKILLS, ...WATER_EVOLUTION_CARDS];
+/** Numeric card copy follows simulation functions, never stale hand-copied damage. */
+function buildSkillCopy(skill: SkillDefinition): SkillDefinition {
+  const weapon=WEAPON_CARDS[skill.id], number=(n:number)=>Number(n.toFixed(2));
+  if(weapon){
+    const base=ATTACKS[weapon];
+    const mechanics:Record<BaseAttackId,string>={
+      spark:'获得命中分裂后形成爆裂火种；每级伤害+16%。',bubble:'减速30%、持续1.5秒，每级延长0.1秒；湿润2.4秒，每级伤害+18%。',
+      leaf:'基础额外穿透1名，3级额外穿透2名；每级伤害+16%。',
+      'flame-sweep':'火浪逐级扩大，5级半径5、360°；精英/首领70%伤害；分枝、分裂、连锁不复制。',
+      'thorn-wheel':'2枚公转，3级3枚；同敌0.55秒门限；5级扩圈。精英70%、首领55%；不提供护盾。',
+      'tidal-blade':'往返各命中一次；刃半径0.7至1.1；5级射程10.6、间隔1.64秒。精英75%、首领60%。',
+      'thunder-bud':'蓄电0.12秒，最多3至6名不同目标；跳距3.2至4，每跳保留80%至88%；5级间隔1.09秒。',
+      'frost-crystal':'霜寒持续1.6秒，水冰组合冻结普通1.25秒/精英0.45秒，Boss只减速；解冻抗性2.5秒。',
+      'dream-dart':'梦印4秒，三层绽放160%本次伤害，半径2.6；派生精英70%、首领50%，不递归。',
+      'resonance-seed':'共鸣印4秒，总穿透3至5目标；击杀向4单位内最多3名含印敌传伤65%，不递归。',
+    };
+    return {...skill,maxRank:5,description:`基础伤害${base.damage}，${weapon==='thorn-wheel'?'持续公转':`间隔${number(base.interval)}秒`}。${mechanics[weapon]}`
+      + (base.kind === 'projectile' ? ' 副槽间隔×1.35/1.55；额外主弹75%伤害。' : ' 分枝魔法不增加攻击数量。')};
+  }
+  let stats:ReturnType<typeof waterStats>|ReturnType<typeof positionStats>|ReturnType<typeof iceSkillStats>|undefined;
+  if(WATER_AOE_IDS.includes(skill.id as WaterSkill))stats=waterStats(skill.id as WaterSkill,1);
+  if(POSITION_IDS.includes(skill.id as PositionSkill))stats=positionStats(skill.id as PositionSkill,1);
+  if(ICE_SKILL_IDS.includes(skill.id as IceSkill))stats=iceSkillStats(skill.id as IceSkill,1);
+  if(stats){
+    const mechanics:Record<string,string>={
+      'azure-burst':'聚光0.16秒后震爆一次，首领55%。','star-tide':'1/3/5级为1/2/3圈，每圈同敌一次，首领50%。',
+      'still-sea':'每0.5秒跳伤、减速；同类领域重叠不叠伤，首领45%。','returning-ring':'随身水环每0.5秒跳伤与减速，不提供护盾，首领45%。',
+      'abyss-vortex':'每0.5秒跳伤，普通拉速1.2、精英0.25，Boss不位移，首领45%。',
+      'ice-radiance':'光束/扩张圆环交替，8至16束，同次同敌一次，按水来源，首领55%。',
+      'spore-trail':'移动1.2单位生成足迹，站立不生成，每0.5秒跳伤，最多16块；重叠不叠跳，首领45%。',
+      'tidal-recall':'往返各命中一次，回程吸引已有经验，首领60%。',
+      'shatter-ring':'冻结目标额外50%伤害，同次同敌一次，不消耗冻结，首领55%。',
+      'glacier-trail':'移动每1单位铺冰，每0.5秒跳伤并附霜寒，最多24段，重叠不叠伤，首领45%。',
+    };
+    const cadence = skill.id === 'glacier-trail' ? '移动铺冰，每0.5秒跳伤。'
+      : skill.id === 'spore-trail' ? '移动生成足迹。'
+      : stats.interval ? `周期${number(stats.interval)}秒。` : '持续存在。';
+    return {...skill,description:`1级每次/每跳${number(stats.damage)}伤害，半径${number(stats.radius)}，${cadence}${mechanics[skill.id]} 精英70%伤害。独立技能最高5级，享受全局魔力，不占武器槽。`};
+  }
+  if(skill.id==='range')return {...skill,benefit:'攻击范围 +12%',description:'每级增加锁敌范围/飞行距离12%，显示和命中使用同一快照，受最终射程上限限制。'};
+  if(skill.id==='multishot')return {...skill,description:'每轮额外1枚主投射物，最多4枚；第1枚100%、额外每枚75%伤害，派生读取各自快照。'};
+  if(skill.id==='sakura-echo')return {...skill,description:'1级18伤害、半径2、周期4.6秒；每层梦印增半径0.55，共鸣延长1秒，剩余最多6秒。精英70%、首领55%，最高5级。'};
+  if(skill.id==='screen-nova')return {...skill,description:'每12秒对当前全屏轰击90/112.5/135伤害；0.45秒预警，同次一次，精英70%、首领40%。'};
+  if(skill.id==='screen-barrage')return {...skill,benefit:'每5.5秒发射12/18/24道弹幕',description:'每道22伤害，分1/2/3轮，同次同敌只直击一次；每道穿透3目标、各跳保留80%；精英70%、首领40%。'};
+  if(skill.id==='orbit')return {...skill,description:'1/2/3颗伴星，伤害12/17/22，轨道2.1/2.3/2.5；同敌0.55秒门限，享受全局魔力，精英70%、首领55%。'};
+  if(skill.id==='shockwave')return {...skill,description:'伤害24/34/44、半径3.8/4.6/5.4、周期4.8/4.3/3.8秒；同波同敌一次，享受全局魔力，精英70%、首领55%。'};
+  return skill;
+}
+const RUN_SKILLS = [...BUILD_SKILLS.map(buildSkillCopy), ...RARE_SKILLS, ...PAIR_SKILLS, ...WATER_EVOLUTION_CARDS];
 const ALL_SKILLS = RUN_SKILLS;
 export const EXPERIENCE = { initial: 8, increment: 4 } as const;
 export const MAX_LEVEL = 1 + SKILLS.reduce((total, skill) => total + skill.maxRank, 0);
@@ -135,32 +184,53 @@ export function emptyRanks(): SkillRanks {
 export function experienceThreshold(level: number) {
   return level >= MAX_LEVEL ? Infinity : EXPERIENCE.initial + Math.max(0, level - 1) * EXPERIENCE.increment;
 }
-export function calculateStats(ranks: SkillRanks): Readonly<SkillStats> {
+export function calculateStats(ranks: SkillRanks, formal = false): Readonly<SkillStats> {
   const stats: SkillStats = { damageMultiplier: 1, attackRateMultiplier: 1, projectileCount: 1, maxHp: 100, moveMultiplier: 1, rangeMultiplier: 1, orbitCount: 0, orbitDamage: 0, orbitRadius: 0, orbitSpeed: 0, shockDamage: 0, shockRadius: 0, shockInterval: 0, splitOnHit: 0 };
   for (const skill of ALL_SKILLS) {
     const rank = Math.min(skill.maxRank, Math.max(0, Math.floor(ranks[skill.id] || 0)));
     if (skill.effect.type === 'add') stats[skill.effect.stat] += rank * skill.effect.perRank;
     else if (rank > 0) Object.assign(stats, skill.effect.levels[rank - 1]);
   }
+  if (formal) {
+    stats.rangeMultiplier = 1 + .12 * Math.min(5, Math.max(0, ranks.range || 0));
+    const orbit = Math.min(3,Math.max(0,ranks.orbit || 0));
+    if (orbit) { stats.orbitDamage=[12,17,22][orbit-1]; stats.orbitRadius=[2.1,2.3,2.5][orbit-1]; }
+    const shock = Math.min(3,Math.max(0,ranks.shockwave || 0));
+    if (shock) stats.shockInterval=[4.8,4.3,3.8][shock-1];
+  }
   return Object.freeze(stats);
 }
 
-export function upgradePreview(skill: SkillDefinition, ranks: SkillRanks) {
+export function upgradePreview(skill: SkillDefinition, ranks: SkillRanks, formal = false) {
   if (ranks[skill.id] >= skill.maxRank) return;
-  const before = calculateStats(ranks), after = calculateStats({ ...ranks, [skill.id]: ranks[skill.id] + 1 });
+  const before = calculateStats(ranks, formal), after = calculateStats({ ...ranks, [skill.id]: ranks[skill.id] + 1 }, formal);
   if (skill.effect.type === 'add') {
     const stat = skill.effect.stat;
     const format = (value: number) => skill.effect.type === 'add' && skill.effect.percent ? `${Math.round(value * 100)}%` : String(value);
     return `${format(before[stat])} → ${format(after[stat])}`;
   }
   if (skill.category === 'relic') return '稀有道具 · 本局生效';
+  const pair = PAIR_IDS.find(id => skill.id === `${id}-weapon`);
+  if (pair) {
+    const recipe=WEAPON_PAIR_RECIPES[pair], rank=ranks[skill.id];
+    const damage=(level:number)=>Number((recipe.damage*(1+recipe.growth*(level-3))).toFixed(2));
+    const radius=(level:number)=>Math.min(2.8,recipe.radius+(pair==='blazing-thorn'?0:.2*(level-3)));
+    return `${rank} → ${rank+1}级 · 基础直击 ${damage(rank)} → ${damage(rank+1)} · 间隔 ${recipe.interval}秒不变`
+      +(recipe.radius?` · 爆炸半径 ${radius(rank).toFixed(2)} → ${radius(rank+1).toFixed(2)}`:'');
+  }
   if (isWaterEvolution(skill.id)) return WATER_EVOLUTIONS[skill.id].requirement + ' · 组合进化';
   if (skill.category === 'evolution') return '互斥进化 · 本局不可切换';
   if (WATER_AOE_IDS.includes(skill.id as WaterSkill)) {
     const rank = ranks[skill.id], next = waterStats(skill.id as WaterSkill, rank + 1);
     return `${rank ? rank + '级' : '未习得'} → ${rank + 1}级 · 半径 ${next.radius.toFixed(1)} · ${next.damage.toFixed(1)}伤害${skill.id === 'star-tide' ? ' · ' + next.waves + '环' : ''}`;
   }
-  if (WEAPON_CARDS[skill.id]) return skill.title.includes('强化') ? `武器 ${ranks[skill.id]} → ${ranks[skill.id] + 1}级` : `空副武器槽 → ${skill.title.replace('获得', '')} · 独立自动攻击`;
+  const weapon = WEAPON_CARDS[skill.id];
+  if (weapon) {
+    const rank = ranks[skill.id];
+    if (!rank) return `空副武器槽 → ${skill.title.replace('获得', '')} · 独立自动攻击`;
+    const damage = (level: number) => Number((ATTACKS[weapon].damage * (1 + WEAPON_DAMAGE_PER_LEVEL[weapon] * (level - 1))).toFixed(2));
+    return `武器 ${rank} → ${rank + 1}级 · 基础伤害 ${damage(rank)} → ${damage(rank + 1)}`;
+  }
   if (skill.id === 'sakura-echo') {
     const rank = ranks[skill.id], stats = dreamEchoStats(rank + 1);
     return `${rank ? rank + '级' : '未习得'} → ${rank + 1}级 · ${stats.damage.toFixed(1)}伤害 · ${stats.interval.toFixed(1)}秒/次`;
@@ -174,8 +244,8 @@ export function upgradePreview(skill: SkillDefinition, ranks: SkillRanks) {
     return `${rank ? rank + '级' : '未习得'} → ${rank + 1}级 · 范围 ${stats.radius.toFixed(1)}${skill.id === 'ice-radiance' ? ' · ' + stats.beams + '道' : ' · ' + stats.damage.toFixed(1) + '伤害'}`;
   }
   if (skill.id === 'orbit') return `${before.orbitCount ? `${before.orbitCount} 颗` : '未习得'} → ${after.orbitCount} 颗 · ${after.orbitDamage} 伤害`;
-  if (skill.id === 'screen-nova') return `${ranks[skill.id] ? 85 * (1 + .25 * (ranks[skill.id] - 1)) + ' 伤害' : '未习得'} → ${85 * (1 + .25 * ranks[skill.id])} 全屏伤害 · 12秒/次`;
-  if (skill.id === 'screen-barrage') return `${ranks[skill.id] ? 12 + (ranks[skill.id] - 1) * 6 + ' 道' : '未习得'} → ${12 + ranks[skill.id] * 6} 道 · ${ranks[skill.id] + 1}轮 · 5秒/次`;
+  if (skill.id === 'screen-nova') return `${ranks[skill.id] ? 90 * (1 + .25 * (ranks[skill.id] - 1)) + ' 伤害' : '未习得'} → ${90 * (1 + .25 * ranks[skill.id])} 全屏伤害 · 12秒/次`;
+  if (skill.id === 'screen-barrage') return `${ranks[skill.id] ? 12 + (ranks[skill.id] - 1) * 6 + ' 道' : '未习得'} → ${12 + ranks[skill.id] * 6} 道 · ${ranks[skill.id] + 1}轮 · 5.5秒/次`;
   if (skill.id === 'split-on-hit' && skill.description.includes('所有已装备')) return '已装备火花 / 飞叶弹 → 对应融合';
   if (skill.id === 'split-on-hit') return skill.icon === 'leaf' ? '飞叶弹 → 荆棘散射 · 自动融合' : '火花弹 → 爆裂火种 · 自动融合';
   if (skill.id === 'area' || skill.id === 'chain') return '未习得 → 自动融合';
@@ -193,6 +263,8 @@ export class Progression {
   private fusionSkills = false;
   private purchasedRanks = 0;
   private rollsWithoutCore = 0;
+  private offerRolls = 0;
+  private earlySupportOffered = false;
   private runBuild?: RunBuild;
   get build() { return this.runBuild; }
   set build(value: RunBuild | undefined) {
@@ -277,7 +349,7 @@ export class Progression {
     + (this.build.attacks.length >= 3 ? this.pool.filter(s => WEAPON_CARDS[s.id] && !this.build!.hasOrigin(WEAPON_CARDS[s.id]!)).reduce((sum,s) => sum+s.maxRank,0) : 0) : 0); }
   get awaitingChoice() { return this.pendingChoices > 0; }
   get offers(): readonly SkillId[] { return this.currentOffers; }
-  get threshold() { return this.level >= this.maxLevel ? Infinity : EXPERIENCE.initial + Math.max(0, this.level - 1) * EXPERIENCE.increment; }
+  get threshold() { return this.level >= this.maxLevel ? Infinity : this.build && this.fusionSkills ? buildExperienceThreshold(this.level) : EXPERIENCE.initial + Math.max(0, this.level - 1) * EXPERIENCE.increment; }
   get choiceLevel() { return this.level - this.pendingChoices + 1; }
 
   gainExperience(amount: number) {
@@ -301,7 +373,7 @@ export class Progression {
     if (!this.awaitingChoice || !skill || !this.currentOffers.includes(id) || this.ranks[id] >= skill.maxRank) return false;
     if (!this.applyReward(skill)) return false;
     this.pendingChoices--;
-    this.currentStats = calculateStats(this.ranks);
+    this.currentStats = calculateStats(this.ranks, !!this.build && this.fusionSkills);
     this.currentOffers = [];
     if (this.awaitingChoice) this.rollOffers();
     return true;
@@ -323,7 +395,7 @@ export class Progression {
     this.purchasedRanks++;
     this.level = Math.min(this.level, this.maxLevel);
     if (this.level >= this.maxLevel) this.experience = 0;
-    this.currentStats = calculateStats(this.ranks);
+    this.currentStats = calculateStats(this.ranks, !!this.build && this.fusionSkills);
     return true;
   }
 
@@ -350,7 +422,11 @@ export class Progression {
     }
     if (!this.build || !this.fusionSkills) { this.currentOffers = candidates.slice(0, 3); return; }
     const skills = this.skills;
-    const normal = candidates.filter(id => !skills.find(s => s.id === id)!.category);
+    let newWeapons=0;
+    const normal = candidates.filter(id => !skills.find(s => s.id === id)!.category).filter(id=>{
+      const weapon=WEAPON_CARDS[id];
+      return !weapon || this.build!.hasOrigin(weapon) || ++newWeapons <= 1;
+    });
     const rare = candidates.filter(id => !!skills.find(s => s.id === id)!.category);
     const core = rare.filter(id => this.coreReward(id));
     this.rollsWithoutCore++;
@@ -365,6 +441,12 @@ export class Progression {
       else this.currentOffers.push(support);
     }
     if (rareAllowed && rareChoice) this.currentOffers.push(rareChoice);
+    this.offerRolls++;
+    const fusionSupport=normal.filter(id=>['split-on-hit','area','chain'].includes(id));
+    if(this.offerRolls===3&&!this.earlySupportOffered&&fusionSupport.length) {
+      this.currentOffers[this.currentOffers.length>1?1:0]=fusionSupport[0];
+    }
+    if(this.offerRolls<=3&&this.currentOffers.some(id=>fusionSupport.includes(id)))this.earlySupportOffered=true;
     // Exhaustion can leave only rare choices; do not trap an earned level-up.
     if (!this.currentOffers.length && candidates.length) this.currentOffers = [candidates[0]];
     if(this.build.availablePairs().length){this.currentOffers=this.currentOffers.filter(id=>id!=='weapon-pair-fusion').slice(0,2);this.currentOffers.push('weapon-pair-fusion');}
@@ -374,7 +456,8 @@ export class Progression {
   }
 
   private coreReward(id: SkillId) {
-    return ['draft-martyr-core', 'draft-kindling-flask', 'draft-thorn-testament', 'draft-bubble-spore', 'draft-boiling-core'].includes(id);
+    return ['draft-martyr-core', 'draft-kindling-flask', 'draft-thorn-testament', 'draft-bubble-spore', 'draft-boiling-core',
+      'tide-prism','wet-vines','mirror-prism','hive-fuse','swift-weave','rhythm-seal'].includes(id);
   }
 
   private supportsBuild(id: SkillId) {
@@ -392,10 +475,11 @@ export class Progression {
     this.level = 1;
     this.purchasedRanks = 0;
     this.rollsWithoutCore = 0;
+    this.offerRolls=0;this.earlySupportOffered=false;
     this.experience = this.totalExperience = this.pendingChoices = 0;
     for (const skill of ALL_SKILLS) this.ranks[skill.id] = 0;
     if (this.build && this.fusionSkills) this.ranks[`${this.fusionBase}-weapon`] = 1;
-    this.currentStats = calculateStats(this.ranks);
+    this.currentStats = calculateStats(this.ranks, !!this.build && this.fusionSkills);
     this.currentOffers = [];
   }
 

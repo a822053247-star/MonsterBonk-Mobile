@@ -44,7 +44,7 @@ test('Boss locks a visible predictive aim, cycles all three attacks, and summons
   expect(c.encounters.bossState).toBe('spread-windup'); expect(c.encounters.aimZ).toBeGreaterThan(0);
   const aim=[c.encounters.aimX,c.encounters.aimZ];
   advance(c,.8,{x:0,z:-3}); expect(c.encounters.shots.filter(s=>s.active)).toHaveLength(0); expect([c.encounters.aimX,c.encounters.aimZ]).toEqual(aim);
-  advance(c,.25,{x:0,z:-3}); expect(c.encounters.shots.filter(s=>s.active)).toHaveLength(5);
+  advance(c,.25,{x:0,z:-3}); expect(c.encounters.shots.filter(s=>s.active)).toHaveLength(7);
   const states=new Set<string>(); let summons=0;
   for(let i=0;i<600;i++) {
     c.update(1/60,origin); states.add(c.encounters.bossState);
@@ -53,6 +53,64 @@ test('Boss locks a visible predictive aim, cycles all three attacks, and summons
   }
   expect(states.has('dash-windup')).toBe(true); expect(states.has('dash')).toBe(true); expect(states.has('summon')).toBe(true);
   expect(summons).toBeGreaterThanOrEqual(3); expect(c.enemies).toHaveLength(COMBAT_LIMITS.enemies); expect(c.projectiles).toHaveLength(COMBAT_LIMITS.projectiles);
+});
+
+test('campaign fans grow to seven/nine shots inside the same warned cone; Endless retains five',()=>{
+  for (const mode of ['campaign', 'endless'] as const) for (const enraged of [false, true]) {
+    const c=fixture(), run=new RunFlow(()=>.25,mode); c.encounters.reset(); run.waveIndex=5; run.prepare(c,origin);
+    const e=c.encounters.boss!; Object.assign(e,{x:6,z:0,spawnTime:0});
+    if(enraged)e.hp=e.maxHp!/2;
+    c.encounters.movement(e,1/60,origin,c,0,0);
+    const aim=[c.encounters.aimX,c.encounters.aimZ];
+    c.encounters.movement(e,enraged?.79:.99,{x:0,z:5},c,0,0);
+    expect(c.encounters.shots.filter(s=>s.active)).toHaveLength(0);
+    expect([c.encounters.aimX,c.encounters.aimZ]).toEqual(aim);
+    c.encounters.movement(e,.02,origin,c,0,0);
+    const shots=c.encounters.shots.filter(s=>s.active);
+    expect(shots).toHaveLength(mode==='campaign'?(enraged?9:7):5);
+    for(const shot of shots) {
+      const offset=Math.atan2(shot.vx*aim[1]-shot.vz*aim[0],shot.vx*aim[0]+shot.vz*aim[1]);
+      expect(Math.abs(offset)).toBeLessThanOrEqual(.700001);
+    }
+    expect(shots[Math.floor(shots.length/2)].vx).toBeCloseTo(aim[0]*ENCOUNTER_RULES.spreadSpeed*(enraged?1.15:1));
+    // A nearly full pool drops excess shots without allocating replacements.
+    c.encounters.clearShots();for(const shot of c.encounters.shots.slice(0,-2))shot.active=true;
+    c.encounters.bossState='spread-windup';c.encounters.bossTime=1;
+    c.encounters.movement(e,1/60,origin,c,0,0);
+    expect(c.encounters.shots.filter(s=>s.active)).toHaveLength(16);
+  }
+});
+
+test('campaign doubles charge slots per rotation with recovery; Endless keeps its original rotation',()=>{
+  for(const mode of ['campaign','endless'] as const) {
+    const c=fixture(),run=new RunFlow(()=>.25,mode);c.encounters.reset();run.waveIndex=5;run.prepare(c,origin);
+    const e=c.encounters.boss!;Object.assign(e,{x:6,z:0,spawnTime:0});
+    const attacks:string[]=[];let previous=c.encounters.bossState,recovery=0;
+    for(let tick=0;tick<60*23;tick++) {
+      c.encounters.movement(e,1/60,origin,c,0,0);
+      const state=c.encounters.bossState;
+      if(previous==='recover')recovery+=1/60;
+      if(state!==previous&&state==='approach'){expect(recovery).toBeGreaterThanOrEqual(1.4);recovery=0;}
+      if(state!==previous&&state.endsWith('windup'))attacks.push(state);
+      previous=state;
+    }
+    expect(attacks.slice(0,5)).toEqual(mode==='campaign'
+      ? ['spread-windup','dash-windup','summon-windup','dash-windup','spread-windup']
+      : ['spread-windup','dash-windup','summon-windup','spread-windup','dash-windup']);
+  }
+});
+
+test('campaign charge travels farther with the same speed and windup; Endless distance stays unchanged',()=>{
+  for(const mode of ['campaign','endless'] as const) {
+    const c=fixture(),run=new RunFlow(()=>.25,mode);c.encounters.reset();run.waveIndex=5;run.prepare(c,origin);
+    const e=c.encounters.boss!;Object.assign(e,{x:-10,z:0,previousX:-10,previousZ:0,spawnTime:0});
+    c.useNavigation=false;c.encounters.bossState='dash-windup';c.encounters.aimX=1;c.encounters.aimZ=0;
+    const player={x:0,z:8};advance(c,1.05,player);expect(e.x).toBe(-10);
+    advance(c,.1,player);expect(c.encounters.bossState).toBe('dash');
+    advance(c,.9,player);expect(c.encounters.bossState).toBe('recover');
+    expect(e.x+10).toBeCloseTo(mode==='campaign'?12.75:9.75,4);
+    expect(c.hp).toBe(100);
+  }
 });
 
 test('hostile projectiles sweep against players and cover with shared invulnerability; full pools stay bounded',()=>{
@@ -120,8 +178,9 @@ test('wave four retries a saturated elite spawn, and wave clears/restarts remove
 });
 
 test('a locked predictive charge hits an unchanged circle but a warning-time reversal avoids it',()=>{
-  function attempt(reverse:boolean) {
+  function attempt(reverse:boolean,enraged=false) {
     const c=fixture(), e=boss(c); Object.assign(e,{x:0,z:0,previousX:0,previousZ:0});
+    if(enraged)e.hp=e.maxHp!/2;
     c.encounters.bossState='recover';c.encounters.bossTime=-100;
     let angle=0,direction=1,changed=false;
     for(let tick=0;tick<210;tick++) {
@@ -132,5 +191,7 @@ test('a locked predictive charge hits an unchanged circle but a warning-time rev
     }
     return c.hp;
   }
-  expect(attempt(false)).toBeLessThan(100);expect(attempt(true)).toBe(100);
+  for(const enraged of [false,true]) {
+    expect(attempt(false,enraged)).toBeLessThan(100);expect(attempt(true,enraged)).toBe(100);
+  }
 });

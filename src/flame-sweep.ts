@@ -1,5 +1,5 @@
 export const FLAME_SWEEP = {
-  id: 'flame-sweep', damage: 36, radius: 2.8, interval: .72,
+  id: 'flame-sweep', damage: 34, radius: 2.8, interval: .76,
   angle: Math.PI, bodyOffset: .55, duration: .3,
   eliteMultiplier: .70, maxRadius: 6,
   frames: 3, fps: 10, frameSize: 128,
@@ -9,11 +9,11 @@ export const FLAME_SWEEP = {
 
 /** Weapon levels spend their growth budget on coverage and close-range uptime. */
 export const FLAME_SWEEP_LEVELS = [
-  { radius: 2.8, degrees: 180, interval: .72 },
-  { radius: 3.2, degrees: 220, interval: .70 },
-  { radius: 3.6, degrees: 260, interval: .68 },
-  { radius: 4.0, degrees: 300, interval: .66 },
-  { radius: 4.4, degrees: 360, interval: .64 },
+  { radius: 2.8, degrees: 180, interval: .76 },
+  { radius: 3.3, degrees: 220, interval: .74 },
+  { radius: 3.8, degrees: 260, interval: .72 },
+  { radius: 4.4, degrees: 300, interval: .70 },
+  { radius: 5.0, degrees: 360, interval: .68 },
 ] as const;
 
 export function flameSweepStats(level: number, rangeMultiplier = 1, areaMultiplier = 1) {

@@ -3,6 +3,7 @@ import type { Combat } from './combat';
 import { ENCOUNTER_RULES } from './enemy-challenge';
 import { CrownthornView } from './crownthorn-view';
 import { screenFacing, type ScreenBasis } from './creature-animation';
+import { EliteQuakeView } from './elite-quake-view';
 
 /** Bounded hostile visuals. The animation pose never drives aim, damage or timing. */
 export class EncounterView {
@@ -13,6 +14,8 @@ export class EncounterView {
   private lane: THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>;
   private cone: THREE.Mesh<THREE.CircleGeometry, THREE.MeshBasicMaterial>;
   private elite: THREE.Mesh<THREE.RingGeometry, THREE.MeshBasicMaterial>;
+  private quake = new EliteQuakeView();
+  private aftershocks = Array.from({ length: 2 }, () => new EliteQuakeView());
   private fallback: THREE.Mesh<THREE.IcosahedronGeometry, THREE.MeshBasicMaterial>;
   private basis: ScreenBasis = {rightX:1,rightZ:0,upX:0,upZ:-Math.SQRT1_2};
   constructor(private combat: Combat) {
@@ -23,11 +26,12 @@ export class EncounterView {
     this.cone = new THREE.Mesh(new THREE.CircleGeometry(1,32,-.7,1.4),ground('#e295ff',.22));
     this.elite = new THREE.Mesh(new THREE.RingGeometry(.92,1,48),ground('#ffc85e',.85));
     this.fallback = new THREE.Mesh(new THREE.IcosahedronGeometry(1,1),new THREE.MeshBasicMaterial({color:'#bf9a52',wireframe:true}));
-    this.group.name='FormalEnemyChallenges'; this.group.add(this.shots,this.lane,this.cone,this.elite,this.fallback);
+    this.group.name='FormalEnemyChallenges'; this.group.add(this.shots,this.lane,this.cone,this.elite,this.fallback,this.quake.group);
+    for (const quake of this.aftershocks) this.group.add(quake.group);
     this.clear();
   }
-  setView(camera: THREE.Camera) { const e=camera.matrixWorld.elements; this.basis={rightX:e[0],rightZ:e[2],upX:e[4],upZ:e[6]}; }
-  render(alpha: number) {
+  setView(camera: THREE.Camera) { this.quake.setView(camera); for (const quake of this.aftershocks) quake.setView(camera); const e=camera.matrixWorld.elements; this.basis={rightX:e[0],rightZ:e[2],upX:e[4],upZ:e[6]}; }
+  render(alpha: number, detail = 3) {
     const c=this.combat.encounters;
     this.clear(); this.group.visible=c.enabled;
     if (!c.enabled) return;
@@ -39,8 +43,16 @@ export class EncounterView {
     this.shots.instanceMatrix.needsUpdate=true;
     if (c.elite?.active && c.elite.spawnTime<=0) {
       this.elite.visible=true; this.elite.rotation.x=-Math.PI/2; this.elite.position.set(c.elite.x,.1,c.elite.z);
-      const radius=c.elitePulsing ? ENCOUNTER_RULES.elitePulseRadius+.62 : 1.35;
-      this.elite.scale.setScalar(radius); this.elite.material.opacity=c.elitePulsing ? .65+.25*Math.sin(c.eliteTime*16) : .6;
+      this.elite.scale.setScalar(1.35); this.elite.material.opacity=.6;
+    }
+    const warning = !!c.elite?.active && c.elite.spawnTime<=0 && c.elitePulsing;
+    const primary = c.eliteQuakeTargets[0].active ? c.eliteQuakeTargets[0] : c.elite;
+    this.quake.render(warning && primary
+      ? { x:primary.x, z:primary.z, progress:c.eliteTime/c.eliteWindupDuration } : null, c.eliteQuake, detail);
+    for (let i = 0; i < this.aftershocks.length; i++) {
+      const target = c.eliteQuakeTargets[i+1];
+      this.aftershocks[i].render(warning && target.active
+        ? { x:target.x, z:target.z, progress:c.eliteTime/c.eliteWindupDuration } : null, c.eliteQuakeAftershocks[i], detail);
     }
     const enemy=c.boss;
     if (!enemy || c.defeated) return;
@@ -56,18 +68,20 @@ export class EncounterView {
     if (!this.boss.group.visible) { this.fallback.visible=true; this.fallback.position.set(enemy.x,1.5,enemy.z); this.fallback.scale.set(1.4,1.8,1.4); }
     const angle=Math.atan2(c.aimX,c.aimZ);
     if (c.bossState==='dash-windup') {
-      const length=ENCOUNTER_RULES.dashSpeed*ENCOUNTER_RULES.dashDuration;
+      const length=ENCOUNTER_RULES.dashSpeed*c.dashDuration;
       this.lane.visible=true; this.lane.position.set(enemy.x+c.aimX*length/2,.12,enemy.z+c.aimZ*length/2);
       this.lane.scale.set((ENCOUNTER_RULES.bossRadius+.62)*2,length,1); this.lane.rotation.set(-Math.PI/2,0,angle);
     }
     if(c.bossState==='spread-windup') {
       this.cone.visible=true; this.cone.position.set(enemy.x,.12,enemy.z); this.cone.rotation.set(-Math.PI/2,0,angle-Math.PI/2);
-      this.cone.scale.setScalar(ENCOUNTER_RULES.spreadLife*ENCOUNTER_RULES.spreadSpeed*(c.enraged?1.15:1));
+      this.cone.scale.setScalar(ENCOUNTER_RULES.spreadLife*ENCOUNTER_RULES.spreadSpeed*(c.enraged?1.1:1));
     }
   }
-  clear() { this.group.visible=false; this.shots.count=0; this.lane.visible=this.cone.visible=this.elite.visible=this.fallback.visible=false; if(this.boss) this.boss.group.visible=false; }
-  inspect() { return {shots:this.shots.count,capacity:ENCOUNTER_RULES.hostileShots,boss:this.boss?.inspect()??null,lane:this.lane.visible,cone:this.cone.visible,elite:this.elite.visible,fallback:this.fallback.visible}; }
+  clear() { this.quake.clear(); for (const quake of this.aftershocks) quake.clear(); this.group.visible=false; this.shots.count=0; this.lane.visible=this.cone.visible=this.elite.visible=this.fallback.visible=false; if(this.boss) this.boss.group.visible=false; }
+  inspect() { return {quake:this.quake.inspect(),aftershocks:this.aftershocks.map(quake=>quake.inspect()),shots:this.shots.count,capacity:ENCOUNTER_RULES.hostileShots,boss:this.boss?.inspect()??null,lane:this.lane.visible,cone:this.cone.visible,elite:this.elite.visible,fallback:this.fallback.visible}; }
   dispose() {
+    this.quake.dispose();
+    for (const quake of this.aftershocks) quake.dispose();
     this.boss?.dispose(); this.boss=undefined;
     for(const mesh of [this.shots,this.lane,this.cone,this.elite,this.fallback]) { mesh.geometry.dispose(); (mesh.material as THREE.Material).dispose(); }
     this.shots.dispose(); this.group.clear(); this.group.removeFromParent();

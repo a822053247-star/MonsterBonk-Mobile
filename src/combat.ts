@@ -18,6 +18,7 @@ import { FLAME_SWEEP, flameSweepStats, insideSweep } from './flame-sweep';
 import { EnemyChallenge, ENCOUNTER_RULES, predictPosition } from './enemy-challenge';
 import { TRIGGER_RELIC_RULES, resolveAttackRules, type RelicDamageSource, type AttackRules } from './relics';
 import { ATTACKS, RunBuild } from './run-build';
+import { BUILD_BALANCE, controlledSpeed, cycleHealth, slotInterval } from './balance';
 import type { BaseAttackId } from './fusion';
 import { ENEMY_MOTION } from './enemy-motion';
 import { GRASS_BLOB, stepGrassRoll } from './grass-blob';
@@ -325,13 +326,13 @@ export class Combat {
   get isTrial() { return this.ruleset !== 'classic'; }
   get isChallenge() { return this.ruleset === 'horn-challenge'; }
   get endlessEnemyHealthMultiplier() {
-    return Math.min(ENDLESS_SCALING.maxEnemyHealthMultiplier, 1 + Math.max(0, this.endlessCycleIndex) * ENDLESS_SCALING.enemyHealthPerCycle);
+    return cycleHealth(this.endlessCycleIndex);
   }
   get endlessContactDamageMultiplier() {
     return Math.min(ENDLESS_SCALING.maxContactDamageMultiplier, 1 + Math.max(0, this.endlessCycleIndex) * ENDLESS_SCALING.contactDamagePerCycle);
   }
   get endlessBossHealthMultiplier() {
-    return Math.min(ENDLESS_SCALING.maxBossHealthMultiplier, 1 + Math.max(0, this.endlessCycleIndex) * ENDLESS_SCALING.bossHealthPerCycle);
+    return cycleHealth(this.endlessCycleIndex, true);
   }
   private scaledContactDamage(enemy: Enemy) {
     const base = enemy.rank === 'boss' ? 24 : enemy.swarm ? SWARM_RULES.contactDamage : ENEMY_TYPES[enemy.kind].damage;
@@ -477,7 +478,7 @@ export class Combat {
     enemy.burnTime = enemy.burnClock = enemy.burnDamage = enemy.burnStacks = 0; enemy.burnSource = undefined;
     if (this.encounters.enabled) enemy.hp = enemy.maxHp =
       (kind==='fast'?40:kind==='tank'?FORMAL_ROCK_HP:kind==='draft-spore-bomber'?FORMAL_SPORE_HP:ENEMY_TYPES[kind].hp)
-      *(ENCOUNTER_RULES.waveHealth[this.encounters.wave-1]??1)*this.endlessEnemyHealthMultiplier;
+      *(ENCOUNTER_RULES.waveHealth[this.encounters.wave-1]??1)*(kind==='draft-crystal-swarm'?Math.min(2.5,this.endlessEnemyHealthMultiplier):this.endlessEnemyHealthMultiplier);
     this.spawned++;
     return enemy;
   }
@@ -580,7 +581,7 @@ export class Combat {
       if (!enemy) break;
       if (kind === 'normal') {
         enemy.swarm = true;
-        enemy.hp = enemy.maxHp = SWARM_RULES.health[this.encounters.wave-1] ?? 18;
+        enemy.hp = enemy.maxHp = (SWARM_RULES.health[this.encounters.wave-1] ?? 18) * Math.min(2.5,this.endlessEnemyHealthMultiplier);
       }
       if (mix) alive[kind] = (alive[kind] ?? 0) + 1;
       spawned++;
@@ -844,8 +845,10 @@ export class Combat {
       if (this.encounters.enabled && enemy.rank) {
         const motion = this.encounters.movement(enemy,dt,player,this,moveX,moveZ); moveX=motion.x; moveZ=motion.z;
       }
-      const bindingSlow=Math.min(this.frost.slowFactor(enemy),this.relicBehaviors.slowFactor(enemy),(enemy.pairSlowUntil??0)>this.elapsed?enemy.rank==='boss'?Math.max(.85,enemy.pairSlowFactor??1):enemy.pairSlowFactor??1:1);moveX*=bindingSlow;moveZ*=bindingSlow;
-      if ((enemy.slowTime ?? 0) > 0) { const slow = enemy.rank === 'boss' ? .85 : ELEMENTAL_RULES.slowFactor; moveX *= slow; moveZ *= slow; }
+      const bindings=[this.frost.slowFactor(enemy),this.relicBehaviors.slowFactor(enemy),(enemy.pairSlowUntil??0)>this.elapsed?enemy.pairSlowFactor??1:1];
+      const waterSlow=(enemy.slowTime??0)>0?(enemy.rank==='boss'?.85:ELEMENTAL_RULES.slowFactor):1;
+      const bindingSlow=this.usesRunBuild?controlledSpeed(enemy.rank,...bindings,waterSlow):Math.min(...bindings)*waterSlow;
+      moveX*=bindingSlow;moveZ*=bindingSlow;
       // Resolve voluntary locomotion before external impulses. Art follows the
       // collision-resolved walk (including cover sliding), never hit knockback.
       this.moveEnemy(enemy, moveX * dt, moveZ * dt, radius);
@@ -873,12 +876,13 @@ export class Combat {
       const member = this.party.leader, attacks = this.runBuild.attacks;
       const boostedTime = Math.max(0, Math.min(dt, this.hourglassUntil - (this.elapsed-dt)));
       const bloodTempo=1/(this.relicBehaviors.intervalFactor()*this.relicBehaviors.gigapack.intervalFactor());
-      const attackTime = (dt + boostedTime * TRIGGER_RELIC_RULES.hourglass.haste)*bloodTempo;
+      const baseTempo=Math.min(BUILD_BALANCE.temporaryHaste,bloodTempo);
+      const attackTime = dt*baseTempo+boostedTime*(Math.min(BUILD_BALANCE.temporaryHaste,bloodTempo*(1+TRIGGER_RELIC_RULES.hourglass.haste))-baseTempo);
       for (const attack of attacks) attack.cooldown = Math.max(0, attack.cooldown - attackTime);
       for (const attack of attacks) {
         if (attack.attackId !== 'thunder-bud' || this.encounters.dying || attack.cooldown > 1e-8) continue;
         const rules = this.runBuild.rules('thunder-bud');
-        const range = Math.min(14, ATTACKS['thunder-bud'].range * this.stats.rangeMultiplier * rules.rangeMultiplier);
+        const range = Math.min(BUILD_BALANCE.lightningRange, ATTACKS['thunder-bud'].range * this.stats.rangeMultiplier * rules.rangeMultiplier);
         const snapshot: WeaponSnapshot = { attackId: 'thunder-bud', damage: ATTACKS['thunder-bud'].damage * this.stats.damageMultiplier * rules.damageMultiplier,
           range, rules: { ...rules, chainRangeMultiplier: rules.chainRangeMultiplier * this.stats.rangeMultiplier },
           fusions: [], lightning: { level: attack.level } };
@@ -890,11 +894,11 @@ export class Combat {
       for (const attack of attacks) {
         if (!isBlade(attack.attackId) || this.encounters.dying || attack.cooldown > 1e-8) continue;
         const id = attack.attackId, stats = bladeStats(id, attack.level), rules = this.runBuild.rules(id);
-        const range = Math.min(id === 'thorn-wheel' ? 5 : 14,
+        const range = Math.min(id === 'thorn-wheel' ? BUILD_BALANCE.wheelRadius : BUILD_BALANCE.bladeRange,
           (id === 'thorn-wheel' ? stats.radius : stats.range) * this.stats.rangeMultiplier * rules.rangeMultiplier);
         const snapshot: WeaponSnapshot = { attackId: id, damage: ATTACKS[id].damage * this.stats.damageMultiplier * rules.damageMultiplier,
           range, rules, fusions: [], blade: { level: attack.level, tempo: this.stats.attackRateMultiplier / rules.intervalMultiplier } };
-        const target = id === 'tidal-blade' ? this.blades.aimTarget(range, stats.bladeRadius * Math.min(1.6, rules.areaMultiplier)) : this.findTarget(member, range);
+        const target = id === 'tidal-blade' ? this.blades.aimTarget(range, stats.bladeRadius * Math.min(1.4, rules.areaMultiplier)) : this.findTarget(member, range);
         if (!this.blades.cast(snapshot, target)) continue;
         this.recordWeaponCast(snapshot);
         attack.cooldown = id === 'thorn-wheel' ? Math.PI * 2 / (stats.speed * snapshot.blade!.tempo)
@@ -923,7 +927,7 @@ export class Combat {
             const index = (this.nextWeapon + offset) % attacks.length, attack = attacks[index];
             const weapon = ATTACKS[attack.attackId], rules = this.runBuild.rules(attack.attackId);
             if (weapon.kind !== 'projectile') continue;
-            const range = weapon.range * this.stats.rangeMultiplier * rules.rangeMultiplier;
+            const range = Math.min(BUILD_BALANCE.projectileRange,weapon.range * this.stats.rangeMultiplier * rules.rangeMultiplier);
             if (attack.cooldown > 1e-8 || !this.findTarget(member, range)) continue;
             const free = this.projectiles.filter(s => !s.active).length;
             if (free < this.stats.projectileCount + (attack.slot ? this.stats.projectileCount : 0)) {
@@ -934,7 +938,7 @@ export class Combat {
               damage: weapon.damage * this.stats.damageMultiplier * rules.damageMultiplier, range,
               total: Math.min(4, this.stats.projectileCount), index: 0, castId:++this.nextRelicCast, rules, mature: matureFire(attack.attackId, attack.level, this.progression.ranks),
               fusions: attack.pairId?[]:resolveFusions(attack.attackId, this.progression.ranks).map(recipe => recipe.id) };
-            attack.cooldown = weapon.interval * (attack.slot === 0 ? 1 : attack.slot === 1 ? 1.6 : 1.9) * rules.intervalMultiplier / this.stats.attackRateMultiplier;
+            attack.cooldown = weapon.interval * slotInterval(attack.slot) * rules.intervalMultiplier / this.stats.attackRateMultiplier;
             attack.cooldownTotal = attack.cooldown;
             this.nextWeapon = (index + 1) % attacks.length;
             break;
@@ -948,7 +952,7 @@ export class Combat {
             attacks.find(a => a.attackId === salvo.attackId)!.shotsFired++;
             if (salvo.index === 0) this.recordWeaponCast({ attackId: salvo.attackId, damage: salvo.damage, range: salvo.range, rules: salvo.rules, fusions: [...salvo.fusions], mature: salvo.mature });
             member.shotsFired++; salvo.index++;
-            const tempo = this.stats.attackRateMultiplier * (this.elapsed < this.hourglassUntil ? 1 + TRIGGER_RELIC_RULES.hourglass.haste : 1);
+            const tempo = this.stats.attackRateMultiplier * Math.min(BUILD_BALANCE.temporaryHaste,bloodTempo*(this.elapsed < this.hourglassUntil ? 1 + TRIGGER_RELIC_RULES.hourglass.haste : 1));
             if (salvo.index >= salvo.total) { this.salvo = undefined; this.launchClock = COMBAT_CLARITY.volleyGap / tempo; }
             else this.launchClock = COMBAT_CLARITY.shotGap / tempo;
           }
@@ -991,11 +995,11 @@ export class Combat {
       if (shot.elemental) { this.elementalHit(shot); continue; }
       let earliest = Infinity, victim: Enemy | undefined;
       for (const obstacle of this.obstacles) {
-        earliest = Math.min(earliest, segmentHit(shot.previousX, shot.previousZ, shot.x, shot.z, obstacle.x, obstacle.z, obstacle.radius + WEAPON.radius));
+        earliest = Math.min(earliest, segmentHit(shot.previousX, shot.previousZ, shot.x, shot.z, obstacle.x, obstacle.z, obstacle.radius + this.projectileRadius(shot)));
       }
       for (const enemy of this.enemies) {
         if (!enemy.active || enemy.spawnTime > 0 || enemy.id === shot.ignoreEnemyId || (shot.hitIds??[]).includes(enemy.id)) continue;
-        const t = segmentHit(shot.previousX, shot.previousZ, shot.x, shot.z, enemy.x, enemy.z, this.enemyRadius(enemy) + WEAPON.radius);
+        const t = segmentHit(shot.previousX, shot.previousZ, shot.x, shot.z, enemy.x, enemy.z, this.enemyRadius(enemy) + this.projectileRadius(shot));
         if (t < earliest) { earliest = t; victim = enemy; }
       }
       if (earliest !== Infinity) {
@@ -1126,7 +1130,13 @@ export class Combat {
   hostilePlayerHit(ax: number, az: number, bx: number, bz: number, radius: number) { return segmentHit(ax,az,bx,bz,0,0,radius); }
 
   /** Shared pool + swept collision + damageEnemy for every controlled/partner bolt. */
+  projectileRadius(shot: Projectile) {
+    const radius=shot.attackRules?.projectileRadius;
+    return this.usesRunBuild&&radius!==undefined ? radius*((shot.generation??0)>0?BUILD_BALANCE.childScale:1) : WEAPON.radius;
+  }
+
   private fireBolts(origin: Point, target: Enemy, damage: number, count: number, range: number, sourceId = 0, species?: SpeciesId, attackId: BaseAttackId = CREATURES[species ?? 'yanrong'].skill, salvo?: { index: number; castId?:number; volley?:{id:number;showerTriggered?:boolean}; rules: AttackRules; fusions: FusionId[]; copied?: boolean; mature?: boolean; suppressRelics?:boolean }) {
+    if(this.usesRunBuild && salvo && !salvo.copied && salvo.index>0)damage*=BUILD_BALANCE.extraPelletDamage;
     if (ATTACKS[attackId].kind !== 'projectile') return false;
     let available = 0;
     for (const shot of this.projectiles) if (!shot.active) available++;
@@ -1159,7 +1169,7 @@ export class Combat {
   private burstSeed(parent: Projectile, original: Enemy, x: number, z: number) {
     const damage = parent.baseDamage ?? parent.damage, angle = Math.atan2(parent.vx, parent.vz), sourceId = parent.sourceId;
     const rules = parent.attackRules ?? resolveAttackRules('spark', [], 1), species = parent.species;
-    const radius = BURST_SEED.explosionRadius * rules.areaMultiplier * this.consumeKindling(original);
+    const radius = Math.min(BUILD_BALANCE.explosionRadius,BURST_SEED.explosionRadius * rules.areaMultiplier * this.consumeKindling(original));
     const relicSource = { ...this.projectileSource(parent), kind: 'explosion' as const };
     const childCount = BURST_SEED.childCount + rules.childCountBonus;
     this.bursts++;
@@ -1346,9 +1356,9 @@ export class Combat {
     const ids = shot.hitIds ?? (shot.hitIds = []);
     const damaged = shot.damageIds ?? (shot.damageIds = []);
     const chain = !!(shot.attackRules?.pairId&&WEAPON_PAIR_RECIPES[shot.attackRules.pairId].chain&&shot.attackRules.pairChain)||shot.fusionIds?.includes('chain-bubble') || shot.fusionIds?.includes('jump-thorn') || shot.relicSource?.kind === 'bubble-spore';
-    const wall = this.obstacles.reduce((t, o) => Math.min(t, segmentHit(shot.previousX, shot.previousZ, shot.x, shot.z, o.x, o.z, o.radius + WEAPON.radius)), Infinity);
+    const wall = this.obstacles.reduce((t, o) => Math.min(t, segmentHit(shot.previousX, shot.previousZ, shot.x, shot.z, o.x, o.z, o.radius + this.projectileRadius(shot))), Infinity);
     const contacts = this.enemies.filter(e => e.active && e.spawnTime <= 0 && !ids.includes(e.id) && (!chain || !damaged.includes(e.id)) && e.id !== shot.ignoreEnemyId && (!shot.hopTargetId || e.id === shot.hopTargetId))
-      .map(enemy => ({ enemy, t: segmentHit(shot.previousX, shot.previousZ, shot.x, shot.z, enemy.x, enemy.z, this.enemyRadius(enemy) + WEAPON.radius) }))
+      .map(enemy => ({ enemy, t: segmentHit(shot.previousX, shot.previousZ, shot.x, shot.z, enemy.x, enemy.z, this.enemyRadius(enemy) + this.projectileRadius(shot)) }))
       .filter(c => c.t < wall && c.t !== Infinity).sort((a, b) => a.t - b.t || a.enemy.id - b.enemy.id);
     for (const { enemy, t } of contacts) {
       if (!enemy.active) continue;
@@ -1411,7 +1421,7 @@ export class Combat {
       enemy.pairBurnSource={...source,kind:'burn',primary:false};
     }
     // bramble converts the acquired chain into wider control, never extra jumps.
-    const radius=(recipe.radius||(rules.pairSplit?recipe.splitRadius:0))*rules.areaMultiplier*(rules.pairArea?recipe.areaScale:1)*(id==='bramble-tide'&&rules.pairChain?recipe.chainAreaScale*rules.chainRangeMultiplier:1);
+    const radius=Math.min(BUILD_BALANCE.pairRadius,((rules.pairRadius??recipe.radius)||(rules.pairSplit?recipe.splitRadius:0))*rules.areaMultiplier*(rules.pairArea?recipe.areaScale:1)*(id==='bramble-tide'&&rules.pairChain?recipe.chainAreaScale*rules.chainRangeMultiplier:1));
     if(radius){
       this.effect(enemy.x,enemy.z,recipe.effect,enemy.kind,radius,recipe.fusionVisual,undefined,recipe.visual);
       const splash={...source,kind:'explosion' as const,primary:false};let explosionHits=0;
@@ -1579,7 +1589,7 @@ export class Combat {
       }
       const attack = pending.attack, member = this.party.leader;
       const target = attack.attackId === 'tidal-blade' && attack.blade
-        ? this.blades.aimTarget(attack.range, bladeStats('tidal-blade', attack.blade.level).bladeRadius * Math.min(1.6, attack.rules.areaMultiplier))
+        ? this.blades.aimTarget(attack.range, bladeStats('tidal-blade', attack.blade.level).bladeRadius * Math.min(1.4, attack.rules.areaMultiplier))
         : this.findTarget(member,attack.range+(attack.sweep ? FLAME_SWEEP.bodyOffset : 0),!!attack.sweep);
       if ((!target && attack.attackId !== 'thorn-wheel') || (!attack.sweep && !attack.blade && !attack.lightning && !this.projectiles.some(p=>!p.active)) || !this.reserveChild()) continue;
       if (attack.blade && !this.blades.cast(attack, target, true)) continue;
@@ -1632,7 +1642,7 @@ export class Combat {
       && (source.kind !== 'burn' || source.mature) && (!source.mature || reserveReaction(source))) {
       source.martyrHits.add(enemy.id);
       this.enqueueRelicEvent({ ...common, type: 'martyr', damage: martyrDamage(source, damage, !!source.mature),
-        radius: TRIGGER_RELIC_RULES.martyr.radius * source.rules.areaMultiplier * this.consumeKindling(enemy),
+        radius: Math.min(BUILD_BALANCE.explosionRadius,TRIGGER_RELIC_RULES.martyr.radius * source.rules.areaMultiplier * this.consumeKindling(enemy)),
         source: { ...source, kind: 'explosion', generation: source.generation + 1 } });
     }
     if (sourceHasAttack(source,'leaf') && source.kind !== 'testament' && this.runBuild.relics.includes('draft-thorn-testament')) {
@@ -1764,7 +1774,7 @@ export class Combat {
         enemy.wetTime = 0; enemy.steamReadyAt = this.elapsed + REACTION_RULES.steam.cooldown;
         this.enqueueRelicEvent({ type: 'steam', x: enemy.x, z: enemy.z, enemyId: enemy.id, enemyKind: enemy.kind,
           readyAt: this.elapsed, damage: source.rootDamage * REACTION_RULES.steam.damage,
-          radius: REACTION_RULES.steam.radius * source.rules.areaMultiplier,
+          radius: Math.min(BUILD_BALANCE.steamRadius,REACTION_RULES.steam.radius * source.rules.areaMultiplier),
           source: { ...source, kind: 'steam', reaction: 'steam', generation: source.generation + 1 } });
       }
     }
@@ -1854,7 +1864,7 @@ export class Combat {
         const z = player.z + Math.sin(this.orbitAngle + offset) * stats.orbitRadius;
         if (segmentHit(oldX, oldZ, x, z, enemy.x, enemy.z, this.enemyRadius(enemy) + SKILL_RULES.orbitBallRadius) === Infinity) continue;
         const dx = enemy.x - player.x, dz = enemy.z - player.z, distance = Math.max(0.001, Math.hypot(dx, dz));
-        this.damageEnemy(enemy, stats.orbitDamage, dx / distance, dz / distance);
+        this.damageEnemy(enemy, stats.orbitDamage*(this.usesRunBuild?this.stats.damageMultiplier*(enemy.rank==='boss'?.55:enemy.rank==='elite'?.7:1):1), dx / distance, dz / distance);
         this.effect(enemy.x, enemy.z, 'hit');
         enemy.orbitCooldown = SKILL_RULES.orbitHitInterval;
         break;
@@ -1865,7 +1875,7 @@ export class Combat {
       if (this.shockClock <= 0) {
         const wave = this.shockwaves.find((candidate) => !candidate.active);
         if (wave) {
-          Object.assign(wave, { active: true, x: player.x, z: player.z, age: 0, radius: 0, previousRadius: 0, maxRadius: stats.shockRadius, damage: stats.shockDamage });
+          Object.assign(wave, { active: true, x: player.x, z: player.z, age: 0, radius: 0, previousRadius: 0, maxRadius: stats.shockRadius, damage: stats.shockDamage*(this.usesRunBuild?this.stats.damageMultiplier:1) });
           wave.hitIds.fill(0);
           this.soundEvents |= SKILL_SOUNDS.shockwave;
           this.shockClock += stats.shockInterval;
@@ -1883,7 +1893,7 @@ export class Combat {
         const dx = enemy.x - wave.x, dz = enemy.z - wave.z, distance = Math.hypot(dx, dz);
         if (distance > wave.radius + this.enemyRadius(enemy)) continue;
         wave.hitIds[index] = enemy.id;
-        this.damageEnemy(enemy, wave.damage, dx / Math.max(0.001, distance), dz / Math.max(0.001, distance));
+        this.damageEnemy(enemy, wave.damage*(this.usesRunBuild?(enemy.rank==='boss'?.55:enemy.rank==='elite'?.7:1):1), dx / Math.max(0.001, distance), dz / Math.max(0.001, distance));
         this.effect(enemy.x, enemy.z, 'hit');
       }
       if (wave.age >= SKILL_RULES.waveDuration) wave.active = false;

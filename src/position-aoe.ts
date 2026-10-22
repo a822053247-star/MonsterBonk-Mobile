@@ -10,10 +10,10 @@ export const POSITION_LIMITS = { enemies: 256, vortex: 2, radiance: 2, trails: 1
 export function positionStats(id: PositionSkill, rank: number) {
   const n = Math.max(1, Math.min(5, Math.floor(rank))) - 1;
   switch (id) {
-    case 'abyss-vortex': return { radius: 3.6 + n * .3, damage: 8 * (1 + n * .2), duration: 3 + n * .25, interval: 6, beams: 0 };
-    case 'ice-radiance': return { radius: 7 + n * .5, damage: 32 * (1 + n * .2), duration: 1.2, interval: 4.5, beams: 8 + n * 2 };
-    case 'spore-trail': return { radius: 1.35 + n * .15, damage: 7 * (1 + n * .2), duration: 3 + n * .4, interval: .22, beams: 0 };
-    case 'tidal-recall': return { radius: 5 + n * .5, damage: 26 * (1 + n * .2), duration: 1.8, interval: 7, beams: 0 };
+    case 'abyss-vortex': return { radius: 3.2 + n * .25, damage: 7.5 * (1 + n * .2), duration: 3 + n * .25, interval: 6.5, beams: 0 };
+    case 'ice-radiance': return { radius: 6 + n * .5, damage: 30 * (1 + n * .2), duration: 1.2, interval: 4.8, beams: 8 + n * 2 };
+    case 'spore-trail': return { radius: 1.2 + n * .1, damage: 6 * (1 + n * .2), duration: 2.8 + n * .3, interval: .22, beams: 0 };
+    case 'tidal-recall': return { radius: 5 + n * .4, damage: 28 * (1 + n * .18), duration: 1.8, interval: 7, beams: 0 };
   }
 }
 type Point = { x: number; z: number };
@@ -106,7 +106,7 @@ export class PositionAoe {
           if (!this.eligible(enemy) || enemy.rank === 'boss') continue;
           const dx = cast.x - enemy.x, dz = cast.z - enemy.z, distance = Math.hypot(dx, dz);
           if (distance < .25 || distance > cast.radius) continue;
-          const movement = Math.min(distance - .25, (enemy.rank === 'elite' ? .35 : 1.6) * dt);
+          const movement = Math.min(distance - .25, (enemy.rank === 'elite' ? .25 : 1.2) * dt);
           this.host.move(enemy, dx / distance * movement, dz / distance * movement);
         }
       }
@@ -178,7 +178,7 @@ export class PositionAoe {
     return { ...cast.source!, areaBudget: { nodes: 0, hits: new Map(), shared: cast.source!.areaBudget!.shared } };
   }
   private hit(cast: PositionCast, enemy: Enemy, source: RelicDamageSource) {
-    this.host.damage(enemy, cast.damage * (enemy.rank === 'boss' ? .4 : enemy.rank === 'elite' ? .7 : 1), source);
+    this.host.damage(enemy, cast.damage * (enemy.rank === 'boss' ? (cast.kind === 'tidal-recall' ? .6 : cast.kind === 'ice-radiance' ? .55 : .45) : enemy.rank === 'elite' ? .7 : 1), source);
     this.telemetry.hits++; if (enemy.hp <= 0) this.telemetry.kills++;
   }
   clear() {

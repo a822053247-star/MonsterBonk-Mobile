@@ -2,7 +2,7 @@ import type { Combat, EnemyKind } from './combat';
 import { RunShop } from './shop';
 import { CRYSTAL_SWARM, SPORE_BOMBER, TREASURE_RUNNER } from './special-enemies';
 import { populationBudget, SPAWN_LAYOUT, FORMAL_SPAWN_CAPS } from './spawn-layout';
-import { WAVE_DIRECTOR, directorStage, ENDLESS_MODIFIERS, ENDLESS_SCALING, type EndlessModifierId, type DirectorStage, type DirectorEscort } from './wave-director';
+import { WAVE_DIRECTOR, directorStage, releaseLeadIn, ENDLESS_MODIFIERS, ENDLESS_SCALING, type EndlessModifierId, type DirectorStage, type DirectorEscort } from './wave-director';
 
 export const WAVE_INTERMISSION_SECONDS = 3.5;
 export const ENDLESS_FLAG_WARNING_SECONDS = 8;
@@ -114,7 +114,7 @@ export class RunFlow {
   /** Crystals and spores participate in the same deterministic mob budget. */
   private mixedCaps(combat: Combat, stage: DirectorStage, waveCap: number) {
     const plan = WAVE_DIRECTOR[this.waveInCycle - 1];
-    const major = this.majorWarning(combat);
+    const major = this.majorWarning(combat)||stage.beat==='release'||releaseLeadIn(this.waveInCycle,this.waveElapsed,this.endless);
     const sporeWarning = combat.sporeExplosions.some(e => e.active && !e.detonated);
     const fastCap = Math.min(stage.fastCap + (this.hasModifier('fast-advance') ? 2 : 0), Math.floor(waveCap * .25));
     const tankCap = Math.min(stage.tankCap + (this.hasModifier('armored-line') ? 1 : 0), Math.floor(waveCap * .2));
@@ -125,7 +125,7 @@ export class RunFlow {
       crystalCap: Math.max(CRYSTAL_SWARM.maxGroup, Math.floor(waveCap * (this.hasModifier('crystal-surge') ? .55 : .4))),
       sporeCap: major ? 0 : sporeCap,
       crystalAllowed: this.hasModifier('crystal-surge') || this.waveElapsed >= plan.crystalFirst,
-      sporeAllowed: (plan.sporeFirst !== null || this.hasModifier('spore-chain'))
+      sporeAllowed: this.waveInCycle!==4&&this.waveInCycle!==6&&(plan.sporeFirst !== null || this.hasModifier('spore-chain'))
         && this.waveElapsed >= (plan.sporeFirst ?? 14) && !major && !sporeWarning && sporeCap > 0,
     };
   }
@@ -134,7 +134,7 @@ export class RunFlow {
   get definition() {
     const base = RUN_WAVES[this.endless ? this.waveInCycle - 1 : this.waveIndex];
     if (!this.endless) return base;
-    const capMultiplier = Math.min(ENDLESS_SCALING.maxSpawnRateMultiplier, 1 + this.cycleIndex * ENDLESS_SCALING.spawnRatePerCycle);
+    const capMultiplier = Math.min(ENDLESS_SCALING.maxPopulationMultiplier, 1 + this.cycleIndex * ENDLESS_SCALING.populationPerCycle);
     return { ...base, cap: Math.min(ENDLESS_SCALING.maxPopulation, Math.ceil(base.cap * capMultiplier)) };
   }
   get remaining() { return Math.max(0, this.definition.seconds - this.waveElapsed); }
@@ -144,9 +144,10 @@ export class RunFlow {
   prepare(combat: Combat, player: {x: number; z: number}) {
     if (this.phase !== 'fighting') return;
     combat.endlessCycleIndex = this.endless ? this.cycleIndex : 0;
-    if (combat.encounters.wave !== this.waveInCycle) combat.encounters.beginWave(this.waveInCycle, this.waveInCycle <= SHOP_AFTER_WAVE);
+    if (combat.encounters.wave !== this.waveInCycle) combat.encounters.beginWave(this.waveInCycle, this.waveInCycle <= SHOP_AFTER_WAVE, !this.endless);
+    combat.encounters.releaseWindow=directorStage(this.waveInCycle,this.waveElapsed,this.endless,this.cycleIndex).beat==='release';
     if (this.isBossWave) combat.encounters.spawnBoss(combat,player);
-    if (this.waveInCycle === 4 && this.waveElapsed >= 10) combat.encounters.spawnElite(combat,player);
+    if (this.waveInCycle === 4 && this.waveElapsed >= 12) combat.encounters.spawnElite(combat,player);
   }
 
   private collectGold(combat: Combat) {
@@ -187,7 +188,7 @@ export class RunFlow {
     if (combat.progression.awaitingChoice) return;
 
     const { cap: waveCap } = this.definition;
-    const stage = directorStage(this.waveInCycle, this.waveElapsed, this.endless);
+    const stage = directorStage(this.waveInCycle, this.waveElapsed, this.endless, this.cycleIndex);
     // The fourth-wave elite needs a free pool slot even at the swarm limit.
     const cap = this.waveInCycle === 4 && !combat.encounters.elite ? waveCap - 1 : waveCap;
     this.spawnSpecials(dt, combat, player, cap);
@@ -198,7 +199,7 @@ export class RunFlow {
       this.spawnClock = Math.min(this.spawnClock, 1 / (stage.fodderPerSecond * this.spawnRateMultiplier));
     }
     this.escortClock -= dt;
-    if (this.majorWarning(combat)) {
+    if (this.majorWarning(combat)||stage.beat==='release'||releaseLeadIn(this.waveInCycle,this.waveElapsed,this.endless)) {
       // Suppressed events expire rather than bursting after the warning.
       this.escorts = []; this.escortClock = 2;
     } else if (stage.escortEvery > 0 && this.escortClock <= 0) {
@@ -365,7 +366,7 @@ export class RunFlow {
   }
 
   inspect() {
-    const stage = directorStage(this.waveInCycle, this.waveElapsed, this.endless);
+    const stage = directorStage(this.waveInCycle, this.waveElapsed, this.endless, this.cycleIndex);
     return { mode: this.mode, endless: this.endless, phase: this.phase, wave: this.wave, waves: RUN_WAVES.length,
       cycle: this.cycle, cycleIndex: this.cycleIndex, waveInCycle: this.waveInCycle, waveLabel: this.waveLabel,
       isShopWave: this.isShopWave, isBossWave: this.isBossWave, bossOvertime: this.bossOvertime,

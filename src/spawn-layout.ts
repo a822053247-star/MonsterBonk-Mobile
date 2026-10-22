@@ -1,5 +1,5 @@
 export interface SpawnViewport { x: number; z: number; halfWidth: number; halfDepth: number }
-export const FORMAL_SPAWN_CAPS = [36, 52, 72, 92, 112, 72] as const;
+export const FORMAL_SPAWN_CAPS = [36, 48, 64, 76, 92, 56] as const;
 export const SPAWN_LAYOUT = { padding: 2.6, band: 2, minDistance: 12, maxDistance: 27, stagger: .25, goldenAngle: 2.399963 } as const;
 
 /** Ground-plane footprint of the orthographic view, padded beyond whole enemy sprites. */

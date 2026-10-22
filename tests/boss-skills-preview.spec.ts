@@ -1,0 +1,30 @@
+import {test,expect} from '@playwright/test';
+
+test('skill preview fires real seven/nine-shot fans, pauses, resets and shows the longer charge',async({page,browserName})=>{
+  const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
+  await page.emulateMedia({reducedMotion:'reduce'});
+  await page.goto('/boss-skills-preview.html');
+  await page.waitForFunction(()=>'__bossSkills' in window);
+  await expect.poll(()=>page.evaluate(()=>(window as any).__bossSkills.inspect().view.boss?.atlases.filter((a:any)=>a.loaded).length)).toBe(8);
+  await page.locator('#skill').selectOption('spread-windup');
+  await page.evaluate(()=>(window as any).__bossSkills.advance(1.1));
+  expect(await page.evaluate(()=>(window as any).__bossSkills.inspect().shots.length)).toBe(7);
+  await page.locator('#rage').selectOption('enraged');
+  await page.evaluate(()=>(window as any).__bossSkills.advance(1.4));
+  expect(await page.evaluate(()=>(window as any).__bossSkills.inspect().shots.length)).toBe(9);
+  const frozen=await page.evaluate(()=>(window as any).__bossSkills.inspect().time);
+  await page.waitForTimeout(150);expect(await page.evaluate(()=>(window as any).__bossSkills.inspect().time)).toBe(frozen);
+  await page.setViewportSize({width:844,height:600});
+  if(browserName==='chromium')await page.screenshot({path:'artifacts/boss-skills-preview.png'});
+  await page.locator('#skill').selectOption('dash-windup');
+  await page.evaluate(()=>(window as any).__bossSkills.advance(.5));
+  expect(await page.evaluate(()=>(window as any).__bossSkills.inspect().view.lane)).toBe(true);
+  await page.evaluate(()=>(window as any).__bossSkills.advance(.5));
+  expect(await page.evaluate(()=>(window as any).__bossSkills.inspect().boss.state)).toBe('dash');
+  await page.locator('#replay').click();
+  expect(await page.evaluate(()=>(window as any).__bossSkills.inspect())).toMatchObject({time:0,shots:[]});
+  await page.locator('#step').click();expect(await page.evaluate(()=>(window as any).__bossSkills.inspect().time)).toBeCloseTo(1/60);
+  await page.setViewportSize({width:375,height:667});
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+  expect(errors).toEqual([]);
+});

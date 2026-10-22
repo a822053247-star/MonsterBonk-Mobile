@@ -1,10 +1,10 @@
 import type { Enemy, WeaponSnapshot } from './combat';
 import type { RelicDamageSource } from './relics';
 
-export const THUNDER_LIMITS = { casts: 4, links: 32, impacts: 32, warning: .12, hopDelay: .09, decay: .82 } as const;
+export const THUNDER_LIMITS = { casts: 4, links: 32, impacts: 32, warning: .12, hopDelay: .09, decay: .80 } as const;
 export function thunderStats(level: number) {
   const n = Math.max(0, Math.min(4, Math.floor(level) - 1));
-  return { targets: [3, 3, 4, 5, 6][n], hopRange: 3.2 + n * .2, interval: 1.3 - n * .05, decay: THUNDER_LIMITS.decay + n * .02 };
+  return { targets: [3, 3, 4, 5, 6][n], hopRange: 3.2 + n * .2, interval: 1.25 - n * .04, decay: THUNDER_LIMITS.decay + n * .02 };
 }
 interface ThunderCast {
   active: boolean; age: number; nextAt: number; x: number; z: number; initialId: number;
@@ -41,7 +41,7 @@ export class ThunderWeapon {
     const stats = thunderStats(attack.lightning.level);
     Object.assign(cast, { active: true, age: 0, nextAt: THUNDER_LIMITS.warning,
       x: origin.x, z: origin.z, initialId: target.id, range: attack.range,
-      hopRange: Math.min(7, stats.hopRange * attack.rules.rangeMultiplier * attack.rules.chainRangeMultiplier),
+      hopRange: Math.min(6.5, stats.hopRange * attack.rules.rangeMultiplier * attack.rules.chainRangeMultiplier),
       targets: stats.targets, hops: 0, decay: stats.decay, damage: attack.damage * attack.rules.directMultiplier,
       source: this.host.source(attack, copied) });
     cast.visited.clear(); this.telemetry.casts++;

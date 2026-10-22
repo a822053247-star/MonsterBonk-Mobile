@@ -86,6 +86,7 @@ export interface World {
   group: THREE.Group; obstacles: Obstacle[];
   readonly sampleActive: boolean;
   readonly infiniteActive: boolean;
+  readonly loading: boolean;
   readonly revision: number;
   setSample(enabled: boolean, newMap?: boolean): void;
   setInfinite(enabled: boolean, newMap?: boolean): void;
@@ -95,7 +96,7 @@ export interface World {
   dispose(): void;
 }
 
-/** Keep the old modes and a URL fallback on their original scenery and collisions. */
+/** Default to the pixel meadow; legacy modes and explicit fallback retain their own scenery. */
 export function createWorld(): World {
   const legacy = createLegacyWorld();
   const query = new URLSearchParams(window.location.search);
@@ -111,16 +112,17 @@ export function createWorld(): World {
   group.add(legacy.group, sample.group, infinite.group, boundary);
   // Combat and party systems hold this array by reference.
   const obstacles = [...legacy.obstacles];
-  let requested = false, requestedInfinite = false;
+  let requested = query.get('world') !== 'legacy', requestedInfinite = false;
   let ready = false, infiniteReady = false, failed = false, infiniteFailed = false, disposed = false;
   let hasRun = false, infiniteRun = false, revision = 0;
+  const loading = () => requestedInfinite ? !infiniteReady && !infiniteFailed : requested && !ready && !failed;
   const apply = () => {
     const activeInfinite = requestedInfinite && infiniteReady;
     const activeSample = requested && ready && !activeInfinite;
-    legacy.group.visible = !activeSample && !activeInfinite;
+    legacy.group.visible = !activeSample && !activeInfinite && !loading();
     sample.group.visible = activeSample;
     infinite.group.visible = activeInfinite;
-    boundary.visible = !activeInfinite;
+    boundary.visible = !activeInfinite && !loading();
     obstacles.splice(0, obstacles.length, ...(activeInfinite ? infinite.obstacles : activeSample ? sample.obstacles : legacy.obstacles));
     revision++;
   };
@@ -141,6 +143,7 @@ export function createWorld(): World {
     group, obstacles,
     get sampleActive() { return sample.group.visible; },
     get infiniteActive() { return infinite.group.visible; },
+    get loading() { return loading(); },
     get revision() { return revision; },
     setSample(enabled, newMap = false) {
       if (disposed) return;

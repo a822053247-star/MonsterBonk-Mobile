@@ -3,13 +3,13 @@ import type { RelicDamageSource } from './relics';
 import type { SpawnViewport } from './spawn-layout';
 
 export const AREA_RULES = {
-  novaCapacity: 2, visualCapacity: 1, warning: .45, duration: 1.15, interval: 12, damage: 85,
+  novaCapacity: 2, visualCapacity: 1, warning: .45, duration: 1.15, interval: 12, damage: 90,
   eliteMultiplier: .7, bossMultiplier: .4, chainNodes: 24,
 } as const;
 export const BARRAGE_RULES = {
   casts: 4, lanes: 96, minCount: 12, maxCount: 24, speed: 24, lifetime: 1.8,
   roundGap: .12, maxRounds: 3, targetsPerLane: 3, targetsPerCast: 72,
-  decay: .8, interval: 5, damage: 24, radius: .23,
+  decay: .8, interval: 5.5, damage: 22, radius: .23,
 } as const;
 export type BarragePattern = 'ring' | 'fan' | 'cross';
 export interface BarrageLane {

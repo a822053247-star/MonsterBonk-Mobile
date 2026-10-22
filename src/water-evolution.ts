@@ -8,11 +8,11 @@ export type WaterEvolutionId = typeof WATER_EVOLUTION_IDS[number];
 export const WATER_EVOLUTIONS = {
   'tsunami-sanctuary': { title: '海啸圣域', main: 'azure-burst', support: 'still-sea', requirement: '苍蓝震爆5级＋静海法阵3级', benefit: '震爆 → 残留领域 → 收尾冲击', description: '每8秒锁定敌群震爆，留下持续4秒的减速领域，结束后再扩张一圈冲击。' },
   'astral-wheel': { title: '星海天轮', main: 'star-tide', support: 'ice-radiance', requirement: '星潮脉冲5级＋冰棱放射3级', benefit: '三重扩张圆环 · 旋转冰棱齐射', description: '每6秒展开三道圆环，每圈起势后从中心补发12道冰棱；逐轮旋转方向，光束间保留空隙。' },
-  'abyss-crown': { title: '深海王冠', main: 'returning-ring', support: 'abyss-vortex', requirement: '回流水环5级＋深渊漩涡3级', benefit: '随身外圈聚怪 · 内核周期重击', description: '随角色移动，外圈缓慢聚拢普通怪、弱吸引精英，首领不位移；内圈每0.8秒重击一次。' },
+  'abyss-crown': { title: '深海王冠', main: 'returning-ring', support: 'abyss-vortex', requirement: '回流水环5级＋深渊漩涡3级', benefit: '随身外圈聚怪 · 内核周期重击', description: '随角色移动，半径5.6外圈缓慢聚怪，首领不位移；半径2.6内圈每0.95秒造成32伤害。' },
   'undertow-pyre': { title: '逆潮焚径', main: 'spore-trail', support: 'tidal-recall', requirement: '孢火足迹5级＋潮汐回收3级', benefit: '移动铺设毒焰 · 回潮引爆足迹', description: '移动留下毒焰，每7秒释放往返水浪；回潮扫过足迹时引爆并消耗它。每次最多引爆8块，同一目标最多受到2次足迹爆炸。' },
-  'deep-collapse': { title: '深海坍缩', main: 'azure-burst', support: 'abyss-vortex', requirement: '苍蓝震爆5级＋深渊漩涡3级', benefit: '先聚拢敌群 · 中心坍缩重击', description: '每7秒在敌群中心放置漩涡，聚拢1.6秒后坍缩重击。普通怪受吸引，精英受弱吸引，首领不位移。' },
+  'deep-collapse': { title: '深海坍缩', main: 'azure-burst', support: 'abyss-vortex', requirement: '苍蓝震爆5级＋深渊漩涡3级', benefit: '先聚拢敌群 · 中心坍缩重击', description: '每6.5秒在敌群中心放置半径5.6漩涡，每0.5秒造成10伤害；聚拢1.6秒后在半径5内造成205伤害。普通怪受吸引，精英受弱吸引，首领不位移。' },
   'frost-prism': { title: '极寒棱镜', main: 'still-sea', support: 'ice-radiance', requirement: '静海法阵5级＋冰棱放射3级', benefit: '冰棱齐射 · 反射交叉火力', description: '每6.5秒留下法阵，四轮冰棱到达边缘后各反射一次，斜向穿过阵内。每轮6束，每阶段对目标只命中一次，反射不再派生反射。' },
-  'all-tides': { title: '万潮归心', main: 'star-tide', support: 'tidal-recall', requirement: '星潮脉冲5级＋潮汐回收3级', benefit: '三重往返水环 · 归心收束爆发', description: '每7秒释放三道往返水环，各自去程、回程独立命中；回程吸引扫过的经验球，最后一圈归心时在角色周围爆发。' },
+  'all-tides': { title: '万潮归心', main: 'star-tide', support: 'tidal-recall', requirement: '星潮脉冲5级＋潮汐回收3级', benefit: '三重往返水环 · 归心收束爆发', description: '每7.5秒释放三道最大半径7的往返水环，每圈去程、回程各造成28伤害；回程吸引已有经验球，最后归心时在半径3.2内造成80伤害。' },
 } as const;
 export type AoeRanks = Partial<Record<string, number>>;
 export function isWaterEvolution(id: string): id is WaterEvolutionId { return (WATER_EVOLUTION_IDS as readonly string[]).includes(id); }
@@ -78,8 +78,8 @@ export class WaterEvolution {
     if (!c) { this.telemetry.denied++; return false; }
     Object.assign(c, { active: true, castId: this.host.nextCastId(), x: p.x, z: p.z, age: 0,
       duration: kind === 'tsunami-sanctuary' ? 5.3 : kind === 'astral-wheel' ? 2.8 : kind === 'deep-collapse' ? 2.4 : kind === 'frost-prism' ? 4.6 : kind === 'undertow-pyre' ? 2.5 : kind === 'all-tides' ? 3.05 : 4,
-      radius: kind === 'tsunami-sanctuary' ? 5.6 : kind === 'astral-wheel' ? 8 : kind === 'frost-prism' ? 5.4 : kind === 'all-tides' ? 8 : kind === 'undertow-pyre' ? 7.5 : 6.2,
-      damage: multiplier, nextTick: kind === 'abyss-crown' ? .8 : kind === 'tsunami-sanctuary' ? .66 : .5, detonated: false, closing: 0, previousClosing: 0,
+      radius: kind === 'tsunami-sanctuary' ? 5.2 : kind === 'astral-wheel' ? 7 : kind === 'frost-prism' ? 5 : kind === 'all-tides' ? 7 : kind === 'undertow-pyre' ? 7 : 5.6,
+      damage: multiplier, nextTick: kind === 'abyss-crown' ? .95 : kind === 'tsunami-sanctuary' ? .66 : .5, detonated: false, closing: 0, previousClosing: 0,
       originX: p.x, originZ: p.z, triggers: 0 });
     c.hits.fill(0); c.finishHits.fill(0);
     c.ignitionIds.fill(0); c.ignitionHits.fill(0);
@@ -96,7 +96,7 @@ export class WaterEvolution {
       if (!((ranks[id] ?? 0) > 0)) continue;
       this.clocks[id] -= dt;
       if (this.clocks[id] <= 0 && (id !== 'abyss-crown' || !this.casts.some(c => c.active && c.kind === id)) && this.cast(id, multiplier))
-        this.clocks[id] = id === 'tsunami-sanctuary' ? 8 : id === 'astral-wheel' ? 6 : id === 'frost-prism' ? 6.5 : id === 'abyss-crown' ? 0 : 7;
+        this.clocks[id] = id === 'tsunami-sanctuary' ? 8 : id === 'astral-wheel' ? 6 : id === 'frost-prism' ? 6.5 : id === 'abyss-crown' ? 0 : id === 'deep-collapse' ? 6.5 : id === 'all-tides' ? 7.5 : 7;
     }
     for (const c of this.casts) {
       if (!c.active) continue;
@@ -107,7 +107,7 @@ export class WaterEvolution {
           this.disk(c, c.radius, 18, undefined, true); c.nextTick += .5;
         }
         if (c.age > 4.16) {
-          c.previousClosing = c.closing; c.closing = Math.min(7.2, (c.age - 4.16) / .85 * 7.2);
+          c.previousClosing = c.closing; c.closing = Math.min(6.6, (c.age - 4.16) / .85 * 6.6);
           this.ring(c, c.previousClosing, c.closing, c.finishHits, 64);
           if (before <= 4.16) this.host.sound('shockwave');
         }
@@ -116,17 +116,17 @@ export class WaterEvolution {
           const age = c.age - i * .65, w = c.waves[i]; if (age <= 0) continue;
           if (w.radius < c.radius) {
             w.previous = w.radius; w.radius = Math.min(c.radius, age / .9 * c.radius);
-            this.ring(c, w.previous, w.radius, w.hits, 36);
+            this.ring(c, w.previous, w.radius, w.hits, 34);
             if (w.previous === 0) this.host.sound('water');
           }
           if (!w.fired && age + 1e-8 >= .18) {
-            w.fired = true; const source = this.eventSource(c, 32), angle = i * Math.PI / 12, step = Math.PI * 2 / 12;
+            w.fired = true; const source = this.eventSource(c, 30), angle = i * Math.PI / 12, step = Math.PI * 2 / 12;
             this.each((e, index) => {
               if (w.rayHits[index] === e.id) return;
               const dx = e.x - c.x, dz = e.z - c.z, distance = Math.hypot(dx, dz), a = Math.atan2(dz, dx) - angle;
               const offset = a - Math.round(a / step) * step, along = Math.cos(offset) * distance;
               if (along < .4 || along > c.radius || Math.abs(Math.sin(offset) * distance) > .3) return;
-              w.rayHits[index] = e.id; this.hit(c, e, 32, source);
+              w.rayHits[index] = e.id; this.hit(c, e, 30, source);
             });
             this.telemetry.rayRounds++; this.host.sound('shockwave');
           }
@@ -140,9 +140,9 @@ export class WaterEvolution {
           this.host.move(e, dx / d * step, dz / d * step);
         });
         while (c.nextTick <= Math.min(c.age, 1.6) + 1e-8) { this.disk(c, c.radius, 10); c.nextTick += .5; }
-        if (!c.detonated && c.age >= 1.6) { c.detonated = true; this.disk(c, 5.2, 160, c.hits); this.host.sound('collapse-impact'); }
+        if (!c.detonated && c.age >= 1.6) { c.detonated = true; this.disk(c, 5.0, 205, c.hits); this.host.sound('collapse-impact'); }
       } else if (c.kind === 'frost-prism') {
-        while (c.nextTick <= Math.min(c.age, 4.2) + 1e-8) { this.disk(c, c.radius, 12, undefined, true); c.nextTick += .5; }
+        while (c.nextTick <= Math.min(c.age, 4.2) + 1e-8) { this.disk(c, c.radius, 10, undefined, true); c.nextTick += .5; }
         for (let i = 0; i < 4; i++) {
           const age = c.age - i, w = c.waves[i];
           if (!w.fired && age + 1e-8 >= .25) { w.fired = true; this.prismRays(c, i, false); }
@@ -155,11 +155,11 @@ export class WaterEvolution {
         this.each(e => {
           if (e.rank === 'boss') return;
           const dx = c.x - e.x, dz = c.z - e.z, distance = Math.hypot(dx, dz);
-          if (distance <= 2.4 || distance > c.radius) return;
-          const movement = Math.min(distance - 2.4, (e.rank === 'elite' ? .2 : .9) * (c.age - before));
+          if (distance <= 2.6 || distance > c.radius) return;
+          const movement = Math.min(distance - 2.6, (e.rank === 'elite' ? .15 : .75) * (c.age - before));
           this.host.move(e, dx / distance * movement, dz / distance * movement);
         });
-        while (c.nextTick <= c.age + 1e-8) { this.disk(c, 2.4, 52, undefined, true); c.nextTick += .8; this.host.sound('shockwave'); }
+        while (c.nextTick <= c.age + 1e-8) { this.disk(c, 2.6, 32, undefined, true); c.nextTick += .95; this.host.sound('shockwave'); }
       }
       if (c.age >= c.duration) c.active = false;
     }
@@ -167,7 +167,7 @@ export class WaterEvolution {
   }
   private eligible(e: Enemy) { return e.active && e.hp > 0 && e.spawnTime <= 0; }
   private prismRays(c: EvolutionCast, round: number, reflected: boolean) {
-    const ids = reflected ? c.waves[round].rayHits : c.waves[round].hits, damage = reflected ? 32 : 26;
+    const ids = reflected ? c.waves[round].rayHits : c.waves[round].hits, damage = reflected ? 28 : 24;
     const source = this.eventSource(c, damage);
     this.each((e, index) => {
       if (ids[index] === e.id) return;
@@ -199,10 +199,10 @@ export class WaterEvolution {
         w.radius = c.radius * (returning ? 1 - progress : progress);
         w.x = c.originX + (returning ? (origin.x - c.originX) * progress : 0);
         w.z = c.originZ + (returning ? (origin.z - c.originZ) * progress : 0);
-        const ids = returning ? w.rayHits : w.hits, source = this.eventSource(c, triple ? 30 : 28);
+        const ids = returning ? w.rayHits : w.hits, source = this.eventSource(c, 28);
         this.each((e, index) => {
           if (ids[index] === e.id || !this.swept(w, e)) return;
-          ids[index] = e.id; this.hit(c, e, triple ? 30 : 28, source);
+          ids[index] = e.id; this.hit(c, e, 28, source);
         });
         if (returning) {
           for (const orb of this.host.orbs()) if (orb.active && !orb.magnetized && this.swept(w, orb)) orb.magnetized = true;
@@ -213,7 +213,7 @@ export class WaterEvolution {
       else if (from === 0) this.host.sound('water');
     }
     if (triple && !c.detonated && c.age + 1e-8 >= 2.6) {
-      c.detonated = true; Object.assign(c, origin); this.disk(c, 3.5, 90, c.finishHits); this.host.sound('tide-finish');
+      c.detonated = true; Object.assign(c, origin); this.disk(c, 3.2, 80, c.finishHits); this.host.sound('tide-finish');
     }
   }
   private igniteTrails(c: EvolutionCast, w: Sweep) {
@@ -221,12 +221,12 @@ export class WaterEvolution {
       if (c.triggers >= WATER_EVOLUTION_LIMITS.ignitions) break;
       if (!trail.active || trail.kind !== 'spore-trail' || !this.swept(w, trail)) continue;
       trail.active = false; trail.source = undefined; c.triggers++;
-      const source = this.eventSource(c, 72, true);
+      const source = this.eventSource(c, 62, true);
       this.each((e, index) => {
-        if (Math.hypot(e.x - trail.x, e.z - trail.z) > 2.4) return;
+        if (Math.hypot(e.x - trail.x, e.z - trail.z) > 2.2) return;
         if (c.ignitionIds[index] !== e.id) { c.ignitionIds[index] = e.id; c.ignitionHits[index] = 0; }
         if (c.ignitionHits[index] >= WATER_EVOLUTION_LIMITS.ignitionHits) return;
-        c.ignitionHits[index]++; this.hit(c, e, 72, source);
+        c.ignitionHits[index]++; this.hit(c, e, 62, source);
       });
       // A saturated visual pool only drops decoration, never the explosion above.
       const effect = this.ignitions.find(e => !e.active);
@@ -259,7 +259,7 @@ export class WaterEvolution {
     });
   }
   private hit(c: EvolutionCast, e: Enemy, damage: number, source: RelicDamageSource) {
-    this.host.damage(e, damage * c.damage * (e.rank === 'boss' ? .4 : e.rank === 'elite' ? .7 : 1), source);
+    this.host.damage(e, damage * c.damage * (e.rank === 'boss' ? (c.kind === 'astral-wheel' || c.kind === 'frost-prism' ? .5 : .55) : e.rank === 'elite' ? .7 : 1), source);
     this.telemetry.hits++; if (e.hp <= 0) this.telemetry.kills++;
   }
   clear() { for (const c of this.casts) { c.active = false; c.source = undefined; } for (const effect of this.ignitions) effect.active = false; }

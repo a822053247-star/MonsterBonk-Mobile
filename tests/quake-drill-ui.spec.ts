@@ -1,0 +1,57 @@
+import { test, expect } from '@playwright/test';
+
+test('playable drill moves by keyboard and joystick, locks multiple warnings, pauses and restarts', async ({ page }) => {
+  const errors: string[] = []; page.on('pageerror', error => errors.push(error.message));
+  await page.setViewportSize({ width: 1200, height: 760 });
+  await page.goto('/elite-quake-preview.html');
+  await page.waitForFunction(() => (window as any).__eliteQuake?.inspect().ready);
+  const state = () => page.evaluate(() => (window as any).__eliteQuake.inspect());
+  await expect(page.locator('#mode-drill')).toHaveAttribute('aria-pressed', 'true');
+  await page.locator('#drill-auto').uncheck();
+  await page.locator('#play').click();
+  const start = (await state()).drill.player;
+  await page.keyboard.down('KeyA');
+  await expect.poll(async () => (await state()).drill.player.x).toBeLessThan(start.x - .6);
+  await page.keyboard.up('KeyA');
+  await page.locator('#play').click();
+  const paused = await state(); await page.waitForTimeout(100);
+  expect((await state()).time).toBe(paused.time); expect((await state()).drill.player).toEqual(paused.drill.player);
+  await page.selectOption('#drill-count', '6');
+  await page.locator('#drill-radius').fill('5.5');
+  await page.locator('#drill-trigger').click();
+  await expect.poll(async () => (await state()).drill.zones.length).toBe(6);
+  const locked = (await state()).drill.zones.map((zone: any) => ({ x: zone.x, z: zone.z, radius: zone.radius }));
+  await page.locator('#drill-radius').fill('2.5');
+  expect((await state()).drill.zones.map((zone: any) => ({ x: zone.x, z: zone.z, radius: zone.radius }))).toEqual(locked);
+  await expect.poll(async () => (await state()).fields.filter((field: any) => field.visible).length).toBe(6);
+  await page.locator('#play').click();
+  await page.screenshot({ path: 'artifacts/quake-drill-six-zones.png' });
+  await page.locator('#replay').click();
+  await expect(page.locator('#drill-hp')).toHaveText('100');
+  const stick = page.locator('#drill-joystick'), rect = (await stick.boundingBox())!;
+  const before = (await state()).drill.player.x;
+  await page.mouse.move(rect.x + rect.width / 2, rect.y + rect.height / 2);
+  await page.mouse.down(); await page.mouse.move(rect.x + rect.width * .85, rect.y + rect.height / 2);
+  await expect.poll(async () => (await state()).drill.player.x).toBeGreaterThan(before + .5);
+  await page.mouse.up(); await page.locator('#play').click();
+  const stopped = (await state()).drill.player; await page.waitForTimeout(100);
+  expect((await state()).drill.player).toEqual(stopped);
+  await page.locator('#mode-view').click();
+  await expect(page.locator('.timeline')).toBeVisible(); await expect(page.locator('#drill-joystick')).toBeHidden();
+  expect(errors).toEqual([]);
+});
+
+test('stationary player loses HP, mobile controls fit, and a new attempt restores movement', async ({ page }) => {
+  await page.setViewportSize({ width: 844, height: 390 });
+  await page.goto('/elite-quake-preview.html');
+  await page.waitForFunction(() => (window as any).__eliteQuake?.inspect().ready);
+  await page.locator('#drill-auto').uncheck(); await page.locator('#drill-trigger').click();
+  await expect(page.locator('#drill-hp')).toHaveText('80');
+  await page.locator('#play').click();
+  await page.screenshot({ path: 'artifacts/quake-drill-mobile.png' });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await page.locator('#replay').click(); await expect(page.locator('#drill-hp')).toHaveText('100');
+  await page.keyboard.down('ArrowRight');
+  await expect.poll(() => page.evaluate(() => (window as any).__eliteQuake.inspect().drill.player.x)).toBeGreaterThan(5);
+  await page.keyboard.up('ArrowRight');
+});

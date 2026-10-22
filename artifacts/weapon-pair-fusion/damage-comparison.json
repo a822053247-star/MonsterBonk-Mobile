@@ -7,44 +7,44 @@
     {
       "id": "steam-comet",
       "scenario": "single",
-      "before": 679.2,
-      "after": 736,
-      "ratio": 1.084
+      "before": 785.84,
+      "after": 750,
+      "ratio": 0.954
     },
     {
       "id": "steam-comet",
       "scenario": "group-5",
-      "before": 679.2,
-      "after": 2060.8,
-      "ratio": 3.034
+      "before": 785.84,
+      "after": 1950,
+      "ratio": 2.481
     },
     {
       "id": "blazing-thorn",
       "scenario": "single",
       "before": 778.8,
-      "after": 772,
-      "ratio": 0.991
+      "after": 820.64,
+      "ratio": 1.054
     },
     {
       "id": "blazing-thorn",
       "scenario": "group-5",
       "before": 1243.44,
-      "after": 2316,
-      "ratio": 1.863
+      "after": 2461.92,
+      "ratio": 1.98
     },
     {
       "id": "bramble-tide",
       "scenario": "single",
-      "before": 558.72,
-      "after": 640,
-      "ratio": 1.145
+      "before": 622.08,
+      "after": 660,
+      "ratio": 1.061
     },
     {
       "id": "bramble-tide",
       "scenario": "group-5",
-      "before": 1023.36,
-      "after": 1664,
-      "ratio": 1.626
+      "before": 1213.44,
+      "after": 1584,
+      "ratio": 1.305
     }
   ]
 }

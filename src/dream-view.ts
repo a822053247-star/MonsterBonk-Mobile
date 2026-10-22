@@ -96,8 +96,9 @@ export class DreamView {
     for (const shot of combat.projectiles) {
       if (!shot.active || !isDreamWeapon(shot.attackId) || shot.vfxPresetId) continue;
       const x=THREE.MathUtils.lerp(shot.previousX,shot.x,alpha),z=THREE.MathUtils.lerp(shot.previousZ,shot.z,alpha),angle=-Math.atan2(shot.vz,shot.vx);
-      if (shot.attackId==='dream-dart') this.darts.putRect(Math.floor((shot.age??0)*10)%4,x,z,1.3,.95,OPACITY.projectile,angle,.32);
-      else this.seeds.putRect(0,x,z,1.3,.86,OPACITY.projectile,angle,.3);
+      const scale=combat.projectileRadius(shot)/.2;
+      if (shot.attackId==='dream-dart') this.darts.putRect(Math.floor((shot.age??0)*10)%4,x,z,1.3*scale,.95*scale,OPACITY.projectile,angle,.32);
+      else this.seeds.putRect(0,x,z,1.3*scale,.86*scale,OPACITY.projectile,angle,.3);
     }
     for (const enemy of combat.enemies) {
       if (!enemy.active || enemy.spawnTime>0) continue;

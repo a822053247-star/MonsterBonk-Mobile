@@ -1,17 +1,22 @@
 import type { Combat, Enemy } from './combat';
 import { FORMAL_SPAWN_CAPS } from './spawn-layout';
 import type { CrownthornAction } from './crownthorn-animation';
+import { ELITE_QUAKE_DURATION, type EliteQuakeEvent } from './elite-quake';
+import { ARENA_HALF_EXTENT, PLAYER_COLLISION_RADIUS } from './arena-boundary';
 
 type Point = { x: number; z: number };
 export const ENCOUNTER_RULES = {
   hostileShots: 16, bossHp: 6000, bossRadius: 1.05, bossSpawn: 1.5, bossSupportCap: FORMAL_SPAWN_CAPS[5],
-  waveHealth: [1,1.2,1.5,1.8,2.2,1.8],
+  waveHealth: [1,1.15,1.35,1.5,1.75,1.4],
   bossSpeed: 1.8, dashSpeed: 15, dashDuration: .65, dashWindup: 1.1,
   spreadWindup: 1, spreadSpeed: 6, spreadLife: 2, shotRadius: .24,
   eliteHp: 480, eliteRadius: 1, elitePulseRadius: 3.4, eliteWindup: 1.3,
   elitePulseCooldown: 2.9, elitePulseDamage: 20,
   meleeWindup: .55, meleeActive: .16, meleeRecovery: .9,
 } as const;
+export const CAMPAIGN_ELITE_QUAKE = { warning: 2.2, cooldown: 3.6, reaction: .8, escapeMargin: .9, sideDistance: 5.5 } as const;
+export const CAMPAIGN_BOSS = { spreadCount: 7, enragedSpreadCount: 9, dashDuration: .85 } as const;
+const CAMPAIGN_BOSS_PATTERN = ['spread-windup', 'dash-windup', 'summon-windup', 'dash-windup'] as const;
 /** Predict only when locking a warning. Bounded curvature makes an unchanged
  * circular path readable to enemies; a subsequent reversal invalidates the aim. */
 export function predictPosition(player: Point, vx: number, vz: number, turn: number, seconds: number): Point {
@@ -31,20 +36,30 @@ export class EnemyChallenge {
   bossState: BossState = 'approach';
   /** Set by Endless RunFlow when the Boss reaches its target time. */
   forceEnraged = false;
+  releaseWindow = false;
   bossTime = 0;
   aimX = 0;
   aimZ = 1;
   eliteTime = 0;
   eliteCooldown = 2;
   elitePulsing = false;
+  eliteWindupDuration: number = ENCOUNTER_RULES.eliteWindup;
+  readonly eliteQuake: EliteQuakeEvent = { active: false, age: 0, x: 0, z: 0 };
+  readonly eliteQuakeAftershocks: EliteQuakeEvent[] = Array.from({ length: 2 }, () => ({ active: false, age: 0, x: 0, z: 0 }));
+  readonly eliteQuakeTargets = Array.from({ length: 3 }, () => ({ active: false, x: 0, z: 0 }));
   private pulseDue = false;
   private pattern = 0;
+  private campaign = true;
   private motion = { x: 0, z: 0 };
   readonly shots: HostileShot[] = Array.from({ length: ENCOUNTER_RULES.hostileShots }, () => ({ active: false, x: 0, z: 0, previousX: 0, previousZ: 0, vx: 0, vz: 0, life: 0 }));
   get enraged() {
     return !!this.boss?.active && (this.forceEnraged || this.boss.hp <= (this.boss.maxHp ?? ENCOUNTER_RULES.bossHp) / 2);
   }
   get defeated() { return this.bossState === 'defeated'; }
+  get dashDuration() { return CAMPAIGN_BOSS.dashDuration; }
+  get dashWindupDuration() { return this.enraged ? .95 : 1.1; }
+  get spreadWindupDuration() { return this.enraged ? .9 : 1; }
+  get spreadCount() { return this.enraged ? CAMPAIGN_BOSS.enragedSpreadCount : CAMPAIGN_BOSS.spreadCount; }
   get dying() { return this.bossState === 'dying' || this.defeated; }
   get action(): CrownthornAction | null {
     if (this.dying) return 'death';
@@ -58,23 +73,37 @@ export class EnemyChallenge {
   freezeEnemy(enemy: Enemy) {
     if (enemy !== this.elite) return;
     this.elitePulsing = this.pulseDue = false; this.eliteTime = 0;
+    for (const target of this.eliteQuakeTargets) target.active = false;
     this.eliteCooldown = Math.max(.75, this.eliteCooldown);
   }
   reset() {
-    this.enabled = false; this.wave = 0; this.boss = this.elite = undefined;
+    this.enabled = false; this.releaseWindow = false; this.wave = 0; this.boss = this.elite = undefined;
+    this.campaign = true;
     this.bossState = 'approach'; this.forceEnraged = false; this.bossTime = this.eliteTime = this.pattern = 0;
     this.eliteCooldown = 2; this.elitePulsing = this.pulseDue = false; this.aimX = 0; this.aimZ = 1;
+    Object.assign(this.eliteQuake, { active: false, age: 0, x: 0, z: 0 });
+    this.eliteWindupDuration = ENCOUNTER_RULES.eliteWindup;
+    for (const event of this.eliteQuakeAftershocks) Object.assign(event, { active: false, age: 0, x: 0, z: 0 });
+    for (const target of this.eliteQuakeTargets) target.active = false;
     this.clearShots();
   }
-  beginWave(wave: number, continuous = false) {
+  beginWave(wave: number, continuous = false, campaign = true) {
     if (continuous && this.enabled && wave === this.wave + 1 && wave <= 5) {
       // An unfinished wave-four elite keeps its pulse/health into wave five.
       this.wave = wave; return;
     }
-    this.reset(); this.enabled = true; this.wave = wave;
+    this.reset(); this.enabled = true; this.wave = wave; this.campaign = campaign;
   }
   beforeTick(dt: number) {
     this.pulseDue = false;
+    if (this.eliteQuake.active) {
+      this.eliteQuake.age += dt;
+      if (this.eliteQuake.age >= ELITE_QUAKE_DURATION) this.eliteQuake.active = false;
+    }
+    for (const event of this.eliteQuakeAftershocks) if (event.active) {
+      event.age += dt;
+      if (event.age >= ELITE_QUAKE_DURATION) event.active = false;
+    }
     if (this.bossState === 'dying') { this.bossTime += dt; if (this.bossTime >= 1) this.bossState = 'defeated'; }
   }
   killedBoss(combat: Combat) {
@@ -95,6 +124,35 @@ export class EnemyChallenge {
     return this.elite;
   }
   private transition(state: BossState) { this.bossState = state; this.bossTime = 0; }
+  /** Only cast if a straight, walkable escape fits inside the campaign boundary. */
+  private lockCampaignQuake(combat: Combat, player: Point) {
+    const radius = ENCOUNTER_RULES.elitePulseRadius + PLAYER_COLLISION_RADIUS;
+    const distance = radius + CAMPAIGN_ELITE_QUAKE.escapeMargin;
+    const limit = ARENA_HALF_EXTENT - PLAYER_COLLISION_RADIUS - .15;
+    const preferred = Math.atan2(-player.z, -player.x);
+    for (let i = 0; i < 24; i++) {
+      const offset = (i % 2 ? 1 : -1) * Math.ceil(i / 2) * Math.PI / 12;
+      const angle = preferred + offset, ux = Math.cos(angle), uz = Math.sin(angle);
+      const endX = player.x + ux * distance, endZ = player.z + uz * distance;
+      if (Math.abs(endX) > limit || Math.abs(endZ) > limit) continue;
+      const blocked = combat.hostileWallHit(player.x,player.z,endX,endZ,PLAYER_COLLISION_RADIUS+.12)!==Infinity;
+      if (blocked) continue;
+      Object.assign(this.eliteQuakeTargets[0], { active: true, x: player.x, z: player.z });
+      for (let j = 0; j < 2; j++) {
+        // Both side circles sit behind the escape direction and cannot close that route.
+        const sign = j ? 1 : -1, spread = CAMPAIGN_ELITE_QUAKE.sideDistance;
+        const x = player.x + (-ux * .65 - uz * .76 * sign) * spread;
+        const z = player.z + (-uz * .65 + ux * .76 * sign) * spread;
+        const active = Math.abs(x) <= limit && Math.abs(z) <= limit
+          && combat.hostileWallHit(x,z,x,z,.3)===Infinity;
+        Object.assign(this.eliteQuakeTargets[j+1], { active, x, z });
+      }
+      this.eliteWindupDuration = Math.max(CAMPAIGN_ELITE_QUAKE.warning,
+        CAMPAIGN_ELITE_QUAKE.reaction + distance / Math.max(.1, 4.6 * combat.stats.moveMultiplier) + .2);
+      return true;
+    }
+    return false;
+  }
   /** Keep normal navigation/cover sliding, replacing only the chosen attack's velocity. */
   movement(enemy: Enemy, dt: number, player: Point, combat: Combat, x: number, z: number) {
     this.motion.x = x; this.motion.z = z;
@@ -103,43 +161,51 @@ export class EnemyChallenge {
       const distance = Math.hypot(player.x-enemy.x, player.z-enemy.z);
       const tempo = this.enraged ? .8 : 1;
       if (this.bossState === 'approach' && (distance < 8 || this.bossTime > 3)) {
-        const state=(['spread-windup', 'dash-windup', 'summon-windup'] as const)[this.pattern++ % 3];
+        const pattern = CAMPAIGN_BOSS_PATTERN;
+        const state=pattern[this.pattern++ % pattern.length];
         // A bounded lead punishes an unchanged orbit, but the displayed locked
         // warning never follows the player. Reversing/side-stepping stays safe.
-        const lead=(state==='dash-windup'?ENCOUNTER_RULES.dashWindup:ENCOUNTER_RULES.spreadWindup)*tempo+(state==='dash-windup'?.35:.7);
+        const lead=(state==='dash-windup'?this.dashWindupDuration:this.spreadWindupDuration)+(state==='dash-windup'?.35:.7);
         const predicted=predictPosition(player,combat.playerVelocityX,combat.playerVelocityZ,combat.playerTurnRate,lead);
         const tx=predicted.x-enemy.x, tz=predicted.z-enemy.z;
         const length=Math.max(.001,Math.hypot(tx,tz)); this.aimX=tx/length; this.aimZ=tz/length;
         if(length<=.001) this.aimZ=1;
         this.transition(state);
-      } else if (this.bossState === 'spread-windup' && this.bossTime >= ENCOUNTER_RULES.spreadWindup * tempo) {
+      } else if (this.bossState === 'spread-windup' && this.bossTime >= this.spreadWindupDuration) {
         const angle = Math.atan2(this.aimX,this.aimZ);
-        for (let i = -2; i <= 2; i++) {
+        // Keep the readable 1.4-radian cone and its side escape routes while
+        // filling it more densely. No extra volleys overlap the next charge.
+        const count = this.spreadCount;
+        for (let i = 0; i < count; i++) {
           const shot = this.shots.find(s => !s.active); if (!shot) break;
-          const vx = Math.sin(angle+i*.35), vz = Math.cos(angle+i*.35), speed = ENCOUNTER_RULES.spreadSpeed*(this.enraged ? 1.15 : 1);
+          const offset = -.7 + i * 1.4 / (count - 1);
+          const vx = Math.sin(angle+offset), vz = Math.cos(angle+offset), speed = ENCOUNTER_RULES.spreadSpeed*(this.enraged ? 1.1 : 1);
           const sx = enemy.x, sz = enemy.z;
           Object.assign(shot,{active:true,x:sx,z:sz,previousX:sx,previousZ:sz,vx:vx*speed,vz:vz*speed,life:ENCOUNTER_RULES.spreadLife});
         }
         this.transition('spread');
-      } else if (this.bossState === 'dash-windup' && this.bossTime >= ENCOUNTER_RULES.dashWindup * tempo) this.transition('dash');
-      else if (this.bossState === 'dash' && this.bossTime >= ENCOUNTER_RULES.dashDuration) this.transition('recover');
+      } else if (this.bossState === 'dash-windup' && this.bossTime >= this.dashWindupDuration) this.transition('dash');
+      else if (this.bossState === 'dash' && this.bossTime >= this.dashDuration) this.transition('recover');
       else if (this.bossState === 'summon-windup' && this.bossTime >= .9 * tempo) {
         for (let i = 0; i < 3 && combat.enemies.filter(e => e.active).length < ENCOUNTER_RULES.bossSupportCap; i++) combat.spawnEncounter('normal', enemy, 2.8, 4.2);
         this.transition('summon');
       } else if ((this.bossState === 'spread' || this.bossState === 'summon') && this.bossTime >= .7) this.transition('recover');
-      else if (this.bossState === 'recover' && this.bossTime >= (this.enraged ? 1.06 : 1.4)) this.transition('approach');
+      else if (this.bossState === 'recover' && this.bossTime >= (this.enraged ? 1.15 : 1.4)) this.transition('approach');
       if (this.bossState === 'dash') { this.motion.x = this.aimX*ENCOUNTER_RULES.dashSpeed; this.motion.z = this.aimZ*ENCOUNTER_RULES.dashSpeed; }
       else if (this.bossState !== 'approach') this.motion.x = this.motion.z = 0;
       else { this.motion.x *= ENCOUNTER_RULES.bossSpeed/.75; this.motion.z *= ENCOUNTER_RULES.bossSpeed/.75; }
     } else if (enemy === this.elite) {
       if (this.elitePulsing) {
         this.eliteTime += dt; this.motion.x = this.motion.z = 0;
-        if (this.eliteTime >= ENCOUNTER_RULES.eliteWindup) { this.pulseDue = true; this.elitePulsing = false; this.eliteCooldown = ENCOUNTER_RULES.elitePulseCooldown; }
+        if (this.eliteTime >= this.eliteWindupDuration) { this.pulseDue = true; this.elitePulsing = false; this.eliteCooldown = this.eliteQuakeTargets[0].active ? (this.releaseWindow ? 5.5 : CAMPAIGN_ELITE_QUAKE.cooldown) : ENCOUNTER_RULES.elitePulseCooldown; }
       } else {
         this.eliteCooldown = Math.max(0,this.eliteCooldown-dt);
         // A spore explosion has its own warning; avoid starting two major warnings together.
         const sporeWarning = combat.sporeExplosions.some(e => e.active && !e.detonated);
         if (!this.eliteCooldown && !sporeWarning && Math.hypot(player.x-enemy.x, player.z-enemy.z)<6) {
+          const campaign = this.campaign && this.wave >= 4 && this.wave <= 5;
+          if (campaign && !this.lockCampaignQuake(combat, player)) { this.eliteCooldown = .8; return this.motion; }
+          if (!campaign) this.eliteWindupDuration = ENCOUNTER_RULES.eliteWindup;
           this.elitePulsing=true; this.eliteTime=0; this.motion.x=this.motion.z=0;
         }
       }
@@ -148,8 +214,19 @@ export class EnemyChallenge {
   }
   advanceHazards(dt: number, combat: Combat, player: Point, previous: Point) {
     if (this.dying) { this.clearShots(); return; }
-    if (this.pulseDue && this.elite?.active && Math.hypot(player.x-this.elite.x,player.z-this.elite.z) < ENCOUNTER_RULES.elitePulseRadius+.62
-      && !combat.covered(this.elite.x,this.elite.z,player.x,player.z)) combat.hitPlayer(ENCOUNTER_RULES.elitePulseDamage);
+    if (this.pulseDue && this.elite?.active) {
+      const locked = this.eliteQuakeTargets[0].active;
+      const source = locked ? this.eliteQuakeTargets[0] : this.elite;
+      Object.assign(this.eliteQuake, { active: true, age: 0, x: source.x, z: source.z });
+      if (locked) for (let i = 0; i < this.eliteQuakeAftershocks.length; i++) {
+        const target = this.eliteQuakeTargets[i+1];
+        Object.assign(this.eliteQuakeAftershocks[i], { active: target.active, age: 0, x: target.x, z: target.z });
+      }
+      const hit = (point: Point) => Math.hypot(player.x-point.x,player.z-point.z) < ENCOUNTER_RULES.elitePulseRadius + PLAYER_COLLISION_RADIUS
+        && !combat.covered(point.x,point.z,player.x,player.z);
+      if (locked ? this.eliteQuakeTargets.some(target => target.active && hit(target)) : hit(source)) combat.hitPlayer(ENCOUNTER_RULES.elitePulseDamage);
+      for (const target of this.eliteQuakeTargets) target.active = false;
+    }
     for (const shot of this.shots) {
       if (!shot.active) continue;
       shot.previousX=shot.x; shot.previousZ=shot.z;

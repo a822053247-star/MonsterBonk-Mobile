@@ -20,7 +20,7 @@ function relic<const Id extends string>(id:Id,title:string,requirements:Requirem
 }
 export const GIGAPACK_BATCH_11_15 = [
   relic('storm-relay','雷鸣中继',{projectile:true},['chain','multiweapon'],'fire',{handler:'storm-relay',window:2.5,sameHits:4,damage:.45,count:2,radius:3.2,cooldown:4}),
-  relic('void-vessel','虚空收纳匣',{},['defense','retaliation'],'water',{handler:'void-vessel',cooldown:16,radius:1.6,damage:.6}),
+  relic('void-vessel','虚空收纳匣',{},['defense','retaliation'],'water',{handler:'void-vessel',cooldown:18,radius:1.6,damage:.6}),
   relic('warp-eye','折跃之瞳',{projectile:true},['projectile','position'],'water',{handler:'warp-eye',every:6,range:9,exit:1.1}),
   relic('reaper-decree','死神点名',{},['on-kill','execute'],'fire',{handler:'reaper-decree',kills:8,cooldown:6,range:6,delay:.6,damage:.75}),
   relic('rhythm-seal','律动破阵',{},['on-cast','cone'],'fire',{handler:'rhythm-seal',every:7,cooldown:4.5,range:3,degrees:90,damage:.55}),
@@ -35,7 +35,7 @@ export const GIGAPACK_BATCH_16_20 = [
 export function gigapackCopy(b:GigapackBehavior){
   switch(b.handler){
     case 'storm-relay':return {benefit:'2.5秒内异武器2次或同武器4次主命中：雷击另外2敌 · 45%原伤',tradeoff:'半径3.2；冷却4秒，触发后清空计数；雷击不再派生'};
-    case 'void-vessel':return {benefit:'每16秒抵消一次有效受伤，储存1层虚空',tradeoff:'下次主命中消耗，半径1.6脉冲 · 60%原伤；最多1层，不再派生'};
+    case 'void-vessel':return {benefit:'每18秒抵消一次有效受伤，储存1层虚空',tradeoff:'下次主命中消耗，半径1.6脉冲 · 60%原伤；最多1层，不再派生'};
     case 'warp-eye':return {benefit:'每第6次主远程施放，将同一枚弹折跃至9范围最远敌前1.1单位',tradeoff:'重新瞄准，无额外弹或跨段碰撞；无目标照常发射并继续计数'};
     case 'reaper-decree':return {benefit:'主武器谱系8杀后点名6范围内最高生命普通敌，0.6秒后处决',tradeoff:'冷却6秒；无普通敌则对可见精英/首领造成主武器基础75%伤害；处决不蓄杀'};
     case 'rhythm-seal':return {benefit:'每第7次主施放：朝最近敌释放90°、长3音浪 · 55%施放快照伤害',tradeoff:'全局冷却4.5秒；每敌一次，音浪不再派生'};

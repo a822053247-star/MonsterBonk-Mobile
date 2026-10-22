@@ -10,13 +10,13 @@ export const WATER_NAMES: Record<WaterSkill, string> = {
 export function waterStats(id: WaterSkill, rank: number) {
   const level = Math.max(1, Math.min(5, Math.floor(rank))), growth = level - 1;
   switch (id) {
-    case 'azure-burst': return { radius: 3.5 + growth * .35, damage: 50 * (1 + growth * .2), interval: 4.5, duration: .9, waves: 1 };
+    case 'azure-burst': return { radius: 3.5 + growth * .425, damage: 52 * (1 + growth * .18), interval: 4.5, duration: .9, waves: 1 };
     case 'star-tide': {
       const waves = level >= 5 ? 3 : level >= 3 ? 2 : 1;
-      return { radius: 4.5 + growth * .4, damage: 20 * (1 + growth * .15), interval: 5.5, duration: .95 + (waves - 1) * .22, waves };
+      return { radius: 4.2 + growth * .35, damage: 18 * (1 + growth * .15), interval: 5.8, duration: .95 + (waves - 1) * .22, waves };
     }
-    case 'still-sea': return { radius: 3.3 + growth * .25, damage: 8 * (1 + growth * .2), interval: 6.5, duration: 4 + growth * .5, waves: 1 };
-    case 'returning-ring': return { radius: 2.1 + growth * .25, damage: 6 * (1 + growth * .2), interval: 0, duration: 4, waves: 1 };
+    case 'still-sea': return { radius: 3.0 + growth * .2, damage: 7 * (1 + growth * .2), interval: 6.5, duration: 4 + growth * .4, waves: 1 };
+    case 'returning-ring': return { radius: 1.9 + growth * .2, damage: 5 * (1 + growth * .2), interval: 0, duration: 4, waves: 1 };
   }
 }
 interface Wave { radius: number; previousRadius: number; hits: Int32Array; source?: RelicDamageSource }
@@ -152,7 +152,7 @@ export class WaterAoe {
     }
   }
   private hit(cast: WaterCast, enemy: Enemy, source: RelicDamageSource) {
-    this.host.damage(enemy, cast.damage * (enemy.rank === 'boss' ? .4 : enemy.rank === 'elite' ? .7 : 1), source);
+    this.host.damage(enemy, cast.damage * (enemy.rank === 'boss' ? (cast.kind === 'azure-burst' ? .55 : cast.kind === 'star-tide' ? .50 : .45) : enemy.rank === 'elite' ? .7 : 1), source);
     this.telemetry.hits++;
     if (enemy.hp <= 0) this.telemetry.kills++;
   }

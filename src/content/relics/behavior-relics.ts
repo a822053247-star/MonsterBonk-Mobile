@@ -32,8 +32,8 @@ export const SECOND_RELIC_BATCH = [
   relic('spore-crown','孢子花冠',{weapon:'leaf'},['grass','area'],'grass','spore-area',{handler:'poison-zone',duration:1.6,interval:.4,damage:.12,cooldown:1.5,cap:2,radius:1.6}),
   relic('back-mirror','背影魔镜',{projectile:true},['projectile'],'water','water-impact',{handler:'back-shot',every:4,damage:.5}),
   relic('slaughter-drum','屠戮战鼓',{},['area'],'fire','fire-explosion',{handler:'kill-wave',window:3,kills:6,radius:3,damage:.35,cooldown:8}),
-  relic('wet-vines','湿藤缠绕',{weapon:'leaf',weapons:['bubble']},['grass','water'],'grass','water-impact',{handler:'wet-bind',duration:.7,cooldown:1.2,slow:.2,bossSlow:.9}),
-  relic('blood-pact','绝境血契',{},['melee','projectile'],'fire','fire-impact',{handler:'blood',maxHp:.85,threshold:.4,interval:.75,heal:1,healCap:3}),
+  relic('wet-vines','湿藤缠绕',{weapon:'leaf',weapons:['bubble']},['grass','water'],'grass','water-impact',{handler:'wet-bind',duration:.7,cooldown:1.2,slow:.3,bossSlow:.9}),
+  relic('blood-pact','绝境血契',{},['melee','projectile'],'fire','fire-impact',{handler:'blood',maxHp:.85,threshold:.4,interval:.85,heal:1,healCap:2}),
 ] as const;
 
 export function behaviorCopy(b: RelicBehavior) {
