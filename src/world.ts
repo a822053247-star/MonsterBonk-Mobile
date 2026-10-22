@@ -208,7 +208,7 @@ function createLegacyWorld(): Pick<World, 'group' | 'obstacles'> {
   const ground = new THREE.Mesh(new THREE.PlaneGeometry(240, 240), material('#8bc869'));
   ground.rotation.x = -Math.PI / 2;
   group.add(ground);
-  // Visual regions only. Existing obstacles, boundary and combat rules stay intact.
+  // Terrain regions are visual-only; collision uses the shared rectangular arena rules.
   const regionGeometry = new THREE.CircleGeometry(1, 32);
   for (const region of [
     { name: '风语林地', x: -20, z: -8, sx: 15, sz: 23, color: '#78b98b' },
