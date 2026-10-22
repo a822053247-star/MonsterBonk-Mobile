@@ -1,4 +1,4 @@
-import { clampToRectangularBoundary, isInsideRectangularBoundary } from './arena-boundary';
+import { ARENA_HALF_EXTENT, clampToRectangularBoundary, isInsideRectangularBoundary } from './arena-boundary';
 import {WEAPON_PAIR_RECIPES,sourceHasAttack,type WeaponPairId} from './weapon-pair-fusion';
 import { CombatRelicBehaviors } from './combat-relic-behaviors';
 import { COMBAT_CLARITY } from './combat-clarity';
@@ -178,7 +178,7 @@ export class Combat {
   hornKills = 0;
   interrupts = 0;
 
-  constructor(private obstacles: readonly Obstacle[] = [], private boundary = 32.3, private random: () => number = Math.random, ruleset: Ruleset = 'classic') {
+  constructor(private obstacles: readonly Obstacle[] = [], private boundary = ARENA_HALF_EXTENT, private random: () => number = Math.random, ruleset: Ruleset = 'classic') {
     this.ruleset = ruleset; this.progression = new Progression(random);
     this.navigation = new GroundNavigation(obstacles, boundary);
   }
