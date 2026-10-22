@@ -9,6 +9,7 @@ test('forest HUD keeps live values, weapon artwork and safe touch targets on lan
   </script></body></html>` }));
   await page.goto('/hud-harness?world=fixed');
   await page.locator('#start-fusion').click();
+  await expect.poll(() => page.evaluate(() => (window as any).game.inspect().mode)).toBe('playing');
   await page.evaluate(() => {
     const w = window as any, g = w.game;
     g.sleep();g.combat.hp=24;g.combat.progression.gainExperience(3);
