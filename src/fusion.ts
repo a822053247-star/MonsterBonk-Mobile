@@ -1,6 +1,6 @@
 import type { SkillRanks } from './progression';
 
-export type BaseAttackId = 'spark' | 'bubble' | 'leaf' | 'flame-sweep' | 'thorn-wheel' | 'tidal-blade' | 'thunder-bud' | 'frost-crystal';
+export type BaseAttackId = 'spark' | 'bubble' | 'leaf' | 'flame-sweep' | 'thorn-wheel' | 'tidal-blade' | 'thunder-bud' | 'frost-crystal' | 'dream-dart' | 'resonance-seed';
 /** P1 tuning. Child hits never execute the parent recipe. */
 export const BURST_SEED = {
   id: 'burst-seed', title: '爆裂火种', baseAttack: 'spark', requires: ['split-on-hit'], visual: 'yanrong-fire',

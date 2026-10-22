@@ -30,6 +30,11 @@ const LEGACY_UPGRADE_ART = {
   'returning-ring': ['skills/returning-ring.png'],
   'abyss-vortex': ['skills/abyss-vortex.png'],
   'ice-radiance': ['skills/ice-radiance.png'],
+  'shatter-ring': ['skills/shatter-ring.png'],
+  'glacier-trail': ['skills/glacier-trail.png'],
+  'dream-dart-weapon': ['skills/dream-dart-weapon.png'],
+  'resonance-seed-weapon': ['skills/resonance-seed-weapon.png'],
+  'sakura-echo': ['skills/sakura-echo.png'],
   'spore-trail': ['skills/spore-trail.png'],
   'tidal-recall': ['skills/tidal-recall.png'],
   'tsunami-sanctuary': ['skills/tsunami-sanctuary.png'],
@@ -87,7 +92,7 @@ export function upgradeArt(skill: Pick<SkillDefinition, 'id' | 'category'>, base
   // All offers share the same parchment geometry and content safe areas.
   // Category/element are conveyed through dynamic labels, gems and ink colors.
   const frame = 'common';
-  return { illustrations: definition ? [relicIcon(definition.art, import.meta.env.BASE_URL)] : illustrations.map(path => uiArtUrl(`upgrade/illustrations/${path}`)), element: skill.id === 'frost-crystal-weapon' ? 'ice' : skill.id === 'thunder-bud-weapon' ? 'electric' : element, category,
+  return { illustrations: definition ? [relicIcon(definition.art, import.meta.env.BASE_URL)] : illustrations.map(path => uiArtUrl(`upgrade/illustrations/${path}`)), element: ['dream-dart-weapon', 'resonance-seed-weapon', 'sakura-echo'].includes(skill.id) ? 'pink' : ['frost-crystal-weapon', 'shatter-ring', 'glacier-trail'].includes(skill.id) ? 'ice' : skill.id === 'thunder-bud-weapon' ? 'electric' : element, category,
     frame: uiArtUrl(`upgrade/card-frames/${frame}.png`),
     gem: uiArtUrl(`upgrade/gem-${category === 'relic' ? 'rare' : category === 'evolution' ? 'legendary' : 'common'}.png`),
   };

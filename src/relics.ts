@@ -1,5 +1,6 @@
 import type { BaseAttackId } from './fusion';
 import { frostStats } from './frost-combat';
+import { seedPierces } from './dream-combat';
 import { FACTORY_RELIC_METADATA, factoryRelic } from './content/relic-registry';
 import { applyRelicDefinition } from './content/relic-effects';
 import type { RelicContext } from './content/content-types';
@@ -33,6 +34,7 @@ export const TRIGGER_RELIC_RULES = {
 
 /** Unique attack lineage, separate from the caster ID and fusion-child generation. */
 export interface RelicDamageSource {
+  flowerDerived?: 'bloom' | 'resonance' | 'pulse';
   /** Shared by a large cast and every derived source; bounded across enemy pool reuse. */
   areaBudget?: { nodes: number; hits: Map<number, number>; shared?: { nodes: number } };
   weaponTags?:readonly import('./content/weapon-traits').WeaponTag[];
@@ -65,7 +67,7 @@ export const isEvolutionId = (id: string): id is EvolutionId => Object.prototype
 /** Late-game damage growth is deliberately weaker than the old universal +20% per rank.
  * Level one remains unchanged; coverage/piercing/slow/arc are the reward for investing. */
 export const WEAPON_DAMAGE_PER_LEVEL: Readonly<Record<BaseAttackId, number>> = {
-  spark: .16, bubble: .18, leaf: .16, 'flame-sweep': .12, 'thorn-wheel': .15, 'tidal-blade': .14, 'thunder-bud': .12, 'frost-crystal': .14,
+  spark: .16, bubble: .18, leaf: .16, 'flame-sweep': .12, 'thorn-wheel': .15, 'tidal-blade': .14, 'thunder-bud': .12, 'frost-crystal': .14, 'dream-dart': .14, 'resonance-seed': .14,
 };
 
 /** Snapshot these rules on a volley; upgrades never rewrite an in-flight attack. */
@@ -96,7 +98,7 @@ export function resolveAttackRules(attack: BaseAttackId, relics: readonly RelicI
     slowDuration: (1.5 + (attack === 'bubble' ? .1 * (level - 1) : 0)) * (has('tidal-pearl') ? 1.6 : 1),
     chainRangeMultiplier: has('echo-rune') ? 1.4 : 1,
     chainDecay: has('echo-rune') ? .7 : 1,
-    pierceBonus: attack === 'leaf' && level >= 3 ? 1 : attack === 'frost-crystal' ? frostStats(level).pierces : 0,
+    pierceBonus: attack === 'leaf' && level >= 3 ? 1 : attack === 'frost-crystal' ? frostStats(level).pierces : attack === 'resonance-seed' ? seedPierces(level) : 0,
   };
   if (context) for (const id of relics) {
     const definition = factoryRelic(id);

@@ -17,7 +17,7 @@ export function factoryRelic(id: string): RelicDefinition | undefined {
   return Object.prototype.hasOwnProperty.call(FACTORY_RELICS, id) ? FACTORY_RELICS[id as FactoryRelicId] : undefined;
 }
 export function createRelicRegistry<const T extends readonly RelicDefinition[]>(definitions: T, references: ContentReferences = {
-  weapons: ['spark','bubble','leaf','flame-sweep','thorn-wheel','tidal-blade','thunder-bud','frost-crystal'], vfx: VFX_PRESETS,
+  weapons: ['spark','bubble','leaf','flame-sweep','thorn-wheel','tidal-blade','thunder-bud','frost-crystal','dream-dart','resonance-seed'], vfx: VFX_PRESETS,
 }) {
   const registry = new Map<T[number]['id'], T[number]>();
   for (const definition of definitions) {

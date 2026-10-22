@@ -1,13 +1,14 @@
 export const SKILL_SOUNDS = { burst: 1, water: 2, thorn: 4, sweep: 8, shockwave: 16, echo: 32, hourglass: 64, nova: 128,
-  'vortex-charge': 256, 'collapse-impact': 512, 'spore-ignite': 1024, 'prism-shot': 2048, 'prism-reflect': 4096, 'tide-return': 8192, 'tide-finish': 16384, lightning: 32768, frost: 65536 } as const;
+  'vortex-charge': 256, 'collapse-impact': 512, 'spore-ignite': 1024, 'prism-shot': 2048, 'prism-reflect': 4096, 'tide-return': 8192, 'tide-finish': 16384, lightning: 32768, frost: 65536, blossom: 131072 } as const;
 export const COMBINATION_SOUNDS = ['vortex-charge', 'collapse-impact', 'spore-ignite', 'prism-shot', 'prism-reflect', 'tide-return', 'tide-finish'] as const;
 export type CombinationSound = typeof COMBINATION_SOUNDS[number];
 export function isCombinationSound(kind: string): kind is CombinationSound { return (COMBINATION_SOUNDS as readonly string[]).includes(kind); }
 export function isCombinationImpact(kind: string) { return kind === 'collapse-impact' || kind === 'spore-ignite' || kind === 'tide-finish'; }
 export type SkillSound = keyof typeof SKILL_SOUNDS;
 export type Sound = 'cast' | 'hit' | 'hurt' | 'collect' | 'dash' | 'jump' | 'level' | 'harvest' | 'harvest-big' | 'harvest-epic' | SkillSound;
-export const SKILL_SOUND_PRIORITY: readonly SkillSound[] = ['nova', 'tide-finish', 'collapse-impact', 'spore-ignite', 'prism-reflect', 'prism-shot', 'tide-return', 'vortex-charge', 'hourglass', 'echo', 'shockwave', 'sweep', 'frost', 'lightning', 'burst', 'water', 'thorn'];
+export const SKILL_SOUND_PRIORITY: readonly SkillSound[] = ['nova', 'tide-finish', 'collapse-impact', 'spore-ignite', 'prism-reflect', 'prism-shot', 'tide-return', 'vortex-charge', 'hourglass', 'echo', 'shockwave', 'sweep', 'blossom', 'frost', 'lightning', 'burst', 'water', 'thorn'];
 export const SOUND_RULES: Record<Sound, { seconds: number; interval: number; volume: number; from: number; to: number; noise: number }> = {
+  blossom: { seconds: .24, interval: .16, volume: .23, from: 980, to: 1560, noise: .12 },
   lightning: { seconds: .13, interval: .12, volume: .22, from: 1000, to: 140, noise: .72 },
   frost: { seconds: .22, interval: .16, volume: .25, from: 1800, to: 450, noise: .32 },
   'vortex-charge': { seconds: .95, interval: .8, volume: .34, from: 95, to: 340, noise: .36 },

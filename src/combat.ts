@@ -5,6 +5,8 @@ import { PositionAoe } from './position-aoe';
 import { BladeWeapons, bladeStats, isBlade, type BladeSpec } from './blade-weapons';
 import { ThunderWeapon, thunderStats } from './thunder-weapon';
 import { FrostCombat } from './frost-combat';
+import { IceSkills } from './ice-skills';
+import { DreamCombat, isDreamWeapon } from './dream-combat';
 import { WaterEvolution, WATER_EVOLUTION_IDS, WATER_EVOLUTIONS, consumedByEvolution, isWaterEvolution } from './water-evolution';
 import {WEAPON_PAIR_RECIPES,sourceHasAttack,type WeaponPairId} from './weapon-pair-fusion';
 import { CombatRelicBehaviors } from './combat-relic-behaviors';
@@ -64,6 +66,7 @@ export interface WeaponSnapshot {
 type Moving = Point & { previousX: number; previousZ: number; active: boolean };
 /** Optional pooled frost state; cleared on spawn, death cleanup and reset. */
 export interface Enemy { chillTime?: number; freezeTime?: number; freezeDuration?: number; freezeImmuneTime?: number }
+export interface Enemy { dreamStacks?: number; dreamTime?: number; resonanceTime?: number; resonanceSource?: RelicDamageSource }
 export interface Enemy extends Moving { pairSlowUntil?:number; pairSlowFactor?:number; pairBurnTime?:number; pairBurnClock?:number; pairBurnDamage?:number; pairBurnSource?:RelicDamageSource; venomUntil?:number; venomReady?:number; smokeUntil?:number; vineUntil?: number; vineReadyAt?: number; wetTime?: number; steamReadyAt?: number; grassRollDistance?: number; grassCycle?: number; grassRollX?: number; grassRollZ?: number; grassAttackX?: number; grassAttackZ?: number; grassHit?: boolean; burnTime?: number; burnClock?: number; burnDamage?: number; burnStacks?: number; burnSource?: RelicDamageSource; specialTime?: number; swarm?: boolean; rank?: 'elite' | 'boss'; maxHp?: number; radius?: number; id: number; kind: EnemyKind; hp: number; age: number; spawnTime: number; flash: number; knockX: number; knockZ: number; facing: number; orbitCooldown: number; intent: EnemyIntent; intentTime: number; intentCooldown: number; aimX: number; aimZ: number; stagger: number; hornDash: number; slowTime?: number; walkPhase?: number; walkAmount?: number; steerX?: number; steerZ?: number; walkX?: number; walkZ?: number }
 export interface Projectile extends Moving { chargedPierceSource?:number; returning?: boolean; outboundSpent?: boolean; flightRange?: number; behaviorRoot?: number; vfxPresetId?: string; relicSource?: RelicDamageSource; vx: number; vz: number; life: number; damage: number; distance: number; sourceId?: number; species?: SpeciesId; attackId?: BaseAttackId; attackRules?: AttackRules; homing?: boolean; generation?: number; bornTick?: number; ignoreEnemyId?: number; burst?: boolean; age?: number; elemental?: boolean; fusionIds?: FusionId[]; hitIds?: number[]; pierces?: number; bounces?: number; scatter?: boolean; baseDamage?: number; damageIds?: number[]; hopTargetId?: number; hopDelay?: number; hopElapsed?: number; hopDuration?: number; hopFromX?: number; hopFromZ?: number }
 export interface Shockwave { active: boolean; x: number; z: number; age: number; radius: number; previousRadius: number; maxRadius: number; damage: number; hitIds: Int32Array }
@@ -88,6 +91,22 @@ export class Combat {
   soundEvents = 0;
   readonly encounters = new EnemyChallenge();
   readonly frost = new FrostCombat(() => this.enemies, enemy => this.encounters.freezeEnemy(enemy), () => { this.soundEvents |= SKILL_SOUNDS.frost; });
+  readonly dream = new DreamCombat({
+    origin: () => ({ x: this.anchorX, z: this.anchorZ }), enemies: () => this.enemies,
+    stopped: () => this.hp <= 0 || this.encounters.dying, radius: enemy => this.enemyRadius(enemy),
+    covered: (x, z, tx, tz) => this.covered(x, z, tx, tz),
+    source: damage => this.newRelicSource('dream-dart', this.runBuild.rules('dream-dart'), damage),
+    damage: (enemy, damage, source) => this.damageEnemy(enemy, damage, 0, 0, 'player', source),
+    sound: () => { this.soundEvents |= SKILL_SOUNDS.blossom; },
+  });
+  readonly iceSkills = new IceSkills({
+    origin: () => ({ x: this.anchorX, z: this.anchorZ }), enemies: () => this.enemies,
+    radius: enemy => this.enemyRadius(enemy), covered: (x, z, tx, tz) => this.covered(x, z, tx, tz),
+    source: damage => ({ ...this.newRelicSource('frost-crystal', this.runBuild.rules('frost-crystal'), damage),
+      castId: ++this.nextRelicCast, primary: false, kind: 'explosion' }),
+    damage: (enemy, damage, source) => this.damageEnemy(enemy, damage, 0, 0, 'player', source),
+    sound: () => { this.soundEvents |= SKILL_SOUNDS.frost; },
+  });
   readonly thunder = new ThunderWeapon({
     enemies: () => this.enemies, origin: () => ({ x: this.anchorX, z: this.anchorZ }),
     stopped: () => this.hp <= 0 || this.encounters.dying,
@@ -333,9 +352,12 @@ export class Combat {
   get resonances() {
     if (!this.usesRunBuild) return [];
     const active: string[] = [];
+    if (this.runBuild.hasOrigin('dream-dart')) active.push('梦印三层 → 绽放');
+    if (this.runBuild.hasOrigin('resonance-seed')) active.push('共鸣印记击杀 → 最多三名传伤');
     if (this.runBuild.relics.includes('draft-martyr-core') && this.runBuild.attacks.some(a => matureFire(a.attackId, a.level, this.progression.ranks))) active.push('连爆觉醒');
     if (this.runBuild.relics.includes('draft-boiling-core')) active.push('湿润 → 蒸爆');
-    if (this.runBuild.hasOrigin('frost-crystal') && this.runBuild.attacks.some(a => this.runBuild.capabilities(a.attackId).tags.includes('water'))) active.push('湿润 + 霜寒 → 冻结');
+    if ((this.runBuild.hasOrigin('frost-crystal') || this.progression.ranks['shatter-ring'] > 0 || this.progression.ranks['glacier-trail'] > 0)
+      && this.runBuild.attacks.some(a => this.runBuild.capabilities(a.attackId).tags.includes('water'))) active.push('湿润 + 霜寒 → 冻结');
     return active;
   }
 
@@ -391,6 +413,8 @@ export class Combat {
     this.blades.reset();
     this.thunder.reset();
     this.frost.reset();
+    this.dream.reset();
+    this.iceSkills.reset();
     this.positionAoe.reset();
     this.waterEvolution.reset();
     this.waterAoe.reset();
@@ -448,6 +472,7 @@ export class Combat {
     enemy.grassRollDistance = 0; enemy.grassCycle = 0; enemy.grassRollX = enemy.grassRollZ = enemy.grassAttackX = enemy.grassAttackZ = undefined; enemy.grassHit = false;
     enemy.wetTime = enemy.steamReadyAt = 0; enemy.vineUntil=enemy.vineReadyAt=0; enemy.venomUntil=enemy.venomReady=enemy.smokeUntil=0;
     this.frost.resetEnemy(enemy);
+    this.dream.resetEnemy(enemy);
     enemy.pairSlowUntil=enemy.pairBurnTime=enemy.pairBurnClock=0;enemy.pairBurnSource=undefined;
     enemy.burnTime = enemy.burnClock = enemy.burnDamage = enemy.burnStacks = 0; enemy.burnSource = undefined;
     if (this.encounters.enabled) enemy.hp = enemy.maxHp =
@@ -703,6 +728,7 @@ export class Combat {
       enemy.previousZ = enemy.z;
       enemy.slowTime = Math.max(0, (enemy.slowTime ?? 0) - dt);
       enemy.wetTime = Math.max(0, (enemy.wetTime ?? 0) - dt);
+      this.dream.tickEnemy(enemy, dt);
       enemy.age += dt;
       enemy.flash = Math.max(0, enemy.flash - dt);
       enemy.orbitCooldown = Math.max(0, enemy.orbitCooldown - dt);
@@ -1003,6 +1029,8 @@ export class Combat {
       this.removeEvolvedBaseCasts();
       this.waterAoe.update(dt, baseRanks, this.stats.damageMultiplier);
       this.positionAoe.update(dt, baseRanks, this.stats.damageMultiplier);
+      this.iceSkills.update(dt, ranks, this.stats.damageMultiplier);
+      this.dream.update(dt, ranks['sakura-echo'] ?? 0, this.stats.damageMultiplier);
       this.waterEvolution.update(dt, ranks, this.stats.damageMultiplier);
     }
     if (!this.encounters.dying) this.updateSporeExplosions(player);
@@ -1077,6 +1105,8 @@ export class Combat {
       this.blades.clear();
       this.thunder.clear();
       this.frost.clear();
+      this.dream.clear();
+      this.iceSkills.clear();
       this.positionAoe.clear();
       this.waterEvolution.clear();
       this.waterAoe.clear();
@@ -1117,6 +1147,7 @@ export class Combat {
       Object.assign(shot, { active: true, x: origin.x, z: origin.z, previousX: origin.x, previousZ: origin.z, vx: Math.sin(angle) * WEAPON.speed, vz: Math.cos(angle) * WEAPON.speed, relicSource: { ...this.newRelicSource(attackId, rules, damage * rules.directMultiplier, salvo?.mature), copied: salvo?.copied, suppressRelics:salvo?.suppressRelics, castId,volley }, distance: 0, life: Math.max(WEAPON.lifetime, range / WEAPON.speed + 0.12), damage: damage * rules.directMultiplier, baseDamage: damage, sourceId, species, attackId, flightRange:range,vfxPresetId:undefined,attackRules: rules, homing: false, generation: salvo?.copied ? 1 : 0, bornTick: this.tick, ignoreEnemyId: 0, burst: fusionIds.includes('burst-seed') && attackId === 'spark', age: 0, elemental: this.fusionEnabled && (attackId === 'bubble' || attackId === 'leaf'), fusionIds, hitIds: [], damageIds: [], hopTargetId: 0, hopDelay: 0, hopElapsed: 0, hopDuration: 0, pierces: this.fusionEnabled && attackId === 'leaf' && !fusionIds.includes('jump-thorn') ? ELEMENTAL_RULES.leafPierces + rules.pierceBonus : 0, bounces: fusionIds.includes('chain-bubble') ? CHAIN_BUBBLE.maxHops : fusionIds.includes('jump-thorn') ? JUMP_THORN.maxHops : 0, scatter: fusionIds.includes('thorn-scatter') });
       shot.returning=false;shot.outboundSpent=false;shot.chargedPierceSource=undefined;shot.behaviorRoot=undefined;
       if (attackId === 'frost-crystal') { shot.elemental = true; shot.pierces = rules.pierceBonus; }
+      if (isDreamWeapon(attackId)) { shot.elemental = true; shot.pierces = attackId === 'resonance-seed' ? rules.pierceBonus : 0; }
       if(rules.pairId){const recipe=WEAPON_PAIR_RECIPES[rules.pairId];shot.burst=false;shot.elemental=true;shot.fusionIds=[];shot.scatter=false;shot.pierces=recipe.chain&&rules.pairChain?0:recipe.pierces;shot.bounces=recipe.chain&&rules.pairChain?2:0;}
       this.relicBehaviors.gigapack.projectileEmitted(shot.relicSource!);
       this.shotsFired++;
@@ -1218,6 +1249,8 @@ export class Combat {
     this.blades.clear();
     this.thunder.clear();
     this.frost.clear();
+    this.dream.clear();
+    this.iceSkills.clear();
     this.positionAoe.clear();
     this.waterEvolution.clear();
     this.waterAoe.clear();
@@ -1327,7 +1360,7 @@ export class Combat {
       const deep = shot.fusionIds?.includes('deep-bubble'), waterChain = shot.fusionIds?.includes('chain-bubble');
       const rules = shot.attackRules ?? resolveAttackRules(shot.attackId ?? 'bubble', [], 1);
       // Visual anchor only. AoE and direct damage retain the actual swept contact (x, z).
-      if (shot.attackId !== 'frost-crystal') this.effect(x, z, shot.attackId === 'bubble' ? 'water' : 'thorn', enemy.kind,
+      if (shot.attackId !== 'frost-crystal' && !isDreamWeapon(shot.attackId)) this.effect(x, z, shot.attackId === 'bubble' ? 'water' : 'thorn', enemy.kind,
         (deep ? DEEP_BUBBLE.radius : waterChain ? CHAIN_BUBBLE.radius : .6) * rules.areaMultiplier, fusionId,
         shot.attackId === 'bubble' ? enemy : undefined, rules.impactVfx);
       if(shot.attackRules?.pairId)this.pairHit(shot,enemy,x,z);
@@ -1745,6 +1778,7 @@ export class Combat {
     this.hits++;
     enemy.hp = Math.max(0, enemy.hp - damage);
     if (this.usesRunBuild && origin === 'player' && source) this.frost.hit(enemy, source);
+    if (this.usesRunBuild && origin === 'player' && source) this.dream.hit(enemy, damage, source);
     enemy.flash = 0.16;
     const strength = enemy.rank === 'boss' ? 0 : enemy.kind === 'tank' ? 1.2 : 3;
     enemy.knockX = dx * strength;
@@ -1757,6 +1791,7 @@ export class Combat {
     }
     if (enemy.hp === 0) {
       enemy.active = false;
+      if (this.usesRunBuild) this.dream.killed(enemy, source);
       this.kills++;
       this.relicBehaviors.kill(enemy,damage,source,origin);
       if(!source?.suppressRelics)this.recordHourglassKill();
@@ -1887,7 +1922,7 @@ export class Combat {
       build: { enabled: this.usesRunBuild, species: this.runBuild.species, relics: [...this.runBuild.relics], evolution: this.runBuild.evolution ?? null, attacks: this.runBuild.attacks.map(attack => ({ ...attack })) },
       melee: { ...this.melee, hitIds: Array.from(this.melee.hitIds).filter(Boolean) },
       firing: { weapon: this.salvo?.attackId ?? null, remaining: this.salvo ? this.salvo.total - this.salvo.index : 0, gap: this.launchClock },
-      frost: this.frost.inspect(), thunder: this.thunder.inspect(), blades: this.blades.inspect(), waterEvolution: this.waterEvolution.inspect(), positionAoe: this.positionAoe.inspect(), waterAoe: this.waterAoe.inspect(), areaAttacks: this.areaAttacks.inspect(), areaFeedback: { ...this.areaFeedback },
+      dream: this.dream.inspect(), iceSkills: this.iceSkills.inspect(), frost: this.frost.inspect(), thunder: this.thunder.inspect(), blades: this.blades.inspect(), waterEvolution: this.waterEvolution.inspect(), positionAoe: this.positionAoe.inspect(), waterAoe: this.waterAoe.inspect(), areaAttacks: this.areaAttacks.inspect(), areaFeedback: { ...this.areaFeedback },
       hp: this.hp, kills: this.kills, goldEarned: this.goldEarned, xp: this.xp, shotsFired: this.shotsFired, hits: this.hits,
       fusion: { enabled: this.fusionEnabled, active: this.fusion?.id ?? null, recipes: this.fusions.map(f => f.id), bursts: this.bursts, childShots: this.childShots, children: this.projectiles.filter(shot => shot.active && shot.generation === 1).length },
       spawned: this.spawned, collected: this.collected, invulnerability: this.invulnerability,

@@ -10,6 +10,8 @@ import { FUSION_ASSET_ROOT, type ElementalFusionId } from './fusion-pixels';
 import { bindUpgradeArt, uiArtUrl, upgradeArt } from './upgrade-art';
 import { WATER_AOE_IDS, WATER_NAMES, waterStats } from './water-aoe';
 import { POSITION_IDS, POSITION_NAMES, positionStats } from './position-aoe';
+import { ICE_SKILL_IDS, ICE_SKILL_NAMES, iceSkillStats } from './ice-skills';
+import { dreamEchoStats } from './dream-combat';
 import { WATER_EVOLUTION_IDS, WATER_EVOLUTIONS, consumedByEvolution, isWaterEvolution } from './water-evolution';
 import { shopArt } from './shop-art';
 import { formatEndlessRecordTime, readEndlessRecord, type EndlessRecord, type EndlessRunResult } from './endless-record';
@@ -226,9 +228,11 @@ export function renderBuildSummary(build: RunBuild | undefined, fusions: readonl
   if (!build) return;
   const evolution = [...(build.evolution ? [EVOLUTIONS[build.evolution].title] : []), ...WATER_EVOLUTION_IDS.filter(id => (build.skillRanks[id] ?? 0) > 0).map(id => WATER_EVOLUTIONS[id].title)].join(' / ') || '未选择进化';
   const position = POSITION_IDS.filter(id => (build.skillRanks[id] ?? 0) > 0 && !consumedByEvolution(id, build.skillRanks));
+  const ice = ICE_SKILL_IDS.filter(id => (build.skillRanks[id] ?? 0) > 0);
+  const echoRank = build.skillRanks['sakura-echo'] ?? 0;
   const water = WATER_AOE_IDS.filter(id => (build.skillRanks[id] ?? 0) > 0 && !consumedByEvolution(id, build.skillRanks));
   const waterEvolutions = WATER_EVOLUTION_IDS.filter(id => (build.skillRanks[id] ?? 0) > 0);
-  const key = JSON.stringify([build.attacks.map(a => [a.attackId, a.level]), build.relics, evolution, fusions.map(f => f.title), resonances, [...water, ...position, ...waterEvolutions].map(id => [id, build.skillRanks[id]])]);
+  const key = JSON.stringify([build.attacks.map(a => [a.attackId, a.level]), build.relics, evolution, echoRank, fusions.map(f => f.title), resonances, [...water, ...position, ...ice, ...waterEvolutions].map(id => [id, build.skillRanks[id]])]);
   status.textContent = `${build.relics.length} 件稀有道具 · ${evolution} · 暂停查看构筑`;
   if (panel.dataset.snapshot === key) return;
   panel.dataset.snapshot = key;
@@ -237,6 +241,14 @@ export function renderBuildSummary(build: RunBuild | undefined, fusions: readonl
     return `<div class="build-weapon" data-element="water"><span class="build-weapon-art"><img data-upgrade-art="build-weapon" src="${uiArtUrl(`upgrade/illustrations/skills/${id}.png`)}" alt=""/></span><div class="build-weapon-copy"><span class="build-weapon-role">水系范围技能</span><strong>${WATER_NAMES[id]} ${level}级</strong><small>半径 ${stats.radius.toFixed(1)} · ${stats.damage.toFixed(1)}伤害${id === 'star-tide' ? ` · ${stats.waves}环` : ''}</small></div></div>`;
   }).join('');
   document.getElementById('build-fusions')!.innerHTML = (fusions.length ? buildTokens(fusions.map(f=>f.title)) : '<p class="build-empty">尚未形成融合，升级时选择适配改造。</p>') + (resonances.length ? `<p>已激活：${buildText(resonances.join(' / '))}</p>` : '');
+  if (echoRank > 0) {
+    const stats = dreamEchoStats(echoRank);
+    document.getElementById('build-weapons')!.innerHTML += `<div class="build-weapon" data-element="pink"><span class="build-weapon-art"><img data-upgrade-art="build-weapon" src="${uiArtUrl('upgrade/illustrations/skills/sakura-echo.png')}" alt=""/></span><div class="build-weapon-copy"><span class="build-weapon-role">粉色联动技能</span><strong>绯樱回响 ${echoRank}级</strong><small>${stats.damage.toFixed(1)}伤害 · ${stats.interval.toFixed(1)}秒/次 · 梦印扩圈</small></div></div>`;
+  }
+  document.getElementById('build-weapons')!.innerHTML += ice.map(id => {
+    const level = build.skillRanks[id]!, stats = iceSkillStats(id, level);
+    return `<div class="build-weapon" data-element="ice"><span class="build-weapon-art"><img data-upgrade-art="build-weapon" src="${uiArtUrl(`upgrade/illustrations/skills/${id}.png`)}" alt=""/></span><div class="build-weapon-copy"><span class="build-weapon-role">冰系范围技能</span><strong>${ICE_SKILL_NAMES[id]} ${level}级</strong><small>${stats.damage.toFixed(1)}伤害 · ${id === 'shatter-ring' ? '范围 ' + stats.radius.toFixed(1) : '残留 ' + stats.duration.toFixed(1) + '秒'}</small></div></div>`;
+  }).join('');
   document.getElementById('build-weapons')!.innerHTML += position.map(id => {
     const level = build.skillRanks[id]!, stats = positionStats(id, level);
     return `<div class="build-weapon" data-element="${id === 'spore-trail' ? 'grass' : 'water'}"><span class="build-weapon-art"><img data-upgrade-art="build-weapon" src="${uiArtUrl(`upgrade/illustrations/skills/${id}.png`)}" alt=""/></span><div class="build-weapon-copy"><span class="build-weapon-role">走位范围技能</span><strong>${POSITION_NAMES[id]} ${level}级</strong><small>范围 ${stats.radius.toFixed(1)} · ${stats.damage.toFixed(1)}伤害</small></div></div>`;
@@ -335,14 +347,18 @@ export function renderHudWeaponIcons(combat: Combat) {
   const pairs=combat.usesRunBuild?combat.runBuild.attacks.filter(a=>a.pairId):[];
   const water = combat.usesRunBuild ? WATER_AOE_IDS.filter(id => combat.progression.ranks[id] > 0 && !consumedByEvolution(id, combat.progression.ranks)) : [];
   const position = combat.usesRunBuild ? POSITION_IDS.filter(id => combat.progression.ranks[id] > 0 && !consumedByEvolution(id, combat.progression.ranks)) : [];
+  const ice = combat.usesRunBuild ? ICE_SKILL_IDS.filter(id => combat.progression.ranks[id] > 0) : [];
+  const echoRank = combat.usesRunBuild ? combat.progression.ranks['sakura-echo'] : 0;
   const waterEvolutions = combat.usesRunBuild ? WATER_EVOLUTION_IDS.filter(id => combat.progression.ranks[id] > 0) : [];
   const ids = attacks.filter(id => !pairs.some(a=>a.attackId===id)&&id !== 'spark' && !combat.fusions.some(fusion => fusion.baseAttack === id));
-  root.hidden = !ids.length&&!pairs.length&&!water.length&&!position.length&&!waterEvolutions.length;
-  const key = ids.join(',')+pairs.map(a=>a.pairId).join(',') + [...water, ...position, ...waterEvolutions].map(id => id + combat.progression.ranks[id]).join(',');
+  root.hidden = !ids.length&&!pairs.length&&!water.length&&!position.length&&!ice.length&&!waterEvolutions.length;
+  const key = ids.join(',')+pairs.map(a=>a.pairId).join(',') + [...water, ...position, ...ice, ...waterEvolutions].map(id => id + combat.progression.ranks[id]).join(',') + ':echo' + echoRank;
   if (root.dataset.weapons === key) return;
   root.dataset.weapons = key;
   root.innerHTML = ids.map(id => `<span class="hud-weapon-icon" title="${ATTACKS[id].title}">${icon(id === 'bubble' || id === 'tidal-blade' || id === 'frost-crystal' ? 'wave' : id === 'flame-sweep' ? 'battle' : id === 'thunder-bud' ? 'spark' : 'leaf')}<img data-upgrade-art="hud-weapon" src="${uiArtUrl(`upgrade/illustrations/skills/${id}-weapon.png`)}" alt="${ATTACKS[id].title}" draggable="false"/></span>`).join('');
   root.innerHTML+=pairs.map(a=>`<span class="hud-weapon-icon" title="${combat.runBuild.title(a)} ${a.level}级；来源：${a.sources!.map(id=>ATTACKS[id].title).join('+')}"><img data-upgrade-art="hud-weapon" src="${import.meta.env.BASE_URL}${pairIcon(a.pairId!)}" alt="${combat.runBuild.title(a)}"/></span>`).join('');
+  root.innerHTML += ice.map(id => `<span class="hud-weapon-icon" title="${ICE_SKILL_NAMES[id]} ${combat.progression.ranks[id]}级"><img data-upgrade-art="hud-weapon" src="${uiArtUrl(`upgrade/illustrations/skills/${id}.png`)}" alt="${ICE_SKILL_NAMES[id]}"/></span>`).join('');
+  if (echoRank > 0) root.innerHTML += `<span class="hud-weapon-icon" title="绯樱回响 ${echoRank}级"><img data-upgrade-art="hud-weapon" src="${uiArtUrl('upgrade/illustrations/skills/sakura-echo.png')}" alt="绯樱回响"/></span>`;
   root.innerHTML += water.map(id => `<span class="hud-weapon-icon" title="${WATER_NAMES[id]} ${combat.progression.ranks[id]}级"><img data-upgrade-art="hud-weapon" src="${uiArtUrl(`upgrade/illustrations/skills/${id}.png`)}" alt="${WATER_NAMES[id]}"/></span>`).join('');
   root.innerHTML += position.map(id => `<span class="hud-weapon-icon" title="${POSITION_NAMES[id]} ${combat.progression.ranks[id]}级"><img data-upgrade-art="hud-weapon" src="${uiArtUrl(`upgrade/illustrations/skills/${id}.png`)}" alt="${POSITION_NAMES[id]}"/></span>`).join('');
   root.innerHTML += waterEvolutions.map(id => `<span class="hud-weapon-icon" title="${WATER_EVOLUTIONS[id].title} · 组合进化"><img data-upgrade-art="hud-weapon" src="${uiArtUrl(`upgrade/illustrations/skills/${id}.png`)}" alt="${WATER_EVOLUTIONS[id].title}"/></span>`).join('');

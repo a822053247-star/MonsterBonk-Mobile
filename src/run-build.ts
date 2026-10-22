@@ -19,6 +19,8 @@ export const ATTACKS = {
   'tidal-blade': { kind: 'return_blade', title: '回旋潮刃', damage: 26, interval: 2.1, range: 8, color: '#72dfff' },
   'thunder-bud': { kind: 'lightning_chain', title: '雷芽连锁', damage: 22, interval: 1.3, range: 9, color: '#ffe26b' },
   'frost-crystal': { kind: 'projectile', title: '霜晶弹', damage: 16, interval: .72, range: 10.5, color: '#9de5ff' },
+  'dream-dart': { kind: 'projectile', title: '绯梦弹', damage: 14, interval: .64, range: 10.5, color: '#ff80c7' },
+  'resonance-seed': { kind: 'projectile', title: '共鸣花种', damage: 15, interval: .86, range: 11, color: '#f797df' },
 } as const;
 
 export interface EquippedAttack {

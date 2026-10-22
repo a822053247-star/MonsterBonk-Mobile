@@ -290,6 +290,8 @@ h1>em{font-size:12px;line-height:1;letter-spacing:4px;display:inline-block;backg
 .skill-card[data-element=grass]{--card-ink:#3b682e}
 .skill-card[data-element=electric]{--card-ink:#856114}
 .skill-card[data-element=ice]{--card-ink:#286e9c}
+.skill-card[data-element=pink]{--card-ink:#a43174}
+.build-weapon[data-element=pink] .build-weapon-art{color:#ff9bd6;background:#ffd7ef22}
 .build-weapon[data-element=ice] .build-weapon-art{color:#a6e5ff;background:#8ed9ff18}
 .build-weapon[data-element=electric] .build-weapon-art{color:#ffe26b;background:#eecb5214}
 .skill-card h3{position:absolute;top:13%;left:13%;right:13%;height:8%;display:flex;align-items:center;justify-content:center;font-size:clamp(11px,calc(var(--card-height) * .047),23px);line-height:1.15;letter-spacing:0;margin:0;color:var(--card-ink,#3d593f);text-shadow:0 1px #fffae3}

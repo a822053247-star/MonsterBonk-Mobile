@@ -9,10 +9,36 @@ export class FrostView {
   readonly crystals = new WaterAtlas('crystal', 1, 1, 'frost', 24, false);
   readonly shells = new WaterAtlas('freeze-shell', 1, 1, 'frost', 256, false);
   private shards = new WaterAtlas('crystal', 1, 1, 'frost', 240, false);
-  private atlases = [this.crystals, this.shells, this.shards];
+  readonly rings = new WaterAtlas('shatter-ring', 3, 2, 'frost', 2, false);
+  readonly trails = new WaterAtlas('glacier-trail', 3, 1, 'frost', 24, false);
+  private atlases = [this.crystals, this.shells, this.shards, this.rings, this.trails];
   constructor() {
     this.group.name = 'FrostCrystalAndFreeze';
     for (const atlas of this.atlases) { atlas.mesh.material.color.setScalar(1); this.group.add(atlas.mesh); }
+    // The source ring has a blue painted haze. Mask its center and dim background in
+    // the shader so the unchanged PNG never paints a rectangular patch over the map.
+    const material = this.rings.mesh.material, compile = material.onBeforeCompile;
+    material.onBeforeCompile = (shader, renderer) => {
+      compile(shader, renderer);
+      shader.vertexShader = 'varying float iceFrame;\n' + shader.vertexShader;
+      shader.vertexShader = shader.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\niceFrame = waterFrame;');
+      shader.fragmentShader = 'varying float iceFrame;\n' + shader.fragmentShader;
+      shader.fragmentShader = shader.fragmentShader.replace('#include <alphatest_fragment>', `
+        float iceRadius = length(waterLocalUv - vec2(0.5, 0.5));
+        float iceHole = iceFrame < 0.5 ? 0.06 : iceFrame < 1.5 ? 0.115 : iceFrame < 2.5 ? 0.185 : iceFrame < 3.5 ? 0.235 : 0.265;
+        float iceBright = max(diffuseColor.r, max(diffuseColor.g, diffuseColor.b));
+        diffuseColor.a *= smoothstep(iceHole, iceHole + 0.025, iceRadius)
+          * (1.0 - smoothstep(0.47, 0.5, iceRadius)) * smoothstep(0.48, 0.82, iceBright);
+        #include <alphatest_fragment>`);
+    };
+    material.customProgramCacheKey = () => 'shatter-ring-transparent-center-v1';
+    const trailMaterial = this.trails.mesh.material, compileTrail = trailMaterial.onBeforeCompile;
+    trailMaterial.onBeforeCompile = (shader, renderer) => {
+      compileTrail(shader, renderer);
+      shader.fragmentShader = shader.fragmentShader.replace('#include <alphatest_fragment>',
+        'diffuseColor.a = min(1.0, diffuseColor.a * 2.0);\n#include <alphatest_fragment>');
+    };
+    trailMaterial.customProgramCacheKey = () => 'glacier-trail-readable-alpha-v1';
     for (const atlas of [this.crystals, this.shards]) {
       const uv = atlas.mesh.geometry.getAttribute('uv');
       for (let i = 0; i < uv.count; i++) uv.setXY(i, (CRYSTAL_RECT.x + uv.getX(i) * CRYSTAL_RECT.width) / CRYSTAL_RECT.sheet,
@@ -22,6 +48,19 @@ export class FrostView {
   }
   render(combat: Combat, alpha: number, detail: number) {
     this.clear();
+    for (const cast of combat.iceSkills.trails) {
+      if (!cast.active) continue;
+      const frame = cast.serial % 3, sourceAngle = frame === 1 ? .35 : -.42;
+      const fade = Math.min(1, cast.age / .12 + .25, (cast.duration - cast.age) / .5);
+      this.trails.putRect(frame, cast.x, cast.z, 3.05, (cast.radius / .6) * 2.3, .8 * fade, sourceAngle - cast.angle, .075);
+    }
+    for (const cast of combat.iceSkills.rings) {
+      if (!cast.active || cast.waveRadius <= 0) continue;
+      const frame = Math.min(5, Math.floor(cast.age / .1));
+      const extent = [.26, .36, .46, .49, .46, .44][frame];
+      const fade = Math.min(1, (cast.duration - cast.age) / .14);
+      this.rings.put(frame, cast.x, cast.z, cast.waveRadius / extent, .92 * fade, 0, .16);
+    }
     for (const shot of combat.projectiles) {
       if (!shot.active || shot.attackId !== 'frost-crystal' || shot.vfxPresetId) continue;
       const x = THREE.MathUtils.lerp(shot.previousX, shot.x, alpha), z = THREE.MathUtils.lerp(shot.previousZ, shot.z, alpha);

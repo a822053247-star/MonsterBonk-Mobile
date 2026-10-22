@@ -22,6 +22,7 @@ function attackTags(attack: BaseAttackId, context: RelicContext): readonly Conte
   const inherited=context.capabilities?.find(w=>w.origins.includes(attack));
   if (attack === 'thunder-bud') return ['electric', 'chain'];
   if (attack === 'frost-crystal') return ['ice', 'projectile'];
+  if (attack === 'dream-dart' || attack === 'resonance-seed') return ['pink', 'projectile'];
   if(inherited&&inherited.origins.length>1)return [...inherited.tags.filter(t=>t!=='explosion'),...(['area'] as const)];
   if (attack === 'thorn-wheel' || attack === 'tidal-blade') return [...weaponCapabilities(attack).tags.filter(t => t !== 'explosion'), 'area'];
   return [attack === 'bubble' ? 'water' : attack === 'leaf' ? 'grass' : 'fire', attack === 'flame-sweep' ? 'melee' : 'projectile', ...(area || attack === 'flame-sweep' || attack === 'spark' && (context.ranks['split-on-hit'] ?? 0) > 0 ? ['area' as const] : [])];

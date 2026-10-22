@@ -1,10 +1,10 @@
 import type { BaseAttackId } from '../fusion';
 import type { RelicId } from '../relics';
 
-export const WEAPON_TAGS=['fire','water','grass','ice','electric','chain','projectile','melee','explosion'] as const;
+export const WEAPON_TAGS=['fire','water','grass','ice','pink','electric','chain','projectile','melee','explosion'] as const;
 export type WeaponTag=typeof WEAPON_TAGS[number];
 export interface WeaponCapabilities { tags:readonly WeaponTag[]; origins:readonly BaseAttackId[] }
-const TAGS:Record<BaseAttackId,readonly WeaponTag[]>={spark:['fire','projectile'],bubble:['water','projectile'],leaf:['grass','projectile'],'flame-sweep':['fire','melee'],'thorn-wheel':['grass','melee'],'tidal-blade':['water','projectile'],'thunder-bud':['electric','chain'],'frost-crystal':['ice','projectile']};
+const TAGS:Record<BaseAttackId,readonly WeaponTag[]>={spark:['fire','projectile'],bubble:['water','projectile'],leaf:['grass','projectile'],'flame-sweep':['fire','melee'],'thorn-wheel':['grass','melee'],'tidal-blade':['water','projectile'],'thunder-bud':['electric','chain'],'frost-crystal':['ice','projectile'],'dream-dart':['pink','projectile'],'resonance-seed':['pink','projectile']};
 export function weaponCapabilities(id:BaseAttackId,ranks:{'split-on-hit'?:number}={}):WeaponCapabilities{
   return {tags:[...TAGS[id],...(id==='spark'&&(ranks['split-on-hit']??0)>0?['explosion' as const]:[])],origins:[id]};
 }
