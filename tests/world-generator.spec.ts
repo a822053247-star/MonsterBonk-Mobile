@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { generateWorld, validateLayout } from '../src/world-generator';
+import { generateWorld, MAP_BOUNDARY, validateLayout } from '../src/world-generator';
 import { sampleObstacles } from '../src/world-layout';
 
 test('same seed reproduces the complete layout and validation, independently of global RNG', () => {
@@ -26,7 +26,10 @@ test('256 seeds vary regions, trees, rocks and ponds while preserving spawn and 
       expect(map.attempt).toBe(8);
       expect(generateWorld(map.seed)).toEqual(map);
     }
-    expect(sampleObstacles(map.layout).every(o => Math.hypot(o.x, o.z) - o.radius >= 8)).toBe(true);
+    const obstacles = sampleObstacles(map.layout);
+    expect(obstacles.every(o => Math.hypot(o.x, o.z) - o.radius >= 8)).toBe(true);
+    expect(obstacles.every(o => Math.abs(o.x) + o.radius <= MAP_BOUNDARY - .95 + .001)).toBe(true);
+    expect(obstacles.every(o => Math.abs(o.z) + o.radius <= MAP_BOUNDARY - .95 + .001)).toBe(true);
     regions.add(map.layout.regions.map(r => r.kind).join(','));
     water.add(JSON.stringify(map.layout.water)); trees.add(JSON.stringify(map.layout.trees)); rocks.add(JSON.stringify(map.layout.rocks));
   }

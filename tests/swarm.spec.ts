@@ -50,7 +50,8 @@ test('placement is seeded, stays in one incoming sector, and does not overlap pl
         expect(e.spawnTime).toBe(.75);
         expect(Math.hypot(e.x-player.x, e.z-player.z)).toBeGreaterThanOrEqual(SWARM_RULES.minDistance-1e-8);
         expect(Math.hypot(e.x-player.x, e.z-player.z)).toBeLessThanOrEqual(SWARM_RULES.maxDistance+1e-8);
-        expect(Math.hypot(e.x, e.z)).toBeLessThanOrEqual(32-c.enemyRadius(e)-.2+1e-8);
+        expect(Math.abs(e.x) + c.enemyRadius(e) + .2).toBeLessThanOrEqual(32+1e-8);
+        expect(Math.abs(e.z) + c.enemyRadius(e) + .2).toBeLessThanOrEqual(32+1e-8);
         const angle = Math.atan2(e.x-player.x, e.z-player.z)-heading;
         expect(Math.abs(Math.atan2(Math.sin(angle), Math.cos(angle)))).toBeLessThanOrEqual(SWARM_RULES.halfAngle+SWARM_RULES.laneAngle+1e-8);
         for (const o of obstacles) expect(Math.hypot(e.x-o.x, e.z-o.z)).toBeGreaterThanOrEqual(o.radius+c.enemyRadius(e)+.3-1e-8);

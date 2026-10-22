@@ -3,7 +3,8 @@ import {renderWeaponPairPicker} from './ui';
 import * as THREE from 'three';
 import { Input } from './input';
 import { Monster } from './monster';
-import { createWorld, WORLD_RADIUS, type World } from './world';
+import { createWorld, type World } from './world';
+import { ARENA_HALF_EXTENT, clampToRectangularBoundary, PLAYER_COLLISION_RADIUS } from './arena-boundary';
 import { Combat } from './combat';
 import { CombatView } from './combat-view';
 import { renderUpgradeCards, setFusionIcons, renderBuildSummary, renderRunShop, renderRunResult, renderResultOutcome, renderWeaponCooldowns, renderHudWeaponIcons, renderEncounterStatus, renderEndlessBestMenu, renderEndlessBestResult } from './ui';
@@ -111,7 +112,7 @@ export class Game {
     this.world = createWorld();
     this.scene.add(this.world.group, this.monster.root, this.partyView.group);
     this.monster.root.visible = false;
-    this.combat = new Combat(this.world.obstacles, WORLD_RADIUS - 0.7);
+    this.combat = new Combat(this.world.obstacles, ARENA_HALF_EXTENT);
     this.combatView = new CombatView(this.combat);
     this.scene.add(this.combatView.group);
     const trailGeometry = new THREE.RingGeometry(0.4, 0.5, 12);
@@ -429,7 +430,7 @@ export class Game {
     this.run?.prepare(this.combat,this.position);
     document.getElementById('shop-screen')!.hidden = true;
     this.party.syncLeader(this.position, this.facing);
-    this.party.placeCompanions(this.world.obstacles, WORLD_RADIUS - 0.7);
+    this.party.placeCompanions(this.world.obstacles, ARENA_HALF_EXTENT);
     this.partyView.setAnimatedLeader((this.combat.fusionEnabled || this.prototypeVariant === 'legacy-party') && new URLSearchParams(window.location.search).get('creatureAnimation') !== 'static');
     if (partyPrototype) this.partyView.render(1, 0);
     this.monster.root.visible = !partyPrototype || !this.partyView.hasPixelLeader;
@@ -611,15 +612,14 @@ export class Game {
     // Circle collisions allow sliding around trunks and rocks.
     for (const obstacle of this.world.obstacles) {
       const x = this.position.x - obstacle.x, z = this.position.z - obstacle.z;
-      const radius = obstacle.radius + 0.62;
+      const radius = obstacle.radius + PLAYER_COLLISION_RADIUS;
       const length = Math.hypot(x, z);
       if (length < radius) {
         this.position.x = obstacle.x + (length > 0.0001 ? x / length : 1) * radius;
         this.position.z = obstacle.z + (length > 0.0001 ? z / length : 0) * radius;
       }
     }
-    const radius = Math.hypot(this.position.x, this.position.z);
-    if (!this.combat.infiniteWorld && radius > WORLD_RADIUS - 0.7) this.position.multiplyScalar((WORLD_RADIUS - 0.7) / radius);
+    if (!this.combat.infiniteWorld) clampToRectangularBoundary(this.position, ARENA_HALF_EXTENT, PLAYER_COLLISION_RADIUS);
     this.distance += this.position.distanceTo(this.previousPosition);
     if (this.velocity.lengthSq() > 0.05) {
       const target = Math.atan2(this.velocity.x, this.velocity.y);
@@ -641,7 +641,7 @@ export class Game {
     if (this.partyPrototype) {
       // The original Player movement is now the controlled creature adapter.
       this.party.syncLeader(this.position, this.facing);
-      if (this.prototypeVariant === 'legacy-party') this.party.follow(dt, this.world.obstacles, WORLD_RADIUS - 0.7);
+      if (this.prototypeVariant === 'legacy-party') this.party.follow(dt, this.world.obstacles, ARENA_HALF_EXTENT);
     }
     this.combat.update(dt, this.position, this.dashAttack);
     if (this.partyPrototype && this.combat.hp > 0) this.partyView.stepAnimation(dt, (this.position.x - this.previousPosition.x) / dt, (this.position.z - this.previousPosition.z) / dt);
@@ -955,7 +955,7 @@ export class Game {
         : '开始新一波战斗';
       this.welcome.classList.remove('faded');
     } else this.welcome.classList.toggle('faded', this.elapsed > 5 || this.distance > 8);
-    this.boundaryHint.hidden = this.combat.infiniteWorld || Math.hypot(this.position.x, this.position.z) < WORLD_RADIUS - 1.2;
+    this.boundaryHint.hidden = this.combat.infiniteWorld || Math.max(Math.abs(this.position.x), Math.abs(this.position.z)) < ARENA_HALF_EXTENT - PLAYER_COLLISION_RADIUS - 0.5;
     const hp = this.combat.hp, maxHp = this.combat.maxHp;
     this.healthValue.textContent = `${hp} / ${maxHp}`;
     this.healthFill.style.width = `${hp / maxHp * 100}%`;

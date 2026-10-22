@@ -1,3 +1,4 @@
+import { ARENA_HALF_EXTENT, clampToRectangularBoundary, isInsideRectangularBoundary } from './arena-boundary';
 import {WEAPON_PAIR_RECIPES,sourceHasAttack,type WeaponPairId} from './weapon-pair-fusion';
 import { CombatRelicBehaviors } from './combat-relic-behaviors';
 import { COMBAT_CLARITY } from './combat-clarity';
@@ -177,7 +178,7 @@ export class Combat {
   hornKills = 0;
   interrupts = 0;
 
-  constructor(private obstacles: readonly Obstacle[] = [], private boundary = 32.3, private random: () => number = Math.random, ruleset: Ruleset = 'classic') {
+  constructor(private obstacles: readonly Obstacle[] = [], private boundary = ARENA_HALF_EXTENT, private random: () => number = Math.random, ruleset: Ruleset = 'classic') {
     this.ruleset = ruleset; this.progression = new Progression(random);
     this.navigation = new GroundNavigation(obstacles, boundary);
   }
@@ -331,7 +332,7 @@ export class Combat {
     for (let attempt = 0; attempt < 24; attempt++) {
       const angle = this.random() * Math.PI * 2, distance = 8 + this.random() * 4;
       const x = player.x + Math.sin(angle) * distance, z = player.z + Math.cos(angle) * distance;
-      if (!this.infiniteWorld && Math.hypot(x, z) > this.boundary - 1) continue;
+      if (!this.infiniteWorld && !isInsideRectangularBoundary(x, z, this.boundary, 1)) continue;
       if (this.obstacles.some((obstacle) => Math.hypot(x - obstacle.x, z - obstacle.z) < obstacle.radius + 1.1)) continue;
       const roll = this.random();
       // Introduce each silhouette once, then use a weighted mix.
@@ -351,7 +352,7 @@ export class Combat {
       const angle = this.random() * Math.PI * 2, distance = min + this.random() * (max-min);
       const x = player.x + Math.sin(angle) * distance, z = player.z + Math.cos(angle) * distance;
       const radius = ENEMY_TYPES[kind].radius;
-      if (!this.infiniteWorld && Math.hypot(x, z) > this.boundary - radius - .2) continue;
+      if (!this.infiniteWorld && !isInsideRectangularBoundary(x, z, this.boundary, radius + .2)) continue;
       if (this.obstacles.some(o => Math.hypot(x - o.x, z - o.z) < o.radius + radius + .3)) continue;
       if (this.enemies.some(e => e.active && Math.hypot(x - e.x, z - e.z) < radius + this.enemyRadius(e) + .3)) continue;
       return this.spawn(kind, x, z);
@@ -432,7 +433,7 @@ export class Combat {
       const point = perimeterPoint(view, angle, attempt < 12 ? this.random() : (attempt % 3) / 2);
       const distance = Math.hypot(point.x - player.x, point.z - player.z);
       if (distance < SPAWN_LAYOUT.minDistance || distance > SPAWN_LAYOUT.maxDistance) continue;
-      if (!this.infiniteWorld && Math.hypot(point.x, point.z) > this.boundary - radius - .2) continue;
+      if (!this.infiniteWorld && !isInsideRectangularBoundary(point.x, point.z, this.boundary, radius + .2)) continue;
       if (this.obstacles.some(o => Math.hypot(point.x-o.x,point.z-o.z) < o.radius+radius+.3)) continue;
       if (this.enemies.some(e => e.active && Math.hypot(point.x-e.x,point.z-e.z) < radius+this.enemyRadius(e)+.6)) continue;
       if (this.navigation.reachable(point, player)) return point;
@@ -455,7 +456,7 @@ export class Combat {
       for (let attempt = 0; attempt < 24; attempt++) {
         const angle = attempt * 2.399963 + i, distance = attempt === 0 && i === 0 ? 0 : .95 + Math.floor(attempt / 8) * .48;
         const x = anchor.x + Math.cos(angle) * distance, z = anchor.z + Math.sin(angle) * distance;
-        if ((!this.infiniteWorld && Math.hypot(x, z) > this.boundary - radius - .2) || Math.hypot(x-player.x, z-player.z) < 6) continue;
+        if ((!this.infiniteWorld && !isInsideRectangularBoundary(x, z, this.boundary, radius + .2)) || Math.hypot(x-player.x, z-player.z) < 6) continue;
         if (this.obstacles.some(o => Math.hypot(x-o.x,z-o.z) < o.radius+radius+.3)) continue;
         if (this.enemies.some(e => e.active && Math.hypot(x-e.x,z-e.z) < radius+this.enemyRadius(e)+.3)) continue;
         if (!this.navigation.reachable({x,z},player)) continue;
@@ -476,7 +477,7 @@ export class Combat {
   private spawnPosition(player: Point, min: number, max: number, radius: number, heading?: number): Point | undefined {
     const candidate = (angle: number, distance: number) => {
       const x = player.x + Math.sin(angle) * distance, z = player.z + Math.cos(angle) * distance;
-      if (!this.infiniteWorld && Math.hypot(x, z) > this.boundary - radius - .2) return;
+      if (!this.infiniteWorld && !isInsideRectangularBoundary(x, z, this.boundary, radius + .2)) return;
       if (this.obstacles.some(o => Math.hypot(x - o.x, z - o.z) < o.radius + radius + .3)) return;
       if (this.enemies.some(e => e.active && Math.hypot(x - e.x, z - e.z) < radius + this.enemyRadius(e) + .3)) return;
       const point = { x, z };
@@ -586,8 +587,7 @@ export class Combat {
         steerX = length > .01 ? -dx / length : Math.sin(enemy.id * 2.399963);
         steerZ = length > .01 ? -dz / length : Math.cos(enemy.id * 2.399963);
         this.fleeGoal.x = enemy.x + steerX * 5; this.fleeGoal.z = enemy.z + steerZ * 5;
-        const distance = Math.hypot(this.fleeGoal.x,this.fleeGoal.z), limit = this.boundary-radius-.2;
-        if (!this.infiniteWorld && distance > limit) { this.fleeGoal.x *= limit/distance; this.fleeGoal.z *= limit/distance; }
+        if (!this.infiniteWorld) clampToRectangularBoundary(this.fleeGoal, this.boundary, radius + .2);
         goal = this.fleeGoal;
       }
       const guided = this.useNavigation && this.navigation.guide(enemy, goal, radius, this.navigationGoal);
@@ -689,8 +689,7 @@ export class Combat {
       enemy.knockX *= decay;
       enemy.knockZ *= decay;
       enemy.facing = this.hasAttackIntents && (enemy.intent === 'windup' || enemy.intent === 'pounce') ? Math.atan2(enemy.aimX, enemy.aimZ) : Math.atan2(dx, dz);
-      const boundaryDistance = Math.hypot(enemy.x, enemy.z), limit = this.boundary - radius;
-      if (!this.infiniteWorld && boundaryDistance > limit) { enemy.x *= limit / boundaryDistance; enemy.z *= limit / boundaryDistance; }
+      if (!this.infiniteWorld) clampToRectangularBoundary(enemy, this.boundary, radius);
       const travelled = Math.hypot(enemy.walkX, enemy.walkZ);
       if(this.encounters.enabled && enemy.kind==='normal' && !enemy.rank && enemy.intent==='chase')
         enemy.grassRollDistance=(enemy.grassRollDistance ?? 0)+travelled;

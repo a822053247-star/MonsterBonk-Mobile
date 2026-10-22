@@ -3,6 +3,21 @@ import { Combat, ENEMY_TYPES } from '../src/combat';
 import { GroundNavigation } from '../src/navigation';
 import { sampleObstacles, SAMPLE_PATHS } from '../src/world-layout';
 
+
+test('finite arena navigation and enemy movement preserve the square corners', () => {
+  const navigation = new GroundNavigation([], 32.3);
+  expect(navigation.reachable({ x: 31, z: 31 }, { x: 0, z: 0 })).toBe(true);
+
+  const combat = new Combat([], 32.3, () => .25);
+  const enemy = combat.spawn('normal', 31, 31, 0)!;
+  enemy.hp = 100000;
+  combat.update(1 / 60, { x: 30, z: 30 });
+  expect(enemy.x).toBeGreaterThan(30);
+  expect(enemy.z).toBeGreaterThan(30);
+  expect(Math.abs(enemy.x) + ENEMY_TYPES.normal.radius).toBeLessThanOrEqual(32.3 + .001);
+  expect(Math.abs(enemy.z) + ENEMY_TYPES.normal.radius).toBeLessThanOrEqual(32.3 + .001);
+});
+
 test('an enemy behind the pond can reach the player without entering water', () => {
   const pond = { x: 14, z: -7, radius: 5.3 };
   // Keep reinforcements in their spawn warning, isolating one pursuit route.
@@ -39,7 +54,8 @@ test('main roads retain a 4.8-unit clear corridor and all open regions connect t
         const t = i / 40, u = 1 - t;
         const x = u ** 3 * start[0] + 3 * u ** 2 * t * c[0] + 3 * u * t ** 2 * c[2] + t ** 3 * c[4];
         const z = u ** 3 * start[1] + 3 * u ** 2 * t * c[1] + 3 * u * t ** 2 * c[3] + t ** 3 * c[5];
-        expect(Math.hypot(x, z) + 2.4).toBeLessThanOrEqual(32.3);
+        expect(Math.abs(x) + 2.4).toBeLessThanOrEqual(32.3);
+        expect(Math.abs(z) + 2.4).toBeLessThanOrEqual(32.3);
         expect(obstacles.every(o => Math.hypot(x - o.x, z - o.z) >= o.radius + 2.4)).toBe(true);
       }
       start = [c[4], c[5]];
@@ -47,7 +63,7 @@ test('main roads retain a 4.8-unit clear corridor and all open regions connect t
   }
   const navigation = new GroundNavigation(obstacles, 32.3);
   for (let x = -30; x <= 30; x += 2) for (let z = -30; z <= 30; z += 2) {
-    if (Math.hypot(x, z) > 30 || obstacles.some(o => Math.hypot(x - o.x, z - o.z) < o.radius + 1.5)) continue;
+    if (obstacles.some(o => Math.hypot(x - o.x, z - o.z) < o.radius + 1.5)) continue;
     expect(navigation.reachable({ x, z }, { x: 0, z: 0 }), 'unreachable ground at ' + x + ',' + z).toBe(true);
   }
 });
@@ -105,7 +121,8 @@ test('encounters and automatic waves spawn on dry ground with space and warning 
       const enemy = combat.spawnEncounter(kind, player);
       expect(enemy, 'encounter near ' + x + ',' + z).toBeDefined();
       const radius = ENEMY_TYPES[kind].radius;
-      expect(Math.hypot(enemy!.x, enemy!.z) + radius + .2).toBeLessThanOrEqual(32.3 + .001);
+      expect(Math.abs(enemy!.x) + radius + .2).toBeLessThanOrEqual(32.3 + .001);
+      expect(Math.abs(enemy!.z) + radius + .2).toBeLessThanOrEqual(32.3 + .001);
       expect(obstacles.every(o => Math.hypot(enemy!.x - o.x, enemy!.z - o.z) >= o.radius + radius + .3 - .001)).toBe(true);
       expect(Math.hypot(enemy!.x - x, enemy!.z - z)).toBeGreaterThanOrEqual(6 - .001);
       expect(enemy!.spawnTime).toBe(.75);

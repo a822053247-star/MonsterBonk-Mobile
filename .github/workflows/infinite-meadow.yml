@@ -3,14 +3,24 @@ on:
   pull_request:
     paths:
       - src/infinite-world.ts
+      - src/arena-boundary.ts
       - src/world.ts
       - src/world-sample.ts
+      - src/world-generator.ts
       - src/navigation.ts
+      - src/party.ts
       - src/combat.ts
       - src/game.ts
       - src/ui.ts
       - tests/infinite-world.spec.ts
       - tests/infinite-world-ui.spec.ts
+      - tests/navigation-model.spec.ts
+      - tests/world-generator.spec.ts
+      - tests/world-sample.spec.ts
+      - tests/combat-model.spec.ts
+      - tests/party-model.spec.ts
+      - tests/perimeter-spawning.spec.ts
+      - tests/swarm.spec.ts
       - .github/workflows/infinite-meadow.yml
   push:
     branches: [main]
@@ -32,4 +42,4 @@ jobs:
       - run: npm ci
       - run: npm run build
       - run: npx playwright install --with-deps chromium
-      - run: npx playwright test tests/infinite-world.spec.ts tests/infinite-world-ui.spec.ts tests/random-world-ui.spec.ts tests/navigation-model.spec.ts --project=chromium
+      - run: npx playwright test tests/infinite-world.spec.ts tests/infinite-world-ui.spec.ts tests/random-world-ui.spec.ts tests/navigation-model.spec.ts tests/world-generator.spec.ts tests/world-sample.spec.ts tests/combat-model.spec.ts tests/party-model.spec.ts tests/perimeter-spawning.spec.ts tests/swarm.spec.ts --project=chromium

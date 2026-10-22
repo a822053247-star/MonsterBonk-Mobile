@@ -98,7 +98,8 @@ test('spawn positions stay near the player, inside the map and outside obstacles
       if (!enemy.active || enemy.age > STEP * 1.1) continue;
       expect(Math.hypot(enemy.x - player.x, enemy.z - player.z)).toBeGreaterThanOrEqual(8);
       expect(Math.hypot(enemy.x - player.x, enemy.z - player.z)).toBeLessThanOrEqual(12);
-      expect(Math.hypot(enemy.x, enemy.z)).toBeLessThanOrEqual(31.3);
+      expect(Math.abs(enemy.x)).toBeLessThanOrEqual(31.3);
+      expect(Math.abs(enemy.z)).toBeLessThanOrEqual(31.3);
       expect(Math.hypot(enemy.x - 25, enemy.z - 5)).toBeGreaterThanOrEqual(4.1);
     }
   }

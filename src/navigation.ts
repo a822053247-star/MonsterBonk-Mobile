@@ -1,3 +1,4 @@
+import { isInsideRectangularBoundary } from './arena-boundary';
 export interface GroundPoint { x: number; z: number }
 export interface GroundObstacle extends GroundPoint { radius: number }
 
@@ -31,7 +32,7 @@ export class GroundNavigation {
   }
 
   private clear(x: number, z: number, radius: number) {
-    return Math.hypot(x - this.centerX, z - this.centerZ) <= this.boundary - radius
+    return isInsideRectangularBoundary(x - this.centerX, z - this.centerZ, this.boundary, radius)
       && this.obstacles.every(o => {
         const r = o.radius + radius;
         return Math.abs(x - o.x) > r || Math.abs(z - o.z) > r || Math.hypot(x - o.x, z - o.z) >= r;
@@ -112,7 +113,7 @@ export class GroundNavigation {
     this.prepare(target);
     let walkable = 0, reachable = 0, inside = 0;
     for (let i = 0; i < this.blocked.length; i++) {
-      if (Math.hypot(this.x(i) - this.centerX, this.z(i) - this.centerZ) <= this.boundary - this.clearance) inside++;
+      if (isInsideRectangularBoundary(this.x(i) - this.centerX, this.z(i) - this.centerZ, this.boundary, this.clearance)) inside++;
       if (this.blocked[i]) continue;
       walkable++;
       if (this.distance[i] >= 0) reachable++;
