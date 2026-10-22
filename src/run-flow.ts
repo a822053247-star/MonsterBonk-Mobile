@@ -5,6 +5,7 @@ import { populationBudget, SPAWN_LAYOUT, FORMAL_SPAWN_CAPS } from './spawn-layou
 import { WAVE_DIRECTOR, directorStage, ENDLESS_MODIFIERS, ENDLESS_SCALING, type EndlessModifierId, type DirectorStage, type DirectorEscort } from './wave-director';
 
 export const WAVE_INTERMISSION_SECONDS = 3.5;
+export const ENDLESS_FLAG_WARNING_SECONDS = 8;
 export const SHOP_AFTER_WAVE = 5;
 export type RunMode = 'campaign' | 'endless';
 
