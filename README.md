@@ -1,5 +1,7 @@
 # 幻兽幸存者（原 MonsterBonk Mobile）
 
+开发入口：[项目导航](AGENTS.md) · [敌人、武器与遗物接入指南](docs/CONTENT_DEVELOPMENT.md)。新增内容时先按任务定位；下文保留历次玩法与验收说明。
+
 ## iPhone 主屏幕离线版
 
 Safari 打开 <https://a822053247-star.github.io/MonsterBonk-Mobile/>，等待右上角提示“离线资源已就绪”，然后分享 → 添加到主屏幕。首次从主屏幕图标打开时保持联网，再次确认离线就绪后即可断网横屏游玩。首次下载约 99 MB，建议使用 Wi-Fi。这是网页 App，无需 Mac 或苹果开发者账号；清理网站数据后需重新下载，不保存未结束的战斗。
