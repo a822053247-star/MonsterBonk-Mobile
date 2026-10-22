@@ -26,6 +26,7 @@ test('complete six-wave UI with shopping, healing, refresh, victory, clean resta
   </script></body></html>` }));
   await page.goto('/run-flow-harness?world=fixed');
   await page.waitForFunction(() => 'game' in window); await page.locator('#start-fusion').click();
+  await expect.poll(() => page.evaluate(() => (window as any).game.inspect().mode)).toBe('playing');
   await expect(page.locator('#run-wave')).toContainText('第 1 / 6 波');
   for (let wave = 1; wave <= 5; wave++) {
     if (wave === 2) await page.evaluate(() => { (window as any).game.combat.hp = 40; });
