@@ -6,10 +6,11 @@ import { Monster } from './monster';
 import { createWorld, WORLD_RADIUS, type World } from './world';
 import { Combat } from './combat';
 import { CombatView } from './combat-view';
-import { renderUpgradeCards, setFusionIcons, renderBuildSummary, renderRunShop, renderRunResult, renderResultOutcome, renderWeaponCooldowns, renderHudWeaponIcons, renderEncounterStatus } from './ui';
+import { renderUpgradeCards, setFusionIcons, renderBuildSummary, renderRunShop, renderRunResult, renderResultOutcome, renderWeaponCooldowns, renderHudWeaponIcons, renderEncounterStatus, renderEndlessBestMenu, renderEndlessBestResult } from './ui';
 import { elementalClip, type ElementalFusionId } from './fusion-pixels';
 import type { SkillId } from './progression';
-import { RunFlow } from './run-flow';
+import { ENDLESS_FLAG_WARNING_SECONDS, RunFlow } from './run-flow';
+import { recordEndlessRun } from './endless-record';
 import { ATTACKS } from './run-build';
 import { AdaptiveQuality, loadPreferences, savePreferences, normalizeGameSpeed, type QualityMode } from './quality';
 import { GameAudio } from './audio';
@@ -776,6 +777,13 @@ export class Game {
   }
 
   private endRun(outcome: 'victory' | 'defeat' = 'defeat') {
+    const endlessResult = this.run?.endless ? {
+      wave: this.run.wave,
+      cycle: this.run.cycle,
+      bossesDefeated: this.run.bossesDefeated,
+      survivalSeconds: this.run.totalElapsed,
+    } : undefined;
+    const endlessRecordUpdate = endlessResult ? recordEndlessRun(endlessResult) : undefined;
     this.run?.finish(this.combat, outcome === 'victory');
     document.getElementById('shop-screen')!.hidden = true;
     this.combat.clearTransientEffects();
@@ -808,6 +816,14 @@ export class Game {
       : this.run.failure === 'boss-timeout' ? '未能在 90 秒内击败荆冠兽王。调整构筑，再来挑战。'
       : `生命耗尽，止步第 ${this.run.wave} 波。换一种构筑再出发。`;
     renderRunResult(this.run, this.combat);
+    const recordPanel = document.getElementById('endless-record-result')!;
+    if (endlessResult && endlessRecordUpdate) {
+      renderEndlessBestResult(endlessResult, endlessRecordUpdate.record, endlessRecordUpdate.newRecords);
+    } else {
+      recordPanel.hidden = true;
+      recordPanel.classList.remove('new-record');
+      renderEndlessBestMenu();
+    }
     const summary = document.getElementById('result-challenge')!;
     summary.hidden = !this.challenge;
     if (this.challenge) {
@@ -895,7 +911,16 @@ export class Game {
     this.dashButton.classList.toggle('cooling', this.cooldown > 0);
     this.dashButton.setAttribute('aria-disabled', String(this.cooldown > 0));
     this.dashStatus.textContent = this.cooldown > 0 ? `${this.cooldown.toFixed(1)} 秒` : '就绪';
-    if (this.challenge) {
+    const flagWarning = !!this.run?.endless && this.run.phase === 'fighting'
+      && this.run.waveInCycle === 4 && this.run.remaining > 0
+      && this.run.remaining <= ENDLESS_FLAG_WARNING_SECONDS;
+    this.welcome.classList.toggle('flag-wave-warning', flagWarning);
+    if (flagWarning && this.run) {
+      this.welcome.querySelector('h2')!.textContent = '警报！旗帜大波即将来袭';
+      this.welcome.querySelector('p')!.textContent =
+        `剩余 ${Math.ceil(this.run.remaining)} 秒 · 第 ${this.run.wave + 1} 波（第 ${this.run.cycle} 轮）· 快速怪、重甲、爆孢与晶屑混编，保持移动！`;
+      this.welcome.classList.remove('faded');
+    } else if (this.challenge) {
       const resting = this.challenge.phase === 'rest';
       if (resting) {
         this.welcome.querySelector('h2')!.textContent = `第 ${this.challenge.wave + 1} 波完成！`;
