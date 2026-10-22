@@ -29,6 +29,8 @@ export class EnemyChallenge {
   boss?: Enemy;
   elite?: Enemy;
   bossState: BossState = 'approach';
+  /** Set by Endless RunFlow when the Boss reaches its target time. */
+  forceEnraged = false;
   bossTime = 0;
   aimX = 0;
   aimZ = 1;
@@ -39,7 +41,9 @@ export class EnemyChallenge {
   private pattern = 0;
   private motion = { x: 0, z: 0 };
   readonly shots: HostileShot[] = Array.from({ length: ENCOUNTER_RULES.hostileShots }, () => ({ active: false, x: 0, z: 0, previousX: 0, previousZ: 0, vx: 0, vz: 0, life: 0 }));
-  get enraged() { return !!this.boss?.active && this.boss.hp <= ENCOUNTER_RULES.bossHp / 2; }
+  get enraged() {
+    return !!this.boss?.active && (this.forceEnraged || this.boss.hp <= (this.boss.maxHp ?? ENCOUNTER_RULES.bossHp) / 2);
+  }
   get defeated() { return this.bossState === 'defeated'; }
   get dying() { return this.bossState === 'dying' || this.defeated; }
   get action(): CrownthornAction | null {
@@ -51,9 +55,14 @@ export class EnemyChallenge {
     return this.bossState === 'approach' ? null : this.enraged ? 'enraged-idle' : 'idle';
   }
   clearShots() { for (const s of this.shots) s.active = false; }
+  freezeEnemy(enemy: Enemy) {
+    if (enemy !== this.elite) return;
+    this.elitePulsing = this.pulseDue = false; this.eliteTime = 0;
+    this.eliteCooldown = Math.max(.75, this.eliteCooldown);
+  }
   reset() {
     this.enabled = false; this.wave = 0; this.boss = this.elite = undefined;
-    this.bossState = 'approach'; this.bossTime = this.eliteTime = this.pattern = 0;
+    this.bossState = 'approach'; this.forceEnraged = false; this.bossTime = this.eliteTime = this.pattern = 0;
     this.eliteCooldown = 2; this.elitePulsing = this.pulseDue = false; this.aimX = 0; this.aimZ = 1;
     this.clearShots();
   }
@@ -78,7 +87,7 @@ export class EnemyChallenge {
   spawnBoss(combat: Combat, player: Point) {
     if (this.boss) return this.boss;
     this.boss = combat.spawnRank('boss', player);
-    if (this.boss) { this.bossState = 'approach'; this.bossTime = 0; this.pattern = 0; }
+    if (this.boss) { this.forceEnraged = false; this.bossState = 'approach'; this.bossTime = 0; this.pattern = 0; }
     return this.boss;
   }
   spawnElite(combat: Combat, player: Point) {

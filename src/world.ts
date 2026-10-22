@@ -2,9 +2,85 @@ import * as THREE from 'three';
 import { createSampleWorld } from './world-sample';
 import { fixedWorldLayout } from './world-layout';
 import { generateWorld } from './world-generator';
+import { ARENA_HALF_EXTENT } from './arena-boundary';
 import { createInfiniteWorld } from './infinite-world';
 
 export const WORLD_RADIUS = 33;
+
+function createArenaBoundary() {
+  const group = new THREE.Group();
+  group.name = '闯关区域隔离';
+
+  // Keep the visible fence just outside the existing movement limit.
+  const half = ARENA_HALF_EXTENT + 0.2;
+  const length = half * 2;
+  const outsideStart = half + 0.2;
+  const outsideLimit = 64;
+  const outsideDepth = outsideLimit - outsideStart;
+  const outsideMaterial = new THREE.MeshBasicMaterial({
+    color: '#244432', transparent: true, opacity: 0.5, depthWrite: false, side: THREE.DoubleSide,
+  });
+  const shade = (width: number, depth: number, x: number, z: number) => {
+    const mesh = new THREE.Mesh(new THREE.PlaneGeometry(width, depth), outsideMaterial);
+    mesh.rotation.x = -Math.PI / 2;
+    mesh.position.set(x, 0.012, z);
+    mesh.name = '禁行区暗色地带';
+    group.add(mesh);
+  };
+
+  // Desaturate the ground outside the enclosure so the playable area reads clearly.
+  shade(outsideLimit * 2, outsideDepth, 0, (outsideStart + outsideLimit) / 2);
+  shade(outsideLimit * 2, outsideDepth, 0, -(outsideStart + outsideLimit) / 2);
+  shade(outsideDepth, length, (outsideStart + outsideLimit) / 2, 0);
+  shade(outsideDepth, length, -(outsideStart + outsideLimit) / 2, 0);
+
+  const darkRail = new THREE.MeshBasicMaterial({ color: '#315d42' });
+  const brightRail = new THREE.MeshBasicMaterial({ color: '#d8ed9b' });
+  const support = new THREE.MeshLambertMaterial({ color: '#57824d', flatShading: true });
+  const cornerMaterial = new THREE.MeshBasicMaterial({ color: '#f0e7a6' });
+  const addBox = (width: number, height: number, depth: number, x: number, y: number, z: number, material: THREE.Material) => {
+    const mesh = new THREE.Mesh(new THREE.BoxGeometry(width, height, depth), material);
+    mesh.position.set(x, y, z);
+    group.add(mesh);
+    return mesh;
+  };
+
+  // Four straight sides form a readable square enclosure from the game's 2.5D camera.
+  for (const sign of [-1, 1]) {
+    const edge = sign * half;
+    addBox(length, 0.18, 0.28, 0, 0.16, edge, darkRail);
+    addBox(length, 0.14, 0.2, 0, 0.5, edge, support);
+    addBox(length, 0.17, 0.24, 0, 1.06, edge, brightRail);
+    addBox(0.28, 0.18, length, edge, 0.16, 0, darkRail);
+    addBox(0.2, 0.14, length, edge, 0.5, 0, support);
+    addBox(0.24, 0.17, length, edge, 1.06, 0, brightRail);
+  }
+
+  // Instanced fence posts keep the perimeter inexpensive on mobile GPUs.
+  const positions: Array<[number, number]> = [];
+  for (let p = -half + 2.6; p < half - 1; p += 2.6) {
+    positions.push([p, -half], [p, half], [-half, p], [half, p]);
+  }
+  const posts = new THREE.InstancedMesh(new THREE.BoxGeometry(0.25, 1.2, 0.25), support, positions.length);
+  const transform = new THREE.Object3D();
+  positions.forEach(([x, z], index) => {
+    transform.position.set(x, 0.6, z);
+    transform.updateMatrix();
+    posts.setMatrixAt(index, transform.matrix);
+  });
+  posts.instanceMatrix.needsUpdate = true;
+  posts.name = '围栏立柱';
+  group.add(posts);
+
+  const cornerGeometry = new THREE.BoxGeometry(0.5, 1.5, 0.5);
+  for (const x of [-half, half]) for (const z of [-half, half]) {
+    const corner = new THREE.Mesh(cornerGeometry, cornerMaterial);
+    corner.position.set(x, 0.75, z);
+    corner.name = '边界角柱';
+    group.add(corner);
+  }
+  return group;
+}
 export interface Obstacle { x: number; z: number; radius: number }
 export interface World {
   group: THREE.Group; obstacles: Obstacle[];
@@ -31,7 +107,8 @@ export function createWorld(): World {
   const sample = createSampleWorld(generated?.layout ?? fixedWorldLayout());
   const infinite = createInfiniteWorld(pinnedSeed ?? freshSeed());
   const group = new THREE.Group();
-  group.add(legacy.group, sample.group, infinite.group);
+  const boundary = createArenaBoundary();
+  group.add(legacy.group, sample.group, infinite.group, boundary);
   // Combat and party systems hold this array by reference.
   const obstacles = [...legacy.obstacles];
   let requested = false, requestedInfinite = false;
@@ -43,6 +120,7 @@ export function createWorld(): World {
     legacy.group.visible = !activeSample && !activeInfinite;
     sample.group.visible = activeSample;
     infinite.group.visible = activeInfinite;
+    boundary.visible = !activeInfinite;
     obstacles.splice(0, obstacles.length, ...(activeInfinite ? infinite.obstacles : activeSample ? sample.obstacles : legacy.obstacles));
     revision++;
   };
@@ -130,7 +208,7 @@ function createLegacyWorld(): Pick<World, 'group' | 'obstacles'> {
   const ground = new THREE.Mesh(new THREE.PlaneGeometry(240, 240), material('#8bc869'));
   ground.rotation.x = -Math.PI / 2;
   group.add(ground);
-  // Visual regions only. Existing obstacles, boundary and combat rules stay intact.
+  // Terrain regions are visual-only; collision uses the shared rectangular arena rules.
   const regionGeometry = new THREE.CircleGeometry(1, 32);
   for (const region of [
     { name: '风语林地', x: -20, z: -8, sx: 15, sz: 23, color: '#78b98b' },
@@ -213,9 +291,5 @@ function createLegacyWorld(): Pick<World, 'group' | 'obstacles'> {
     mesh.computeBoundingSphere();
     group.add(mesh);
   }
-  const boundary = new THREE.Mesh(new THREE.RingGeometry(WORLD_RADIUS - 0.1, WORLD_RADIUS + 0.1, 96), new THREE.MeshBasicMaterial({ color: '#d8edb3', transparent: true, opacity: 0.45, side: THREE.DoubleSide }));
-  boundary.rotation.x = -Math.PI / 2;
-  boundary.position.y = 0.025;
-  group.add(boundary);
   return { group, obstacles };
 }

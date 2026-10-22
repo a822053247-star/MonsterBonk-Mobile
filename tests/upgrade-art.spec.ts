@@ -31,6 +31,41 @@ async function show(page: import('@playwright/test').Page, ids: string[], base =
   await page.evaluate(({ ids, base, weapons }) => (window as any).showCards(ids, base, weapons), { ids, base, weapons });
 }
 
+test('supplied area icons appear on upgrade cards with transparent corners and shared shop routing', async ({ page }) => {
+  await show(page, ['screen-nova', 'screen-barrage', 'damage']);
+  for (const id of ['screen-nova', 'screen-barrage']) {
+    const image = page.locator(`[data-skill="${id}"] .skill-illustration`);
+    await expect(image).toHaveClass(/art-loaded/);
+    await expect(image).toHaveAttribute('src', new RegExp(`/skills/${id}.png$`));
+    await expect(image).toHaveCSS('image-rendering', 'auto');
+    expect(await image.evaluate((node: HTMLImageElement) => {
+      const canvas = document.createElement('canvas'); canvas.width = canvas.height = 1;
+      const ctx = canvas.getContext('2d')!; ctx.drawImage(node, 0, 0);
+      return { width: node.naturalWidth, height: node.naturalHeight, cornerAlpha: ctx.getImageData(0, 0, 1, 1).data[3] };
+    })).toEqual({ width: 887, height: 887, cornerAlpha: 0 });
+  }
+  const shopImages = await page.evaluate(async () => {
+    const { shopArt } = await import('/src/shop-art.ts' as string);
+    const combat = { progression: { skills: [], fusionBase: 'spark' }, runBuild: { attacks: [{ attackId: 'spark' }] } };
+    return ['screen-nova', 'screen-barrage'].map(skill => shopArt({ kind: 'skill', skill, title: skill }, combat).images[0]);
+  });
+  expect(shopImages[0]).toMatch(/\/skills\/screen-nova.png$/);
+  expect(shopImages[1]).toMatch(/\/skills\/screen-barrage.png$/);
+  await page.screenshot({ path: 'artifacts/area-skill-icons-cards.png' });
+});
+
+test('four supplied water icons load on actual upgrade cards', async ({ page }) => {
+  await show(page, ['azure-burst', 'star-tide', 'still-sea']);
+  for (const id of ['azure-burst', 'star-tide', 'still-sea']) {
+    const image = page.locator(`[data-skill="${id}"] .skill-illustration`);
+    await expect(image).toHaveClass(/art-loaded/); await expect(image).toHaveAttribute('src', new RegExp(`/skills/${id}.png$`));
+    expect(await image.evaluate((img: HTMLImageElement) => [img.naturalWidth, img.naturalHeight])).toEqual([512, 512]);
+  }
+  await page.screenshot({ path: 'artifacts/water-skill-cards.png' });
+  await show(page, ['returning-ring', 'azure-burst', 'star-tide']);
+  await expect(page.locator('[data-skill="returning-ring"] .skill-illustration')).toHaveClass(/art-loaded/);
+});
+
 test('three supplied trigger-relic icons and their limits remain readable on mobile', async ({ page }, info) => {
   await show(page, ['draft-martyr-core', 'draft-kindling-flask', 'draft-thorn-testament']);
   for (const id of ['draft-martyr-core', 'draft-kindling-flask', 'draft-thorn-testament']) {

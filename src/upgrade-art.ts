@@ -22,6 +22,28 @@ const LEGACY_UPGRADE_ART = {
   range: ['skills/range.png'],
   orbit: ['skills/orbit.png'],
   shockwave: ['skills/shockwave.png'],
+  'screen-nova': ['skills/screen-nova.png'],
+  'screen-barrage': ['skills/screen-barrage.png'],
+  'azure-burst': ['skills/azure-burst.png'],
+  'star-tide': ['skills/star-tide.png'],
+  'still-sea': ['skills/still-sea.png'],
+  'returning-ring': ['skills/returning-ring.png'],
+  'abyss-vortex': ['skills/abyss-vortex.png'],
+  'ice-radiance': ['skills/ice-radiance.png'],
+  'shatter-ring': ['skills/shatter-ring.png'],
+  'glacier-trail': ['skills/glacier-trail.png'],
+  'dream-dart-weapon': ['skills/dream-dart-weapon.png'],
+  'resonance-seed-weapon': ['skills/resonance-seed-weapon.png'],
+  'sakura-echo': ['skills/sakura-echo.png'],
+  'spore-trail': ['skills/spore-trail.png'],
+  'tidal-recall': ['skills/tidal-recall.png'],
+  'tsunami-sanctuary': ['skills/tsunami-sanctuary.png'],
+  'astral-wheel': ['skills/astral-wheel.png'],
+  'abyss-crown': ['skills/abyss-crown.png'],
+  'undertow-pyre': ['skills/undertow-pyre.png'],
+  'deep-collapse': ['skills/deep-collapse.png'],
+  'frost-prism': ['skills/frost-prism.png'],
+  'all-tides': ['skills/all-tides.png'],
   'split-on-hit': ['skills/split-on-hit-fire.png'],
   area: ['skills/area-expansion.png'],
   chain: ['skills/chain-bounce-water.png'],
@@ -29,6 +51,10 @@ const LEGACY_UPGRADE_ART = {
   'bubble-weapon': ['skills/bubble-weapon.png'],
   'leaf-weapon': ['skills/leaf-weapon.png'],
   'flame-sweep-weapon': ['skills/flame-sweep-weapon.png'],
+  'thorn-wheel-weapon': ['skills/thorn-wheel-weapon.png'],
+  'tidal-blade-weapon': ['skills/tidal-blade-weapon.png'],
+  'thunder-bud-weapon': ['skills/thunder-bud-weapon.png'],
+  'frost-crystal-weapon': ['skills/frost-crystal-weapon.png'],
   'overload-core': ['relics/overload-core.png'],
   'hunter-eye': ['relics/hunter-eye.png'],
   'shattered-core': ['relics/shattered-core.png'],
@@ -61,12 +87,12 @@ export function upgradeArt(skill: Pick<SkillDefinition, 'id' | 'category'>, base
       ...(equipped.includes('leaf') ? ['skills/chain-bounce-grass.png'] : []),
     ];
   }
-  const element = definition?.art.palette ?? (skill.id === 'spark-weapon' || skill.id === 'flame-sweep-weapon' ? 'fire' : skill.id === 'bubble-weapon' ? 'water' : skill.id === 'leaf-weapon' ? 'grass' : undefined);
+  const element = definition?.art.palette ?? (skill.id === 'spark-weapon' || skill.id === 'flame-sweep-weapon' ? 'fire' : ['bubble-weapon', 'tidal-blade-weapon', 'azure-burst', 'star-tide', 'still-sea', 'returning-ring', 'abyss-vortex', 'ice-radiance', 'tidal-recall', 'tsunami-sanctuary', 'astral-wheel', 'abyss-crown', 'deep-collapse', 'frost-prism', 'all-tides'].includes(skill.id) ? 'water' : skill.id === 'leaf-weapon' || skill.id === 'thorn-wheel-weapon' || (skill.id === 'spore-trail' || skill.id === 'undertow-pyre') ? 'grass' : undefined);
   const category = skill.category ?? 'normal';
   // All offers share the same parchment geometry and content safe areas.
   // Category/element are conveyed through dynamic labels, gems and ink colors.
   const frame = 'common';
-  return { illustrations: definition ? [relicIcon(definition.art, import.meta.env.BASE_URL)] : illustrations.map(path => uiArtUrl(`upgrade/illustrations/${path}`)), element, category,
+  return { illustrations: definition ? [relicIcon(definition.art, import.meta.env.BASE_URL)] : illustrations.map(path => uiArtUrl(`upgrade/illustrations/${path}`)), element: ['dream-dart-weapon', 'resonance-seed-weapon', 'sakura-echo'].includes(skill.id) ? 'pink' : ['frost-crystal-weapon', 'shatter-ring', 'glacier-trail'].includes(skill.id) ? 'ice' : skill.id === 'thunder-bud-weapon' ? 'electric' : element, category,
     frame: uiArtUrl(`upgrade/card-frames/${frame}.png`),
     gem: uiArtUrl(`upgrade/gem-${category === 'relic' ? 'rare' : category === 'evolution' ? 'legendary' : 'common'}.png`),
   };
@@ -78,7 +104,8 @@ export function bindUpgradeArt(root: HTMLElement, definitions: readonly RelicDef
     if (image.dataset.artBound === 'true') return;
     image.dataset.artBound = 'true';
     // Dedicated illustrations can be high resolution; generated pixel icons retain nearest sampling.
-    if (definitions.some(d => d.art.png && image.src === new URL(relicIcon(d.art, import.meta.env.BASE_URL), document.baseURI).href)) image.style.imageRendering = 'auto';
+    if (/\/(?:screen-nova|screen-barrage|azure-burst|star-tide|still-sea|returning-ring|abyss-vortex|ice-radiance|spore-trail|tidal-recall|tsunami-sanctuary|astral-wheel|abyss-crown|undertow-pyre|deep-collapse|frost-prism|all-tides)\.png$/.test(image.src)
+      || definitions.some(d => d.art.png && image.src === new URL(relicIcon(d.art, import.meta.env.BASE_URL), document.baseURI).href)) image.style.imageRendering = 'auto';
     const sync = () => {
       const ready = image.complete && image.naturalWidth > 0;
       image.classList.toggle('art-loaded', ready);

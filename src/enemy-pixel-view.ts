@@ -9,6 +9,7 @@ export const ENEMY_PIXEL_HEIGHTS = { normal: 1.7, fast: 1.45, tank: 2.3, 'draft-
 type Batch = {
   mesh: THREE.InstancedMesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>;
   hurt: THREE.InstancedBufferAttribute;
+  frost: THREE.InstancedBufferAttribute;
   fade: THREE.InstancedBufferAttribute;
   facing: THREE.InstancedBufferAttribute;
   rolls: Float32Array;
@@ -56,6 +57,8 @@ export class EnemyPixelView {
       const hurt = new THREE.InstancedBufferAttribute(new Float32Array(COMBAT_LIMITS.enemies), 1);
       hurt.setUsage(THREE.DynamicDrawUsage);
       geometry.setAttribute('instanceHurt', hurt);
+      const frost = new THREE.InstancedBufferAttribute(new Float32Array(COMBAT_LIMITS.enemies), 1);
+      frost.setUsage(THREE.DynamicDrawUsage); geometry.setAttribute('instanceFrost', frost);
       const fade = new THREE.InstancedBufferAttribute(new Float32Array(COMBAT_LIMITS.enemies).fill(1), 1);
       fade.setUsage(THREE.DynamicDrawUsage); geometry.setAttribute('instanceFade', fade);
       const facing = new THREE.InstancedBufferAttribute(new Float32Array(COMBAT_LIMITS.enemies * 2), 2);
@@ -66,14 +69,21 @@ export class EnemyPixelView {
       if (kind === 'tank') material.map = this.tankFallback;
       material.onBeforeCompile = shader => {
         shader.uniforms.enemyDirectionAtlas = directionAtlas;
+        shader.vertexShader = 'attribute float instanceFrost; varying float vPixelFrost;\n' + shader.vertexShader;
         shader.vertexShader = 'attribute float instanceHurt; attribute float instanceFade; attribute vec2 instanceFacing; uniform float enemyDirectionAtlas; varying float vPixelHurt; varying float vPixelFade;\n' + shader.vertexShader;
         shader.vertexShader = shader.vertexShader.replace('#include <uv_vertex>', `#include <uv_vertex>
           #ifdef USE_MAP
             if (enemyDirectionAtlas > 0.5) vMapUv.x = (mix(vMapUv.x, 1.0-vMapUv.x, instanceFacing.y) + instanceFacing.x) / 5.0;
           #endif`);
         shader.vertexShader = shader.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\nvPixelHurt = instanceHurt; vPixelFade = instanceFade; transformed.y -= enemyDirectionAtlas * (1.0 - 240.0/256.0);');
+        shader.vertexShader = shader.vertexShader.replace('#include <begin_vertex>', '#include <begin_vertex>\nvPixelFrost = instanceFrost;');
+        shader.fragmentShader = 'varying float vPixelFrost;\n' + shader.fragmentShader;
         shader.fragmentShader = 'varying float vPixelHurt; varying float vPixelFade;\n' + shader.fragmentShader;
         shader.fragmentShader = shader.fragmentShader.replace('#include <color_fragment>', '#include <color_fragment>\ndiffuseColor.rgb = mix(diffuseColor.rgb, vec3(1.0, 0.96, 0.84), vPixelHurt * 0.78);');
+        shader.fragmentShader = shader.fragmentShader.replace('#include <alphamap_fragment>', `
+          float iceLight = dot(diffuseColor.rgb, vec3(0.2126, 0.7152, 0.0722));
+          diffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.24, 0.65, 1.0) * (0.18 + iceLight * 0.82), vPixelFrost * 0.85);
+          #include <alphamap_fragment>`);
         // Ordered pixel dissolve retains opaque depth/cutout behavior without corpse sorting.
         shader.fragmentShader = shader.fragmentShader.replace('#include <alphatest_fragment>', `#include <alphatest_fragment>
           if (vPixelFade < 1.0) {
@@ -82,7 +92,7 @@ export class EnemyPixelView {
             if (vPixelFade < threshold) discard;
           }`);
       };
-      material.customProgramCacheKey = () => 'enemy-pixel-direction-hurt-fade-v3';
+      material.customProgramCacheKey = () => 'enemy-pixel-direction-hurt-fade-frost-v4';
       const mesh = new THREE.InstancedMesh(geometry, material, COMBAT_LIMITS.enemies);
       mesh.name = `EnemyPixel:${kind}`; mesh.count = 0; mesh.frustumCulled = false;
       mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
@@ -92,7 +102,7 @@ export class EnemyPixelView {
         directionAtlas.value = lease.entry.directional ? 1 : 0;
         material.map = lease.entry.texture; material.needsUpdate = true;
       }, kind === 'tank');
-      this.batches.set(kind, { mesh, hurt, fade, facing, lease, rolls: new Float32Array(COMBAT_LIMITS.enemies) });
+      this.batches.set(kind, { mesh, hurt, frost, fade, facing, lease, rolls: new Float32Array(COMBAT_LIMITS.enemies) });
       this.group.add(mesh);
     }
   }
@@ -113,7 +123,7 @@ export class EnemyPixelView {
   begin() { this.renderSerial++; for (const { mesh } of this.batches.values()) mesh.count = 0; }
   resetDirections() { this.directions.clear(); }
 
-  put(kind: PixelEnemyKind, x: number, z: number, bob: number, hurt: boolean | number, tint: string, lean = 0, squash = 0, scale = 1, opacity = 1, movement?: { id: number; dx: number; dz: number }, bodyRoll = 0) {
+  put(kind: PixelEnemyKind, x: number, z: number, bob: number, hurt: boolean | number, tint: string, lean = 0, squash = 0, scale = 1, opacity = 1, movement?: { id: number; dx: number; dz: number }, bodyRoll = 0, frozen = false) {
     const batch = this.batches.get(kind)!;
     if (batch.mesh.count >= COMBAT_LIMITS.enemies) return;
     const index = batch.mesh.count++, height = this.height(kind);
@@ -143,6 +153,7 @@ export class EnemyPixelView {
     batch.mesh.setColorAt(index, this.color.set(tint));
     batch.hurt.setX(index, typeof hurt === 'number' ? Math.max(0, Math.min(1, hurt)) : hurt ? 1 : 0);
     batch.fade.setX(index, opacity);
+    batch.frost.setX(index, frozen ? 1 : 0);
   }
 
   head(kind: PixelEnemyKind, x: number, z: number, bob: number) {
@@ -150,10 +161,11 @@ export class EnemyPixelView {
   }
 
   finish() {
-    for (const { mesh, hurt, fade, facing } of this.batches.values()) {
+    for (const { mesh, hurt, frost, fade, facing } of this.batches.values()) {
       mesh.instanceMatrix.needsUpdate = true;
       if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
       hurt.needsUpdate = true; fade.needsUpdate = true; facing.needsUpdate = true;
+      frost.needsUpdate = true;
     }
     for (const [id,state] of this.directions) if (state.seen !== this.renderSerial) this.directions.delete(id);
   }
@@ -163,6 +175,7 @@ export class EnemyPixelView {
       directional: batch.lease.entry.directional, directionFailed: batch.lease.entry.directionFailed,
       frames: Array.from({ length: batch.mesh.count }, (_,i) => ({ frame: batch.facing.getX(i), mirror: !!batch.facing.getY(i) })),
       rolls: Array.from(batch.rolls.slice(0,batch.mesh.count)),
+      frozen: Array.from(batch.frost.array.slice(0,batch.mesh.count)),
       count: batch.mesh.count, capacity: COMBAT_LIMITS.enemies, aspect: batch.lease.entry.aspect, height: this.height(kind),
       crop: [...batch.lease.entry.crop], sourceSize: [...batch.lease.entry.sourceSize],
       nearest: batch.lease.entry.texture.magFilter === THREE.NearestFilter && batch.lease.entry.texture.minFilter === THREE.NearestFilter,

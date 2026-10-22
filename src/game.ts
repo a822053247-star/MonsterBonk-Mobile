@@ -3,13 +3,15 @@ import {renderWeaponPairPicker} from './ui';
 import * as THREE from 'three';
 import { Input } from './input';
 import { Monster } from './monster';
-import { createWorld, WORLD_RADIUS, type World } from './world';
+import { createWorld, type World } from './world';
+import { ARENA_HALF_EXTENT, clampToRectangularBoundary, PLAYER_COLLISION_RADIUS } from './arena-boundary';
 import { Combat } from './combat';
 import { CombatView } from './combat-view';
-import { renderUpgradeCards, setFusionIcons, renderBuildSummary, renderRunShop, renderRunResult, renderResultOutcome, renderWeaponCooldowns, renderHudWeaponIcons, renderEncounterStatus } from './ui';
+import { renderUpgradeCards, setFusionIcons, renderBuildSummary, renderRunShop, renderRunResult, renderResultOutcome, renderWeaponCooldowns, renderHudWeaponIcons, renderEncounterStatus, renderEndlessBestMenu, renderEndlessBestResult } from './ui';
 import { elementalClip, type ElementalFusionId } from './fusion-pixels';
 import type { SkillId } from './progression';
-import { RunFlow } from './run-flow';
+import { ENDLESS_FLAG_WARNING_SECONDS, RunFlow } from './run-flow';
+import { recordEndlessRun } from './endless-record';
 import { ATTACKS } from './run-build';
 import { AdaptiveQuality, loadPreferences, savePreferences, normalizeGameSpeed, type QualityMode } from './quality';
 import { GameAudio } from './audio';
@@ -37,8 +39,8 @@ export class Game {
   private renderer: THREE.WebGLRenderer;
   private scene = new THREE.Scene();
   private camera = new THREE.OrthographicCamera(-15, 15, 8.5, -8.5, 0.1, 180);
-  // Repaired GLB by default; ?character=sprite / ?character=3d retain both fallbacks.
-  private monster = new Monster(new URLSearchParams(window.location.search).get('character') === '3d' ? 'procedural' : new URLSearchParams(window.location.search).get('character') === 'sprite' ? 'sprite' : 'gltf');
+  // Match the production pixel-art presentation by default. Alternate 3D visuals remain opt-in.
+  private monster = new Monster(new URLSearchParams(window.location.search).get('character') === '3d' ? 'procedural' : new URLSearchParams(window.location.search).get('character') === 'gltf' ? 'gltf' : 'sprite');
   private party = new PartySystem();
   private pixelPartyEnabled = new URLSearchParams(window.location.search).get('partyVisual') !== 'legacy';
   private partyView = new PartyView(this.party, this.pixelPartyEnabled);
@@ -110,7 +112,7 @@ export class Game {
     this.world = createWorld();
     this.scene.add(this.world.group, this.monster.root, this.partyView.group);
     this.monster.root.visible = false;
-    this.combat = new Combat(this.world.obstacles, WORLD_RADIUS - 0.7);
+    this.combat = new Combat(this.world.obstacles, ARENA_HALF_EXTENT);
     this.combatView = new CombatView(this.combat);
     this.scene.add(this.combatView.group);
     const trailGeometry = new THREE.RingGeometry(0.4, 0.5, 12);
@@ -388,7 +390,7 @@ export class Game {
     this.partyPrototype = partyPrototype;
     this.prototypeVariant = partyPrototype ? variant : 'sample';
     this.applyGraphics();
-    // Endless exploration changes ONLY the world, not the six-wave fusion combat rules.
+    // Infinite world and Endless survival are paired here; the formal fusion challenge remains finite.
     this.combat.fusionEnabled = partyPrototype && (variant === 'fusion' || variant === 'infinite');
     this.combatView.setFusion(this.combat.fusionEnabled, this.selectedSpecies !== 'yanrong');
     const endless = partyPrototype && variant === 'infinite';
@@ -406,7 +408,7 @@ export class Game {
     document.getElementById('hud')!.classList.toggle('fusion-prototype', this.combat.fusionEnabled);
     document.getElementById('game-canvas')!.classList.toggle('pixel-party', partyPrototype && this.pixelPartyEnabled);
     this.partyView.group.visible = partyPrototype;
-    this.combatView.setPixelEnemies(partyPrototype && new URLSearchParams(window.location.search).get('enemyVisual') !== 'legacy');
+    this.combatView.setPixelEnemies(new URLSearchParams(window.location.search).get('enemyVisual') !== 'legacy');
     this.challenge = ruleset === 'horn-challenge' ? new Challenge() : undefined;
     this.outcome = null;
     this.audio.setWave();
@@ -422,13 +424,13 @@ export class Game {
     this.combat.reset(ruleset);
     this.world.update(0, 0);
     this.combat.refreshWorld(0, 0, this.world.revision);
-    this.run = this.combat.usesRunBuild ? new RunFlow() : undefined;
+    this.run = this.combat.usesRunBuild ? new RunFlow(Math.random, endless ? 'endless' : 'campaign') : undefined;
     if (this.run && new URLSearchParams(window.location.search).get('meleeDev') === 'flame-sweep') this.combat.grantUpgrade('flame-sweep-weapon');
     this.combat.automaticSpawning = !this.run;
     this.run?.prepare(this.combat,this.position);
     document.getElementById('shop-screen')!.hidden = true;
     this.party.syncLeader(this.position, this.facing);
-    this.party.placeCompanions(this.world.obstacles, WORLD_RADIUS - 0.7);
+    this.party.placeCompanions(this.world.obstacles, ARENA_HALF_EXTENT);
     this.partyView.setAnimatedLeader((this.combat.fusionEnabled || this.prototypeVariant === 'legacy-party') && new URLSearchParams(window.location.search).get('creatureAnimation') !== 'static');
     if (partyPrototype) this.partyView.render(1, 0);
     this.monster.root.visible = !partyPrototype || !this.partyView.hasPixelLeader;
@@ -452,7 +454,7 @@ export class Game {
     (document.activeElement as HTMLElement | null)?.blur();
     this.welcome.classList.remove('faded');
     this.welcome.querySelector('h2')!.textContent = endless ? '无尽挑战，向远方出发。' : this.combat.fusionEnabled && species !== 'yanrong' ? `${CREATURES[species].name}，准备出发。` : this.combat.fusionEnabled ? '一簇火花，生长成烈焰。' : partyPrototype ? '草场已就绪，出发吧。' : this.challenge ? '三波迎战，冲出一条路。' : this.combat.isTrial ? '犄角已就绪，冲出一条路。' : '小小魔法，准备就绪。';
-    this.welcome.querySelector('p')!.textContent = endless ? '与闯关挑战相同的六波战斗、升级及商店 · 地图无边界，可持续探索' : this.combat.fusionEnabled && species !== 'yanrong' ? `${CREATURES[species].name}出战 · 摇杆移动 · 自动攻击 · 升级三选一` : this.combat.fusionEnabled ? '六波自动战斗 · 升级形成融合 · 前四波连续迎战，第五波后才可购物' : partyPrototype && variant === 'legacy-party' ? '三兽兼容模式 · 主控移动，伙伴跟随并自动攻击' : partyPrototype ? '摇杆操控焰绒 · 自动攻击 · 沿泥路绕过林地与水岸' : this.challenge ? '击败三波即可通关 · 冲锋命中 6 次、打断 2 次各加一星' : this.combat.isTrial ? '冲刺命中可击退和打断 · 留意黄色扑击预警线' : '移动躲避敌人，焰绒会自动施法 · 靠近拾取经验';
+    this.welcome.querySelector('p')!.textContent = endless ? '六波循环生存 · 第五波旗帜大波与商店 · 第六波 Boss 循环' : this.combat.fusionEnabled && species !== 'yanrong' ? `${CREATURES[species].name}出战 · 摇杆移动 · 自动攻击 · 升级三选一` : this.combat.fusionEnabled ? '六波自动战斗 · 升级形成融合 · 前四波连续迎战，第五波后才可购物' : partyPrototype && variant === 'legacy-party' ? '三兽兼容模式 · 主控移动，伙伴跟随并自动攻击' : partyPrototype ? '摇杆操控焰绒 · 自动攻击 · 沿泥路绕过林地与水岸' : this.challenge ? '击败三波即可通关 · 冲锋命中 6 次、打断 2 次各加一星' : this.combat.isTrial ? '冲刺命中可击退和打断 · 留意黄色扑击预警线' : '移动躲避敌人，焰绒会自动施法 · 靠近拾取经验';
     this.accumulator = 0;
     this.placeCamera(true);
     this.updateHUD();
@@ -462,6 +464,7 @@ export class Game {
   private pause(reason: string) {
     if (this.mode !== 'playing') return;
     this.mode = 'paused';
+    document.getElementById('area-combo')!.hidden = true;
     this.input.setEnabled(false);
     this.velocity.set(0, 0);
     this.previousPosition.copy(this.position);
@@ -610,15 +613,14 @@ export class Game {
     // Circle collisions allow sliding around trunks and rocks.
     for (const obstacle of this.world.obstacles) {
       const x = this.position.x - obstacle.x, z = this.position.z - obstacle.z;
-      const radius = obstacle.radius + 0.62;
+      const radius = obstacle.radius + PLAYER_COLLISION_RADIUS;
       const length = Math.hypot(x, z);
       if (length < radius) {
         this.position.x = obstacle.x + (length > 0.0001 ? x / length : 1) * radius;
         this.position.z = obstacle.z + (length > 0.0001 ? z / length : 0) * radius;
       }
     }
-    const radius = Math.hypot(this.position.x, this.position.z);
-    if (!this.combat.infiniteWorld && radius > WORLD_RADIUS - 0.7) this.position.multiplyScalar((WORLD_RADIUS - 0.7) / radius);
+    if (!this.combat.infiniteWorld) clampToRectangularBoundary(this.position, ARENA_HALF_EXTENT, PLAYER_COLLISION_RADIUS);
     this.distance += this.position.distanceTo(this.previousPosition);
     if (this.velocity.lengthSq() > 0.05) {
       const target = Math.atan2(this.velocity.x, this.velocity.y);
@@ -633,18 +635,20 @@ export class Game {
         trail.mesh.scale.setScalar(1.3 - trail.remaining);
       }
     });
-    const shots = this.combat.shotsFired, hits = this.combat.hits, collected = this.combat.collected, hp = this.combat.hp;
+    const shots = this.combat.shotsFired, hits = this.combat.hits, collected = this.combat.collected, hp = this.combat.hp, kills = this.combat.kills;
     this.dashAttack.active = dashing;
     this.dashAttack.fromX = this.previousPosition.x; this.dashAttack.fromZ = this.previousPosition.z;
     this.dashAttack.dx = this.dashDirection.x; this.dashAttack.dz = this.dashDirection.y;
     if (this.partyPrototype) {
       // The original Player movement is now the controlled creature adapter.
       this.party.syncLeader(this.position, this.facing);
-      if (this.prototypeVariant === 'legacy-party') this.party.follow(dt, this.world.obstacles, WORLD_RADIUS - 0.7);
+      if (this.prototypeVariant === 'legacy-party') this.party.follow(dt, this.world.obstacles, ARENA_HALF_EXTENT);
     }
+    this.combat.attackViewport = this.cameraFootprint();
     this.combat.update(dt, this.position, this.dashAttack);
     if (this.partyPrototype && this.combat.hp > 0) this.partyView.stepAnimation(dt, (this.position.x - this.previousPosition.x) / dt, (this.position.z - this.previousPosition.z) / dt);
     this.audio.playSkills(this.combat.soundEvents);
+    this.audio.playHarvest(this.combat.kills - kills);
     if (this.combat.hits > hits) this.audio.play('hit');
     if (this.combat.shotsFired > shots) this.audio.play('cast');
     if (this.combat.collected > collected) this.audio.play('collect');
@@ -661,14 +665,15 @@ export class Game {
         if (this.challenge.wave !== wave || this.challenge.phase !== phase) this.audio.play('level');
         if (this.challenge.phase === 'won') this.endRun('victory');
       }
-      if (this.mode === 'playing' && this.combat.progression.awaitingChoice && !this.combat.encounters.dying) this.openUpgrade();
+      const endlessBossChoice = !!this.run?.endless && this.run.isBossWave && this.combat.encounters.defeated;
+      if (this.mode === 'playing' && this.combat.progression.awaitingChoice && (!this.combat.encounters.dying || endlessBossChoice)) this.openUpgrade();
     }
   }
 
   private canShop() { return this.mode === 'shop' && !document.hidden && !this.portrait && !this.contextLost; }
 
   private syncRunPhase() {
-    this.audio.setWave(this.run?.wave);
+    this.audio.setWave(this.run?.waveInCycle);
     if (!this.run) return false;
     if (this.run.phase === 'won' || this.run.phase === 'lost') { this.endRun(this.run.phase === 'won' ? 'victory' : 'defeat'); return true; }
     if (this.run.phase === 'intermission') {
@@ -702,7 +707,7 @@ export class Game {
       document.getElementById('hud')!.inert = true;
       document.getElementById('shop-screen')!.hidden = false;
       const growth = this.run.lastWaveGrowth;
-      document.getElementById('shop-message')!.textContent = `本波奖励 +${this.run.definition.reward} 金币${growth.sporeBonus ? ` · 爆孢连锁 +${growth.sporeBonus} 金币` : ''}${this.run.shop?.treasureRefreshes ? ' · 前五波携宝兽奖励免费刷新' : ''}`;
+      document.getElementById('shop-message')!.textContent = `本波奖励 +${this.run.definition.reward} 金币${growth.sporeBonus ? ` · 爆孢连锁 +${growth.sporeBonus} 金币` : ''}${this.run.shop?.treasureRefreshes ? (this.run.endless ? ' · 本轮携宝兽奖励免费刷新' : ' · 前五波携宝兽奖励免费刷新') : ''}`;
       renderRunShop(this.run, this.combat); this.updateHUD();
       document.getElementById('shop-next')!.focus({ preventScroll: true }); this.wake(); return true;
     }
@@ -775,6 +780,13 @@ export class Game {
   }
 
   private endRun(outcome: 'victory' | 'defeat' = 'defeat') {
+    const endlessResult = this.run?.endless ? {
+      wave: this.run.wave,
+      cycle: this.run.cycle,
+      bossesDefeated: this.run.bossesDefeated,
+      survivalSeconds: this.run.totalElapsed,
+    } : undefined;
+    const endlessRecordUpdate = endlessResult ? recordEndlessRun(endlessResult) : undefined;
     this.run?.finish(this.combat, outcome === 'victory');
     document.getElementById('shop-screen')!.hidden = true;
     this.combat.clearTransientEffects();
@@ -796,11 +808,25 @@ export class Game {
     document.getElementById('result-xp')!.textContent = String(this.combat.xp);
     const won = outcome === 'victory';
     renderResultOutcome(won);
-    document.getElementById('result-heading')!.textContent = this.run ? (won ? '六波挑战，通关！' : '冒险暂时结束。') : won ? '三波挑战，通关！' : '小火焰，休息一下。';
-    document.getElementById('result-eyebrow')!.textContent = won ? '挑战完成' : '本局结束';
+    document.getElementById('result-heading')!.textContent = this.run
+      ? this.run.endless ? '无尽生存，挑战结束' : won ? '六波挑战，通关！' : '冒险暂时结束。'
+      : won ? '三波挑战，通关！' : '小火焰，休息一下。';
+    document.getElementById('result-eyebrow')!.textContent = this.run?.endless ? '生存结算' : won ? '挑战完成' : '本局结束';
     document.getElementById('result-message')!.textContent = won ? '三波挑战完成，再次出发。' : '生命耗尽，本次冒险结束。';
-    if (this.run) document.getElementById('result-message')!.textContent = won ? '荆冠兽王已击败！构筑经受住了六波考验。' : this.run.failure === 'boss-timeout' ? '未能在 90 秒内击败荆冠兽王。调整构筑，再来挑战。' : `生命耗尽，止步第 ${this.run.wave} 波。换一种构筑再出发。`;
+    if (this.run) document.getElementById('result-message')!.textContent = this.run.endless
+      ? `生命耗尽，止步第 ${this.run.wave} 波（第 ${this.run.cycle} 轮）。击败 ${this.run.bossesDefeated} 个 Boss。`
+      : won ? '荆冠兽王已击败！构筑经受住了六波考验。'
+      : this.run.failure === 'boss-timeout' ? '未能在 90 秒内击败荆冠兽王。调整构筑，再来挑战。'
+      : `生命耗尽，止步第 ${this.run.wave} 波。换一种构筑再出发。`;
     renderRunResult(this.run, this.combat);
+    const recordPanel = document.getElementById('endless-record-result')!;
+    if (endlessResult && endlessRecordUpdate) {
+      renderEndlessBestResult(endlessResult, endlessRecordUpdate.record, endlessRecordUpdate.newRecords);
+    } else {
+      recordPanel.hidden = true;
+      recordPanel.classList.remove('new-record');
+      renderEndlessBestMenu();
+    }
     const summary = document.getElementById('result-challenge')!;
     summary.hidden = !this.challenge;
     if (this.challenge) {
@@ -819,6 +845,10 @@ export class Game {
 
 
   private updateHUD() {
+    const combo = document.getElementById('area-combo')!;
+    const feedback = this.combat.areaFeedback;
+    combo.hidden = this.mode !== 'playing' || feedback.kills < 8 || this.combat.elapsed - feedback.time > 1.35;
+    if (!combo.hidden) combo.textContent = `${feedback.kills} 连斩！`;
     renderEncounterStatus(this.combat,this.run);
     renderWeaponCooldowns(this.combat);
     renderHudWeaponIcons(this.combat);
@@ -827,7 +857,7 @@ export class Game {
     gold.hidden = true; // Only wave and elapsed time occupy the top center.
     const coins = this.run?.coins ?? this.combat.goldEarned;
     document.getElementById('hud-coins')!.textContent = Math.max(0, coins).toLocaleString('en-US');
-    if (this.run) { wave.textContent = `第 ${this.run.wave} / 6 波`; gold.textContent = `金币 ${this.run.coins}`; }
+    if (this.run) { wave.textContent = this.run.waveLabel; gold.textContent = `金币 ${this.run.coins}`; }
     renderBuildSummary(this.combat.usesRunBuild ? this.combat.runBuild : undefined, this.combat.fusions, this.combat.resonances);
     const fusionStatus = document.getElementById('fusion-status')!;
     fusionStatus.hidden = !this.combat.fusionEnabled;
@@ -842,8 +872,16 @@ export class Game {
     const species = this.party.leader.species;
     const portrait = document.getElementById('creature-portrait') as HTMLImageElement;
     portrait.hidden = false;
-    if (portrait.dataset.species !== species) { portrait.src = `${import.meta.env.BASE_URL}assets/pixel/${PIXEL_CREATURE_ASSETS[species]}`; portrait.dataset.species = species; }
-    (document.querySelector('.health-panel svg.portrait') as SVGElement).style.display = species === 'yanrong' ? '' : 'none';
+    const fallbackPortrait = document.querySelector('.health-panel svg.portrait') as SVGElement;
+    fallbackPortrait.style.display = species === 'yanrong' ? '' : 'none';
+    if (portrait.dataset.species !== species) {
+      portrait.classList.remove('art-loaded');
+      portrait.onload = () => { portrait.classList.add('art-loaded'); fallbackPortrait.style.display = 'none'; };
+      portrait.onerror = () => { portrait.classList.remove('art-loaded'); portrait.hidden = true; fallbackPortrait.style.display = species === 'yanrong' ? '' : 'none'; };
+      portrait.src = `${import.meta.env.BASE_URL}assets/pixel/${PIXEL_CREATURE_ASSETS[species]}`;
+      portrait.dataset.species = species;
+    }
+    if (portrait.complete && portrait.naturalWidth > 0) { portrait.classList.add('art-loaded'); fallbackPortrait.style.display = 'none'; }
     if (title.textContent !== titleText) title.textContent = titleText;
     if (hint.textContent !== hintText) hint.textContent = hintText;
     const hasSpark = this.combat.usesRunBuild ? this.combat.runBuild.has('spark')&&!this.combat.runBuild.consumed('spark') : base === 'spark';
@@ -888,7 +926,20 @@ export class Game {
     this.dashButton.classList.toggle('cooling', this.cooldown > 0);
     this.dashButton.setAttribute('aria-disabled', String(this.cooldown > 0));
     this.dashStatus.textContent = this.cooldown > 0 ? `${this.cooldown.toFixed(1)} 秒` : '就绪';
-    if (this.challenge) {
+    const flagWarning = !!this.run?.endless && this.run.phase === 'fighting'
+      && this.run.waveInCycle === 4 && this.run.remaining > 0
+      && this.run.remaining <= ENDLESS_FLAG_WARNING_SECONDS;
+    this.welcome.classList.toggle('flag-wave-warning', flagWarning);
+    if (flagWarning && this.run) {
+      const warningTitle = '警报！旗帜大波即将来袭';
+      const warningDetail =
+        `剩余 ${Math.ceil(this.run.remaining)} 秒 · 第 ${this.run.wave + 1} 波（第 ${this.run.cycle} 轮）· 快速怪、重甲、爆孢与晶屑混编，保持移动！`;
+      const titleNode = this.welcome.querySelector('h2')!;
+      const detailNode = this.welcome.querySelector('p')!;
+      if (titleNode.textContent !== warningTitle) titleNode.textContent = warningTitle;
+      if (detailNode.textContent !== warningDetail) detailNode.textContent = warningDetail;
+      this.welcome.classList.remove('faded');
+    } else if (this.challenge) {
       const resting = this.challenge.phase === 'rest';
       if (resting) {
         this.welcome.querySelector('h2')!.textContent = `第 ${this.challenge.wave + 1} 波完成！`;
@@ -899,18 +950,27 @@ export class Game {
       }
       this.welcome.classList.toggle('faded', !resting && this.challenge.waveTime > (this.challenge.wave === 0 ? 5 : 2));
     } else if (this.run?.phase === 'intermission') {
-      const shopping = this.run.wave === 5;
-      this.welcome.querySelector('h2')!.textContent = shopping ? '第五波完成 · 魔法商店即将开放' : `第 ${this.run.wave} 波完成！`;
+      const shopping = this.run.isShopWave;
+      this.welcome.querySelector('h2')!.textContent = shopping
+        ? `${this.run.waveLabel}完成 · 魔法商店即将开放`
+        : `${this.run.waveLabel}完成！`;
       this.welcome.querySelector('p')!.textContent = shopping
-        ? `${Math.ceil(this.run.intermissionRemaining)} 秒后进入商店 · 准备最终 Boss 战`
-        : `${Math.ceil(this.run.intermissionRemaining)} 秒后进入第 ${this.run.wave + 1} 波 · 已回收经验`;
+        ? `${Math.ceil(this.run.intermissionRemaining)} 秒后进入商店 · 为阶段 Boss 做准备`
+        : this.run.isBossWave
+          ? `${Math.ceil(this.run.intermissionRemaining)} 秒后进入下一轮 · Boss 奖励已结算`
+          : `${Math.ceil(this.run.intermissionRemaining)} 秒后进入第 ${this.run.wave + 1} 波 · 已回收经验`;
       this.welcome.classList.remove('faded');
     } else if (this.run && this.run.waveElapsed < 3 && this.run.wave > 1) {
-      this.welcome.querySelector('h2')!.textContent = `第 ${this.run.wave} 波 · ${this.run.wave === 6 ? '最终决战' : '怪潮来袭'}`;
-      this.welcome.querySelector('p')!.textContent = this.run.wave === 6 ? '荆冠兽王登场 · 留意攻击预警' : '开始新一波战斗';
+      const event = this.run.isBossWave ? (this.run.endless ? '阶段 Boss' : '最终决战') : this.run.isFlagWave ? '旗帜大波' : '怪潮来袭';
+      this.welcome.querySelector('h2')!.textContent = `${this.run.waveLabel} · ${event}`;
+      this.welcome.querySelector('p')!.textContent = this.run.isBossWave
+        ? (this.run.endless ? '荆冠兽王登场 · 超时后进入狂暴，击败后继续生存' : '荆冠兽王登场 · 留意攻击预警')
+        : this.run.isFlagWave ? '混合怪潮即将压境 · 留意走位与爆孢预警'
+        : this.run.waveInCycle === 1 && this.run.modifierLabel ? `本轮特殊规则：${this.run.modifierLabel}。 ${this.run.modifierDescription}`
+        : '开始新一波战斗';
       this.welcome.classList.remove('faded');
     } else this.welcome.classList.toggle('faded', this.elapsed > 5 || this.distance > 8);
-    this.boundaryHint.hidden = this.combat.infiniteWorld || Math.hypot(this.position.x, this.position.z) < WORLD_RADIUS - 1.2;
+    this.boundaryHint.hidden = this.combat.infiniteWorld || Math.max(Math.abs(this.position.x), Math.abs(this.position.z)) < ARENA_HALF_EXTENT - PLAYER_COLLISION_RADIUS - 0.5;
     const hp = this.combat.hp, maxHp = this.combat.maxHp;
     this.healthValue.textContent = `${hp} / ${maxHp}`;
     this.healthFill.style.width = `${hp / maxHp * 100}%`;
@@ -951,10 +1011,21 @@ export class Game {
     this.camera.position.copy(this.cameraTarget);
     // Position and look point share one smoothed anchor, so pitch never changes.
     this.camera.lookAt(this.cameraAnchor);
-    this.combat.spawnViewport = { x: this.cameraAnchor.x, z: this.cameraAnchor.z - this.cameraAnchor.y / Math.tan(VIEW_25D.pitch),
-      halfWidth: (this.camera.right - this.camera.left) / 2, halfDepth: (this.camera.top - this.camera.bottom) / (2 * Math.sin(VIEW_25D.pitch)) };
+    // Shake only the rendered camera. Target selection uses the stable anchor footprint below.
+    const impactAge = this.combat.elapsed - this.combat.areaFeedback.time;
+    if (this.mode === 'playing' && this.combat.areaFeedback.kills >= 8 && impactAge >= 0 && impactAge < .24) {
+      const strength = .07 * (1 - impactAge / .24);
+      this.camera.position.x += Math.sin(impactAge * 157) * strength;
+      this.camera.position.y += Math.cos(impactAge * 119) * strength * .5;
+    }
+    this.combat.spawnViewport = this.cameraFootprint();
     this.combatView.updateView(this.camera, window.innerHeight, this.camera.top - this.camera.bottom);
     this.partyView.setCamera(this.camera);
+  }
+
+  private cameraFootprint() {
+    return { x: this.cameraAnchor.x, z: this.cameraAnchor.z - this.cameraAnchor.y / Math.tan(VIEW_25D.pitch),
+      halfWidth: (this.camera.right - this.camera.left) / 2, halfDepth: (this.camera.top - this.camera.bottom) / (2 * Math.sin(VIEW_25D.pitch)) };
   }
 
   private frame = (time: number) => {

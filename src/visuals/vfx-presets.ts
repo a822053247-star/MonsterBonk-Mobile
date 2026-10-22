@@ -33,7 +33,7 @@ export const VFX_PRESETS: readonly VfxPreset[] = [
   { id: 'fire-impact', type: 'impact', color: '#ffe7ae', secondaryColor: '#ffbb60', radiusScale: 1.2, height: 1.45,
     duration: .16, particles: true, ring: false, low: { particles: true, animated: false } },
   { id: 'water-impact', type: 'impact', color: '#91e5f2', secondaryColor: '#65dcff', radiusScale: 1.35, height: 1.55,
-    duration: .2, particles: true, ring: true,
+    duration: .2, particles: true, ring: false,
     animation: { atlas: 'elemental', row: 0, frames: [3,4,5,6,7], fps: 25 }, low: { particles: true, animated: true } },
   { id: 'fire-explosion', type: 'impact', color: '#ffac48', secondaryColor: '#ffe09a', radiusScale: 1,
     duration: .32, particles: true, ring: false,

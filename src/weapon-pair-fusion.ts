@@ -17,5 +17,6 @@ export const pairSources=(id:WeaponPairId):readonly BaseAttackId[]=>WEAPON_PAIR_
 export function sourceHasAttack(source:{attackId:BaseAttackId;kind?:string;rules?:{pairId?:WeaponPairId}},id:BaseAttackId){
   if(source.kind==='testament')return id==='leaf';
   if(source.kind==='bubble-spore')return id==='bubble';
+  if (source.attackId === 'thorn-wheel' && id === 'leaf' || source.attackId === 'tidal-blade' && id === 'bubble') return true;
   return source.rules?.pairId?pairSources(source.rules.pairId).includes(id):source.attackId===id;
 }

@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 
 const GHOST_LIFE = 0.17;
-const IMAGE_URL = `${import.meta.env?.BASE_URL ?? './'}assets/characters/yanrong-base.png`;
+const IMAGE_URL = `${import.meta.env?.BASE_URL ?? './'}assets/pixel/creatures/yanrong-base.png`;
 
 /** Crop transparent padding only, keeping the complete visible silhouette and aspect. */
 function prepareTexture(image: HTMLImageElement) {

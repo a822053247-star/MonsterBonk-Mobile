@@ -1,8 +1,9 @@
+import { ARENA_HALF_EXTENT, isInsideRectangularBoundary } from './arena-boundary';
 import { GroundNavigation, type GroundObstacle } from './navigation';
 import { fixedWorldLayout, ROAD_WIDTH, SAMPLE_PATHS, sampleObstacles, type MapTree, type MapRock, type TerrainRegion, type WorldLayout } from './world-layout';
 
 export const MAP_VERSION = 1;
-export const MAP_BOUNDARY = 32.3;
+export const MAP_BOUNDARY = ARENA_HALF_EXTENT;
 const MAX_ATTEMPTS = 8;
 const SPAWN_RADIUS = 8;
 
@@ -54,7 +55,7 @@ export function validateLayout(layout: WorldLayout): LayoutValidation {
   for (const o of obstacles) {
     if (![o.x, o.z, o.radius].every(Number.isFinite) || o.radius <= 0) { issues.push('invalid-obstacle'); continue; }
     if (Math.hypot(o.x, o.z) - o.radius < SPAWN_RADIUS) issues.push('blocked-spawn');
-    if (Math.hypot(o.x, o.z) + o.radius > MAP_BOUNDARY - .95) issues.push('outside-boundary');
+    if (!isInsideRectangularBoundary(o.x, o.z, MAP_BOUNDARY - .95, o.radius)) issues.push('outside-boundary');
     if (roadDistance(o.x, o.z) < o.radius + ROAD_WIDTH / 2) issues.push('blocked-road');
   }
   if (issues.length) return { valid: false, issues: [...new Set(issues)], walkable: 0, reachable: 0, openRatio: 0 };
@@ -78,7 +79,7 @@ function candidate(seed: string): WorldLayout {
   const water: GroundObstacle[] = [], trees: MapTree[] = [], rocks: MapRock[] = [];
   const occupied: GroundObstacle[] = [];
   const fits = (o: GroundObstacle, shore = 0) => Math.hypot(o.x, o.z) - o.radius >= SPAWN_RADIUS + .4
-    && Math.hypot(o.x, o.z) + o.radius <= MAP_BOUNDARY - 1.3
+    && isInsideRectangularBoundary(o.x, o.z, MAP_BOUNDARY - 1.3, o.radius)
     && roadDistance(o.x, o.z) >= o.radius + ROAD_WIDTH / 2 + .15 + shore;
   for (const region of regions.filter(r => r.kind === 'pond')) {
     const radius = 3.3 + random() * 1.2, angle = random() * Math.PI * 2;
@@ -129,10 +130,10 @@ export function generateWorld(input: string | number): GeneratedWorld {
     if (validation.valid) return { seed, version: MAP_VERSION, attempt, fallback: false, layout, validation };
   }
   const fixed = fixedWorldLayout();
-  // The old sample includes distant decorative props outside the playable disk.
+  // The old sample includes decorative props outside the rectangular playable area.
   const layout: WorldLayout = { ...fixed,
-    trees: fixed.trees.filter(([x, z]) => Math.hypot(x, z) + .65 <= MAP_BOUNDARY - .95),
-    rocks: fixed.rocks.filter(([x, z]) => Math.hypot(x, z) + .8 <= MAP_BOUNDARY - .95),
+    trees: fixed.trees.filter(([x, z]) => isInsideRectangularBoundary(x, z, MAP_BOUNDARY - .95, .65)),
+    rocks: fixed.rocks.filter(([x, z]) => isInsideRectangularBoundary(x, z, MAP_BOUNDARY - .95, .8)),
   };
   const validation = validateLayout(layout);
   if (!validation.valid) throw new Error('Fixed map safety check failed: ' + validation.issues.join(', '));

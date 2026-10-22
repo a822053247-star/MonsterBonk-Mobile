@@ -8,7 +8,13 @@ import { flameSweepStats } from './flame-sweep';
 import { upgradePreview, type Progression, type SkillId } from './progression';
 import { FUSION_ASSET_ROOT, type ElementalFusionId } from './fusion-pixels';
 import { bindUpgradeArt, uiArtUrl, upgradeArt } from './upgrade-art';
+import { WATER_AOE_IDS, WATER_NAMES, waterStats } from './water-aoe';
+import { POSITION_IDS, POSITION_NAMES, positionStats } from './position-aoe';
+import { ICE_SKILL_IDS, ICE_SKILL_NAMES, iceSkillStats } from './ice-skills';
+import { dreamEchoStats } from './dream-combat';
+import { WATER_EVOLUTION_IDS, WATER_EVOLUTIONS, consumedByEvolution, isWaterEvolution } from './water-evolution';
 import { shopArt } from './shop-art';
+import { formatEndlessRecordTime, readEndlessRecord, type EndlessRecord, type EndlessRunResult } from './endless-record';
 
 const icons = {
   settings: '<path d="M4 6h16M4 12h16M4 18h16"/><circle cx="9" cy="6" r="2" fill="currentColor"/><circle cx="15" cy="12" r="2" fill="currentColor"/><circle cx="9" cy="18" r="2" fill="currentColor"/>',
@@ -44,6 +50,7 @@ export function createUI(root: HTMLElement) {
         <h1>幻兽<br/><span>幸存者</span></h1>
         <p class="menu-description">一只焰绒，从火花到爆裂火种。<br/>自动迎战，升级组合你的魔法。</p>
         <div class="main-modes" aria-label="选择挑战玩法"><button id="start-fusion" class="mode-card campaign-mode">${icon('battle')}<span><strong>闯关挑战</strong></span>${icon('arrow')}</button><button id="start-infinite" class="mode-card infinite-mode">${icon('spark')}<span><strong>无尽挑战</strong></span>${icon('arrow')}</button></div>
+        <div id="endless-best-menu" class="endless-best-menu" aria-label="无尽个人最佳">无尽个人最佳 · 首次挑战后记录</div>
         <div class="menu-actions menu-utilities"><button id="choose-creature" class="secondary creature-select-entry" aria-label="选择出战幻兽">选择幻兽</button><button id="help" class="secondary" aria-label="操作指南">${icon('help')}<span>操作指南</span></button><button id="menu-settings" class="secondary settings-entry" aria-label="画质与声音设置">${icon('settings')}</button></div>
         
       </div>
@@ -61,6 +68,7 @@ export function createUI(root: HTMLElement) {
       </div>
     </section>
     <section id="hud" class="hud screen" aria-label="游戏操作与状态" hidden>
+      <div id="area-combo" class="area-combo" role="status" hidden></div>
       <div id="low-health-effect" class="low-health-effect" aria-hidden="true"></div>
       <div class="hud-top">
         <div class="health-block"><div class="health-panel"><img class="health-frame-art" data-upgrade-art="health-frame" src="${uiArtUrl('hud/creature-health-panel.png')}" alt="" draggable="false"/>${portrait}<img id="creature-portrait" class="portrait" data-upgrade-art="portrait" alt="" hidden style="object-fit:contain;image-rendering:pixelated"/><div class="health-copy"><div class="health-values"><strong id="health-value">100 / 100</strong></div><div class="health-track" role="progressbar" aria-label="生命值 HP" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100"><div id="health-fill"></div></div></div></div><div class="combat-stats"><div>${icon('battle')}<span>击败</span><strong id="kill-value">0</strong></div><div>${icon('spark')}<span>经验</span><strong id="xp-value">0</strong></div></div><div class="hud-bottom-row"><div class="hud-gold" aria-label="当前金币"><img src="${uiArtUrl('common/coin.png')}" alt="" draggable="false"/><strong id="hud-coins">0</strong></div><div class="xp-row"><div id="xp-track" class="xp-track" role="progressbar" aria-label="升级经验" aria-valuemin="0" aria-valuemax="8" aria-valuenow="0"><div id="xp-fill"></div></div><span id="level-value">Lv.1</span></div></div></div>
@@ -81,7 +89,7 @@ export function createUI(root: HTMLElement) {
     <section id="gameover-screen" class="modal-screen" role="dialog" aria-modal="true" aria-labelledby="result-heading" aria-label="本局结束" data-outcome="defeat" hidden>
       <div class="modal result-card">
         <header class="result-header"><span class="result-insignia" aria-hidden="true"><span class="result-art-fallback">${icon('leaf')}</span><img id="result-victory-art" data-upgrade-art="result-victory" src="${uiArtUrl('result/victory-crown.png')}" alt="" draggable="false" hidden/><img id="result-defeat-art" data-upgrade-art="result-defeat" src="${uiArtUrl('result/defeat-badge.png')}" alt="" draggable="false"/></span><div><span id="result-eyebrow" class="eyebrow">冒险战报</span><h2 id="result-heading">本局结束</h2><p id="result-message"></p></div></header>
-        <div class="result-report" style="--result-panel-url:url('${uiArtUrl('result/battle-report-panel.png')}')"><img class="result-panel-art" data-upgrade-art="result-panel" src="${uiArtUrl('result/battle-report-panel.png')}" alt="" draggable="false"/><div class="result-body"><div class="result-overview"><div class="result-stats"><div><strong id="result-time">00:00</strong><span>生存时间</span></div><div><strong id="result-kills">0</strong><span>击败怪物</span></div><div><strong id="result-xp">0</strong><span>获得经验</span></div></div><div id="result-challenge" class="result-challenge" hidden></div><p id="result-run"></p></div>
+        <div class="result-report" style="--result-panel-url:url('${uiArtUrl('result/battle-report-panel.png')}')"><img class="result-panel-art" data-upgrade-art="result-panel" src="${uiArtUrl('result/battle-report-panel.png')}" alt="" draggable="false"/><div class="result-body"><div class="result-overview"><div class="result-stats"><div><strong id="result-time">00:00</strong><span>生存时间</span></div><div><strong id="result-kills">0</strong><span>击败怪物</span></div><div><strong id="result-xp">0</strong><span>获得经验</span></div></div><div id="result-challenge" class="result-challenge" hidden></div><p id="result-run"></p><section id="endless-record-result" class="endless-record-result" hidden aria-live="polite"><strong id="endless-record-title"></strong><p id="endless-record-current"></p><p id="endless-record-best"></p></section></div>
           <section id="result-build" class="build-summary" aria-label="最终构筑" tabindex="0"><h3>最终构筑</h3><div id="result-weapons" class="build-weapon-list"></div><div id="result-skills" class="build-detail"></div><div id="result-fusions" class="build-detail"></div><div id="result-relics" class="build-detail"></div></section></div></div>
         <footer class="result-actions"><button id="gameover-restart" class="primary">再次挑战 ${icon('arrow')}</button><button id="gameover-menu" class="text-button">返回菜单</button></footer>
       </div>
@@ -112,6 +120,35 @@ export function createUI(root: HTMLElement) {
   `;
   bindFireIcons(root);
   bindUpgradeArt(root);
+  renderEndlessBestMenu();
+}
+
+export function renderEndlessBestMenu() {
+  const panel = document.getElementById('endless-best-menu');
+  if (!panel) return;
+  const record = readEndlessRecord();
+  panel.textContent = record.runsPlayed
+    ? `无尽个人最佳 · 第 ${record.bestWave} 波 / 第 ${record.bestCycle} 轮 · Boss ${record.bestBossesDefeated} · ${formatEndlessRecordTime(record.bestSurvivalSeconds)}`
+    : '无尽个人最佳 · 首次挑战后记录';
+}
+
+export function renderEndlessBestResult(
+  result: EndlessRunResult,
+  record: EndlessRecord,
+  newRecords: readonly string[],
+) {
+  const panel = document.getElementById('endless-record-result');
+  if (!panel) return;
+  panel.hidden = false;
+  panel.classList.toggle('new-record', newRecords.length > 0);
+  document.getElementById('endless-record-title')!.textContent = newRecords.length
+    ? `新纪录！${newRecords.join('、')}`
+    : '本局结束 · 无尽个人最佳';
+  document.getElementById('endless-record-current')!.textContent =
+    `本局：第 ${result.wave} 波 · 第 ${result.cycle} 轮 · 击败 Boss ${result.bossesDefeated} 个 · ${formatEndlessRecordTime(result.survivalSeconds)}`;
+  document.getElementById('endless-record-best')!.textContent =
+    `最佳：第 ${record.bestWave} 波 · 第 ${record.bestCycle} 轮 · 击败 Boss ${record.bestBossesDefeated} 个 · ${formatEndlessRecordTime(record.bestSurvivalSeconds)}`;
+  renderEndlessBestMenu();
 }
 
 export function renderUpgradeCards(progression: Progression, version: number) {
@@ -129,7 +166,7 @@ export function renderUpgradeCards(progression: Progression, version: number) {
     const titlePath = `upgrade-title-${version}-${id}`;
     return `<button type="button" class="skill-card${skill.tradeoff ? ' has-tradeoff' : ''}" data-skill="${id}" data-offer="${version}" data-category="${skill.category ?? 'normal'}" data-element="${art.element ?? ''}" style="--skill-color:${skill.color}" disabled aria-label="${skill.title}：${skill.benefit}，${preview}，${rank} → ${rank + 1}级${skill.tradeoff ? '，代价：' + skill.tradeoff : ''}" aria-description="${skill.description}">
       <img class="skill-frame" data-upgrade-art="frame" src="${art.frame}" alt="" draggable="false"/>
-      <span class="skill-card-meta"><span><img data-upgrade-art="gem" src="${art.gem}" alt="" draggable="false"/>${id==='weapon-pair-fusion'?'武器融合':skill.category === 'relic' ? '稀有道具' : skill.category === 'evolution' ? '互斥进化' : id.endsWith('-weapon') ? (rank ? '武器强化' : '新武器') : rank === 0 && skill.effect.type === 'spell' ? '新技能' : '魔法强化'}</span><span>${id==='weapon-pair-fusion'?'自选配方':`${rank} → ${rank + 1}级`}<small> / ${skill.maxRank}</small></span></span>
+      <span class="skill-card-meta"><span><img data-upgrade-art="gem" src="${art.gem}" alt="" draggable="false"/>${id==='weapon-pair-fusion'?'武器融合':skill.category === 'relic' ? '稀有道具' : skill.category === 'evolution' ? (isWaterEvolution(id) ? '组合进化' : '互斥进化') : id.endsWith('-weapon') ? (rank ? '武器强化' : '新武器') : rank === 0 && skill.effect.type === 'spell' ? '新技能' : '魔法强化'}</span><span>${id==='weapon-pair-fusion'?'自选配方':`${rank} → ${rank + 1}级`}<small> / ${skill.maxRank}</small></span></span>
       <h3 aria-label="${skill.title}">${curvedTitle(skill.title, titlePath, 'skill-title-arc')}</h3>
       <span class="skill-content"><span class="skill-emblem${art.illustrations.length > 1 ? ' multiple-art' : ''}" aria-hidden="true"><span class="skill-art-fallback">${icon(skill.icon)}</span>${art.illustrations.map(url => `<img class="skill-illustration" data-upgrade-art="illustration" src="${url}" alt="" draggable="false"/>`).join('')}</span>
       <strong class="skill-benefit">${skill.benefit}</strong>
@@ -189,13 +226,33 @@ export function renderBuildSummary(build: RunBuild | undefined, fusions: readonl
   const status = document.getElementById('build-status')!;
   status.hidden = true;
   if (!build) return;
-  const evolution = build.evolution ? EVOLUTIONS[build.evolution].title : '未选择进化';
-  const key = JSON.stringify([build.attacks.map(a => [a.attackId, a.level]), build.relics, evolution, fusions.map(f => f.title), resonances]);
+  const evolution = [...(build.evolution ? [EVOLUTIONS[build.evolution].title] : []), ...WATER_EVOLUTION_IDS.filter(id => (build.skillRanks[id] ?? 0) > 0).map(id => WATER_EVOLUTIONS[id].title)].join(' / ') || '未选择进化';
+  const position = POSITION_IDS.filter(id => (build.skillRanks[id] ?? 0) > 0 && !consumedByEvolution(id, build.skillRanks));
+  const ice = ICE_SKILL_IDS.filter(id => (build.skillRanks[id] ?? 0) > 0);
+  const echoRank = build.skillRanks['sakura-echo'] ?? 0;
+  const water = WATER_AOE_IDS.filter(id => (build.skillRanks[id] ?? 0) > 0 && !consumedByEvolution(id, build.skillRanks));
+  const waterEvolutions = WATER_EVOLUTION_IDS.filter(id => (build.skillRanks[id] ?? 0) > 0);
+  const key = JSON.stringify([build.attacks.map(a => [a.attackId, a.level]), build.relics, evolution, echoRank, fusions.map(f => f.title), resonances, [...water, ...position, ...ice, ...waterEvolutions].map(id => [id, build.skillRanks[id]])]);
   status.textContent = `${build.relics.length} 件稀有道具 · ${evolution} · 暂停查看构筑`;
   if (panel.dataset.snapshot === key) return;
   panel.dataset.snapshot = key;
-  document.getElementById('build-weapons')!.innerHTML = buildWeaponRows(build);
+  document.getElementById('build-weapons')!.innerHTML = buildWeaponRows(build) + water.map(id => {
+    const level = build.skillRanks[id]!, stats = waterStats(id, level);
+    return `<div class="build-weapon" data-element="water"><span class="build-weapon-art"><img data-upgrade-art="build-weapon" src="${uiArtUrl(`upgrade/illustrations/skills/${id}.png`)}" alt=""/></span><div class="build-weapon-copy"><span class="build-weapon-role">水系范围技能</span><strong>${WATER_NAMES[id]} ${level}级</strong><small>半径 ${stats.radius.toFixed(1)} · ${stats.damage.toFixed(1)}伤害${id === 'star-tide' ? ` · ${stats.waves}环` : ''}</small></div></div>`;
+  }).join('');
   document.getElementById('build-fusions')!.innerHTML = (fusions.length ? buildTokens(fusions.map(f=>f.title)) : '<p class="build-empty">尚未形成融合，升级时选择适配改造。</p>') + (resonances.length ? `<p>已激活：${buildText(resonances.join(' / '))}</p>` : '');
+  if (echoRank > 0) {
+    const stats = dreamEchoStats(echoRank);
+    document.getElementById('build-weapons')!.innerHTML += `<div class="build-weapon" data-element="pink"><span class="build-weapon-art"><img data-upgrade-art="build-weapon" src="${uiArtUrl('upgrade/illustrations/skills/sakura-echo.png')}" alt=""/></span><div class="build-weapon-copy"><span class="build-weapon-role">粉色联动技能</span><strong>绯樱回响 ${echoRank}级</strong><small>${stats.damage.toFixed(1)}伤害 · ${stats.interval.toFixed(1)}秒/次 · 梦印扩圈</small></div></div>`;
+  }
+  document.getElementById('build-weapons')!.innerHTML += ice.map(id => {
+    const level = build.skillRanks[id]!, stats = iceSkillStats(id, level);
+    return `<div class="build-weapon" data-element="ice"><span class="build-weapon-art"><img data-upgrade-art="build-weapon" src="${uiArtUrl(`upgrade/illustrations/skills/${id}.png`)}" alt=""/></span><div class="build-weapon-copy"><span class="build-weapon-role">冰系范围技能</span><strong>${ICE_SKILL_NAMES[id]} ${level}级</strong><small>${stats.damage.toFixed(1)}伤害 · ${id === 'shatter-ring' ? '范围 ' + stats.radius.toFixed(1) : '残留 ' + stats.duration.toFixed(1) + '秒'}</small></div></div>`;
+  }).join('');
+  document.getElementById('build-weapons')!.innerHTML += position.map(id => {
+    const level = build.skillRanks[id]!, stats = positionStats(id, level);
+    return `<div class="build-weapon" data-element="${id === 'spore-trail' ? 'grass' : 'water'}"><span class="build-weapon-art"><img data-upgrade-art="build-weapon" src="${uiArtUrl(`upgrade/illustrations/skills/${id}.png`)}" alt=""/></span><div class="build-weapon-copy"><span class="build-weapon-role">走位范围技能</span><strong>${POSITION_NAMES[id]} ${level}级</strong><small>范围 ${stats.radius.toFixed(1)} · ${stats.damage.toFixed(1)}伤害</small></div></div>`;
+  }).join('');
   document.getElementById('build-relics')!.innerHTML = build.relics.length ? build.relics.map(id => {
     const relic = RELICS[id];
     const inactive = id === 'specialist-badge' && build.attacks.length > 1 ? '（副武器已装备，加成失效）' : '';
@@ -203,13 +260,22 @@ export function renderBuildSummary(build: RunBuild | undefined, fusions: readonl
     return `<article class="build-relic"><img class="build-relic-icon" data-upgrade-art="build-relic" src="${art.illustrations[0]}" alt=""/><strong>${buildText(relic.title+inactive)}</strong><p>${buildText(relic.benefit)}</p><p class="build-tradeoff">代价：${buildText(relic.tradeoff)}</p></article>`;
   }).join('') : '<p class="build-empty">尚未获得稀有道具，升级时偶尔出现。</p>';
   document.getElementById('build-evolution')!.textContent = build.evolution ? `${evolution}：${EVOLUTIONS[build.evolution].benefit}；${EVOLUTIONS[build.evolution].tradeoff}` : '火花弹获得命中分裂后，可出现互斥进化路线。';
+  document.getElementById('build-weapons')!.innerHTML += waterEvolutions.map(id => `<div class="build-weapon" data-element="water"><span class="build-weapon-art"><img data-upgrade-art="build-weapon" src="${uiArtUrl(`upgrade/illustrations/skills/${id}.png`)}" alt=""/></span><div class="build-weapon-copy"><span class="build-weapon-role">水系组合进化</span><strong>${WATER_EVOLUTIONS[id].title}</strong><small>${WATER_EVOLUTIONS[id].benefit}</small></div></div>`).join('');
+  document.getElementById('build-evolution')!.textContent += waterEvolutions.length ? ' 已激活组合：' + waterEvolutions.map(id => WATER_EVOLUTIONS[id].title).join('、') : ' 水系主技能5级＋搭配技能3级，可在升级中选择组合进化。';
+  const recipes = WATER_EVOLUTION_IDS.filter(id => !(build.skillRanks[id]! > 0));
+  if (recipes.length) document.getElementById('build-evolution')!.textContent += ' 配方：' + recipes.map(id => {
+    const r = WATER_EVOLUTIONS[id], locked = consumedByEvolution(r.main, build.skillRanks) || consumedByEvolution(r.support, build.skillRanks);
+    return `${r.title}（${r.requirement}${locked ? ' · 材料已用于其他进化' : ''}）`;
+  }).join('；');
   bindUpgradeArt(panel);
 }
 
 export function renderRunShop(run: RunFlow, combat: Combat) {
   const shop = run.shop;
   if (!shop) return;
-  document.getElementById('shop-heading')!.textContent = `第 ${run.wave} 波完成 · 魔法商店`;
+  document.getElementById('shop-heading')!.textContent = run.endless
+    ? `${run.waveLabel}完成 · 魔法商店`
+    : `第 ${run.wave} 波完成 · 魔法商店`;
   document.getElementById('shop-coins')!.textContent = `${run.coins} 金币`;
   document.getElementById('shop-health')!.textContent = `生命 ${Math.ceil(combat.hp)} / ${combat.maxHp}`;
   const items = document.getElementById('shop-items')!;
@@ -248,15 +314,17 @@ export function renderRunResult(run: RunFlow | undefined, combat: Combat) {
   const build = combat.usesRunBuild ? combat.runBuild : undefined;
   const runSummary = document.getElementById('result-run')!;
   runSummary.hidden = !run;
-  runSummary.textContent = run ? `第 ${run.wave} / 6 波 · 完成 ${run.completedWaves} 波\n本局获得 ${run.earned} 金币` : '';
+  runSummary.textContent = run ? (run.endless
+    ? `无尽生存 · ${run.waveLabel}\n完成 ${run.completedWaves} 波 · 击败 ${run.bossesDefeated} 个 Boss\n本局获得 ${run.earned} 金币`
+    : `第 ${run.wave} / 6 波 · 完成 ${run.completedWaves} 波\n本局获得 ${run.earned} 金币`) : '';
   document.getElementById('result-weapons')!.innerHTML = build ? buildWeaponRows(build) : `<p>基础攻击：${buildText(ATTACKS[combat.baseAttack].title)}</p>`;
   const learned = combat.progression.skills.filter(skill => !skill.category && !skill.id.endsWith('-weapon') && combat.progression.ranks[skill.id] > 0);
   document.getElementById('result-skills')!.innerHTML = `<h4>技能强化</h4>${buildTokens(learned.map(skill => `${skill.title} ${combat.progression.ranks[skill.id]}级`))}`;
   document.getElementById('result-fusions')!.innerHTML = `<h4>技能融合</h4>${buildTokens(combat.fusions.map(f=>f.title))}` + (combat.resonances.length ? `<p>共鸣：${buildText(combat.resonances.join(' / '))}</p>` : '') + `<p class="build-chain-summary">连锁击杀 <strong>${combat.relicTelemetry.chainKills}</strong> · 蒸爆 <strong>${combat.relicTelemetry.steamBursts}</strong> 次</p>`;
-  document.getElementById('result-relics')!.innerHTML = `<h4>稀有道具与进化</h4>${buildTokens([...(build?.relics.map(id=>RELICS[id].title) ?? []),...(build?.evolution ? [EVOLUTIONS[build.evolution].title] : [])])}`;
+  document.getElementById('result-relics')!.innerHTML = `<h4>稀有道具与进化</h4>${buildTokens([...(build?.relics.map(id=>RELICS[id].title) ?? []),...(build?.evolution ? [EVOLUTIONS[build.evolution].title] : []),...WATER_EVOLUTION_IDS.filter(id => (build?.skillRanks[id] ?? 0) > 0).map(id => WATER_EVOLUTIONS[id].title)])}`;
   document.getElementById('result-skills')!.hidden = !learned.length;
   document.getElementById('result-fusions')!.hidden = !combat.fusions.length && !combat.resonances.length && !combat.relicTelemetry.chainKills && !combat.relicTelemetry.steamBursts;
-  document.getElementById('result-relics')!.hidden = !build?.relics.length && !build?.evolution;
+  document.getElementById('result-relics')!.hidden = !build?.relics.length && !build?.evolution && !WATER_EVOLUTION_IDS.some(id => (build?.skillRanks[id] ?? 0) > 0);
   bindUpgradeArt(panel);
 }
 
@@ -277,13 +345,23 @@ export function renderHudWeaponIcons(combat: Combat) {
   const root = document.getElementById('hud-extra-weapons')!;
   const attacks = combat.usesRunBuild ? combat.runBuild.attacks.map(attack => attack.attackId) : [combat.baseAttack];
   const pairs=combat.usesRunBuild?combat.runBuild.attacks.filter(a=>a.pairId):[];
+  const water = combat.usesRunBuild ? WATER_AOE_IDS.filter(id => combat.progression.ranks[id] > 0 && !consumedByEvolution(id, combat.progression.ranks)) : [];
+  const position = combat.usesRunBuild ? POSITION_IDS.filter(id => combat.progression.ranks[id] > 0 && !consumedByEvolution(id, combat.progression.ranks)) : [];
+  const ice = combat.usesRunBuild ? ICE_SKILL_IDS.filter(id => combat.progression.ranks[id] > 0) : [];
+  const echoRank = combat.usesRunBuild ? combat.progression.ranks['sakura-echo'] : 0;
+  const waterEvolutions = combat.usesRunBuild ? WATER_EVOLUTION_IDS.filter(id => combat.progression.ranks[id] > 0) : [];
   const ids = attacks.filter(id => !pairs.some(a=>a.attackId===id)&&id !== 'spark' && !combat.fusions.some(fusion => fusion.baseAttack === id));
-  root.hidden = !ids.length&&!pairs.length;
-  const key = ids.join(',')+pairs.map(a=>a.pairId).join(',');
+  root.hidden = !ids.length&&!pairs.length&&!water.length&&!position.length&&!ice.length&&!waterEvolutions.length;
+  const key = ids.join(',')+pairs.map(a=>a.pairId).join(',') + [...water, ...position, ...ice, ...waterEvolutions].map(id => id + combat.progression.ranks[id]).join(',') + ':echo' + echoRank;
   if (root.dataset.weapons === key) return;
   root.dataset.weapons = key;
-  root.innerHTML = ids.map(id => `<span class="hud-weapon-icon" title="${ATTACKS[id].title}">${icon(id === 'bubble' ? 'wave' : id === 'flame-sweep' ? 'battle' : 'leaf')}<img data-upgrade-art="hud-weapon" src="${uiArtUrl(`upgrade/illustrations/skills/${id}-weapon.png`)}" alt="" draggable="false"/></span>`).join('');
+  root.innerHTML = ids.map(id => `<span class="hud-weapon-icon" title="${ATTACKS[id].title}">${icon(id === 'bubble' || id === 'tidal-blade' || id === 'frost-crystal' ? 'wave' : id === 'flame-sweep' ? 'battle' : id === 'thunder-bud' ? 'spark' : 'leaf')}<img data-upgrade-art="hud-weapon" src="${uiArtUrl(`upgrade/illustrations/skills/${id}-weapon.png`)}" alt="${ATTACKS[id].title}" draggable="false"/></span>`).join('');
   root.innerHTML+=pairs.map(a=>`<span class="hud-weapon-icon" title="${combat.runBuild.title(a)} ${a.level}级；来源：${a.sources!.map(id=>ATTACKS[id].title).join('+')}"><img data-upgrade-art="hud-weapon" src="${import.meta.env.BASE_URL}${pairIcon(a.pairId!)}" alt="${combat.runBuild.title(a)}"/></span>`).join('');
+  root.innerHTML += ice.map(id => `<span class="hud-weapon-icon" title="${ICE_SKILL_NAMES[id]} ${combat.progression.ranks[id]}级"><img data-upgrade-art="hud-weapon" src="${uiArtUrl(`upgrade/illustrations/skills/${id}.png`)}" alt="${ICE_SKILL_NAMES[id]}"/></span>`).join('');
+  if (echoRank > 0) root.innerHTML += `<span class="hud-weapon-icon" title="绯樱回响 ${echoRank}级"><img data-upgrade-art="hud-weapon" src="${uiArtUrl('upgrade/illustrations/skills/sakura-echo.png')}" alt="绯樱回响"/></span>`;
+  root.innerHTML += water.map(id => `<span class="hud-weapon-icon" title="${WATER_NAMES[id]} ${combat.progression.ranks[id]}级"><img data-upgrade-art="hud-weapon" src="${uiArtUrl(`upgrade/illustrations/skills/${id}.png`)}" alt="${WATER_NAMES[id]}"/></span>`).join('');
+  root.innerHTML += position.map(id => `<span class="hud-weapon-icon" title="${POSITION_NAMES[id]} ${combat.progression.ranks[id]}级"><img data-upgrade-art="hud-weapon" src="${uiArtUrl(`upgrade/illustrations/skills/${id}.png`)}" alt="${POSITION_NAMES[id]}"/></span>`).join('');
+  root.innerHTML += waterEvolutions.map(id => `<span class="hud-weapon-icon" title="${WATER_EVOLUTIONS[id].title} · 组合进化"><img data-upgrade-art="hud-weapon" src="${uiArtUrl(`upgrade/illustrations/skills/${id}.png`)}" alt="${WATER_EVOLUTIONS[id].title}"/></span>`).join('');
   bindUpgradeArt(root);
 }
 
@@ -301,8 +379,13 @@ export function renderEncounterStatus(combat: Combat, run?: RunFlow) {
   document.getElementById('encounter-fill')!.style.width=`${Math.max(0,enemy.hp/max)*100}%`;
   const track=document.getElementById('encounter-track')!; track.setAttribute('aria-valuemax',String(max)); track.setAttribute('aria-valuenow',String(Math.ceil(enemy.hp)));
   const hints:Record<string,string>={approach:'保持移动，留意下一次攻击', 'spread-windup':'扇形弹幕蓄力 · 离开紫色扇面',spread:'弹幕来袭 · 从间隙或侧面绕过', 'dash-windup':'锁定冲击 · 立即横向移出橙色长条',dash:'冲击！避开路径', 'summon-windup':'即将召唤 · 预留清怪空间',summon:'援兵出生预警 · 优先清理包围',recover:'攻击间隙 · 趁机反击',dying:'兽王倒下……'};
-  document.getElementById('encounter-hint')!.textContent=enemy.spawnTime>0 ? (boss?'最终挑战 · 90 秒内击败兽王':'精英出现 · 击败额外获得 18 金币') : boss ? hints[c.bossState]??'' : c.elitePulsing?'震地蓄力 · 离开金色圆环':'绕开震地，或集中火力获取奖励';
-  document.getElementById('encounter-wave')!.textContent=run ? `第 ${run.wave} / 6 波 · 剩余 ${Math.ceil(run.remaining)} 秒 · 金币 ${run.coins}` : '';
+  document.getElementById('encounter-hint')!.textContent=enemy.spawnTime>0
+    ? (boss ? (run?.endless ? '阶段 Boss · 超时后进入狂暴' : '最终挑战 · 90 秒内击败兽王') : '精英出现 · 击败额外获得 18 金币')
+    : boss && run?.endless && run.bossOvertime ? '加时狂暴 · 继续战斗，击败兽王后进入下一轮'
+    : boss ? hints[c.bossState]??'' : c.elitePulsing?'震地蓄力 · 离开金色圆环':'绕开震地，或集中火力获取奖励';
+  document.getElementById('encounter-wave')!.textContent=run
+    ? `${run.waveLabel} · ${run.bossOvertime ? `加时 ${Math.ceil(run.bossOvertimeElapsed)} 秒` : `剩余 ${Math.ceil(run.remaining)} 秒`} · 金币 ${run.coins}`
+    : '';
 }
 
 export function renderWeaponPairPicker(build:RunBuild){

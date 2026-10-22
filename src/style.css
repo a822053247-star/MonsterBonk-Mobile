@@ -288,6 +288,12 @@ h1>em{font-size:12px;line-height:1;letter-spacing:4px;display:inline-block;backg
 .skill-card[data-element=fire]{--card-ink:#95471e}
 .skill-card[data-element=water]{--card-ink:#245d7d}
 .skill-card[data-element=grass]{--card-ink:#3b682e}
+.skill-card[data-element=electric]{--card-ink:#856114}
+.skill-card[data-element=ice]{--card-ink:#286e9c}
+.skill-card[data-element=pink]{--card-ink:#a43174}
+.build-weapon[data-element=pink] .build-weapon-art{color:#ff9bd6;background:#ffd7ef22}
+.build-weapon[data-element=ice] .build-weapon-art{color:#a6e5ff;background:#8ed9ff18}
+.build-weapon[data-element=electric] .build-weapon-art{color:#ffe26b;background:#eecb5214}
 .skill-card h3{position:absolute;top:13%;left:13%;right:13%;height:8%;display:flex;align-items:center;justify-content:center;font-size:clamp(11px,calc(var(--card-height) * .047),23px);line-height:1.15;letter-spacing:0;margin:0;color:var(--card-ink,#3d593f);text-shadow:0 1px #fffae3}
 .skill-emblem{position:absolute;top:23%;left:14%;width:72%;height:29%;display:flex;align-items:center;justify-content:center;gap:0;margin:0;border:0;border-radius:0;background:transparent;color:var(--skill-color);pointer-events:none}
 .skill-art-fallback{display:grid;place-items:center;width:72%;height:90%;border-radius:50%;background:radial-gradient(ellipse,#5c8c6b33,transparent 70%)}
@@ -1206,3 +1212,39 @@ h1>em{font-size:12px;line-height:1;letter-spacing:4px;display:inline-block;backg
 .upgrade-panel.choosing-pair>.upgrade-header,.upgrade-panel.choosing-pair>.upgrade-subtitle,.upgrade-panel.choosing-pair>.upgrade-footer{display:none}
 .upgrade-panel.choosing-pair .weapon-pair-picker{max-height:calc(100dvh - 36px);overflow-y:auto;padding:8px 16px}
 .upgrade-panel.choosing-pair .weapon-pair-picker>button{position:sticky;bottom:0;background:#254f3f;min-height:44px}
+
+
+/* Endless flag-wave telegraph: persistent for the final eight seconds before wave five. */
+.welcome.flag-wave-warning{
+  z-index:15;max-width:min(92vw,760px);white-space:normal;padding:12px 18px;
+  border:2px solid #ffd078;border-radius:12px;
+  background:linear-gradient(135deg,#542e20f2,#282b20f0);
+  box-shadow:0 0 0 4px #291f1b80,0 8px 28px #111b18a6;
+  color:#fff1ce;transform:translateX(-50%);
+}
+.welcome.flag-wave-warning h2{font-size:clamp(16px,2.2vw,26px);letter-spacing:1px;line-height:1.3;margin:0 0 6px;color:#ffdc8b}
+.welcome.flag-wave-warning p{max-width:70ch;margin:0;font-size:clamp(10px,1.15vw,14px);line-height:1.55;letter-spacing:.2px;color:#fff4dc;white-space:normal;text-wrap:balance}
+.welcome.flag-wave-warning.faded{transform:translate(-50%,-10px)}
+.endless-best-menu{
+  width:min(420px,90vw);max-width:100%;margin:-4px 0 12px;padding:7px 10px;
+  border:1px solid #dce8bd45;border-radius:8px;background:#17372d99;
+  color:#e7eacb;font-size:clamp(8px,.8vw,11px);line-height:1.55;letter-spacing:.25px;
+  overflow-wrap:anywhere;text-wrap:pretty;
+}
+.endless-record-result{
+  display:grid;gap:5px;margin-top:12px;padding:10px 12px;border:1px solid #78916a;
+  border-radius:8px;background:#e7e4c8;color:#3d5338;font-size:clamp(10px,1vw,13px);line-height:1.5;
+}
+.endless-record-result[hidden]{display:none}
+.endless-record-result strong{font-size:1.05em;color:#456c3c}
+.endless-record-result p{margin:0;color:#55563e}
+.endless-record-result.new-record{border-color:#c18a35;background:#f7e7b6;box-shadow:inset 0 0 0 1px #d7ad5a}
+.endless-record-result.new-record strong{color:#8b5318}
+@media(max-height:380px) and (orientation:landscape){
+  .endless-best-menu{margin:-5px 0 6px;padding:4px 7px;font-size:7px;line-height:1.35}
+  .welcome.flag-wave-warning{padding:8px 12px}
+  .welcome.flag-wave-warning h2{font-size:16px;margin-bottom:4px}
+  .welcome.flag-wave-warning p{font-size:9px;line-height:1.4}
+}
+/* Dedicated, bounded mass-kill feedback; simulation time controls its visibility. */
+.area-combo { position: fixed; top: 22%; left: 50%; transform: translateX(-50%); z-index: 30; pointer-events: none; color: #ffe5a5; font-size: clamp(22px, 4vw, 38px); font-weight: 900; text-shadow: 0 3px 0 #713317, 0 0 16px #ff922c; }
