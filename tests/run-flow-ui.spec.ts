@@ -87,9 +87,9 @@ test('complete six-wave UI with shopping, healing, refresh, victory, clean resta
   })).toEqual({ coins: 0, wave: 1, weapons: 1, hp: 100 });
   await page.evaluate(() => { const g = (window as any).game; g.sleep(); g.combat.hp = 0; g.step(1 / 60); });
   await expect(page.locator('#result-message')).toContainText('生命耗尽，止步第 1 波');
-  await page.locator('#gameover-menu').click(); await page.locator('#start-legacy-party').click();
+  await page.locator('#gameover-menu').click(); await page.locator('#open-legacy').click(); await page.locator('#start').click();
   expect(await page.evaluate(() => {
     const g = (window as any).game; return { formal: !!g.run, members: g.party.members.length, spawning: g.combat.automaticSpawning };
-  })).toEqual({ formal: false, members: 3, spawning: true });
+  })).toEqual({ formal: false, members: 1, spawning: true });
   expect(errors).toEqual([]);
 });
