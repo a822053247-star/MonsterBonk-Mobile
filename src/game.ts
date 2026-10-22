@@ -392,7 +392,7 @@ export class Game {
       portrait.src = import.meta.env.BASE_URL + 'assets/pixel/' + PIXEL_CREATURE_ASSETS[species];
       portrait.dataset.species = species;
     }
-    (document.querySelector('.health-panel svg.portrait') as SVGElement).style.display = species === 'yanrong' ? '' : 'none';
+    (document.querySelector('.health-panel svg.portrait') as SVGElement).style.display = species === 'yanrong' && !(portrait.complete && portrait.naturalWidth > 0) ? '' : 'none';
   }
 
   private pixelBattleAssetsReady(requirePlayer: boolean, requireEnemies: boolean) {
