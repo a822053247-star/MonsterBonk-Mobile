@@ -1,0 +1,74 @@
+/* Out-of-run habitat: DOM-only illustration, independent of the combat renderer. */
+.sanctuary-entry{display:flex;align-items:center;justify-content:space-between;gap:16px;width:min(310px,100%);min-height:37px;margin:10px 0 12px;padding:7px 14px;background:linear-gradient(100deg,#234f42eb,#476246b3);border:1px solid #f3e7aa7a;border-radius:10px;color:#f8e7ab;font-size:12px;font-weight:800;letter-spacing:1px;box-shadow:0 4px 20px #08261950}
+.sanctuary-entry span{font-size:10px;color:#cfddb2;font-weight:500;letter-spacing:0}
+.sanctuary-screen{z-index:16;padding:calc(12px + var(--safe-top)) calc(16px + var(--safe-right)) calc(12px + var(--safe-bottom)) calc(16px + var(--safe-left));background:#081e19e8}
+.sanctuary-panel{display:flex;flex-direction:column;width:min(1060px,100%);height:min(640px,100%);min-height:0;overflow:hidden;border:1px solid #a6c7a57d;border-radius:20px;background:#132f29;color:#f5f1dc;box-shadow:0 20px 65px #061b1cbb;text-align:left}
+.sanctuary-header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 25px 12px;border-bottom:1px solid #b6ccaf3d;background:linear-gradient(120deg,#285344,#1b382e)}
+.sanctuary-header small{color:#cbd9ad;font-size:10px;letter-spacing:2px}
+.sanctuary-header h2{font-size:clamp(23px,3vw,34px);margin:2px 0;color:#f8efc5;letter-spacing:3px}
+.sanctuary-header p{font-size:11px;line-height:1.35;color:#d0dfc3;margin:0}
+.sanctuary-header-actions{display:flex;align-items:center;gap:18px}
+.sanctuary-wallet{white-space:nowrap;background:#112a24a6;border:1px solid #e0d8a865;border-radius:25px;padding:9px 13px;color:#fce5a6;font-size:12px;font-variant-numeric:tabular-nums}
+.sanctuary-close{display:grid;place-items:center;flex-shrink:0;background:#e3f1b51c;border:1px solid #e1e9b652;border-radius:50%;width:42px;height:42px;font-size:28px;line-height:1;color:#fff7d1}
+.sanctuary-content{display:grid;grid-template-columns:minmax(230px,0.93fr) minmax(330px,1.07fr);flex:1;min-height:0}
+.sanctuary-scene{position:relative;min-height:0;overflow:hidden;background:radial-gradient(circle at 65% 19%,#82a88690 0,transparent 22%),linear-gradient(#183e3f,#386454 53%,#3b6844 54%,#173d35);isolation:isolate}
+.sanctuary-scene:before,.sanctuary-scene:after{content:'';position:absolute;z-index:0;width:120%;height:60%;border-radius:50%;background:#245347;left:-35%;bottom:-36%;transform:rotate(-7deg)}
+.sanctuary-scene:after{background:#578150;left:30%;bottom:-40%;transform:rotate(14deg)}
+.sanctuary-moon{position:absolute;top:8%;right:18%;color:#e3efbe;font-size:44px;text-shadow:0 0 24px #f6f1a2aa}
+.sanctuary-scene-title{position:absolute;top:17px;left:20px;z-index:3;color:#fff7dc;font-size:13px;font-weight:800;letter-spacing:2px;text-shadow:0 2px 9px #13362c}
+.sanctuary-scene-title small{display:block;margin-top:6px;font-size:10px;font-weight:400;letter-spacing:1px;color:#d5e8be}
+.sanctuary-hills{position:absolute;inset:0;background:radial-gradient(ellipse at 12% 65%,#517848 0 20%,transparent 21%),radial-gradient(ellipse at 81% 78%,#53794a 0 24%,transparent 25%),radial-gradient(ellipse at 34% 90%,#477043 0 30%,transparent 31%);opacity:.8}
+.sanctuary-path{position:absolute;z-index:1;left:13%;right:13%;bottom:12%;height:13%;border-top:8px dashed #d6cb8966;border-radius:50%;transform:rotate(-7deg)}
+.sanctuary-landmark{position:absolute;z-index:2;display:flex;align-items:center;flex-direction:column;justify-content:center;gap:5px;min-width:112px;min-height:98px;border-radius:45%;transition:transform .25s,filter .25s;filter:grayscale(.75) brightness(.65)}
+.sanctuary-landmark[data-level="1"]{filter:none}
+.sanctuary-landmark[data-level="2"]{filter:brightness(1.1);transform:scale(1.08)}
+.sanctuary-landmark[data-level="3"]{filter:brightness(1.18) drop-shadow(0 0 13px #e7eb9788);transform:scale(1.16)}
+.sanctuary-landmark--ember{top:38%;left:8%}
+.sanctuary-landmark--spring{top:51%;right:4%}
+.sanctuary-landmark--grove{top:14%;left:43%}
+.sanctuary-landmark-light{position:absolute;z-index:-1;inset:10%;border-radius:50%;background:#a0be8550;border:1px solid #d2e8a54a;box-shadow:0 0 30px #c5de9355}
+.sanctuary-landmark--ember .sanctuary-landmark-light{background:#cc845540}
+.sanctuary-landmark--spring .sanctuary-landmark-light{background:#78bfca55}
+.sanctuary-landmark-icon{font-size:clamp(30px,4vw,50px);line-height:1.1;filter:drop-shadow(0 3px 5px #182d25)}
+.sanctuary-landmark small{white-space:nowrap;background:#0b2b23ca;border:1px solid #dbe0ad55;border-radius:6px;padding:4px 6px;color:#e9e9c2;font-size:10px}
+.sanctuary-build-area{display:flex;flex-direction:column;gap:11px;padding:18px 20px 15px;overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y}
+.sanctuary-build-heading{display:flex;align-items:baseline;justify-content:space-between;gap:8px;font-size:15px;color:#f3eaca}
+.sanctuary-build-heading span{font-size:10px;color:#a9c7ae}
+.sanctuary-buildings{display:flex;flex-direction:column;gap:9px}
+.sanctuary-building{display:grid;grid-template-columns:52px minmax(0,1fr) auto;align-items:center;gap:12px;padding:12px;background:#234b3b;border:1px solid #adc6a455;border-radius:13px;transition:background .2s}
+.sanctuary-building[data-level="3"]{background:#3a5542;border-color:#f0dc9388}
+.sanctuary-building-icon{width:52px;height:52px;display:grid;place-items:center;border-radius:12px;background:#d9dc9b19;font-size:32px}
+.sanctuary-building-info small{display:block;color:#a8cca7;font-size:9px;letter-spacing:1px}
+.sanctuary-building-info h3{font-size:15px;margin:4px 0;color:#fff3cf}
+.sanctuary-building-info p{font-size:10px;color:#ced9bf;margin:0 0 5px;line-height:1.3}
+.sanctuary-stage{display:block;font-size:10px;color:#e8d999}
+.sanctuary-build-button{min-height:42px;min-width:90px;padding:7px 9px;border-radius:9px;background:#d9ebb2;color:#183d34;font-size:11px;font-weight:800}
+.sanctuary-build-button:disabled{background:#334d43;color:#a2b8a5;border:1px solid #acc5a655}
+.sanctuary-info{min-height:28px;margin:0;color:#d4dfbc;font-size:10px;line-height:1.5}
+.sanctuary-earned{margin:8px 0!important;padding:8px 10px;border:1px solid #e6d89488;border-radius:8px;background:#cdb46e1d;color:#ffe8a6!important;font-size:11px!important}
+@media(max-height:520px) and (orientation:landscape){
+ .sanctuary-header{padding:8px 18px}
+ .sanctuary-header h2{font-size:21px}
+ .sanctuary-header p{display:none}
+ .sanctuary-content{grid-template-columns:minmax(205px,.82fr) minmax(390px,1.18fr)}
+ .sanctuary-build-area{padding:10px 14px;gap:7px}
+ .sanctuary-buildings{gap:6px}
+ .sanctuary-building{padding:7px 9px;grid-template-columns:42px minmax(0,1fr) auto}
+ .sanctuary-building-icon{width:42px;height:42px;font-size:26px}
+ .sanctuary-building-info h3{margin:2px 0;font-size:13px}
+ .sanctuary-building-info p{display:none}
+ .sanctuary-landmark--grove{left:38%}
+ .sanctuary-info{font-size:9px}
+ .sanctuary-entry{min-height:30px;margin:6px 0 7px;padding:5px 10px}
+}
+@media(max-width:700px){
+ .sanctuary-content{grid-template-columns:38% 62%}
+ .sanctuary-building{grid-template-columns:36px minmax(0,1fr) auto;gap:6px}
+ .sanctuary-building-icon{width:36px;height:36px;font-size:23px}
+ .sanctuary-building-info p{display:none}
+ .sanctuary-build-button{min-width:66px;font-size:10px}
+ .sanctuary-landmark{min-width:70px;min-height:60px}
+ .sanctuary-landmark-icon{font-size:28px}
+ .sanctuary-landmark small{font-size:8px}
+}
+@media(prefers-reduced-motion:reduce){.sanctuary-landmark,.sanctuary-building{transition:none}}
