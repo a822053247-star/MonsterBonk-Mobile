@@ -6,7 +6,7 @@ import { applyRelicDefinition } from './content/relic-effects';
 import type { RelicContext } from './content/content-types';
 
 export const LEGACY_RELICS = {
-  'draft-boiling-core': { title: '沸腾核心', benefit: '水泡铺湿润，火系命中引发蒸爆 · 半径 2.5', tradeoff: '消耗湿润；同一目标间隔 0.6 秒，蒸爆不再触发蒸爆', icon: 'wave', color: '#ffd49b' },
+  'draft-boiling-core': { title: '沸腾核心', benefit: '水泡铺湿润，火系命中引发蒸爆 · 55%原伤，基础半径2.5', tradeoff: '消耗湿润；同一目标间隔0.6秒，最终半径上限3.5；蒸爆不再触发蒸爆', icon: 'wave', color: '#ffd49b' },
   'overload-core': { title: '过载核心', benefit: '范围半径 +30%', tradeoff: '所有武器攻击间隔 +12%', icon: 'wave', color: '#ffb45f' },
   'hunter-eye': { title: '追猎之眼', benefit: '派生弹轻微追踪', tradeoff: '派生弹伤害 -10%', icon: 'compass', color: '#e7c67a' },
   'shattered-core': { title: '破碎晶核', benefit: '每次分裂子弹 +1', tradeoff: '派生弹伤害 -15%，仍受弹体预算限制', icon: 'battle', color: '#d6b9f5' },

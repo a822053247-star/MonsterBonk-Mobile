@@ -24,7 +24,7 @@
 | 新武器 | `src/fusion.ts` 的 `BaseAttackId`、`src/run-build.ts` 的 `ATTACKS` / `RunBuild` | `src/progression.ts`、`src/relics.ts`、`src/content/weapon-traits.ts`；接入指南列出奖励与显示入口 |
 | 新遗物 | `src/content/relic-registry.ts`、一个同机制的 `src/content/relics/` 定义 | `src/content/content-types.ts`、`src/content/relic-effects.ts`；工厂说明见 `docs/relic-content-factory-v1.md` |
 | 融合 | `src/weapon-pair-fusion.ts`、`src/run-build.ts`；技能触发融合另见 `src/fusion.ts` | `src/relics.ts`、`src/content/weapon-traits.ts`、`src/combat.ts` |
-| 波次/出怪 | `src/wave-director.ts`、`src/enemy-challenge.ts`、`src/combat.ts` 的生成路径 | `src/run-flow.ts`、`src/spawn-layout.ts`；Boss 闯关/无尽难度由 `RunFlow.prepare` → `EnemyChallenge.beginWave` 区分 |
+| 波次/出怪 | `src/wave-director.ts`、`src/enemy-challenge.ts`、`src/combat.ts` 的生成路径 | `src/run-flow.ts`、`src/spawn-layout.ts`；Boss 共用攻击循环；无尽跨轮成长另见 `src/balance.ts` |
 | 特效 | `src/visuals/vfx-presets.ts`、`src/visuals/vfx-resolver.ts` | 对应 `*-view.ts`、`src/quality.ts` |
 | Boss 技能预览 | `src/boss-skills-preview.ts`、`boss-skills-preview.html` | 复用 `src/enemy-challenge.ts`、`src/combat-view.ts`；动画素材预览另见 `src/crownthorn-preview.ts` |
 | 精英地震/躲避预览 | `src/elite-quake-view.ts`、`src/enemy-challenge.ts` | 演练专用调度在 `src/quake-drill.ts`；入口 `src/elite-quake-preview.ts`，说明见 `docs/ELITE-QUAKE.md` |

@@ -61,28 +61,28 @@ const AREA_CARD: SkillDefinition = { id: 'area', title: '范围扩张', benefit:
 const CHAIN_CARD: SkillDefinition = { id: 'chain', title: '连锁弹射', benefit: '命中后跳向附近敌人', description: '自动形成连环水爆或跳跃荆棘；最多两次额外跳跃，不重复锁定已命中的敌人。', maxRank: 1, icon: 'compass', color: '#a5edbe', effect: { type: 'spell', levels: [{}] } };
 export const WATER_SKILLS: readonly SkillDefinition[] = [...SKILLS, AREA_CARD, CHAIN_CARD];
 export const GRASS_SKILLS: readonly SkillDefinition[] = [...SKILLS, { ...FUSION_SKILLS[FUSION_SKILLS.length - 1], title: '命中分裂', benefit: '飞叶弹命中散射三枚荆棘', description: '飞叶弹自动融合为荆棘散射；派生荆棘不会再次分裂。', icon: 'leaf', color: '#b4ea86' }, CHAIN_CARD];
-const BUBBLE_WEAPON: SkillDefinition = { id: 'bubble-weapon', title: '获得水泡弹', benefit: '增加独立自动攻击 · 命中减速', description: '装备第二种武器。水泡弹独立索敌、自动释放，命中使敌人减速 30%，持续 1.5 秒。副武器初始攻击间隔为基础的 1.6 倍。', maxRank: 1, icon: 'wave', color: '#55c9ed', effect: { type: 'spell', levels: [{}] } };
+const BUBBLE_WEAPON: SkillDefinition = { id: 'bubble-weapon', title: '获得水泡弹', benefit: '增加独立自动攻击 · 命中减速', description: '装备第二种武器。水泡弹独立索敌、自动释放，命中使敌人减速 30%，持续 1.5 秒。副武器一、二的间隔分别为基础的1.35、1.55倍。', maxRank: 1, icon: 'wave', color: '#55c9ed', effect: { type: 'spell', levels: [{}] } };
 export const WEAPON_CARDS: Partial<Record<SkillId, BaseAttackId>> = { 'spark-weapon': 'spark', 'bubble-weapon': 'bubble', 'leaf-weapon': 'leaf', 'flame-sweep-weapon': 'flame-sweep', 'thorn-wheel-weapon': 'thorn-wheel', 'tidal-blade-weapon': 'tidal-blade', 'thunder-bud-weapon': 'thunder-bud', 'frost-crystal-weapon': 'frost-crystal', 'dream-dart-weapon': 'dream-dart', 'resonance-seed-weapon': 'resonance-seed' };
 const WATER_AOE_DESCRIPTIONS: Record<WaterSkill, string> = {
   'azure-burst': '自动瞄准附近密集敌群，短暂聚光后对圆内造成一次水系伤害并施加湿润。每4.5秒释放；升级扩大范围并提高伤害。',
-  'star-tide': '从施法位置向外扩张水环，仅圆环经过时命中，同一圈不重复伤害。3级双环、5级三环，并轻推普通怪；每5.5秒释放。',
+  'star-tide': '从施法位置向外扩张水环，仅圆环经过时命中，同一圈不重复伤害。3级双环、5级三环，并轻推普通怪；每5.8秒释放。',
   'still-sea': '在敌群脚下留下固定领域，每0.5秒伤害并减速。多个同类领域重叠不叠加跳伤。升级延长持续时间、扩大范围并提高伤害。',
   'returning-ring': '持续围绕角色的水流光环，每0.5秒伤害并减速圆内敌人，随角色移动。升级提高范围和伤害；不提供无敌或护盾。',
 };
 const WATER_AOE_CARDS: readonly SkillDefinition[] = WATER_AOE_IDS.map(id => ({
   id, title: WATER_NAMES[id], benefit: id === 'azure-burst' ? '自动锁定敌群 · 圆形震爆' : id === 'star-tide' ? '扩张水环 · 升级增加波次' : id === 'still-sea' ? '持续范围伤害 · 减速领域' : '随身水环 · 持续伤害与减速',
-  description: WATER_AOE_DESCRIPTIONS[id] + ' 水系命中可配合现有元素协同；精英受到70%、首领受到40%伤害，首领减速效果减弱。',
+  description: WATER_AOE_DESCRIPTIONS[id] + ` 水系命中可配合现有元素协同；精英70%、首领${id === 'azure-burst' ? 55 : id === 'star-tide' ? 50 : 45}%伤害。`,
   maxRank: 5, icon: 'wave', color: '#88deff', effect: { type: 'spell', levels: [{}, {}, {}, {}, {}] },
 }));
 const POSITION_DESCRIPTIONS: Record<PositionSkill, string> = {
-  'abyss-vortex': '每6秒在附近敌群中心召唤漩涡，每0.5秒伤害。持续吸引普通怪，精英受弱吸引，首领不被拖动。升级提高伤害、范围与持续时间。',
-  'ice-radiance': '每4.5秒从附近静海法阵或角色位置释放攻击，放射光束与扩张圆环交替。光束间留有空隙；每次对同一目标只伤害一次。升级从8道增加到16道。',
+  'abyss-vortex': '每6.5秒在附近敌群中心召唤漩涡，每0.5秒伤害。持续吸引普通怪，精英受弱吸引，首领不被拖动。升级提高伤害、范围与持续时间。',
+  'ice-radiance': '每4.8秒从附近静海法阵或角色位置释放攻击，放射光束与扩张圆环交替。光束间留有空隙；每次对同一目标只伤害一次。升级从8道增加到16道。',
   'spore-trail': '移动约1.2米留下绿色毒焰区域，持续跳伤；站立不生成。同类足迹重叠不叠加跳伤，最多保留16块，满池时替换最旧足迹。升级扩大范围并延长残留。',
   'tidal-recall': '每7秒释放外扩后回收的水浪，两阶段各命中一次。回收水浪向角色收束，扫过的经验球进入原有吸引流程，经验值不额外复制。升级提高范围与伤害。',
 };
 const POSITION_CARDS: readonly SkillDefinition[] = POSITION_IDS.map(id => ({
   id, title: POSITION_NAMES[id], benefit: id === 'abyss-vortex' ? '漩涡聚怪 · 精英弱吸引' : id === 'ice-radiance' ? '光束与圆环交替' : id === 'spore-trail' ? '移动留下毒焰足迹' : '往返水浪 · 回收经验',
-  description: POSITION_DESCRIPTIONS[id] + ' 精英承受70%、首领承受40%伤害；派生协同受预算限制。',
+  description: POSITION_DESCRIPTIONS[id] + ` 精英70%、首领${id === 'tidal-recall' ? 60 : id === 'ice-radiance' ? 55 : 45}%伤害；派生协同受预算限制。`,
   maxRank: 5, icon: id === 'spore-trail' ? 'leaf' : 'wave', color: id === 'spore-trail' ? '#c6ec65' : '#88deff',
   effect: { type: 'spell', levels: [{}, {}, {}, {}, {}] },
 }));
@@ -91,17 +91,17 @@ const ICE_CARDS: readonly SkillDefinition[] = ICE_SKILL_IDS.map(id => ({
   description: (id === 'shatter-ring'
     ? '每5秒从角色位置释放碎冰震环，对扫过的敌人造成26伤害，同次只命中一次；已冻结目标额外承受50%伤害，保留剩余冻结时间。升级提高伤害和范围，缩短间隔。'
     : '移动每1米留下一段冰川滑痕，持续3秒，每0.5秒造成5伤害并施加霜寒。站立不铺冰，重叠区域不叠加跳伤；最多24段，满池替换最旧冰痕。升级提高伤害、宽度和持续时间。')
-    + ' 冰系命中可与湿润组合冻结；精英承受70%、首领40%伤害。独立技能，不占武器槽，最高5级。',
+    + ` 冰系命中可与湿润组合冻结；精英70%、首领${id === 'shatter-ring' ? 55 : 45}%伤害。独立技能，不占武器槽，最高5级。`,
   maxRank: 5, icon: 'wave', color: '#9de5ff', effect: { type: 'spell', levels: [{}, {}, {}, {}, {}] },
 }));
 const BUILD_SKILLS: readonly SkillDefinition[] = [...SKILLS, ...WATER_AOE_CARDS, ...POSITION_CARDS, ...ICE_CARDS,
   { ...BUBBLE_WEAPON, id: 'dream-dart-weapon', title: '获得绯梦弹', benefit: '叠加梦印 · 三层绽放', description: '自动发射14伤害粉色光弹，命中添加1层梦印，持续4秒；同一目标积满3层后清空梦印，绽放造成160%本次命中伤害，半径2.6。绽放不会继续叠梦印。武器最高5级，每级伤害+14%；占用武器槽。', icon: 'spark', color: '#ff80c7' },
   { ...BUBBLE_WEAPON, id: 'resonance-seed-weapon', title: '获得共鸣花种', benefit: '穿透挂印 · 击杀传伤', description: '自动发射15伤害花种，穿透3个目标，施加4秒共鸣印记。带印敌人被击败时，向4米内最多3名带共鸣印记的敌人传递65%花种命中伤害。传伤击杀不会再次传递，障碍阻挡。3级穿透4个、5级5个目标，每级伤害+14%；占用武器槽。', icon: 'leaf', color: '#f797df' },
-  { id: 'sakura-echo', title: '绯樱回响', benefit: '梦印扩圈 · 延长共鸣', description: '每4.6秒选取10米内带梦印或共鸣印记的敌人，优先梦印较多者，释放18伤害粉色脉冲。基础半径2，每层梦印增加0.55；不消耗梦印。命中仍存活的共鸣目标时，印记延长1秒，剩余时长最多6秒。升级提高伤害、范围、延长时间并缩短间隔；最高5级，不占武器槽。粉色派生范围伤害对精英70%、首领40%。', maxRank: 5, icon: 'spark', color: '#ff91d1', effect: { type: 'spell', levels: [{}, {}, {}, {}, {}] } },
+  { id: 'sakura-echo', title: '绯樱回响', benefit: '梦印扩圈 · 延长共鸣', description: '每4.6秒选取10米内带梦印或共鸣印记的敌人，优先梦印较多者，释放18伤害粉色脉冲。基础半径2，每层梦印增加0.55；不消耗梦印。命中仍存活的共鸣目标时，印记延长1秒，剩余时长最多6秒。升级提高伤害、范围、延长时间并缩短间隔；最高5级，不占武器槽。粉色脉冲对精英70%、首领55%。', maxRank: 5, icon: 'spark', color: '#ff91d1', effect: { type: 'spell', levels: [{}, {}, {}, {}, {}] } },
   { ...BUBBLE_WEAPON, id: 'frost-crystal-weapon', title: '获得霜晶弹', benefit: '冰晶减速 · 与水系命中组合冻结', description: '自动发射16伤害冰晶，霜寒使普通敌人减速35%，持续1.6秒。湿润与霜寒相遇时消耗湿润：普通怪冻结1.25秒，精英0.45秒；首领只减速。先水后冰或先冰后水均可触发，解冻后抗性2.5秒。3级可额外穿透1名、5级2名；每级伤害+14%、间隔略缩短。副武器受槽位间隔系数影响。', icon: 'wave', color: '#9de5ff' },
   { ...BUBBLE_WEAPON, id: 'thunder-bud-weapon', title: '获得雷芽连锁', benefit: '黄色雷芽放电 · 最多连击3个不同目标', description: '每1.25秒自动锁定附近敌人，短暂蓄电后造成22点电系伤害，再跳向3.2范围内的其他敌人。每跳保留80%伤害，升级逐步提高至88%；同次施放不重复命中，最高级最多6个目标。升级提高伤害、跳跃距离并缩短间隔。障碍和出生保护阻挡选敌；分枝、分裂、连锁不额外复制攻击。', icon: 'spark', color: '#ffe26b' },
-  { ...BUBBLE_WEAPON, id: 'thorn-wheel-weapon', title: '获得环刃荆轮', benefit: '双荆轮绕身切割 · 3级增加第三枚', description: '两枚荆轮沿轨道切割，每次命中伤害14；同一敌人每0.55秒最多受一次主荆轮伤害。3级三枚、4级轻推普通怪、5级周期扩圈。轨道中心留空隙，不提供护盾；不穿障碍。攻速加快公转，分枝、分裂、连锁不复制荆轮。精英承受70%、首领40%伤害。', icon: 'orbit', color: '#b6db65' },
-  { ...BUBBLE_WEAPON, id: 'tidal-blade-weapon', title: '获得回旋潮刃', benefit: '宽刃穿透敌群 · 往返各命中一次', description: '自动朝附近敌人掷出水刃，伤害28、射程8、间隔2秒。飞至远端后追随角色返回；同一敌人去程和回程各命中一次并减速。升级扩大刃面、增加射程并缩短间隔；障碍阻挡伤害，不阻止回收。分枝、分裂、连锁不复制水刃。精英承受70%、首领40%伤害。', icon: 'wave', color: '#72dfff' },
+  { ...BUBBLE_WEAPON, id: 'thorn-wheel-weapon', title: '获得环刃荆轮', benefit: '双荆轮绕身切割 · 3级增加第三枚', description: '两枚荆轮沿轨道切割，每次命中伤害14；同一敌人每0.55秒最多受一次主荆轮伤害。3级三枚、4级轻推普通怪、5级周期扩圈。轨道中心留空隙，不提供护盾；不穿障碍。攻速加快公转，分枝、分裂、连锁不复制荆轮。精英承受70%、首领55%伤害。', icon: 'orbit', color: '#b6db65' },
+  { ...BUBBLE_WEAPON, id: 'tidal-blade-weapon', title: '获得回旋潮刃', benefit: '宽刃穿透敌群 · 往返各命中一次', description: '自动朝附近敌人掷出水刃，伤害28、射程8、间隔2秒。飞至远端后追随角色返回；同一敌人去程和回程各命中一次并减速。升级扩大刃面、增加射程并缩短间隔；障碍阻挡伤害，不阻止回收。分枝、分裂、连锁不复制水刃。精英承受75%、首领60%伤害。', icon: 'wave', color: '#72dfff' },
   { id: 'screen-barrage', title: '星雨弹幕', benefit: '每5.5秒释放12道弹幕 · 环形/扇形/交叉轮换', description: '升级至18/24道，分2/3轮发射。每道最多命中3个目标，穿透伤害保留80%；同次施法对每个目标只直接命中一次。弹幕穿越障碍，精英受到70%、首领受到40%伤害。', maxRank: 3, icon: 'battle', color: '#ffcd87', effect: { type: 'spell', levels: [{}, {}, {}] } },
   { id: 'screen-nova', title: '星陨爆发', benefit: '每12秒轰击当前全屏 · 伤害90', description: '短暂预警后，对爆发瞬间镜头内的敌人造成一次伤害，穿越障碍。精英受到70%、首领受到40%伤害。每级伤害增加25%，可触发有限元素击杀协同。', maxRank: 3, icon: 'wave', color: '#ffcb70', effect: { type: 'spell', levels: [{}, {}, {}] } },
   { ...BUBBLE_WEAPON, id: 'flame-sweep-weapon', title: '获得火焰横扫', benefit: '扇形火浪 · 升级扩大覆盖', description: '向附近敌人展开一片火焰：伤害 34、半径 2.8、180°、间隔 0.76 秒。升级逐步扩大火浪，5 级覆盖一整圈；每次只有一次横扫。对精英和首领造成 70% 伤害；不穿障碍，分枝、分裂和连锁不复制攻击。', icon: 'battle', color: '#ff8c35' },

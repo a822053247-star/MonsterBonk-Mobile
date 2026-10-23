@@ -34,7 +34,7 @@ export function advancedCopy(b:AdvancedRelicBehavior){
  case 'reverse-tide':return {benefit:'每4次水系主命中，在命中位置释放半径2无伤害推波',tradeoff:'普通怪推0.8，精英最多0.25，Boss免疫；冷却2.5秒，不打断预警或冲刺'};
  case 'charge-chamber':return {benefit:'1.5秒未发出主投射物蓄满1层；下一主弹命中冲击半径1.6、55%原伤，并额外穿透1敌',tradeoff:'触发后冷却5秒，最多1层；无目标保留蓄能，派生不递归'};
  case 'azure-ward':return {benefit:'连续6秒未实际掉血获得1层守印，下次有效受击伤害减少40%',tradeoff:'消耗后冷却10秒，最多1层；与其他挡伤按统一顺序处理，不重复消耗'};
- case 'swift-weave':return {benefit:'2.5秒内主攻击命中4名不同敌人：攻击间隔×0.88，持续2.5秒',tradeoff:'冷却7秒，不叠加或自刷新；派生弹和DOT不计入'};
+ case 'swift-weave':return {benefit:'2.5秒内主攻击命中4名不同敌人：攻击间隔×0.88，持续2.5秒',tradeoff:'冷却7秒，不叠加或自刷新；派生弹和DOT不计入；临时攻速合计上限×1.5'};
  case 'pristine-halo':return {benefit:'满生命累计5次主命中，释放玩家中心半径2.3光波，35%触发原伤',tradeoff:'冷却4秒；实际掉血清零，光波不触发其他遗物'};
  case 'blazing-satellite':return {benefit:'3秒内火系近战主攻击命中3名不同敌人，生成1枚半径2.2火卫星，持续3秒',tradeoff:'每目标0.6秒最多1次、横扫基础25%伤害；冷却6秒，最多1枚，不递归'};
  case 'prism-shower':return {benefit:'同次主施放至少2枚不同主弹，在0.7秒内命中2名不同敌人：第二命中点生成3枚索敌星屑，各25%根攻击伤害',tradeoff:'冷却2.5秒；每次施放1次，派生弹不再触发，受共享弹池和派生预算限制'};

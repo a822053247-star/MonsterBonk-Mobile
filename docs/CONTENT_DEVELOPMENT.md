@@ -24,7 +24,9 @@
 
 验收覆盖本次新增行为，并核对：出生预警期间的受击规则、接触伤害、死亡奖励只结算一次、暂停冻结、重开和槽位复用无残留。涉及范围技能时检查预警与实际命中范围一致；涉及出怪时检查上限。
 
-Boss 难度分模式配置：`RunFlow.prepare` 将闯关/无尽标记传入 `EnemyChallenge.beginWave` 第三个参数；闯关使用 `CAMPAIGN_BOSS` 与独立攻击循环，无尽保留原循环和数值。冲锋模拟与预警共用 `EnemyChallenge.dashDuration`，调整距离时保持两者一致。
+Boss 闯关/无尽共用 `CAMPAIGN_BOSS` 的弹幕、冲锋与攻击循环；无尽生命成长由跨轮倍率控制。`EnemyChallenge.beginWave` 的模式标记仍区分精英地震路径。冲锋模拟与预警共用 `EnemyChallenge.dashDuration`，调整距离时保持两者一致。
+
+平衡数值入口：`src/balance.ts` 管理正式构筑射程/范围上限、弹体尺寸、槽位间隔、经验和跨轮生命公式；武器基础值在 `ATTACKS`，成长由各武器 stats 函数提供。`upgradePreview` 的第三参数用于选择正式/历史属性预览，界面传入当前构筑模式。
 
 实际 Boss 技能预览入口为 `boss-skills-preview.html`（`src/boss-skills-preview.ts`），直接复用闯关 Combat 与显示，可选完整循环/单技能、普通/狂暴、慢放/暂停/逐帧。固定目标无敌且不自动攻击，仅用于观察；`crownthorn-preview.html` 仍是纯素材动作预览。预览验证见 `tests/boss-skills-preview.spec.ts`。
 

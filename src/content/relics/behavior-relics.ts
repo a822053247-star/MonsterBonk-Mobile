@@ -46,8 +46,8 @@ export function behaviorCopy(b: RelicBehavior) {
     case 'fire-zone':case 'poison-zone':return {benefit:`${b.handler==='fire-zone'?'火系命中燃烧区':'草系击杀毒雾'} · 每${b.interval}秒${pct(b.damage)}原伤`,tradeoff:`持续${b.duration}秒，冷却${b.cooldown}秒；最多${b.cap}处`};
     case 'back-shot':return {benefit:`每第 ${b.every} 次主远程施放追加背射`,tradeoff:`幻影弹${pct(b.damage)}原伤；不再触发派生`};
     case 'kill-wave':return {benefit:`${b.window}秒内${b.kills}杀触发半径${b.radius}冲击波`,tradeoff:`${pct(b.damage)}原伤；冷却${b.cooldown}秒，冲击波不再蓄杀`};
-    case 'wet-bind':return {benefit:`飞叶消耗湿润 · 强减速${b.duration}秒`,tradeoff:`同目标冷却${b.cooldown}秒；Boss仅弱减速`};
-    case 'blood':return {benefit:`生命≤${pct(b.threshold)}时间隔×${b.interval}；击杀恢复${b.heal}`,tradeoff:`最大生命-${pct(1-b.maxHp)}；每秒最多恢复${b.healCap}点`};
+    case 'wet-bind':return {benefit:`飞叶消耗湿润 · 移速降至${pct(b.slow)}，持续${b.duration}秒`,tradeoff:`同目标冷却${b.cooldown}秒；Boss移速降至${pct(b.bossSlow)}；精英最终移速不低于55%`};
+    case 'blood':return {benefit:`生命≤${pct(b.threshold)}时间隔×${b.interval}；击杀恢复${b.heal}`,tradeoff:`最大生命-${pct(1-b.maxHp)}；每秒最多恢复${b.healCap}点；临时攻速合计上限×1.5`};
     default:return gigapackCopy(b);
   }
 }
