@@ -1,0 +1,102 @@
+{
+  "source": "source.png",
+  "sourceSize": [
+    2172,
+    724
+  ],
+  "cell": 256,
+  "bodyHeight": 200,
+  "maxWidth": 224,
+  "foot": [
+    128,
+    240
+  ],
+  "scale": 0.3241491085899514,
+  "frames": [
+    {
+      "direction": "front",
+      "sourceBounds": [
+        5,
+        40,
+        440,
+        657
+      ],
+      "size": [
+        141,
+        200
+      ],
+      "offset": [
+        58,
+        40
+      ]
+    },
+    {
+      "direction": "front-right",
+      "sourceBounds": [
+        478,
+        51,
+        902,
+        654
+      ],
+      "size": [
+        137,
+        195
+      ],
+      "offset": [
+        60,
+        45
+      ]
+    },
+    {
+      "direction": "right",
+      "sourceBounds": [
+        935,
+        62,
+        1274,
+        664
+      ],
+      "size": [
+        110,
+        195
+      ],
+      "offset": [
+        73,
+        45
+      ]
+    },
+    {
+      "direction": "back-right",
+      "sourceBounds": [
+        1319,
+        62,
+        1726,
+        666
+      ],
+      "size": [
+        132,
+        196
+      ],
+      "offset": [
+        62,
+        44
+      ]
+    },
+    {
+      "direction": "back",
+      "sourceBounds": [
+        1755,
+        58,
+        2165,
+        669
+      ],
+      "size": [
+        133,
+        198
+      ],
+      "offset": [
+        62,
+        42
+      ]
+    }
+  ]
+}

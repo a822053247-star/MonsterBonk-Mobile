@@ -10,7 +10,8 @@ export interface SporeExplosion {
 export interface TreasureItem { title: string; skill?: import("./progression").SkillId }
 /** Cumulative probabilities: 45%, 28%, 16%, 8%, 3%. */
 export function treasureItemCount(roll: number) { return roll < .45 ? 1 : roll < .73 ? 2 : roll < .89 ? 3 : roll < .97 ? 4 : 5; }
-export interface TreasureReward { items: TreasureItem[]; active: boolean; x: number; z: number; age: number; coins: number }
+export interface TreasureReward { items: TreasureItem[]; active: boolean; x: number; z: number; age: number; coins: number; source?: 'first-boss' }
+export function firstBossTreasureCount(roll: number) { return roll < .25 ? 3 : roll < .75 ? 4 : 5; }
 
 /** Preserve historical modes; multiply existing formal wave/endless scaling only. */
 export function treasureHealthMultiplier(wave: number) { return wave <= 3 ? 1.25 : 1.6; }

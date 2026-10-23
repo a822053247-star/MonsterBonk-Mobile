@@ -6,7 +6,7 @@ import { COMBAT_CLARITY, WATER_IMPACT_VISUAL, impactVisualPosition, impactSize, 
 import { enemyPose } from './enemy-motion';
 import { grassBlobPose, grassBlobRoll, grassCrowdMotionScale } from './grass-blob';
 import { GrassBlobView } from './grass-blob-view';
-import { Combat, COMBAT_LIMITS, ENEMY_TYPES, FORMAL_POUNCE, MOLTEN_POUNCE, FROST_GLIDE } from './combat';
+import { Combat, COMBAT_LIMITS, ENEMY_TYPES, FORMAL_POUNCE, MOLTEN_POUNCE, FROST_GLIDE, type EnemyKind } from './combat';
 import { EncounterView } from './encounter-view';
 import { SKILL_RULES } from './progression';
 import { POUNCE } from './trial';
@@ -82,6 +82,7 @@ export class CombatView {
   private thunderRings: THREE.InstancedMesh;
   private pixelEnemies?: EnemyPixelView;
   private pixelsEnabled = false;
+  private preloadedRoster?: object;
   private firePixels?: FirePixelView;
   private fusionPixels?: FirePixelView;
   private feedback?: ParticleFeedbackView;
@@ -170,20 +171,24 @@ export class CombatView {
   updateView(camera: THREE.Camera, viewportHeight: number, frustumHeight: number) { this.dreamView.setView(camera); this.gigapack.setView(camera); this.grassBlobs.setView(camera); this.specialEnemies.setView(camera,viewportHeight,frustumHeight); this.flameSweep?.setView(camera); this.shockwaveView.setView(camera); this.encounters.setView(camera); this.pixelEnemies?.setView(camera, viewportHeight, frustumHeight); this.firePixels?.setView(camera); this.fusionPixels?.setView(camera); this.feedback?.setView(camera); this.reactions?.setView(camera); }
 
   get startupSettled() {
-    if (this.pixelsEnabled && !this.pixelEnemies?.startupSettled) return false;
+    return this.startupWaiting.length === 0;
+  }
+
+  get startupWaiting() {
+    const waiting: string[] = [];
+    if (this.pixelsEnabled && !this.pixelEnemies?.startupSettled) waiting.push('敌人外观');
     if (this.combat.fusionEnabled) {
-      if (!this.firePixels || !this.firePixels.loaded && !this.firePixels.failed) return false;
-      if (!this.fusionPixels || !this.fusionPixels.loaded && !this.fusionPixels.failed) return false;
+      if (!this.firePixels || !this.firePixels.loaded && !this.firePixels.failed) waiting.push('火焰效果');
+      if (!this.fusionPixels || !this.fusionPixels.loaded && !this.fusionPixels.failed) waiting.push('融合效果');
     }
-    return true;
+    return waiting;
   }
 
   setFusion(enabled: boolean, _elemental = false) {
     if(enabled)this.grassBlobs.enable();
     if (enabled && !this.flameSweep) { this.flameSweep = new FlameSweepView(); this.group.add(this.flameSweep.group, this.flameSweep.areaGroup); }
     this.flameSweep?.clear();
-    if (enabled && !this.firePixels) { this.firePixels = new FirePixelView(); this.group.add(this.firePixels.mesh); }
-    if (enabled && !this.fusionPixels) { this.fusionPixels = new FirePixelView(FUSION_ASSET_ROOT + 'effects.normalized.png', 8, 4, 'WaterGrassFusionAtlas'); this.group.add(this.fusionPixels.mesh); }
+    if (enabled) this.preloadStartup();
     if (enabled && !this.reactions) { this.reactions = new ReactionView(); this.group.add(this.reactions.group); }
     if (enabled && !this.feedback) { this.feedback = new ParticleFeedbackView(); this.group.add(this.feedback.mesh); }
     this.firePixels?.begin();
@@ -191,7 +196,20 @@ export class CombatView {
     this.feedback?.begin(this.detail);
   }
 
+  preloadStartup() {
+    this.pixelEnemies?.enableBasics();
+    if (!this.firePixels) { this.firePixels = new FirePixelView(); this.group.add(this.firePixels.mesh); }
+    if (!this.fusionPixels) { this.fusionPixels = new FirePixelView(FUSION_ASSET_ROOT + 'effects.normalized.png', 8, 4, 'WaterGrassFusionAtlas'); this.group.add(this.fusionPixels.mesh); }
+  }
+
+  preloadEnemies(kinds: readonly EnemyKind[]) { this.pixelEnemies?.preload(kinds); }
+
   render(alpha: number, time: number, player: { x: number; z: number } = { x: this.combat.anchorX, z: this.combat.anchorZ }) {
+    const roster = this.combat.endlessRoster;
+    if (roster !== this.preloadedRoster) {
+      this.preloadedRoster = roster;
+      if (roster) this.preloadEnemies(roster.types.filter((kind): kind is EnemyKind => kind !== 'boss' && kind !== 'elite'));
+    }
     if (this.combat.hp > 0) this.waterAoeView.render(this.combat.waterAoe, this.detail); else this.waterAoeView.clear();
     if (this.combat.hp > 0) this.positionAoeView.render(this.combat.positionAoe, this.detail); else this.positionAoeView.clear();
     if (this.combat.hp > 0) this.bladeWeaponsView.render(this.combat.blades, alpha, this.detail); else this.bladeWeaponsView.clear();
@@ -215,15 +233,17 @@ export class CombatView {
     const feedback = this.combat.usesRunBuild ? this.feedback : undefined;
     const grassMotionScale=grassCrowdMotionScale(this.combat.enemies.reduce((n,e)=>n+Number(e.active && e.spawnTime<=0 && e.kind==='normal' && !e.rank),0));
     for (const enemy of this.combat.enemies) {
-      if (!enemy.active) continue;
-      const type = ENEMY_TYPES[enemy.kind], size = this.combat.enemyRadius(enemy);
+      const bossProfile = enemy.rank === 'boss' ? this.combat.encounters.bossProfile : undefined;
+      const bossDying = !!bossProfile && enemy === this.combat.encounters.boss && this.combat.encounters.bossState === 'dying';
+      if (!enemy.active && !bossDying) continue;
+      const type = ENEMY_TYPES[enemy.kind], size = this.combat.enemyRadius(enemy)*(enemy.captureScale??1);
       const x = THREE.MathUtils.lerp(enemy.previousX, enemy.x, alpha), z = THREE.MathUtils.lerp(enemy.previousZ, enemy.z, alpha);
       if (enemy.spawnTime > 0) {
         const pulse = 0.9 + Math.sin(time * 10) * 0.1;
         this.put(this.warnings, x, 0.05, z, (size + 0.5) * pulse, (size + 0.5) * pulse, 1, -Math.PI / 2);
         continue;
       }
-      if (enemy.rank === 'boss') continue;
+      if (enemy.rank === 'boss' && !bossProfile) continue;
       const tall = enemy.kind === 'fast' ? 1.55 : 1.3;
       const frozen = (enemy.freezeTime ?? 0) > 0;
       const motion = enemyPose(enemy.kind, enemy.walkPhase ?? 0, enemy.walkAmount ?? 0, this.enemyPose);
@@ -242,11 +262,14 @@ export class CombatView {
       const bob = motion.bob;
       const y = size * tall + bob;
       const color = frozen ? '#a4dcff' : enemy.flash > 0 ? '#fff5d6' : this.combat.hasAttackIntents && enemy.intent === 'windup' ? '#ffba5c' : this.combat.hasAttackIntents && enemy.intent === 'recover' ? '#a3ccb5' : type.color;
-      const pixel = (this.pixelsEnabled || enemy.kind === 'tank') && this.pixelEnemies?.ready(enemy.kind);
+      const pixel = (this.pixelsEnabled || enemy.kind === 'tank' || !!bossProfile) && this.pixelEnemies?.ready(enemy.kind);
       if (pixel) {
         const tint = frozen ? '#a4dcff' : enemy.rank === 'elite' ? '#ffd997' : this.combat.hasAttackIntents && enemy.intent === 'windup' ? '#ffba5c' : this.combat.hasAttackIntents && enemy.intent === 'recover' ? '#a3ccb5' : '#ffffff';
         this.enemyMovement.id = enemy.id;
         this.enemyMovement.dx = enemy.walkX ?? 0; this.enemyMovement.dz = enemy.walkZ ?? 0;
+        if(bossProfile && this.combat.encounters.bossState!=='approach') {
+          this.enemyMovement.dx=this.combat.encounters.aimX;this.enemyMovement.dz=this.combat.encounters.aimZ;
+        }
         if((ranged && (enemy.intent==='windup' || sporeRecoil>0)) || ((enemy.kind==='molten-fruit'||enemy.kind==='frost-fluff') && (enemy.intent==='windup'||enemy.intent==='pounce'))) { this.enemyMovement.dx=enemy.aimX; this.enemyMovement.dz=enemy.aimZ; }
         if (enemy.kind === 'scarlet-flower' || enemy.kind === 'thunder-bell' || enemy.kind === 'toxic-shroom' || enemy.kind === 'mirror-wisp' || enemy.kind === 'abyss-lantern') {
           // A strafing/backpedalling caster faces its target, never its feet.
@@ -255,7 +278,7 @@ export class CombatView {
           this.enemyMovement.dx = frozen ? 0 : locked ? enemy.aimX : Math.sin(enemy.facing);
           this.enemyMovement.dz = frozen ? 0 : locked ? enemy.aimZ : Math.cos(enemy.facing);
         }
-        this.pixelEnemies!.put(enemy.kind, x-enemy.aimX*sporeRecoil*.14, z-enemy.aimZ*sporeRecoil*.14, bob, this.combat.usesRunBuild ? Math.min(1, enemy.flash / .16) * .3 : enemy.flash > 0, tint, motion.lean, motion.squash, enemy.rank==='elite'?1.35:1, 1, this.enemyMovement, enemy.kind==='molten-fruit' && enemy.intent==='pounce' && !frozen ? (enemy.grassRollDistance??0)/size * (enemy.aimX<0?1:-1) : this.combat.encounters.enabled && enemy.kind==='normal' && !enemy.rank && !frozen ? grassBlobRoll(enemy,grassMotionScale) : 0, frozen);
+        this.pixelEnemies!.put(enemy.kind, x-enemy.aimX*sporeRecoil*.14, z-enemy.aimZ*sporeRecoil*.14, bob, this.combat.usesRunBuild ? Math.min(1, enemy.flash / .16) * .3 : enemy.flash > 0, tint, motion.lean, motion.squash, (bossProfile?.scale ?? (enemy.rank==='elite'?1.35:1))*(enemy.captureScale??1), bossDying ? Math.max(0,1-this.combat.encounters.bossTime) : 1, this.enemyMovement, bossProfile?.kind==='molten-fruit' && this.combat.encounters.bossState==='dash' ? this.combat.encounters.bossTime*this.combat.encounters.dashSpeed/size : enemy.kind==='molten-fruit' && enemy.intent==='pounce' && !frozen ? (enemy.grassRollDistance??0)/size * (enemy.aimX<0?1:-1) : this.combat.encounters.enabled && enemy.kind==='normal' && !enemy.rank && !frozen ? grassBlobRoll(enemy,grassMotionScale) : 0, frozen);
       } else if (enemy.kind !== 'tank') this.put(this.body, x, y, z, size, size * tall, size, 0, enemy.facing, 0, color);
       if(enemy.kind==='scarlet-flower') this.put(this.flowerRings,x,.065,z,size+.25,size+.25,1,-Math.PI/2);
       else if(enemy.kind==='thunder-bell') this.put(this.thunderRings,x,.065,z,size+.25,size+.25,1,-Math.PI/2);
@@ -270,7 +293,7 @@ export class CombatView {
       if (enemy.hp < maxHp) {
         const fraction = enemy.hp / maxHp, width = size * 2;
         let bx = x, by = y + size * tall + 0.35, bz = z;
-        if (pixel) { const head = this.pixelEnemies!.head(enemy.kind, x, z, bob); bx = head.x; by = head.y; bz = head.z; }
+        if (pixel) { const head = this.pixelEnemies!.head(enemy.kind, x, z, bob, bossProfile?.scale ?? 1); bx = head.x; by = head.y; bz = head.z; }
         this.put(this.healthBack, bx, by, bz, width, 0.075, 1, -0.55);
         this.put(this.healthFill, bx - width * (1 - fraction) / 2, by + 0.005, bz + 0.01, width * fraction, 0.052, 1, -0.55);
       }

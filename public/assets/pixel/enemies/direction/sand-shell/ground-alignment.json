@@ -1,0 +1,72 @@
+[
+  {
+    "direction": "front",
+    "bounds": [
+      64,
+      86,
+      183,
+      189
+    ],
+    "offset": [
+      64,
+      137
+    ],
+    "shiftY": 51
+  },
+  {
+    "direction": "front-right",
+    "bounds": [
+      62,
+      80,
+      194,
+      188
+    ],
+    "offset": [
+      62,
+      132
+    ],
+    "shiftY": 52
+  },
+  {
+    "direction": "right",
+    "bounds": [
+      70,
+      88,
+      191,
+      188
+    ],
+    "offset": [
+      70,
+      140
+    ],
+    "shiftY": 52
+  },
+  {
+    "direction": "back-right",
+    "bounds": [
+      75,
+      85,
+      191,
+      188
+    ],
+    "offset": [
+      75,
+      137
+    ],
+    "shiftY": 52
+  },
+  {
+    "direction": "back",
+    "bounds": [
+      64,
+      89,
+      191,
+      191
+    ],
+    "offset": [
+      64,
+      138
+    ],
+    "shiftY": 49
+  }
+]

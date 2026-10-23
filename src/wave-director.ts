@@ -41,7 +41,7 @@ export const ENDLESS_MODIFIERS: readonly EndlessModifierDefinition[] = [
   { id: 'armored-line', title: '岩甲列阵', description: '重甲敌人的编队配额增加，优先考虑穿透与范围伤害' },
   { id: 'spore-chain', title: '孢子连锁', description: '爆孢怪更频繁地加入混编，利用爆炸清怪并留意预警' },
   { id: 'crystal-surge', title: '晶屑狂潮', description: '晶屑虫更早、更频繁出现，考验群体清理能力' },
-  { id: 'treasure-bait', title: '携宝诱饵', description: '本轮每波至少尝试出现一次携宝兽，追击仍有风险' },
+  { id: 'treasure-bait', title: '携宝诱饵', description: '携宝兽入选波次名单时尝试出场，追击仍有风险' },
 ] as const;
 function stage(end: number, beat: DirectorBeat, rate: number, every: number,
   escorts: readonly DirectorEscort[], fastCap: number, tankCap = 0, sporeCap = 0): DirectorStage {
@@ -59,10 +59,33 @@ export const WAVE_DIRECTOR: readonly WaveDirectorPlan[] = [
 ];
 const endlessFlagWave: WaveDirectorPlan={...WAVE_DIRECTOR[4],stages:[...WAVE_DIRECTOR[4].stages.slice(0,2),
   stage(70,'pressure',5.2,5,[F,F,T,S,'spore-floater'],12,5,1),stage(80,'release',5.8,0,[],0)]};
-export const ENDLESS_WAVE_DIRECTOR: readonly WaveDirectorPlan[]=WAVE_DIRECTOR.map((plan,i)=>i===4?endlessFlagWave:plan);
+export const ENDLESS_WAVE_SECONDS = 60;
+export const ENDLESS_WAVE_DIRECTOR: readonly WaveDirectorPlan[]=WAVE_DIRECTOR.map((base,i)=>{
+  const plan=i===4?endlessFlagWave:base;
+  const scale=ENDLESS_WAVE_SECONDS/plan.stages[plan.stages.length-1].end;
+  return {...plan, stages:plan.stages.map((s,index)=>({...s,end:index===plan.stages.length-2 ? Math.min(50,s.end*scale) : s.end*scale})),
+    crystalFirst:plan.crystalFirst*scale,
+    sporeFirst:plan.sporeFirst===null?null:plan.sporeFirst*scale,
+    treasureFirst:plan.treasureFirst===null?null:plan.treasureFirst*scale};
+});
+// Build once: prepare/update/inspect all read the same immutable timing tables.
+const ENDLESS_LATER_STAGES = [6, 4.5].map(interval => Array.from({length: 5}, (_, index) => {
+  const wave = index + 1;
+  const pressure = (end: number, every = interval) => stage(end,'pressure',4.4,every,[],8,3,1);
+  if (wave === 1) return [stage(10,'warmup',3.5,0,[],0),pressure(48),stage(60,'release',5.8,0,[],0)];
+  if (wave === 4) return [stage(8,'release',4,0,[],0),pressure(30,interval+1),pressure(48),stage(60,'release',6,0,[],0)];
+  if (wave === 5) return [pressure(20),pressure(40),pressure(50,interval===6?5:4),stage(60,'release',5.8,0,[],0)];
+  return [pressure(24),pressure(48),stage(60,'release',5.8,0,[],0)];
+}));
+
+function stagesFor(wave: number, endless: boolean, cycleIndex: number) {
+  if (!endless || cycleIndex === 0 || wave === 6) return (endless ? ENDLESS_WAVE_DIRECTOR : WAVE_DIRECTOR)[wave-1].stages;
+  return ENDLESS_LATER_STAGES[cycleIndex === 1 ? 0 : 1][wave - 1];
+}
+
 /** Stop new dangerous arrivals before a harvest; never delete living enemies. */
-export function releaseLeadIn(wave:number,elapsed:number,endless=false){
-  const stages=(endless?ENDLESS_WAVE_DIRECTOR:WAVE_DIRECTOR)[wave-1].stages;
+export function releaseLeadIn(wave:number,elapsed:number,endless=false,cycleIndex=0){
+  const stages=stagesFor(wave,endless,cycleIndex);
   const index=stages.findIndex(s=>elapsed<s.end);
   return index>=0&&stages[index+1]?.beat==='release'&&elapsed>=stages[index].end-6;
 }
@@ -70,9 +93,7 @@ export function releaseLeadIn(wave:number,elapsed:number,endless=false){
 export function directorStage(wave: number, elapsed: number, endless = false, cycleIndex = 0): DirectorStage {
   const plan = (endless ? ENDLESS_WAVE_DIRECTOR : WAVE_DIRECTOR)[wave - 1];
   if (!plan) throw new RangeError('Invalid director wave');
-  const current=plan.stages.find(s => elapsed < s.end) ?? plan.stages[plan.stages.length - 1];
-  if(endless&&cycleIndex>0&&wave===1&&elapsed<20)return {...current,fodderPerSecond:3.5,
-    escortEvery:elapsed<10?0:9,escorts:elapsed<10?[]:[F],fastCap:elapsed<10?0:3};
-  return current;
+  const stages=stagesFor(wave,endless,cycleIndex);
+  return stages.find(s => elapsed < s.end) ?? stages[stages.length - 1];
 }
 

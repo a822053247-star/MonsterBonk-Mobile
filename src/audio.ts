@@ -174,7 +174,7 @@ export class GameAudio {
   play(kind: Sound): boolean {
     const ctx = this.context;
     const background = kind === 'cast' || kind === 'hit' || kind === 'collect';
-    const important = isCombinationImpact(kind) || kind === 'nova' || kind === 'harvest' || kind === 'harvest-big' || kind === 'harvest-epic';
+    const important = kind.startsWith('capture-') || isCombinationImpact(kind) || kind === 'nova' || kind === 'harvest' || kind === 'harvest-big' || kind === 'harvest-epic';
     const limit = background ? 4 : important || kind === 'hurt' || kind === 'level' ? 8 : 6;
     if (!ctx || ctx.state !== 'running' || (!this.running && kind !== 'death') || !this.sound) return false;
     if (background && ctx.currentTime < this.quietUntil) return false;

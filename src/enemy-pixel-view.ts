@@ -5,7 +5,7 @@ import { ENEMY_DIRECTION_LAYOUT, ENEMY_DIRECTION_FRAMES, enemyFacing } from './e
 import type { Facing8, ScreenBasis } from './creature-animation';
 
 type PixelEnemyKind = EnemyKind;
-export const ENEMY_PIXEL_HEIGHTS = { 'abyss-lantern': 2, 'mirror-wisp': 1.9, 'sand-shell': 2.05, 'toxic-shroom': 1.85, 'thunder-bell': 1.8, 'frost-fluff': 2.15, 'nightshade-bat': 1.6, 'molten-fruit': 1.9, 'moondew-shell': 1.8, 'scarlet-flower': 2.1, 'crystal-crawler': 2.3, 'spore-floater': 1.85, normal: 1.7, fast: 1.45, tank: 2.3, 'draft-crystal-swarm': 1.3, 'draft-spore-bomber': 2, 'draft-treasure-runner': 2.4 } as const;
+export const ENEMY_PIXEL_HEIGHTS = { 'abyss-lantern': 3, 'mirror-wisp': 2.85, 'sand-shell': 3.075, 'toxic-shroom': 2.775, 'thunder-bell': 2.7, 'frost-fluff': 1.935, 'nightshade-bat': 1.92, 'molten-fruit': 1.9, 'moondew-shell': 1.764, 'scarlet-flower': 2.1, 'crystal-crawler': 2.3, 'spore-floater': 1.85, normal: 1.7, fast: 1.45, tank: 2.3, 'draft-crystal-swarm': 1.3, 'draft-spore-bomber': 2, 'draft-treasure-runner': 2.4 } as const;
 type Batch = {
   mesh: THREE.InstancedMesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>;
   hurt: THREE.InstancedBufferAttribute;
@@ -32,6 +32,7 @@ export class EnemyPixelView {
   private forward = new THREE.Vector3(0, 0, 1);
   private displayScale = 1;
   private disposed = false;
+  private readonly startupKinds: readonly EnemyKind[] = ['normal','fast','tank','draft-crystal-swarm','nightshade-bat'];
   private tankFallback: THREE.CanvasTexture;
   private basis: ScreenBasis = { rightX: 1, rightZ: 0, upX: 0, upZ: -Math.SQRT1_2 };
   private directions = new Map<number, { facing: Facing8; seen: number }>();
@@ -117,10 +118,21 @@ export class EnemyPixelView {
     this.displayScale = THREE.MathUtils.clamp(34 * frustumHeight / Math.max(1, viewportHeight) / ENEMY_PIXEL_HEIGHTS.normal, 1, 1.2);
   }
 
-  ready(kind: EnemyKind): kind is PixelEnemyKind { return !this.disposed && (kind === 'tank' || !!this.batches.get(kind)?.lease.entry.ready); }
-  enableBasics() { if (!this.disposed) for (const batch of this.batches.values()) batch.lease.start(); }
+  ready(kind: EnemyKind): kind is PixelEnemyKind {
+    if (this.disposed) return false;
+    const batch = this.batches.get(kind);
+    batch?.lease.start();
+    return kind === 'tank' || !!batch?.lease.entry.ready;
+  }
+  enableBasics() { this.preload(this.startupKinds); }
+  preload(kinds: readonly EnemyKind[]) {
+    if (!this.disposed) for (const kind of kinds) this.batches.get(kind)?.lease.start();
+  }
   get startupSettled() {
-    for (const { lease } of this.batches.values()) if (!lease.entry.ready && !lease.entry.failed) return false;
+    for (const kind of this.startupKinds) {
+      const entry = this.batches.get(kind)!.lease.entry;
+      if (!entry.ready && !entry.failed) return false;
+    }
     return true;
   }
   height(kind: PixelEnemyKind) { return ENEMY_PIXEL_HEIGHTS[kind] * this.displayScale; }
@@ -160,8 +172,8 @@ export class EnemyPixelView {
     batch.frost.setX(index, frozen ? 1 : 0);
   }
 
-  head(kind: PixelEnemyKind, x: number, z: number, bob: number) {
-    return this.top.set(x, 0.035 + bob * 0.35, z).addScaledVector(this.up, this.height(kind) + 0.18);
+  head(kind: PixelEnemyKind, x: number, z: number, bob: number, scale = 1) {
+    return this.top.set(x, 0.035 + bob * 0.35, z).addScaledVector(this.up, this.height(kind) * scale + 0.18);
   }
 
   finish() {

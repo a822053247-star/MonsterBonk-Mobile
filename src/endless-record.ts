@@ -81,7 +81,6 @@ export function recordEndlessRun(
   const newRecords: string[] = [];
 
   if (wave > previous.bestWave) newRecords.push('最高波数');
-  if (cycle > previous.bestCycle) newRecords.push('最高轮次');
   if (bossesDefeated > previous.bestBossesDefeated) newRecords.push('击败 Boss 数');
   if (survivalSeconds > previous.bestSurvivalSeconds) newRecords.push('最长生存时间');
 

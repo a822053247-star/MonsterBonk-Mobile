@@ -262,6 +262,8 @@ export class Progression {
   private currentOffers: SkillId[] = [];
   private fusionSkills = false;
   private purchasedRanks = 0;
+  /** Explicit RunFlow mode; does not affect campaign or historical growth. */
+  endless = false;
   private rollsWithoutCore = 0;
   private offerRolls = 0;
   private earlySupportOffered = false;
@@ -349,7 +351,7 @@ export class Progression {
     + (this.build.attacks.length >= 3 ? this.pool.filter(s => WEAPON_CARDS[s.id] && !this.build!.hasOrigin(WEAPON_CARDS[s.id]!)).reduce((sum,s) => sum+s.maxRank,0) : 0) : 0); }
   get awaitingChoice() { return this.pendingChoices > 0; }
   get offers(): readonly SkillId[] { return this.currentOffers; }
-  get threshold() { return this.level >= this.maxLevel ? Infinity : this.build && this.fusionSkills ? buildExperienceThreshold(this.level) : EXPERIENCE.initial + Math.max(0, this.level - 1) * EXPERIENCE.increment; }
+  get threshold() { return this.level >= this.maxLevel ? Infinity : this.build && this.fusionSkills ? buildExperienceThreshold(this.level, this.endless) : EXPERIENCE.initial + Math.max(0, this.level - 1) * EXPERIENCE.increment; }
   get choiceLevel() { return this.level - this.pendingChoices + 1; }
 
   gainExperience(amount: number) {
@@ -470,6 +472,7 @@ export class Progression {
   }
 
   reset(fusionSkills = this.fusionSkills) {
+    this.endless = false;
     this.fusionSkills = fusionSkills;
     if (this.build) this.build.skillRanks = this.ranks;
     this.level = 1;

@@ -44,7 +44,9 @@ export class TreasureDialog {
     if(!this.current&&this.combat.hp>0){
       const event=this.combat.treasureRewards.find(e=>e.active&&!this.seen.has(e.items));
       if(event){
-        this.seen.add(event.items);this.current=event;this.root.hidden=false;this.heading.textContent='发现宝藏！';
+        this.seen.add(event.items);this.current=event;this.root.hidden=false;
+        this.root.classList.toggle('first-boss-chest',event.source==='first-boss');
+        this.heading.textContent=event.source==='first-boss'?'首战告捷 · 金光宝箱':'发现宝藏！';
         const urls=event.items.map(i=>i.skill?upgradeArt({id:i.skill},this.combat.baseAttack,this.combat.runBuild.attacks.map(a=>a.attackId)).illustrations[0]:undefined);
         this.draw=createTreasureCanvas(this.canvas,event.items.map(i=>i.title),urls,true,(cue,index)=>this.audio?.playTreasure(cue,event.items.length,index));this.draw(0);
         this.resizeCanvas();this.draw(0);
@@ -75,6 +77,6 @@ export class TreasureDialog {
       this.heading.textContent='宝藏已获得';this.button.disabled=false;this.button.textContent='继续战斗';this.button.focus();
     }else this.frame=requestAnimationFrame(this.tick);
   };
-  reset(){cancelAnimationFrame(this.frame);this.frame=0;this.current=undefined;this.draw=undefined;this.rolling=false;this.arriving=false;this.arrivalAge=0;this.audio?.stopTreasure();this.age=0;this.root.hidden=true;this.root.classList.remove('is-opening','is-arriving');this.root.style.removeProperty('--treasure-entry');this.root.style.removeProperty('--treasure-gold');}
+  reset(){cancelAnimationFrame(this.frame);this.frame=0;this.current=undefined;this.draw=undefined;this.rolling=false;this.arriving=false;this.arrivalAge=0;this.audio?.stopTreasure();this.age=0;this.root.hidden=true;this.root.classList.remove('is-opening','is-arriving','first-boss-chest');this.root.style.removeProperty('--treasure-entry');this.root.style.removeProperty('--treasure-gold');}
   dispose(){this.reset();this.root.remove();}
 }

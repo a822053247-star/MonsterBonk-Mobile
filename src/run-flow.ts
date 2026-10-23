@@ -1,10 +1,12 @@
 import { MOONDEW_SHELL } from './special-enemies';
 import { rangedEnemyRule } from './ranged-enemies';
 import type { Combat, EnemyKind } from './combat';
+import { EndlessRoster, type EndlessEnemyType } from './endless-roster';
+import { EndlessEncounterDeck, APPROACH_NAMES, endlessEntryHeading, type EndlessApproach } from './endless-encounters';
 import { RunShop } from './shop';
-import { CRYSTAL_SWARM, SPORE_BOMBER, TREASURE_RUNNER } from './special-enemies';
+import { CRYSTAL_SWARM, SPORE_BOMBER, TREASURE_RUNNER, firstBossTreasureCount } from './special-enemies';
 import { populationBudget, SPAWN_LAYOUT, FORMAL_SPAWN_CAPS } from './spawn-layout';
-import { WAVE_DIRECTOR, directorStage, releaseLeadIn, ENDLESS_MODIFIERS, ENDLESS_SCALING, type EndlessModifierId, type DirectorStage, type DirectorEscort } from './wave-director';
+import { WAVE_DIRECTOR, ENDLESS_WAVE_DIRECTOR, ENDLESS_WAVE_SECONDS, directorStage, releaseLeadIn, ENDLESS_MODIFIERS, ENDLESS_SCALING, type EndlessModifierId, type DirectorStage, type DirectorEscort } from './wave-director';
 
 export const WAVE_INTERMISSION_SECONDS = 3.5;
 export const ENDLESS_FLAG_WARNING_SECONDS = 8;
@@ -48,6 +50,7 @@ export class RunFlow {
   private escorts: DirectorEscort[] = [];
   private escortClock = 2;
   private arrivalClock = 0;
+  private escortArrivalClock = 0;
   private stageEnd = -1;
   private escortHeading = 0;
   private escortIndex = 0;
@@ -60,17 +63,70 @@ export class RunFlow {
   private treasureWaiting = false;
   private scheduledWave = 0;
   private modifierIds: EndlessModifierId[] = [];
+  private rosterWave = 0;
+  private roster?: EndlessRoster;
+  private readonly encounterDeck = new EndlessEncounterDeck();
+  private encounterKinds: DirectorEscort[] = [];
+  private approach: EndlessApproach = 'adjacent';
+  private formationHeading = 0;
+  private formationBatch = 0;
+  private firstBossChestGranted = false;
+  private firstBossChest?: {active: boolean};
+  private readonly shopHistory: {wave:number; enteringCoins:number; leavingCoins:number; intervalIncome:number; purchases:number; itemSpent:number; refreshSpent:number}[] = [];
+  private shopEnteringCoins = 0;
+  private shopIncome = 0;
+  private previousShopEarned = 0;
 
-  constructor(private random: () => number = Math.random, readonly mode: RunMode = 'campaign') {}
+  constructor(private random: () => number = Math.random, private runMode: RunMode = 'campaign') {}
 
+  get mode() { return this.runMode; }
   get endless() { return this.mode === 'endless'; }
+  get canContinueEndless() {
+    return !this.endless && this.phase === 'won' && this.wave === RUN_WAVES.length
+      && this.completedWaves === RUN_WAVES.length && this.bossDefeated;
+  }
+
+  /** Continue the same run; progression, wallet and accumulated statistics stay intact. */
+  continueEndless(combat: Combat, player: { x: number; z: number }) {
+    if (!this.canContinueEndless || combat.hp <= 0) return false;
+    this.runMode = 'endless';
+    this.firstBossChestGranted = true;
+    this.cycleTreasureCaught = 0;
+    combat.clearWave();
+    this.advanceWave(combat);
+    this.prepare(combat, player);
+    return true;
+  }
   get cycle() { return Math.floor((this.wave - 1) / RUN_WAVES.length) + 1; }
   get cycleIndex() { return this.cycle - 1; }
   get waveInCycle() { return ((this.wave - 1) % RUN_WAVES.length) + 1; }
   get isShopWave() { return this.endless ? this.waveInCycle === SHOP_AFTER_WAVE : this.wave === SHOP_AFTER_WAVE; }
   get isBossWave() { return this.endless ? this.waveInCycle === RUN_WAVES.length : this.wave === RUN_WAVES.length; }
   get isFlagWave() { return this.endless && this.waveInCycle === SHOP_AFTER_WAVE; }
-  get waveLabel() { return this.endless ? `第 ${this.wave} 波 · 第 ${this.cycle} 轮` : `第 ${this.wave} / ${RUN_WAVES.length} 波`; }
+  get waveLabel() { return this.endless ? `第 ${this.wave} 波` : `第 ${this.wave} / ${RUN_WAVES.length} 波`; }
+  private get plan() { return (this.endless ? ENDLESS_WAVE_DIRECTOR : WAVE_DIRECTOR)[this.waveInCycle - 1]; }
+
+  private prepareRoster(combat: Combat) {
+    if (!this.endless) return;
+    if (this.rosterWave !== this.wave) {
+      const types: EndlessEnemyType[] = [this.hasModifier('crystal-surge') && !this.isBossWave
+        ? 'draft-crystal-swarm' : 'normal'];
+      if (this.isBossWave) types.push('boss');
+      if (this.waveInCycle === 4 || combat.enemies.some(e => e.active && e.rank === 'elite')) types.push('elite');
+      // Reserve a treasure type only on reward waves, leaving ordinary waves
+      // room for a real three-threat recipe rather than isolated random picks.
+      if (this.waveInCycle === 2 || this.isShopWave || this.hasModifier('treasure-bait')) types.push('draft-treasure-runner');
+      this.encounterKinds = this.encounterDeck.draw(this.wave, 4 - types.length, this.random);
+      types.push(...this.encounterKinds);
+      this.approach = this.encounterDeck.approach(this.wave, this.random);
+      this.formationHeading = this.random() * Math.PI * 2;
+      this.formationBatch = 0;
+      this.roster = new EndlessRoster(types);
+      this.rosterWave = this.wave;
+    }
+    combat.endlessRoster = this.roster;
+  }
+  get approachLabel() { return this.endless ? APPROACH_NAMES[this.approach] : ''; }
   get activeModifiers() { return this.modifierIds.map(id => ENDLESS_MODIFIERS.find(modifier => modifier.id === id)!).filter(Boolean); }
   get modifierLabel() { return this.activeModifiers.map(modifier => modifier.title).join(' · '); }
   get modifierDescription() { return this.activeModifiers.map(modifier => modifier.description).join('；'); }
@@ -91,13 +147,14 @@ export class RunFlow {
   }
 
   private populationTarget(stage: DirectorStage) {
-    const elapsed = RUN_WAVES.slice(0, this.waveIndex).reduce((sum, w) => sum + w.seconds, 0) + this.waveElapsed;
+    const elapsed = this.endless ? this.waveIndex * ENDLESS_WAVE_SECONDS + this.waveElapsed
+      : RUN_WAVES.slice(0, this.waveIndex).reduce((sum, w) => sum + w.seconds, 0) + this.waveElapsed;
     return populationBudget(this.definition.cap, stage.population, elapsed);
   }
 
   private ensureSchedule() {
     if (this.scheduledWave === this.wave) return;
-    const plan = WAVE_DIRECTOR[this.waveInCycle - 1];
+    const plan = this.plan;
     this.scheduledWave = this.wave;
     this.treasureClock = plan.treasureFirst ?? (this.hasModifier('treasure-bait') ? 32 : Infinity);
     this.treasureWaiting = false;
@@ -107,7 +164,7 @@ export class RunFlow {
   /** Prevent fresh dangerous escorts while a major elite/Boss warning needs attention.
    * Existing enemies keep their behavior and the normal swarm still refills. */
   private majorWarning(combat: Combat) {
-    return (this.waveInCycle === 4 && combat.encounters.elitePulsing)
+    return ((this.endless || this.waveInCycle === 4) && combat.encounters.elitePulsing)
       || (this.isBossWave && (combat.encounters.bossState === 'dash-windup'
         || combat.encounters.bossState === 'spread-windup'
         || combat.encounters.bossState === 'summon-windup'));
@@ -115,8 +172,8 @@ export class RunFlow {
 
   /** Crystals and spores participate in the same deterministic mob budget. */
   private mixedCaps(combat: Combat, stage: DirectorStage, waveCap: number) {
-    const plan = WAVE_DIRECTOR[this.waveInCycle - 1];
-    const major = this.majorWarning(combat)||stage.beat==='release'||releaseLeadIn(this.waveInCycle,this.waveElapsed,this.endless);
+    const plan = this.plan;
+    const major = this.majorWarning(combat)||stage.beat==='release'||releaseLeadIn(this.waveInCycle,this.waveElapsed,this.endless,this.cycleIndex);
     const sporeWarning = combat.sporeExplosions.some(e => e.active && !e.detonated);
     const fastCap = Math.min(stage.fastCap + (this.hasModifier('fast-advance') ? 2 : 0), Math.floor(waveCap * .25));
     const tankCap = Math.min(stage.tankCap + (this.hasModifier('armored-line') ? 1 : 0), Math.floor(waveCap * .2));
@@ -137,7 +194,7 @@ export class RunFlow {
     const base = RUN_WAVES[this.endless ? this.waveInCycle - 1 : this.waveIndex];
     if (!this.endless) return base;
     const capMultiplier = Math.min(ENDLESS_SCALING.maxPopulationMultiplier, 1 + this.cycleIndex * ENDLESS_SCALING.populationPerCycle);
-    return { ...base, cap: Math.min(ENDLESS_SCALING.maxPopulation, Math.ceil(base.cap * capMultiplier)) };
+    return { ...base, seconds: ENDLESS_WAVE_SECONDS, cap: Math.min(ENDLESS_SCALING.maxPopulation, Math.ceil(base.cap * capMultiplier)) };
   }
   get remaining() { return Math.max(0, this.definition.seconds - this.waveElapsed); }
   get totalElapsed() { return this.combatElapsed + this.restElapsed; }
@@ -145,11 +202,13 @@ export class RunFlow {
   /** Called before the combat tick; also callable by headless simulations. */
   prepare(combat: Combat, player: {x: number; z: number}) {
     if (this.phase !== 'fighting') return;
+    this.prepareRoster(combat);
+    combat.progression.endless = this.endless;
     combat.endlessCycleIndex = this.endless ? this.cycleIndex : 0;
     if (combat.encounters.wave !== this.waveInCycle) combat.encounters.beginWave(this.waveInCycle, this.waveInCycle <= SHOP_AFTER_WAVE, !this.endless);
     combat.encounters.releaseWindow=directorStage(this.waveInCycle,this.waveElapsed,this.endless,this.cycleIndex).beat==='release';
     if (this.isBossWave) combat.encounters.spawnBoss(combat,player);
-    if (this.waveInCycle === 4 && this.waveElapsed >= 12) combat.encounters.spawnElite(combat,player);
+    if (this.waveInCycle === 4 && this.waveElapsed >= (this.endless ? 12 * ENDLESS_WAVE_SECONDS / RUN_WAVES[3].seconds : 12)) combat.encounters.spawnElite(combat,player);
   }
 
   private collectGold(combat: Combat) {
@@ -197,21 +256,27 @@ export class RunFlow {
     if (this.stageEnd !== stage.end) {
       this.stageEnd = stage.end;
       this.escorts = []; this.escortClock = 2;
+      this.escortArrivalClock = 0;
       // A new harvest starts promptly; it does not inherit a slow pressure interval.
       this.spawnClock = Math.min(this.spawnClock, 1 / (stage.fodderPerSecond * this.spawnRateMultiplier));
     }
     this.escortClock -= dt;
-    if (this.majorWarning(combat)||stage.beat==='release'||releaseLeadIn(this.waveInCycle,this.waveElapsed,this.endless)) {
+    if (this.majorWarning(combat)||stage.beat==='release'||releaseLeadIn(this.waveInCycle,this.waveElapsed,this.endless,this.cycleIndex)) {
       // Suppressed events expire rather than bursting after the warning.
       this.escorts = []; this.escortClock = 2;
-    } else if (stage.escortEvery > 0 && this.escortClock <= 0) {
-      this.escorts = [...stage.escorts];
+    } else if (stage.escortEvery > 0 && this.escortClock <= 0 && (!this.endless || !this.escorts.length)) {
+      this.escorts = this.endless ? [...this.encounterKinds] : [...stage.escorts];
       // Cycle modifiers change the actual scheduled mix, not just the quota labels.
       if (this.hasModifier('fast-advance')) this.escorts.push('fast');
       if (this.hasModifier('armored-line')) this.escorts.push('tank');
       if (this.hasModifier('spore-chain')) this.escorts.push('draft-spore-bomber');
-      this.escortHeading = this.random() * Math.PI * 2; this.escortIndex = 0;
-      this.escortClock = stage.escortEvery / this.spawnRateMultiplier;
+      if (this.roster) this.escorts = this.escorts.filter(kind => this.roster!.types.includes(kind));
+      this.escortHeading = this.endless ? this.formationHeading : this.random() * Math.PI * 2;
+      this.escortIndex = 0;
+      this.formationBatch++;
+      // Endless authored intervals already express the pressure tier; don't
+      // multiply them again by the old per-cycle feed-rate scaling.
+      this.escortClock = stage.escortEvery / (this.endless ? 1 : this.spawnRateMultiplier);
     }
     const target = Math.min(cap, this.populationTarget(stage));
     // Leave room for authored threats even when fodder has filled its budget.
@@ -222,19 +287,23 @@ export class RunFlow {
     const nearLimit = [7, 9, 12, 15, 18, 10][this.waveInCycle - 1];
     this.spawnClock -= dt;
     this.arrivalClock -= dt;
+    this.escortArrivalClock = Math.max(0, this.escortArrivalClock - dt);
     if (this.arrivalClock > 0) return;
     const mix = this.mixedCaps(combat, stage, cap);
-    if (this.escorts.length) {
+    if (this.escorts.length && this.escortArrivalClock <= 0) {
       const kind = this.escorts.shift()!;
       const limit = kind==='sand-shell' ? 2 : kind==='frost-fluff' ? 1 : kind==='nightshade-bat' ? 3 : kind==='molten-fruit' ? 2 : kind==='moondew-shell' ? MOONDEW_SHELL.maxAlive : rangedEnemyRule(kind) ? rangedEnemyRule(kind)!.cap : kind === 'fast' ? mix.fastCap : kind === 'tank' ? mix.tankCap : mix.sporeAllowed ? mix.sporeCap : 0;
       const occupied = combat.enemies.filter(e => e.active && !e.rank && e.kind === kind).length;
       // Two adjacent approach lanes leave the opposite side available for escape.
-      const heading = this.escortHeading + (this.escortIndex++ % 2 ? .7 : -.7);
+      const member = this.escortIndex++;
+      const heading = this.endless ? endlessEntryHeading(this.approach, this.escortHeading, this.formationBatch, member)
+        : this.escortHeading + (member % 2 ? .7 : -.7);
       if (occupied < limit && active < cap - Number(this.treasureWaiting)) {
         this.escortArrivals += combat.spawnSwarm(player, 1, cap - Number(this.treasureWaiting), kind,
           { ...mix, kinds: [kind] }, heading);
       }
-      this.arrivalClock = SPAWN_LAYOUT.stagger;
+      this.escortArrivalClock = this.endless ? (this.approach === 'wings' ? 1.75 : .65) : SPAWN_LAYOUT.stagger;
+      this.arrivalClock = this.endless ? .12 : SPAWN_LAYOUT.stagger;
       return;
     }
     if (this.spawnClock <= 0) {
@@ -242,8 +311,11 @@ export class RunFlow {
       this.spawnClock = 1 / (stage.fodderPerSecond * this.spawnRateMultiplier * (near >= nearLimit ? .7 : 1));
       this.arrivalClock = .12;
       if (active >= swarmCap) return;
-      if (this.spawnIndex % 4 === 0) this.perimeterHeading = this.random() * Math.PI * 2 + this.spawnIndex * SPAWN_LAYOUT.goldenAngle;
-      const kinds: readonly EnemyKind[] = ['normal', 'draft-crystal-swarm', 'normal', 'draft-crystal-swarm'];
+      if (this.spawnIndex % 4 === 0) this.perimeterHeading = this.endless && this.wave >= 7 && stage.beat !== 'release'
+        ? endlessEntryHeading(this.approach, this.formationHeading, this.formationBatch, this.spawnIndex / 4)
+        : this.random() * Math.PI * 2 + this.spawnIndex * SPAWN_LAYOUT.goldenAngle;
+      const fuel: readonly EnemyKind[] = ['normal', 'draft-crystal-swarm', 'normal', 'draft-crystal-swarm'];
+      const kinds = this.roster ? fuel.filter(kind => this.roster!.types.includes(kind)) : fuel;
       const spawned = combat.spawnSwarm(player, 1, swarmCap, 'normal', { ...mix, kinds }, this.perimeterHeading);
       this.fodderArrivals += spawned; this.spawnIndex++;
     }
@@ -251,7 +323,8 @@ export class RunFlow {
 
   /** Treasure remains a rare once-per-wave event rather than a generic batch slot. */
   private spawnSpecials(dt: number, combat: Combat, player: {x: number; z: number}, cap: number) {
-    const plan = WAVE_DIRECTOR[this.waveInCycle - 1];
+    const plan = this.plan;
+    if (this.roster && !this.roster.types.includes('draft-treasure-runner')) return;
     if ((plan.treasureFirst === null && !this.hasModifier('treasure-bait')) || this.treasureSpawned) return;
     this.treasureClock -= dt;
     if (this.treasureClock > 0) return;
@@ -265,6 +338,7 @@ export class RunFlow {
     if (this.phase !== 'fighting' || this.remaining > 1e-8 && !(this.isBossWave && combat.encounters.defeated)) return;
     this.collectGold(combat);
     if (combat.hp <= 0) { this.phase = 'lost'; this.failure='health'; return; }
+    const chestPoint = {x:combat.encounters.boss?.x ?? 0,z:combat.encounters.boss?.z ?? 0};
     if (this.isBossWave) {
       if (combat.encounters.dying && !combat.encounters.defeated) return;
       if (!combat.encounters.defeated) {
@@ -309,13 +383,33 @@ export class RunFlow {
       if (this.endless) this.cycleTreasureCaught = 0;
     }
     combat.relicBehaviors.gigapack.earnedCoins(sporeBonus+reward,this.wave);
-    if (seamless) { this.advanceWave(); return; }
+    if (seamless) { this.advanceWave(combat); return; }
     this.phase = !this.endless && this.wave === RUN_WAVES.length ? 'won' : 'intermission';
     if (this.phase === 'intermission') this.intermissionRemaining = WAVE_INTERMISSION_SECONDS;
+    if(this.endless && this.wave===6 && this.bossDefeated && !this.firstBossChestGranted) {
+      this.firstBossChestGranted=true;
+      this.firstBossChest=combat.grantTreasure(firstBossTreasureCount(this.random()),chestPoint,true);
+      this.collectGold(combat);
+    }
+    if (this.phase === 'intermission' && this.isShopWave) this.prepareShop(combat);
+  }
+
+  private prepareShop(combat: Combat) {
+    if (this.shop) return;
+    // Settle the offers once so their artwork can load during the rest period.
+    this.shop = new RunShop(combat, this.wave, this.random, this.endless ? this.cycleTreasureCaught : combat.treasureCaught,
+      this.endless ? this.cycleIndex : undefined);
+    this.shopEnteringCoins = this.coins;
+    this.shopIncome = this.earned - this.previousShopEarned;
+    this.previousShopEarned = this.earned;
   }
 
   updateRest(dt: number, combat?: Combat) {
     if (!Number.isFinite(dt) || dt <= 0) return;
+    if(this.firstBossChest) {
+      if(this.firstBossChest.active)return;
+      this.firstBossChest=undefined;
+    }
     if (this.phase === 'shop') { this.restElapsed += dt; return; }
     if (this.phase !== 'intermission') return;
     const step = Math.min(dt, this.intermissionRemaining);
@@ -323,10 +417,9 @@ export class RunFlow {
     this.intermissionRemaining = Math.max(0, this.intermissionRemaining - step);
     if (this.intermissionRemaining > 1e-8) return;
     if (this.isShopWave) {
-      // Catches in the survival segment earn one final shop refresh for this cycle.
-      this.shop = new RunShop(combat!, this.wave, this.random, this.endless ? this.cycleTreasureCaught : combat!.treasureCaught);
+      this.prepareShop(combat!);
       this.phase = 'shop';
-    } else if (combat) this.advanceWave();
+    } else if (combat) this.advanceWave(combat);
   }
 
   buy(index: number, token: string) {
@@ -343,22 +436,29 @@ export class RunFlow {
     this.coins = balance; return true;
   }
 
-  private advanceWave() {
+  private advanceWave(combat?: Combat) {
     const previousCycle = this.cycle;
     this.waveIndex++; this.waveElapsed = 0;
     this.spawnClock = 1.2; this.spawnIndex = 0; this.claimedExperience = false;
     this.escorts = []; this.arrivalClock = 0; this.stageEnd = -1; this.escortClock = 2;
+    this.escortArrivalClock = 0;
     this.scheduledWave = 0;
     this.treasureClock = TREASURE_RUNNER.first; this.treasureSpawned = false;
     this.treasureWaiting = false;
     this.bossOvertime = false; this.bossOvertimeElapsed = 0;
     if (this.cycle !== previousCycle) this.rollCycleModifiers();
     this.shop = undefined; this.phase = 'fighting'; this.intermissionRemaining = 0;
+    if (combat) this.prepareRoster(combat);
   }
 
   nextWave(token: string, combat: Combat) {
     if (this.phase !== 'shop' || !this.isShopWave || token !== this.shop?.token || combat.hp <= 0 || combat.progression.awaitingChoice) return false;
-    this.advanceWave();
+    if(this.endless && this.shop) {
+      this.shopHistory.push({wave:this.wave,enteringCoins:this.shopEnteringCoins,leavingCoins:this.coins,
+        intervalIncome:this.shopIncome,purchases:this.shop.purchases,itemSpent:this.shop.spent,refreshSpent:this.shop.refreshSpent});
+      if(this.shopHistory.length>12)this.shopHistory.shift();
+    }
+    this.advanceWave(combat);
     return true;
   }
 
@@ -373,11 +473,17 @@ export class RunFlow {
       cycle: this.cycle, cycleIndex: this.cycleIndex, waveInCycle: this.waveInCycle, waveLabel: this.waveLabel,
       isShopWave: this.isShopWave, isBossWave: this.isBossWave, bossOvertime: this.bossOvertime,
       bossOvertimeElapsed: this.bossOvertimeElapsed, bossesDefeated: this.bossesDefeated,
+      firstBossChestGranted: this.firstBossChestGranted, firstBossChestActive: this.firstBossChest?.active ?? false,
+      economy: {shops:this.shopHistory.map(s=>({...s})),currentPurchases:this.shop?.purchases ?? 0,
+        currentItemSpent:this.shop?.spent ?? 0,currentRefreshSpent:this.shop?.refreshSpent ?? 0,
+        currentEnteringCoins:this.shop ? this.shopEnteringCoins : null,currentIntervalIncome:this.shop ? this.shopIncome : null},
       cycleTreasureCaught: this.cycleTreasureCaught, modifiers: this.activeModifiers,
       completedWaves: this.completedWaves, remaining: this.remaining, intermissionRemaining: this.intermissionRemaining,
       combatElapsed: this.combatElapsed, restElapsed: this.restElapsed, totalElapsed: this.totalElapsed, coins: this.coins, earned: this.earned,
       bossDefeated:this.bossDefeated,failure:this.failure, growth: { ...this.lastWaveGrowth },
       director: { populationTarget: this.populationTarget(stage), pendingArrivals: this.escorts.length,
+        roster: this.roster ? [...this.roster.types] : null,
+        composition: [...this.encounterKinds], approach: this.approachLabel,
         fodderArrivals: this.fodderArrivals, escortArrivals: this.escortArrivals,
         beat: stage.beat, stage },
       shop: this.shop ? { token: this.shop.token, refreshCost: this.shop.refreshCost, treasureRefreshes: this.shop.treasureRefreshes, items: this.shop.items.map(s => ({ ...s })) } : null };

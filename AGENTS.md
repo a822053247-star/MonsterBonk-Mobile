@@ -24,13 +24,14 @@
 | 新武器 | `src/fusion.ts` 的 `BaseAttackId`、`src/run-build.ts` 的 `ATTACKS` / `RunBuild` | `src/progression.ts`、`src/relics.ts`、`src/content/weapon-traits.ts`；接入指南列出奖励与显示入口 |
 | 新遗物 | `src/content/relic-registry.ts`、一个同机制的 `src/content/relics/` 定义 | `src/content/content-types.ts`、`src/content/relic-effects.ts`；工厂说明见 `docs/relic-content-factory-v1.md` |
 | 融合 | `src/weapon-pair-fusion.ts`、`src/run-build.ts`；技能触发融合另见 `src/fusion.ts` | `src/relics.ts`、`src/content/weapon-traits.ts`、`src/combat.ts` |
-| 波次/出怪 | `src/wave-director.ts`、`src/enemy-challenge.ts`、`src/combat.ts` 的生成路径 | `src/run-flow.ts`、`src/spawn-layout.ts`；Boss 共用攻击循环；无尽跨轮成长另见 `src/balance.ts` |
+| 波次/出怪 | `src/wave-director.ts`、`src/enemy-challenge.ts`、`src/combat.ts` 的生成路径 | `src/run-flow.ts`、`src/spawn-layout.ts`、`src/endless-roster.ts`、`src/endless-encounters.ts`；无尽60秒波长、四类名单/残留、十二类解锁/组合与方向；危险蓄力错峰见 `Combat.beginEndlessWarning`；Boss 共用攻击循环；无尽跨轮成长另见 `src/balance.ts` |
 | 特效 | `src/visuals/vfx-presets.ts`、`src/visuals/vfx-resolver.ts` | 对应 `*-view.ts`、`src/quality.ts`；携宝兽宝箱见 `src/treasure-canvas.ts`、`src/treasure-presentation.ts`、`src/treasure-dialog.ts`、`src/special-enemy-view.ts` |
 | 无限地图/地形卡顿 | `src/world.ts`、`src/infinite-world.ts`；接入指南「无限地图地形生成」 | `src/infinite-terrain.ts`、`src/infinite-terrain-baker.ts`、`src/infinite-terrain.worker.ts` |
 | 战斗碰撞/敌人拥挤卡顿 | `src/spatial-index.ts`、`src/combat.ts`、`src/navigation.ts`；接入指南「战斗空间索引」 | 地图障碍物变更通过 `World.revision` 使索引和导航缓存失效 |
-| Boss 技能预览 | `src/boss-skills-preview.ts`、`boss-skills-preview.html` | 复用 `src/enemy-challenge.ts`、`src/combat-view.ts`；动画素材预览另见 `src/crownthorn-preview.ts` |
+| Boss 技能预览 | `src/boss-skills-preview.ts`、`boss-skills-preview.html` | 复用 `src/enemy-challenge.ts`、`src/combat-view.ts`；无尽变体技能表见 `src/endless-boss.ts`，首通宝箱见 `RunFlow.resolveBoundary` / `Combat.grantTreasure`；动画素材预览另见 `src/crownthorn-preview.ts` |
 | 精英地震/躲避预览 | `src/elite-quake-view.ts`、`src/enemy-challenge.ts` | 演练专用调度在 `src/quake-drill.ts`；入口 `src/elite-quake-preview.ts`，说明见 `docs/ELITE-QUAKE.md` |
 | 界面/流程 | `src/ui.ts`、`src/game.ts`、`src/run-flow.ts` 的相关调用 | `src/style.css`、`src/shop.ts`、`src/upgrade-art.ts` |
+| 无尽成长/经济 | `src/balance.ts` 的 `buildExperienceThreshold`、`cycleHealth`、`cycleFuelHealth`、`endlessShopPrice` | `Progression.endless` / `RunFlow.prepare`、`src/shop.ts`；区间收入与最近12店记录见 `RunFlow.inspect().economy`，静态预算见 `docs/ENDLESS_LONG_RUN_CALIBRATION.md` |
 
 ## 阅读与验证
 
@@ -39,3 +40,6 @@
 - 测试选择、平衡脚本与需求模板见 `docs/CONTENT_DEVELOPMENT.md`。文档变更检查引用和差异；代码变更构建并运行相关测试，共享机制改动扩大回归。
 - `npm run content:check` 当前检查遗物工厂，不能据其通过声称新敌人/武器已完整接入。
 - 工具输出保留摘要与失败详情，完整日志按需落盘。最终说明改动、验证及未解决问题。
+
+
+战斗捕捉/幻兽囚坊：`src/enemy-capture.ts`、`src/capture-hud.ts`、`src/capture-collection.ts`、`src/prison-view.ts`、`src/prison-scene.ts`；完整接入、规则和验证见 [CAPTURE_PRISON.md](docs/CAPTURE_PRISON.md)。正式闯关/无尽启用低血量靠近E与点击封印，永久收藏接局外劳作；旧模式不启用。

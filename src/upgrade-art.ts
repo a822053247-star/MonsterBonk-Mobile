@@ -98,11 +98,28 @@ export function upgradeArt(skill: Pick<SkillDefinition, 'id' | 'category'>, base
   };
 }
 
+/** Small decoded-image cache for the actual upcoming offers, not the full catalog. */
+const warmedImages = new Map<string, HTMLImageElement>();
+export function preloadUpgradeImages(urls: readonly string[]) {
+  for (const url of new Set(urls)) {
+    if (!url || warmedImages.has(url)) continue;
+    const image = new Image();
+    image.loading = 'eager'; image.fetchPriority = 'high'; image.decoding = 'async';
+    image.onload = () => { void image.decode().catch(() => {}); };
+    image.onerror = () => { if (warmedImages.get(url) === image) warmedImages.delete(url); };
+    warmedImages.set(url, image); image.src = url;
+    if (warmedImages.size > 16) warmedImages.delete(warmedImages.keys().next().value!);
+  }
+}
+
 /** Load state affects decoration only; never gates the card's input or offer. */
 export function bindUpgradeArt(root: HTMLElement, definitions: readonly RelicDefinition[] = Object.values(FACTORY_RELICS)) {
   root.querySelectorAll<HTMLImageElement>('img[data-upgrade-art]').forEach(image => {
     if (image.dataset.artBound === 'true') return;
     image.dataset.artBound = 'true';
+    if (image.dataset.upgradeArt === 'shop-illustration' || image.dataset.upgradeArt === 'illustration') {
+      image.loading = 'eager'; image.fetchPriority = 'high';
+    }
     // Dedicated illustrations can be high resolution; generated pixel icons retain nearest sampling.
     if (/\/(?:screen-nova|screen-barrage|azure-burst|star-tide|still-sea|returning-ring|abyss-vortex|ice-radiance|spore-trail|tidal-recall|tsunami-sanctuary|astral-wheel|abyss-crown|undertow-pyre|deep-collapse|frost-prism|all-tides)\.png$/.test(image.src)
       || /\/frost-crystal-weapon\.svg$/.test(image.src)
@@ -110,15 +127,24 @@ export function bindUpgradeArt(root: HTMLElement, definitions: readonly RelicDef
     const sync = () => {
       const ready = image.complete && image.naturalWidth > 0;
       image.classList.toggle('art-loaded', ready);
-      image.parentElement?.classList.toggle('art-ready', !!image.parentElement.querySelector('.art-loaded'));
+      const parent = image.parentElement;
+      const groupReady = parent?.classList.contains('shop-illustration')
+        ? [...parent.querySelectorAll<HTMLImageElement>('img')].every(img => img.complete && img.naturalWidth > 0)
+        : !!parent?.querySelector('.art-loaded');
+      parent?.classList.toggle('art-ready', groupReady);
       if (image.dataset.upgradeArt === 'frame') image.closest('.skill-card')?.classList.toggle('frame-ready', ready);
     };
     image.addEventListener('load', sync, { once: true });
-    image.addEventListener('error', () => {
+    const fallback = () => {
       const definition = definitions.find(d => image.src === new URL(relicIcon(d.art, import.meta.env.BASE_URL), document.baseURI).href);
       if (definition && image.dataset.iconFallback !== 'true') { image.dataset.iconFallback = 'true'; image.src = generatedIcon(definition.art); }
+      else if (image.dataset.artFallback && image.dataset.iconFallback !== 'true') {
+        image.dataset.iconFallback = 'true'; image.src = image.dataset.artFallback;
+      }
       sync();
-    }, { once: true });
+    };
+    image.addEventListener('error', fallback, { once: true });
+    if (image.complete && image.naturalWidth === 0) fallback();
     sync();
   });
 }

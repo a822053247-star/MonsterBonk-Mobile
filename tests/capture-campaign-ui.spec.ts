@@ -1,0 +1,41 @@
+import {test,expect} from '@playwright/test';
+test('campaign capture keeps battle alive, freezes on pause, persists and enters prison after results',async({page})=>{
+ const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.route('**/capture-campaign-harness*',route=>route.fulfill({contentType:'text/html; charset=utf-8',body:`<div id="app"></div><script type="module">
+ import '/src/style.css';import {createUI} from '/src/ui.ts';import {Game} from '/src/game.ts';
+ createUI(document.getElementById('app'));window.game=new Game();
+ </script>`}));
+ await page.goto('/capture-campaign-harness?world=fixed');await page.waitForFunction(()=>!!(window as any).game);
+ await page.locator('#start-fusion').click();await page.waitForFunction(()=>!(window as any).game.sceneLoading);
+ await page.evaluate(()=>{
+  const g=(window as any).game;g.sleep();g.wake=()=>{};g.combat.clearWave();g.combat.encounters.beginWave(1);
+  g.combat.obstacles=[];g.combat.invulnerability=999;g.capture.random=()=>0;
+  g.position.set(0,0,0);g.previousPosition.copy(g.position);g.party.syncLeader(g.position,0);
+  const e=g.combat.spawn('normal',0,2,0);e.spawnTime=0;e.hp=3;window.target=e;
+  window.draw=()=>{g.captureHUD.render(g.capture,g.combat,g.position,g.camera,true);g.combatView.render(1,g.visualTime,g.position);g.renderer.render(g.scene,g.camera);};
+  (window as any).draw();
+ });
+ await page.keyboard.press('e');
+ expect(await page.evaluate(()=>(window as any).target.captureLocked)).toBe(true);
+ await page.evaluate(()=>{const g=(window as any).game;g.pause('capture pause');for(let i=0;i<30;i++)g.step(1/60);});
+ expect(await page.evaluate(()=>(window as any).game.capture.pending.time)).toBe(0);
+ await page.evaluate(()=>{const g=(window as any).game;g.resume();for(let i=0;i<65;i++)g.step(1/60);(window as any).draw();});
+ await expect(page.getByRole('button',{name:'点击完成封印'})).toBeVisible();
+ await page.screenshot({path:'artifacts/capture-seal-campaign.png'});
+ await page.getByRole('button',{name:'点击完成封印'}).click({timeout:5000});
+ await page.evaluate(()=>{const g=(window as any).game;for(let i=0;i<55;i++)g.step(1/60);(window as any).draw();});
+ expect(await page.evaluate(()=>(window as any).game.collection.data.counts.normal)).toBe(1);
+ expect(await page.evaluate(()=>(window as any).game.run.wave)).toBe(1);
+ await page.evaluate(()=>(window as any).game.endRun('defeat'));
+ await expect(page.locator('#result-captures')).toContainText('×1');
+ await page.locator('#gameover-menu').click();await page.locator('#open-prison').click();
+ await expect(page.locator('.prison-shell')).toBeVisible();
+ await page.keyboard.press('m');await expect(page.locator('.roster-monster')).toHaveCount(1);
+ await page.locator('[data-species="6"]').click();
+ expect(await page.evaluate(()=>(window as any).game.prison.inspect().monsters)).toHaveLength(1);
+ await page.getByRole('button',{name:'返回主菜单'}).click();
+ await page.locator('#start-fusion').click();
+ expect(await page.evaluate(()=>(window as any).game.capture.caught)).toEqual({});
+ expect(await page.evaluate(()=>(window as any).game.collection.data.counts.normal)).toBe(1);
+ expect(errors).toEqual([]);
+});

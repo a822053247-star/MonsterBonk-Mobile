@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { CREATURES, type PartySystem } from './party';
+import { CREATURES, type PartySystem, type SpeciesId } from './party';
 import { PixelSpriteRenderer, PixelTextureCache } from './pixel-sprite';
 import { ANIMATION_RULES } from './creature-animation';
 
@@ -45,6 +45,17 @@ export class PartyView {
   }
 
   get hasPixelLeader() { return !!this.pixels[0]?.ready; }
+  /** Warm the selected creature while the menu is visible; start reuses it. */
+  preloadLeader(species: SpeciesId, animated: boolean) {
+    if (this.disposed || !this.usePixels) return;
+    let pixel = this.pixels[0];
+    if (pixel && pixel.species !== species) { pixel.dispose(); pixel = this.pixels[0] = undefined; }
+    if (!pixel) {
+      pixel = this.pixels[0] = new PixelSpriteRenderer(species, this.cache);
+      this.group.add(pixel.group);
+    }
+    pixel.setAnimationEnabled(animated);
+  }
   get startupSettled() {
     if (!this.usePixels) return true;
     for (let i = 0; i < this.party.members.length; i++) {

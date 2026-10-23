@@ -414,6 +414,7 @@ h1>em{font-size:12px;line-height:1;letter-spacing:4px;display:inline-block;backg
 .shop-illustration>img{display:none;min-width:0;max-width:100%;width:100%;height:100%;object-fit:contain;image-rendering:pixelated}
 .shop-illustration>img.art-loaded{display:block}
 .shop-illustration.multiple-art>img{width:50%}
+.shop-illustration.multiple-art:not(.art-ready)>img{display:none}
 /* Trim the stray left-edge shard from the ring illustration, keeping the source intact. */
 .skill-card[data-skill="returning-ring"] .skill-illustration,
 .shop-item[data-skill="returning-ring"] .shop-illustration>img{
@@ -670,6 +671,12 @@ h1>em{font-size:12px;line-height:1;letter-spacing:4px;display:inline-block;backg
 #gameover-screen .build-tokens>li{background:#e4d7b642;border-color:#b9a57266;color:#35513d}
 #gameover-screen .build-chain-summary{color:var(--run-muted)}
 #gameover-screen .result-actions{display:flex;align-items:center;justify-content:center;gap:calc(20 * var(--run-u));margin:0;padding:0;border:0;flex-shrink:0}
+#gameover-screen .endless-continue-prompt{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 18px;border:1px solid #d7c58388;border-radius:10px;background:#234a39ed;color:#f2e5bd;flex-shrink:0}
+#gameover-screen .endless-continue-prompt>div{flex:1;min-width:0}
+#gameover-screen .endless-continue-prompt h3{margin:0 0 5px;font-size:clamp(15px,calc(20 * var(--run-u)),21px)}
+#gameover-screen .endless-continue-prompt p{margin:0;font-size:clamp(11px,calc(14 * var(--run-u)),15px);line-height:1.5;color:#d0dcb7}
+#gameover-screen .endless-continue-prompt .primary{width:auto;margin:0;min-height:44px;padding:10px 16px;font-size:16px;white-space:nowrap;flex:0 0 auto;background:#ead493;color:#254733}
+@media(max-width:680px){#gameover-screen .endless-continue-prompt{flex-wrap:wrap;gap:8px;padding:10px 12px}#gameover-screen .endless-continue-prompt .primary{width:100%;justify-content:center}}
 #gameover-screen .result-actions .primary{flex:0 1 calc(270 * var(--run-u));width:auto;min-width:0;min-height:calc(52 * var(--run-u));margin:0;padding:10px calc(24 * var(--run-u));justify-content:space-between;background:#dce8a4;border:1px solid #bdce83;border-radius:8px;color:#254733;font-size:calc(18 * var(--run-u));letter-spacing:.5px;box-shadow:0 3px 0 #7d9659}
 #gameover-screen .result-actions .text-button{margin:0;padding:10px 16px;min-height:calc(48 * var(--run-u));font-size:calc(17 * var(--run-u));letter-spacing:0;color:#e0e6d1}
 :is(#pause-screen,#gameover-screen) :is(button,a,[tabindex]):focus-visible{outline:3px solid #eed183;outline-offset:3px}
@@ -1288,3 +1295,6 @@ h1>em{font-size:12px;line-height:1;letter-spacing:4px;display:inline-block;backg
 
 /* Keep both practice entries reachable on short landscape menus. */
 .menu-footer{gap:8px;flex-wrap:wrap}
+
+.treasure-dialog.first-boss-chest { background: radial-gradient(ellipse at center, #fff1a8dd 0%, #bd7c1ddd 65%, #4e300dee 100%); }
+.treasure-dialog.first-boss-chest .treasure-dialog-panel { border-color: #fff0a0; box-shadow: 0 0 60px #ffdf69aa, inset 0 0 0 3px #d4a04d; }

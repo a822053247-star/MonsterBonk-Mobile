@@ -21,6 +21,7 @@ export class EncounterView {
   private cone: THREE.Mesh<THREE.CircleGeometry, THREE.MeshBasicMaterial>;
   private elite: THREE.Mesh<THREE.RingGeometry, THREE.MeshBasicMaterial>;
   private quake = new EliteQuakeView();
+  private bossQuake = new EliteQuakeView();
   private aftershocks = Array.from({ length: 2 }, () => new EliteQuakeView());
   private fallback: THREE.Mesh<THREE.IcosahedronGeometry, THREE.MeshBasicMaterial>;
   private basis: ScreenBasis = {rightX:1,rightZ:0,upX:0,upZ:-Math.SQRT1_2};
@@ -37,9 +38,10 @@ export class EncounterView {
     this.fallback = new THREE.Mesh(new THREE.IcosahedronGeometry(1,1),new THREE.MeshBasicMaterial({color:'#bf9a52',wireframe:true}));
     this.group.name='FormalEnemyChallenges'; this.group.add(this.shots,this.lane,this.cone,this.elite,this.fallback,this.quake.group);
     for (const quake of this.aftershocks) this.group.add(quake.group);
+    this.group.add(this.bossQuake.group);
     this.clear();
   }
-  setView(camera: THREE.Camera) { camera.getWorldQuaternion(this.billboard); this.quake.setView(camera); for (const quake of this.aftershocks) quake.setView(camera); const e=camera.matrixWorld.elements; this.basis={rightX:e[0],rightZ:e[2],upX:e[4],upZ:e[6]}; }
+  setView(camera: THREE.Camera) { camera.getWorldQuaternion(this.billboard); this.quake.setView(camera); this.bossQuake.setView(camera); for (const quake of this.aftershocks) quake.setView(camera); const e=camera.matrixWorld.elements; this.basis={rightX:e[0],rightZ:e[2],upX:e[4],upZ:e[6]}; }
   render(alpha: number, detail = 3) {
     const c=this.combat.encounters;
     this.clear(); this.group.visible=c.enabled || c.shots.some(s=>s.active);
@@ -65,7 +67,7 @@ export class EncounterView {
     if (this.shots.instanceColor) this.shots.instanceColor.needsUpdate=true;
     for(const enemy of this.combat.enemies) {
       const ranged=rangedEnemyRule(enemy.kind);
-      if(!enemy.active || enemy.spawnTime>0 || !ranged) continue;
+      if(!enemy.active || enemy.rank || enemy.spawnTime>0 || !ranged) continue;
       const winding=enemy.intent==='windup';
       const flash=enemy.intentCooldown>ranged.cooldown-.18;
       if(!winding && !flash) continue;
@@ -91,6 +93,9 @@ export class EncounterView {
     }
     const enemy=c.boss;
     if (!enemy || c.defeated) return;
+    this.bossQuake.render(c.bossState==='quake-windup'
+      ? {...c.bossQuakeTarget,progress:c.bossTime/c.quakeWindupDuration} : null,c.bossQuake,detail);
+    if (!c.bossProfile) {
     if (!this.boss) { this.boss=new CrownthornView(undefined,4.2); this.group.add(this.boss.group); }
     if (enemy.spawnTime>0) return;
     const moving=c.bossState==='approach' && Math.hypot(enemy.walkX??0,enemy.walkZ??0)>1e-6;
@@ -101,15 +106,16 @@ export class EncounterView {
     this.boss.group.position.set(THREE.MathUtils.lerp(enemy.previousX,enemy.x,alpha),0,THREE.MathUtils.lerp(enemy.previousZ,enemy.z,alpha));
     this.boss.render();
     if (!this.boss.group.visible) { this.fallback.visible=true; this.fallback.position.set(enemy.x,1.5,enemy.z); this.fallback.scale.set(1.4,1.8,1.4); }
+    }
     const angle=Math.atan2(c.aimX,c.aimZ);
     if (c.bossState==='dash-windup') {
-      const length=ENCOUNTER_RULES.dashSpeed*c.dashDuration;
+      const length=c.dashSpeed*c.dashDuration;
       this.lane.visible=true; this.lane.position.set(enemy.x+c.aimX*length/2,.12,enemy.z+c.aimZ*length/2);
-      this.lane.scale.set((ENCOUNTER_RULES.bossRadius+.62)*2,length,1); this.lane.rotation.set(-Math.PI/2,0,angle);
+      this.lane.scale.set((this.combat.enemyRadius(enemy)+.62)*2,length,1); this.lane.rotation.set(-Math.PI/2,0,angle);
     }
     if(c.bossState==='spread-windup') {
       this.cone.visible=true; this.cone.position.set(enemy.x,.12,enemy.z); this.cone.rotation.set(-Math.PI/2,0,angle-Math.PI/2);
-      this.cone.scale.setScalar(ENCOUNTER_RULES.spreadLife*ENCOUNTER_RULES.spreadSpeed*(c.enraged?1.1:1));
+      this.cone.scale.setScalar(c.shotLife*c.shotSpeed);
     }
   }
   private mark(x:number,y:number,z:number,radius:number,color:string) {
@@ -118,10 +124,11 @@ export class EncounterView {
     this.sporeMarks.setColorAt(this.sporeMarks.count,this.shotColor.set(color));
     this.sporeMarks.setMatrixAt(this.sporeMarks.count++,this.pose.matrix);
   }
-  clear() { this.sporeRims.count=this.sporeMarks.count=this.muzzleCount=0; this.quake.clear(); for (const quake of this.aftershocks) quake.clear(); this.group.visible=false; this.shots.count=0; this.lane.visible=this.cone.visible=this.elite.visible=this.fallback.visible=false; if(this.boss) this.boss.group.visible=false; }
+  clear() { this.sporeRims.count=this.sporeMarks.count=this.muzzleCount=0; this.quake.clear(); this.bossQuake.clear(); for (const quake of this.aftershocks) quake.clear(); this.group.visible=false; this.shots.count=0; this.lane.visible=this.cone.visible=this.elite.visible=this.fallback.visible=false; if(this.boss) this.boss.group.visible=false; }
   inspect() { return {quake:this.quake.inspect(),aftershocks:this.aftershocks.map(quake=>quake.inspect()),shots:this.shots.count,sporeRims:this.sporeRims.count,sporeMarks:this.sporeMarks.count,muzzles:this.muzzleCount,capacity:ENCOUNTER_RULES.hostileShots,boss:this.boss?.inspect()??null,lane:this.lane.visible,cone:this.cone.visible,elite:this.elite.visible,fallback:this.fallback.visible}; }
   dispose() {
     this.quake.dispose();
+    this.bossQuake.dispose();
     for (const quake of this.aftershocks) quake.dispose();
     this.boss?.dispose(); this.boss=undefined;
     for(const mesh of [this.shots,this.sporeRims,this.sporeMarks,this.lane,this.cone,this.elite,this.fallback]) { mesh.geometry.dispose(); (mesh.material as THREE.Material).dispose(); }

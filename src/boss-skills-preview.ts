@@ -33,7 +33,7 @@ const view = new CombatView(combat);view.setFusion(true,false);view.group.visibl
 const party = new PartyView(combat.party);party.setAnimatedLeader(true);party.group.visible=true;scene.add(party.group);
 const skill=element<HTMLSelectElement>('#skill'),rage=element<HTMLSelectElement>('#rage'),speed=element<HTMLSelectElement>('#speed');
 const play=element<HTMLButtonElement>('#play');
-const names: Record<BossState,string> = { approach:'接近目标', 'spread-windup':'扇形弹幕 · 预警', spread:'扇形弹幕 · 发射', 'dash-windup':'冲锋 · 锁定路径', dash:'冲锋', 'summon-windup':'召唤 · 蓄力', summon:'召唤支援', recover:'攻击后恢复', dying:'死亡', defeated:'击败' };
+const names: Record<BossState,string> = { approach:'接近目标', 'spread-windup':'扇形弹幕 · 预警', spread:'扇形弹幕 · 发射', 'dash-windup':'冲锋 · 锁定路径', dash:'冲锋', 'summon-windup':'召唤 · 蓄力', summon:'召唤支援', 'quake-windup':'震地 · 预警', quake:'震地冲击', recover:'攻击后恢复', dying:'死亡', defeated:'击败' };
 let paused=matchMedia('(prefers-reduced-motion: reduce)').matches, time=0, accumulator=0, last=performance.now(), raf=0, disposed=false;
 function restart() {
   combat.reset();combat.useNavigation=false;combat.automaticSpawning=false;combat.invulnerability=1e6;

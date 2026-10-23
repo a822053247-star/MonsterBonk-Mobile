@@ -1,0 +1,19 @@
+:host{color-scheme:dark;font-family:'Microsoft YaHei','PingFang SC','Noto Sans CJK SC',sans-serif;background:#0b1418}*{box-sizing:border-box}:host{margin:0;width:100%;height:100%;overflow:hidden;touch-action:none;overscroll-behavior:none}#game-root{width:100%;height:100%;height:100%;overflow:hidden;position:relative;background:radial-gradient(ellipse at 50% 32%,#31423b,#0b1519 75%)}#game{width:100%;height:100%;display:block;outline:none;touch-action:none;cursor:crosshair}#game:focus-visible{outline:2px solid #f3df9a;outline-offset:-6px}.sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}@media(prefers-reduced-motion:reduce){#game{scroll-behavior:auto}}
+/* 18 actual monster sprites in a small roster overlay; the game itself remains a single canvas. */
+#roster-screen[hidden]{display:none!important}
+#roster-screen{position:fixed;inset:0;z-index:9;background:#081419df;display:flex;align-items:center;justify-content:center;padding:clamp(8px,2.5vw,24px);overscroll-behavior:contain;touch-action:pan-y}
+.roster-panel{display:flex;flex-direction:column;width:min(810px,100%);max-height:min(94dvh,790px);border:2px solid #bcad7c;border-radius:18px;background:linear-gradient(155deg,#293b38,#17282b 75%);color:#f9ebc3;box-shadow:0 20px 70px #0009;overflow:hidden}
+.roster-top{padding:17px 24px 10px;display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid #bcb78642}
+.roster-top small{color:#c5d7bc;letter-spacing:1px;font-size:11px}
+.roster-top h2{margin:4px 0;font-size:23px;letter-spacing:2px}
+.roster-top button{display:grid;place-items:center;min-width:46px;height:46px;background:#32433f;border:1px solid #bbba8d9c;border-radius:14px;color:#ffe8bd;font-size:30px;cursor:pointer}
+.roster-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;padding:17px;overflow-y:auto;touch-action:pan-y;overscroll-behavior:contain}
+.roster-monster{position:relative;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:3px;padding:6px 2px 12px;min-height:117px;background:#203330;border:1px solid #a7b69f5c;color:#eee0bd;border-radius:11px;font:inherit;cursor:pointer;touch-action:manipulation}
+.roster-monster:hover,.roster-monster:focus-visible{background:#35504a;border-color:#e6d5a0;outline:none}
+.roster-monster.is-active{background:#44533b;border:2px solid #e1c884}
+.roster-monster canvas{width:min(88px,100%);height:88px;object-fit:contain}
+.roster-monster span{font-size:11px;font-weight:700;white-space:nowrap}
+.roster-monster i{position:absolute;right:5px;top:5px;padding:1px 5px;background:#ddc082;color:#2e3c33;border-radius:5px;font-size:9px;font-style:normal}
+#roster-caption{text-align:center;border-top:1px solid #bcb78642;padding:11px 12px;color:#cbd8b6;font-size:11px}
+@media(max-width:650px){.roster-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;padding:10px}.roster-top{padding:10px 14px}.roster-top h2{font-size:19px}.roster-monster{min-height:108px}.roster-monster canvas{height:77px;width:77px}.roster-monster span{font-size:10px}}
+@media(max-height:460px) and (orientation:landscape){.roster-top{padding:7px 15px}.roster-top h2{font-size:18px}.roster-grid{grid-template-columns:repeat(6,minmax(0,1fr));padding:9px;gap:8px}.roster-monster{min-height:93px;padding:1px 1px 5px}.roster-monster canvas{height:66px;width:66px}#roster-caption{padding:4px}}

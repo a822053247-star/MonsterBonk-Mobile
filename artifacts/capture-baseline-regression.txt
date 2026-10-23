@@ -1,0 +1,155 @@
+
+Running 21 tests using 1 worker
+
+(node:58824) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x   1 C:\Users\ADMINI~1\AppData\Local\Temp\monsterbonk-capture-baseline-hafyvww4\tests\run-flow.spec.ts:22:1 › survival waves connect seamlessly and only wave five rests for the shop (30ms)
+(node:64956) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  2 C:\Users\ADMINI~1\AppData\Local\Temp\monsterbonk-capture-baseline-hafyvww4\tests\run-flow.spec.ts:64:30 › wave 1 continues immediately with living enemies, loose XP and active combat state intact (10ms)
+  ok  3 C:\Users\ADMINI~1\AppData\Local\Temp\monsterbonk-capture-baseline-hafyvww4\tests\run-flow.spec.ts:64:30 › wave 2 continues immediately with living enemies, loose XP and active combat state intact (4ms)
+  ok  4 C:\Users\ADMINI~1\AppData\Local\Temp\monsterbonk-capture-baseline-hafyvww4\tests\run-flow.spec.ts:64:30 › wave 3 continues immediately with living enemies, loose XP and active combat state intact (3ms)
+  ok  5 C:\Users\ADMINI~1\AppData\Local\Temp\monsterbonk-capture-baseline-hafyvww4\tests\run-flow.spec.ts:64:30 › wave 4 continues immediately with living enemies, loose XP and active combat state intact (3ms)
+  ok  6 C:\Users\ADMINI~1\AppData\Local\Temp\monsterbonk-capture-baseline-hafyvww4\tests\run-flow.spec.ts:94:1 › unfinished elite and hostile warnings carry into wave five, then shop clears them (11ms)
+  ok  7 C:\Users\ADMINI~1\AppData\Local\Temp\monsterbonk-capture-baseline-hafyvww4\tests\run-flow.spec.ts:108:1 › real kills earn gold once and cannot be recycled into duplicates (6ms)
+  x   8 C:\Users\ADMINI~1\AppData\Local\Temp\monsterbonk-capture-baseline-hafyvww4\tests\run-flow.spec.ts:117:1 › the fifth-wave shop still has atomic purchases, stale tokens and insufficient-fund protection (19ms)
+(node:62316) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x   9 C:\Users\ADMINI~1\AppData\Local\Temp\monsterbonk-capture-baseline-hafyvww4\tests\run-flow.spec.ts:130:1 › only fifth shop can heal and paid refreshes remain progressive (25ms)
+(node:3724) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 10 C:\Users\ADMINI~1\AppData\Local\Temp\monsterbonk-capture-baseline-hafyvww4\tests\run-flow.spec.ts:143:1 › shop is not accessible during any earlier wave and unspent rewards accumulate (14ms)
+  ok 11 C:\Users\ADMINI~1\AppData\Local\Temp\monsterbonk-capture-baseline-hafyvww4\tests\run-flow.spec.ts:156:1 › death at the final boundary loses and historical modes do not inherit shops (2ms)
+  ok 12 C:\Users\ADMINI~1\AppData\Local\Temp\monsterbonk-capture-baseline-hafyvww4\tests\wave-director.spec.ts:21:1 › six plans cover each wave, alternate pressure and harvest, and increase late arrival supply (24ms)
+  x  13 C:\Users\ADMINI~1\AppData\Local\Temp\monsterbonk-capture-baseline-hafyvww4\tests\wave-director.spec.ts:42:1 › the final flag-wave surge is Endless-only and finite campaign pacing stays unchanged (2ms)
+(node:35544) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 14 C:\Users\ADMINI~1\AppData\Local\Temp\monsterbonk-capture-baseline-hafyvww4\tests\wave-director.spec.ts:48:1 › opening gives growth space, then actual scheduled escorts appear without clearing any enemies (23ms)
+  ok 15 C:\Users\ADMINI~1\AppData\Local\Temp\monsterbonk-capture-baseline-hafyvww4\tests\wave-director.spec.ts:56:1 › nearby crowding slows fodder but cannot erase scheduled pressure (12ms)
+  x  16 C:\Users\ADMINI~1\AppData\Local\Temp\monsterbonk-capture-baseline-hafyvww4\tests\wave-director.spec.ts:67:1 › harvest stops new escorts while increasing fodder and preserving surviving threats (14ms)
+(node:11092) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 17 C:\Users\ADMINI~1\AppData\Local\Temp\monsterbonk-capture-baseline-hafyvww4\tests\wave-director.spec.ts:81:1 › quota, blocked placement and full population never turn an event into an over-cap burst (19ms)
+  ok 18 C:\Users\ADMINI~1\AppData\Local\Temp\monsterbonk-capture-baseline-hafyvww4\tests\wave-director.spec.ts:96:1 › authored escorts can use reserved space above the background target (9ms)
+  ok 19 C:\Users\ADMINI~1\AppData\Local\Temp\monsterbonk-capture-baseline-hafyvww4\tests\wave-director.spec.ts:106:1 › elite and Boss warnings suppress escorts without retaining catch-up debt (12ms)
+  x  20 C:\Users\ADMINI~1\AppData\Local\Temp\monsterbonk-capture-baseline-hafyvww4\tests\wave-director.spec.ts:117:1 › seamless wave change retains pressure budget instead of restarting the opening ramp (2ms)
+(node:27072) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 21 C:\Users\ADMINI~1\AppData\Local\Temp\monsterbonk-capture-baseline-hafyvww4\tests\wave-director.spec.ts:124:1 › director remains fixed-seed reproducible in real 60Hz Combat and RunFlow (169ms)
+
+
+  1) C:\Users\ADMINI~1\AppData\Local\Temp\monsterbonk-capture-baseline-hafyvww4\tests\run-flow.spec.ts:22:1 › survival waves connect seamlessly and only wave five rests for the shop 
+
+    Error: expect(received).toBeUndefined()
+
+    Received: {"combat": {"anchorInitialized": false, "anchorX": 0, "anchorZ": 0, "areaAttacks": [AreaAttacks], "areaBuffers": [Array], "areaDeaths": [Array], "areaFeedback": [Object], "attackViewport": undefined, "automaticSpawning": false, "balanceTelemetry": [Object], "blades": [BladeWeapons], "boundary": 32, "bubbleReadyAt": 0, "bursts": 0, "childShots": 0, "childWindow": 0, "childrenInWindow": 0, "childrenThisTick": 0, "collected": 0, "crowdCandidates": [Array], "crystalCoinRemainder": 0, "crystalExperienceRemainder": 0, "dashSerial": 0, "dream": [DreamCombat], "effects": [Array], "elapsed": 0, "encounters": [EnemyChallenge], "endlessCycleIndex": 0, "endlessRoster": undefined, "enemies": [Array], "enemyIndex": [SpatialIndex], "enemySlots": WeakMap {}, "fireClock": 0, "fleeGoal": [Object], "frost": [FrostCombat], "fusionEnabled": true, "goldEarned": 0, "grassMotion": [Object], "hits": 0, "hopCandidates": [Array], "hornHits": 0, "hornKills": 0, "hourglassReadyAt": 0, "hourglassUntil": 0, "hp": 100, "hurtFlash": 0, "iceSkills": [IceSkills], "infiniteWorld": false, "interrupts": 0, "invulnerability": 0, "kills": 0, "launchClock": 0, "melee": [Object], "navigation": [GroundNavigation], "navigationGoal": [Object], "nextEndlessWarning": 0, "nextId": 1, "nextRelicCast": 0, "nextRelicSource": 0, "nextWeapon": 0, "obstacleBuffer": [Array], "obstacleCandidates": [Array], "obstacleIndex": [ObstacleIndex], "obstacles": [Array], "orbitAngle": 0, "orbs": [Array], "party": [PartySystem], "pendingEchoes": [Array], "playerTurnRate": 0, "playerVelocityX": 0, "playerVelocityZ": 0, "positionAoe": [PositionAoe], "previousAnchorX": 0, "previousAnchorZ": 0, "previousOrbitAngle": 0, "previousWeapon": undefined, "progression": [Progression], "projectiles": [Array], "random": [Function anonymous], "recentRelicKills": [Array], "relicBehaviors": [CombatRelicBehaviors], "relicEvents": [Array], "relicTelemetry": [Object], "ruleset": "classic", "runBuild": [RunBuild], "salvo": undefined, "shockClock": 0, "shockwaves": [Array], "shotCandidates": [Array], "shotsFired": 0, "soundEvents": 0, "spatialActive": false, "spawnClock": 2.6, "spawnViewport": undefined, "spawned": 0, "sporeExplosions": [Array], "sporeKills": 0, "swarmCoinRemainder": 0, "swarmExperienceRemainder": 0, "targetCandidates": [Array], "targetId": 0, "thunder": [ThunderWeapon], "tick": 0, "treasureCaught": 0, "treasureEscapes": 0, "treasureRewards": [Array], "useNavigation": false, "waterAoe": [WaterAoe], "waterEvolution": [WaterEvolution], "weaponCastCount": 0, "worldRevision": -1}, "endlessCycleIndex": undefined, "freeRefreshes": 0, "offers": [[Object], [Object], [Object], [Object]], "paidRefreshes": 0, "purchases": 0, "random": [Function anonymous], "refreshSpent": 0, "refreshes": 0, "revision": 1, "session": 5, "spent": 0}
+
+      36 |     } else if(wave<6) {
+      37 |       expect(run.phase).toBe('intermission');
+    > 38 |       expect(run.shop).toBeUndefined();
+         |                        ^
+      39 |       run.updateRest(WAVE_INTERMISSION_SECONDS/2,c);
+      40 |       expect(run.phase).toBe('intermission');
+      41 |       run.updateRest(WAVE_INTERMISSION_SECONDS/2,c);
+        at C:\Users\ADMINI~1\AppData\Local\Temp\monsterbonk-capture-baseline-hafyvww4\tests\run-flow.spec.ts:38:24
+
+    Error Context: C:\Users\ADMINI~1\AppData\Local\Temp\monsterbonk-capture-baseline-hafyvww4\test-results\run-flow-survival-waves-co-d4929-ave-five-rests-for-the-shop\error-context.md
+
+  2) C:\Users\ADMINI~1\AppData\Local\Temp\monsterbonk-capture-baseline-hafyvww4\tests\run-flow.spec.ts:117:1 › the fifth-wave shop still has atomic purchases, stale tokens and insufficient-fund protection 
+
+    Error: expect(received).toBeUndefined()
+
+    Received: {"combat": {"anchorInitialized": false, "anchorX": 0, "anchorZ": 0, "areaAttacks": [AreaAttacks], "areaBuffers": [Array], "areaDeaths": [Array], "areaFeedback": [Object], "attackViewport": undefined, "automaticSpawning": false, "balanceTelemetry": [Object], "blades": [BladeWeapons], "boundary": 32, "bubbleReadyAt": 0, "bursts": 0, "childShots": 0, "childWindow": 0, "childrenInWindow": 0, "childrenThisTick": 0, "collected": 0, "crowdCandidates": [Array], "crystalCoinRemainder": 0, "crystalExperienceRemainder": 0, "dashSerial": 0, "dream": [DreamCombat], "effects": [Array], "elapsed": 0, "encounters": [EnemyChallenge], "endlessCycleIndex": 0, "endlessRoster": undefined, "enemies": [Array], "enemyIndex": [SpatialIndex], "enemySlots": WeakMap {}, "fireClock": 0, "fleeGoal": [Object], "frost": [FrostCombat], "fusionEnabled": true, "goldEarned": 0, "grassMotion": [Object], "hits": 0, "hopCandidates": [Array], "hornHits": 0, "hornKills": 0, "hourglassReadyAt": 0, "hourglassUntil": 0, "hp": 100, "hurtFlash": 0, "iceSkills": [IceSkills], "infiniteWorld": false, "interrupts": 0, "invulnerability": 0, "kills": 0, "launchClock": 0, "melee": [Object], "navigation": [GroundNavigation], "navigationGoal": [Object], "nextEndlessWarning": 0, "nextId": 1, "nextRelicCast": 0, "nextRelicSource": 0, "nextWeapon": 0, "obstacleBuffer": [Array], "obstacleCandidates": [Array], "obstacleIndex": [ObstacleIndex], "obstacles": [Array], "orbitAngle": 0, "orbs": [Array], "party": [PartySystem], "pendingEchoes": [Array], "playerTurnRate": 0, "playerVelocityX": 0, "playerVelocityZ": 0, "positionAoe": [PositionAoe], "previousAnchorX": 0, "previousAnchorZ": 0, "previousOrbitAngle": 0, "previousWeapon": undefined, "progression": [Progression], "projectiles": [Array], "random": [Function anonymous], "recentRelicKills": [Array], "relicBehaviors": [CombatRelicBehaviors], "relicEvents": [Array], "relicTelemetry": [Object], "ruleset": "classic", "runBuild": [RunBuild], "salvo": undefined, "shockClock": 0, "shockwaves": [Array], "shotCandidates": [Array], "shotsFired": 0, "soundEvents": 0, "spatialActive": false, "spawnClock": 2.6, "spawnViewport": undefined, "spawned": 0, "sporeExplosions": [Array], "sporeKills": 0, "swarmCoinRemainder": 0, "swarmExperienceRemainder": 0, "targetCandidates": [Array], "targetId": 0, "thunder": [ThunderWeapon], "tick": 0, "treasureCaught": 0, "treasureEscapes": 0, "treasureRewards": [Array], "useNavigation": false, "waterAoe": [WaterAoe], "waterEvolution": [WaterEvolution], "weaponCastCount": 0, "worldRevision": -1}, "endlessCycleIndex": undefined, "freeRefreshes": 0, "offers": [[Object], [Object], [Object], [Object]], "paidRefreshes": 0, "purchases": 0, "random": [Function anonymous], "refreshSpent": 0, "refreshes": 0, "revision": 1, "session": 5, "spent": 0}
+
+      14 |   f.run.update(f.run.definition.seconds, f.c, origin);
+      15 |   expect(f.run.phase).toBe('intermission');
+    > 16 |   expect(f.run.shop).toBeUndefined();
+         |                      ^
+      17 |   f.run.updateRest(WAVE_INTERMISSION_SECONDS, f.c);
+      18 |   expect(f.run.phase).toBe('shop');
+      19 |   return f.run.shop!;
+        at fifthShop (C:\Users\ADMINI~1\AppData\Local\Temp\monsterbonk-capture-baseline-hafyvww4\tests\run-flow.spec.ts:16:22)
+        at C:\Users\ADMINI~1\AppData\Local\Temp\monsterbonk-capture-baseline-hafyvww4\tests\run-flow.spec.ts:118:23
+
+    Error Context: C:\Users\ADMINI~1\AppData\Local\Temp\monsterbonk-capture-baseline-hafyvww4\test-results\run-flow-the-fifth-wave-sh-c7414-nsufficient-fund-protection\error-context.md
+
+  3) C:\Users\ADMINI~1\AppData\Local\Temp\monsterbonk-capture-baseline-hafyvww4\tests\run-flow.spec.ts:130:1 › only fifth shop can heal and paid refreshes remain progressive 
+
+    Error: expect(received).toBeUndefined()
+
+    Received: {"combat": {"anchorInitialized": false, "anchorX": 0, "anchorZ": 0, "areaAttacks": [AreaAttacks], "areaBuffers": [Array], "areaDeaths": [Array], "areaFeedback": [Object], "attackViewport": undefined, "automaticSpawning": false, "balanceTelemetry": [Object], "blades": [BladeWeapons], "boundary": 32, "bubbleReadyAt": 0, "bursts": 0, "childShots": 0, "childWindow": 0, "childrenInWindow": 0, "childrenThisTick": 0, "collected": 0, "crowdCandidates": [Array], "crystalCoinRemainder": 0, "crystalExperienceRemainder": 0, "dashSerial": 0, "dream": [DreamCombat], "effects": [Array], "elapsed": 0, "encounters": [EnemyChallenge], "endlessCycleIndex": 0, "endlessRoster": undefined, "enemies": [Array], "enemyIndex": [SpatialIndex], "enemySlots": WeakMap {}, "fireClock": 0, "fleeGoal": [Object], "frost": [FrostCombat], "fusionEnabled": true, "goldEarned": 0, "grassMotion": [Object], "hits": 0, "hopCandidates": [Array], "hornHits": 0, "hornKills": 0, "hourglassReadyAt": 0, "hourglassUntil": 0, "hp": 40, "hurtFlash": 0, "iceSkills": [IceSkills], "infiniteWorld": false, "interrupts": 0, "invulnerability": 0, "kills": 0, "launchClock": 0, "melee": [Object], "navigation": [GroundNavigation], "navigationGoal": [Object], "nextEndlessWarning": 0, "nextId": 1, "nextRelicCast": 0, "nextRelicSource": 0, "nextWeapon": 0, "obstacleBuffer": [Array], "obstacleCandidates": [Array], "obstacleIndex": [ObstacleIndex], "obstacles": [Array], "orbitAngle": 0, "orbs": [Array], "party": [PartySystem], "pendingEchoes": [Array], "playerTurnRate": 0, "playerVelocityX": 0, "playerVelocityZ": 0, "positionAoe": [PositionAoe], "previousAnchorX": 0, "previousAnchorZ": 0, "previousOrbitAngle": 0, "previousWeapon": undefined, "progression": [Progression], "projectiles": [Array], "random": [Function anonymous], "recentRelicKills": [Array], "relicBehaviors": [CombatRelicBehaviors], "relicEvents": [Array], "relicTelemetry": [Object], "ruleset": "classic", "runBuild": [RunBuild], "salvo": undefined, "shockClock": 0, "shockwaves": [Array], "shotCandidates": [Array], "shotsFired": 0, "soundEvents": 0, "spatialActive": false, "spawnClock": 2.6, "spawnViewport": undefined, "spawned": 0, "sporeExplosions": [Array], "sporeKills": 0, "swarmCoinRemainder": 0, "swarmExperienceRemainder": 0, "targetCandidates": [Array], "targetId": 0, "thunder": [ThunderWeapon], "tick": 0, "treasureCaught": 0, "treasureEscapes": 0, "treasureRewards": [Array], "useNavigation": false, "waterAoe": [WaterAoe], "waterEvolution": [WaterEvolution], "weaponCastCount": 0, "worldRevision": -1}, "endlessCycleIndex": undefined, "freeRefreshes": 0, "offers": [[Object], [Object], [Object], [Object]], "paidRefreshes": 0, "purchases": 0, "random": [Function anonymous], "refreshSpent": 0, "refreshes": 0, "revision": 1, "session": 5, "spent": 0}
+
+      14 |   f.run.update(f.run.definition.seconds, f.c, origin);
+      15 |   expect(f.run.phase).toBe('intermission');
+    > 16 |   expect(f.run.shop).toBeUndefined();
+         |                      ^
+      17 |   f.run.updateRest(WAVE_INTERMISSION_SECONDS, f.c);
+      18 |   expect(f.run.phase).toBe('shop');
+      19 |   return f.run.shop!;
+        at fifthShop (C:\Users\ADMINI~1\AppData\Local\Temp\monsterbonk-capture-baseline-hafyvww4\tests\run-flow.spec.ts:16:22)
+        at C:\Users\ADMINI~1\AppData\Local\Temp\monsterbonk-capture-baseline-hafyvww4\tests\run-flow.spec.ts:131:40
+
+    Error Context: C:\Users\ADMINI~1\AppData\Local\Temp\monsterbonk-capture-baseline-hafyvww4\test-results\run-flow-only-fifth-shop-c-7b95e-efreshes-remain-progressive\error-context.md
+
+  4) C:\Users\ADMINI~1\AppData\Local\Temp\monsterbonk-capture-baseline-hafyvww4\tests\wave-director.spec.ts:42:1 › the final flag-wave surge is Endless-only and finite campaign pacing stays unchanged 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: "pressure"
+    Received: "release"
+
+      42 | test('the final flag-wave surge is Endless-only and finite campaign pacing stays unchanged', () => {
+      43 |   expect(directorStage(5, 72).beat).toBe('release');
+    > 44 |   expect(directorStage(5, 72, true).beat).toBe('pressure');
+         |                                           ^
+      45 |   expect(directorStage(5, 72, true).fodderPerSecond).toBe(6.5);
+      46 | });
+      47 |
+        at C:\Users\ADMINI~1\AppData\Local\Temp\monsterbonk-capture-baseline-hafyvww4\tests\wave-director.spec.ts:44:43
+
+    Error Context: C:\Users\ADMINI~1\AppData\Local\Temp\monsterbonk-capture-baseline-hafyvww4\test-results\wave-director-the-final-fl-d8d1a-aign-pacing-stays-unchanged\error-context.md
+
+  5) C:\Users\ADMINI~1\AppData\Local\Temp\monsterbonk-capture-baseline-hafyvww4\tests\wave-director.spec.ts:67:1 › harvest stops new escorts while increasing fodder and preserving surviving threats 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 18
+    Received: 27
+
+      74 |   simulate(run,c,10);
+      75 |   const harvest=run.inspect().director;
+    > 76 |   expect(harvest.escortArrivals).toBe(pressure.escortArrivals);
+         |                                  ^
+      77 |   expect(harvest.fodderArrivals-pressure.fodderArrivals).toBeGreaterThan(pressure.fodderArrivals);
+      78 |   expect(survivor.active).toBe(true);
+      79 | });
+        at C:\Users\ADMINI~1\AppData\Local\Temp\monsterbonk-capture-baseline-hafyvww4\tests\wave-director.spec.ts:76:34
+
+    Error Context: C:\Users\ADMINI~1\AppData\Local\Temp\monsterbonk-capture-baseline-hafyvww4\test-results\wave-director-harvest-stop-9c845-reserving-surviving-threats\error-context.md
+
+  6) C:\Users\ADMINI~1\AppData\Local\Temp\monsterbonk-capture-baseline-hafyvww4\tests\wave-director.spec.ts:117:1 › seamless wave change retains pressure budget instead of restarting the opening ramp 
+
+    Error: expect(received).toBeGreaterThanOrEqual(expected)
+
+    Expected: >= 60
+    Received:    57
+
+      119 |   simulate(run,c,.02);
+      120 |   expect(run.wave).toBe(3);
+    > 121 |   expect(run.inspect().director.populationTarget).toBeGreaterThanOrEqual(60);
+          |                                                   ^
+      122 | });
+      123 |
+      124 | test('director remains fixed-seed reproducible in real 60Hz Combat and RunFlow',()=>{
+        at C:\Users\ADMINI~1\AppData\Local\Temp\monsterbonk-capture-baseline-hafyvww4\tests\wave-director.spec.ts:121:51
+
+    Error Context: C:\Users\ADMINI~1\AppData\Local\Temp\monsterbonk-capture-baseline-hafyvww4\test-results\wave-director-seamless-wav-ca427-restarting-the-opening-ramp\error-context.md
+
+  6 failed
+    C:\Users\ADMINI~1\AppData\Local\Temp\monsterbonk-capture-baseline-hafyvww4\tests\run-flow.spec.ts:22:1 › survival waves connect seamlessly and only wave five rests for the shop 
+    C:\Users\ADMINI~1\AppData\Local\Temp\monsterbonk-capture-baseline-hafyvww4\tests\run-flow.spec.ts:117:1 › the fifth-wave shop still has atomic purchases, stale tokens and insufficient-fund protection 
+    C:\Users\ADMINI~1\AppData\Local\Temp\monsterbonk-capture-baseline-hafyvww4\tests\run-flow.spec.ts:130:1 › only fifth shop can heal and paid refreshes remain progressive 
+    C:\Users\ADMINI~1\AppData\Local\Temp\monsterbonk-capture-baseline-hafyvww4\tests\wave-director.spec.ts:42:1 › the final flag-wave surge is Endless-only and finite campaign pacing stays unchanged 
+    C:\Users\ADMINI~1\AppData\Local\Temp\monsterbonk-capture-baseline-hafyvww4\tests\wave-director.spec.ts:67:1 › harvest stops new escorts while increasing fodder and preserving surviving threats 
+    C:\Users\ADMINI~1\AppData\Local\Temp\monsterbonk-capture-baseline-hafyvww4\tests\wave-director.spec.ts:117:1 › seamless wave change retains pressure budget instead of restarting the opening ramp 
+  15 passed (4.2s)

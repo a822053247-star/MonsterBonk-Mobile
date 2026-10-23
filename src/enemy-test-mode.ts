@@ -1,4 +1,4 @@
-import type { Combat, EnemyKind } from './combat';
+import { ENEMY_TYPES, type Combat, type EnemyKind } from './combat';
 
 /** Isolated roster: never delegates to the campaign, legacy, or Boss spawners. */
 export const ENEMY_TEST_ROSTER: readonly { kind: EnemyKind; cap: number }[] = [
@@ -18,13 +18,14 @@ export const ENEMY_TEST_ROSTER: readonly { kind: EnemyKind; cap: number }[] = [
 
 export class EnemyTestMode {
   private spawnClock = 0;
+  constructor(private readonly capture = false) {}
   step(dt: number, combat: Combat, player: { x: number; z: number }) {
     if (dt <= 0 || combat.hp <= 0) return;
     this.spawnClock = Math.max(0, this.spawnClock - dt);
     if (this.spawnClock > 0) return;
     this.spawnClock = 4;
     // One arrival per kind per interval; failed placements retry next interval.
-    for (const {kind, cap} of ENEMY_TEST_ROSTER) {
+    for (const {kind, cap} of (this.capture ? (Object.keys(ENEMY_TYPES) as EnemyKind[]).map(kind => ({kind, cap: 1})) : ENEMY_TEST_ROSTER)) {
       const alive = combat.enemies.reduce((count, enemy) => count + Number(enemy.active && enemy.kind === kind), 0);
       if (alive < cap) combat.spawnEncounter(kind, player, 8, 11);
     }

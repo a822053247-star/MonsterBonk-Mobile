@@ -1,8 +1,16 @@
 import type { Combat } from './combat';
-import type { ShopItem } from './shop';
+import type { ShopItem, RunShop } from './shop';
 import { RELICS, EVOLUTIONS } from './relics';
-import { uiArtUrl, upgradeArt } from './upgrade-art';
+import { uiArtUrl, upgradeArt, preloadUpgradeImages } from './upgrade-art';
 import { isWaterEvolution } from './water-evolution';
+
+export function preloadShopArt(shop: RunShop, combat: Combat) {
+  preloadUpgradeImages([
+    ...shop.items.flatMap(item => shopArt(item, combat).images),
+    uiArtUrl('shop/item-slot.png'), uiArtUrl('shop/health-potion.png'),
+    uiArtUrl('common/coin.png'), uiArtUrl('shop/refresh-rune.png'),
+  ]);
+}
 
 /** Resolve appearance from the actual offer, never from its position in the shop. */
 export function shopArt(item: ShopItem, combat: Combat) {

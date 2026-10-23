@@ -21,7 +21,8 @@ import { FLAME_SWEEP, flameSweepStats, insideSweep } from './flame-sweep';
 import { EnemyChallenge, ENCOUNTER_RULES, predictPosition } from './enemy-challenge';
 import { TRIGGER_RELIC_RULES, resolveAttackRules, type RelicDamageSource, type AttackRules } from './relics';
 import { ATTACKS, RunBuild } from './run-build';
-import { BUILD_BALANCE, controlledSpeed, cycleHealth, slotInterval } from './balance';
+import { BUILD_BALANCE, controlledSpeed, cycleHealth, cycleFuelHealth, slotInterval } from './balance';
+import { EndlessRoster } from './endless-roster';
 import type { BaseAttackId } from './fusion';
 import { ENEMY_MOTION } from './enemy-motion';
 import { GRASS_BLOB, stepGrassRoll } from './grass-blob';
@@ -86,7 +87,7 @@ type Moving = Point & { previousX: number; previousZ: number; active: boolean };
 /** Optional pooled frost state; cleared on spawn, death cleanup and reset. */
 export interface Enemy { chillTime?: number; freezeTime?: number; freezeDuration?: number; freezeImmuneTime?: number }
 export interface Enemy { dreamStacks?: number; dreamTime?: number; resonanceTime?: number; resonanceSource?: RelicDamageSource }
-export interface Enemy extends Moving { pairSlowUntil?:number; pairSlowFactor?:number; pairBurnTime?:number; pairBurnClock?:number; pairBurnDamage?:number; pairBurnSource?:RelicDamageSource; venomUntil?:number; venomReady?:number; smokeUntil?:number; vineUntil?: number; vineReadyAt?: number; wetTime?: number; steamReadyAt?: number; grassRollDistance?: number; grassCycle?: number; grassRollX?: number; grassRollZ?: number; grassAttackX?: number; grassAttackZ?: number; grassHit?: boolean; burnTime?: number; burnClock?: number; burnDamage?: number; burnStacks?: number; burnSource?: RelicDamageSource; specialTime?: number; swarm?: boolean; rank?: 'elite' | 'boss'; maxHp?: number; radius?: number; id: number; kind: EnemyKind; hp: number; age: number; spawnTime: number; flash: number; knockX: number; knockZ: number; facing: number; orbitCooldown: number; intent: EnemyIntent; intentTime: number; intentCooldown: number; aimX: number; aimZ: number; stagger: number; hornDash: number; slowTime?: number; walkPhase?: number; walkAmount?: number; steerX?: number; steerZ?: number; walkX?: number; walkZ?: number }
+export interface Enemy extends Moving { captureLocked?: boolean; captureScale?: number; pairSlowUntil?:number; pairSlowFactor?:number; pairBurnTime?:number; pairBurnClock?:number; pairBurnDamage?:number; pairBurnSource?:RelicDamageSource; venomUntil?:number; venomReady?:number; smokeUntil?:number; vineUntil?: number; vineReadyAt?: number; wetTime?: number; steamReadyAt?: number; grassRollDistance?: number; grassCycle?: number; grassRollX?: number; grassRollZ?: number; grassAttackX?: number; grassAttackZ?: number; grassHit?: boolean; burnTime?: number; burnClock?: number; burnDamage?: number; burnStacks?: number; burnSource?: RelicDamageSource; specialTime?: number; swarm?: boolean; rank?: 'elite' | 'boss'; maxHp?: number; radius?: number; id: number; kind: EnemyKind; hp: number; age: number; spawnTime: number; flash: number; knockX: number; knockZ: number; facing: number; orbitCooldown: number; intent: EnemyIntent; intentTime: number; intentCooldown: number; aimX: number; aimZ: number; stagger: number; hornDash: number; slowTime?: number; walkPhase?: number; walkAmount?: number; steerX?: number; steerZ?: number; walkX?: number; walkZ?: number }
 export interface Projectile extends Moving { chargedPierceSource?:number; returning?: boolean; outboundSpent?: boolean; flightRange?: number; behaviorRoot?: number; vfxPresetId?: string; relicSource?: RelicDamageSource; vx: number; vz: number; life: number; damage: number; distance: number; sourceId?: number; species?: SpeciesId; attackId?: BaseAttackId; attackRules?: AttackRules; homing?: boolean; generation?: number; bornTick?: number; ignoreEnemyId?: number; burst?: boolean; age?: number; elemental?: boolean; fusionIds?: FusionId[]; hitIds?: number[]; pierces?: number; bounces?: number; scatter?: boolean; baseDamage?: number; damageIds?: number[]; hopTargetId?: number; hopDelay?: number; hopElapsed?: number; hopDuration?: number; hopFromX?: number; hopFromZ?: number }
 export interface Shockwave { active: boolean; x: number; z: number; age: number; radius: number; previousRadius: number; maxRadius: number; damage: number; hitIds: Int32Array }
 export interface ExperienceOrb extends Moving { value: number; magnetized: boolean }
@@ -151,6 +152,9 @@ export class Combat {
   infiniteWorld = false;
   /** Zero for every non-endless mode; Endless uses zero-based completed cycles. */
   endlessCycleIndex = 0;
+  /** Installed only by Endless RunFlow; every pooled enemy creation passes here. */
+  endlessRoster?: EndlessRoster;
+  private nextEndlessWarning = 0;
   /** Updated by the camera; absent in headless simulations, which use a fixed footprint. */
   spawnViewport?: SpawnViewport;
   /** Unshaken camera footprint, supplied by Game before each simulation step. */
@@ -276,7 +280,7 @@ export class Combat {
   childShots = 0;
   private navigation: GroundNavigation;
   private obstacleIndex: ObstacleIndex<Obstacle>;
-  private enemyIndex = new SpatialIndex<Enemy>(enemy => this.enemyRadius(enemy), enemy => enemy.active);
+  private enemyIndex = new SpatialIndex<Enemy>(enemy => this.enemyRadius(enemy), enemy => enemy.active && !enemy.captureLocked);
   private enemySlots = new WeakMap<Enemy, number>();
   private spatialActive = false;
   private crowdCandidates: number[] = [];
@@ -365,14 +369,17 @@ export class Combat {
   get endlessBossHealthMultiplier() {
     return cycleHealth(this.endlessCycleIndex, true);
   }
+  get endlessFuelHealthMultiplier() { return cycleFuelHealth(this.endlessCycleIndex); }
   private scaledContactDamage(enemy: Enemy) {
     const base = enemy.rank === 'boss' ? 24 : enemy.swarm ? SWARM_RULES.contactDamage : ENEMY_TYPES[enemy.kind].damage;
     return base * this.endlessContactDamageMultiplier;
   }
   enemyMaxHp(kind: EnemyKind) {
-    return (this.isTrial && kind === 'fast' ? POUNCE.hp : ENEMY_TYPES[kind].hp) * this.endlessEnemyHealthMultiplier;
+    return (this.isTrial && kind === 'fast' ? POUNCE.hp : ENEMY_TYPES[kind].hp)
+      * (kind === 'draft-crystal-swarm' ? this.endlessFuelHealthMultiplier : this.endlessEnemyHealthMultiplier);
   }
   enemyRadius(enemy: Enemy) { return enemy.radius ?? ENEMY_TYPES[enemy.kind].radius; }
+  enemySpeed(enemy: Enemy) { return ENEMY_TYPES[enemy.kind].speed; }
   enemyHealth(enemy: Enemy) { return enemy.maxHp ?? this.enemyMaxHp(enemy.kind); }
   get hasAttackIntents() { return this.isTrial || this.encounters.enabled; }
   get xp() { return this.progression.totalExperience; }
@@ -395,6 +402,35 @@ export class Combat {
 
   chooseUpgrade(id: SkillId) { return this.applyUpgrade(id, true); }
   grantUpgrade(id: SkillId) { return this.usesRunBuild && this.applyUpgrade(id, false); }
+
+  /** Grant sequentially, rechecking prerequisites after each applied reward. */
+  grantTreasure(count: number, point: Point, firstBoss = false) {
+    const items: TreasureReward['items'] = [];
+    const used = new Set<SkillId>();
+    for (let i = 0; i < count; i++) {
+      const legal = this.progression.skills.filter(s => s.id !== 'weapon-pair-fusion'
+        && !(this.progression.ranks['specialist-badge'] && WEAPON_CARDS[s.id] && !this.runBuild.has(WEAPON_CARDS[s.id]!))
+        && (factoryRelic(s.id)?.rewards.shop ?? true) && this.progression.canGrant(s.id));
+      let candidates = legal.filter(s => !used.has(s.id));
+      if (firstBoss && !candidates.length) candidates = legal;
+      if (firstBoss && i === 0) {
+        const relevant = candidates.filter(s => (WEAPON_CARDS[s.id] && this.runBuild.has(WEAPON_CARDS[s.id]!))
+          || this.progression.ranks[s.id] > 0);
+        const support = candidates.filter(s => ['damage','haste','movement','vitality','range','multishot'].includes(s.id));
+        if (relevant.length) candidates = relevant;
+        else if(support.length) candidates=support;
+      }
+      const skill = candidates[Math.min(candidates.length - 1, Math.floor(this.random() * candidates.length))];
+      if (skill && this.grantUpgrade(skill.id)) {
+        used.add(skill.id); items.push({title:skill.title,skill:skill.id});
+      } else { this.goldEarned += 12; items.push({title:'金币补给 +12'}); }
+    }
+    const reward = this.treasureRewards.find(e => !e.active)
+      ?? this.treasureRewards.reduce((oldest,e) => e.age > oldest.age ? e : oldest);
+    Object.assign(reward,{active:true,x:point.x,z:point.z,age:0,coins:firstBoss?0:TREASURE_RUNNER.coins,
+      items,source:firstBoss?'first-boss':undefined});
+    return reward;
+  }
 
   confirmWeaponPair(id:WeaponPairId){
     if(!this.usesRunBuild||this.hp<=0||!this.progression.confirmPair(id))return false;
@@ -455,6 +491,8 @@ export class Combat {
     this.attackViewport = undefined;
     this.soundEvents = 0;
     this.endlessCycleIndex = 0;
+    this.endlessRoster = undefined;
+    this.nextEndlessWarning = 0;
     this.encounters.reset();
     this.clearTransientEffects();
     this.navigation.setCenter(0, 0, true);
@@ -475,6 +513,7 @@ export class Combat {
     for (const pool of [this.enemies, this.projectiles, this.orbs, this.effects, this.shockwaves]) {
       for (const item of pool) item.active = false;
     }
+    for(const enemy of this.enemies){enemy.captureLocked=false;enemy.captureScale=1;}
     this.hp = 100;
     this.runBuild.reset(this.party?.leader.species ?? 'yanrong');
     this.progression.build = this.usesRunBuild ? this.runBuild : undefined;
@@ -493,13 +532,14 @@ export class Combat {
   }
 
   /** Also used by deterministic simulation tests to arrange encounter positions. */
-  spawn(kind: EnemyKind, x: number, z: number, spawnTime = 0.75): Enemy | undefined {
+  spawn(kind: EnemyKind, x: number, z: number, spawnTime = 0.75, rank?: 'elite' | 'boss'): Enemy | undefined {
+    if (this.endlessRoster && !this.endlessRoster.allows(rank ?? kind, this.enemies)) return;
     // Reserve one future explosion slot per live bomber, including its burst tail.
     if (kind === 'draft-spore-bomber' && this.sporeExplosions.filter(e => e.active).length + this.enemies.filter(e => e.active && e.kind === kind).length >= SPORE_BOMBER.capacity) return;
     const enemy = this.enemies.find((candidate) => !candidate.active && candidate !== this.encounters.boss && candidate !== this.encounters.elite);
     if (!enemy) return;
-    Object.assign(enemy, { active: true, id: this.nextId++, kind, x, z, previousX: x, previousZ: z, hp: this.enemyMaxHp(kind), age: 0, spawnTime, flash: 0, knockX: 0, knockZ: 0, facing: 0, orbitCooldown: 0, intent: 'chase', intentTime: 0, intentCooldown: 0, aimX: 0, aimZ: 1, stagger: 0, hornDash: 0, slowTime: 0, walkPhase: (this.nextId * 2.399963) % (Math.PI * 2), walkAmount: 0, walkX: 0, walkZ: 0, steerX: undefined, steerZ: undefined });
-    enemy.rank = undefined; enemy.maxHp = enemy.radius = undefined; enemy.swarm = false;
+    Object.assign(enemy, { captureLocked: false, captureScale: 1, active: true, id: this.nextId++, kind, x, z, previousX: x, previousZ: z, hp: this.enemyMaxHp(kind), age: 0, spawnTime, flash: 0, knockX: 0, knockZ: 0, facing: 0, orbitCooldown: 0, intent: 'chase', intentTime: 0, intentCooldown: 0, aimX: 0, aimZ: 1, stagger: 0, hornDash: 0, slowTime: 0, walkPhase: (this.nextId * 2.399963) % (Math.PI * 2), walkAmount: 0, walkX: 0, walkZ: 0, steerX: undefined, steerZ: undefined });
+    enemy.rank = rank; enemy.maxHp = enemy.radius = undefined; enemy.swarm = false;
     enemy.specialTime = 0;
     enemy.grassRollDistance = 0; enemy.grassCycle = 0; enemy.grassRollX = enemy.grassRollZ = enemy.grassAttackX = enemy.grassAttackZ = undefined; enemy.grassHit = false;
     enemy.wetTime = enemy.steamReadyAt = 0; enemy.vineUntil=enemy.vineReadyAt=0; enemy.venomUntil=enemy.venomReady=enemy.smokeUntil=0;
@@ -509,7 +549,7 @@ export class Combat {
     enemy.burnTime = enemy.burnClock = enemy.burnDamage = enemy.burnStacks = 0; enemy.burnSource = undefined;
     if (this.encounters.enabled) enemy.hp = enemy.maxHp =
       (kind==='fast'?40:kind==='tank'?FORMAL_ROCK_HP:kind==='draft-spore-bomber'?FORMAL_SPORE_HP:ENEMY_TYPES[kind].hp)
-      *(kind==='draft-treasure-runner'?treasureHealthMultiplier(this.encounters.wave):1)*(ENCOUNTER_RULES.waveHealth[this.encounters.wave-1]??1)*(kind==='draft-crystal-swarm'?Math.min(2.5,this.endlessEnemyHealthMultiplier):this.endlessEnemyHealthMultiplier);
+      *(kind==='draft-treasure-runner'?treasureHealthMultiplier(this.encounters.wave):1)*(ENCOUNTER_RULES.waveHealth[this.encounters.wave-1]??1)*(kind==='draft-crystal-swarm'?this.endlessFuelHealthMultiplier:this.endlessEnemyHealthMultiplier);
     this.spawned++;
     if (this.spatialActive) this.enemyIndex.update(this.enemySlots.get(enemy)!);
     return enemy;
@@ -558,9 +598,11 @@ export class Combat {
   }
 
   spawnRank(rank: 'elite' | 'boss', player: Point) {
-    const boss = rank === 'boss', radius = boss ? ENCOUNTER_RULES.bossRadius : ENCOUNTER_RULES.eliteRadius;
+    const boss = rank === 'boss', profile = boss ? this.encounters.bossProfile : undefined;
+    const kind = profile?.kind ?? 'tank';
+    const radius = profile ? ENEMY_TYPES[kind].radius * profile.scale : boss ? ENCOUNTER_RULES.bossRadius : ENCOUNTER_RULES.eliteRadius;
     const point = this.spawnPosition(player, 6, 8.5, radius);
-    const enemy = point ? this.spawn('tank', point.x, point.z, boss ? ENCOUNTER_RULES.bossSpawn : 1.2) : undefined;
+    const enemy = point ? this.spawn(kind, point.x, point.z, boss ? ENCOUNTER_RULES.bossSpawn : 1.2, rank) : undefined;
     if (enemy) {
       enemy.rank = rank; enemy.radius = radius;
       enemy.hp = enemy.maxHp = boss
@@ -611,6 +653,10 @@ export class Combat {
       const crystalRoom = mix?.crystalAllowed && (alive['draft-crystal-swarm'] ?? 0) < (mix.crystalCap ?? 0);
       const kind: EnemyKind = mix && (occupied >= (quota ?? 0) || eventFull)
         ? crystalRoom ? 'draft-crystal-swarm' : 'normal' : candidate;
+      // Keep crystal-to-fodder feeding before crystal eligibility; exhausted
+      // dangerous escorts expire instead of turning into another threat type.
+      if (this.endlessRoster && ((kind !== candidate && candidate !== 'draft-crystal-swarm')
+        || !this.endlessRoster.allows(kind, this.enemies))) continue;
       const lane = i % 3 === 1 ? -SWARM_RULES.laneAngle : i % 3 === 2 ? SWARM_RULES.laneAngle : 0;
       const point = i === 0 ? anchor : perimeterHeading === undefined
         ? this.spawnPosition(player, SWARM_RULES.minDistance, SWARM_RULES.maxDistance, ENEMY_TYPES[kind].radius, heading + lane)
@@ -620,7 +666,7 @@ export class Combat {
       if (!enemy) break;
       if (kind === 'normal') {
         enemy.swarm = true;
-        enemy.hp = enemy.maxHp = (SWARM_RULES.health[this.encounters.wave-1] ?? 18) * Math.min(2.5,this.endlessEnemyHealthMultiplier);
+        enemy.hp = enemy.maxHp = (SWARM_RULES.health[this.encounters.wave-1] ?? 18) * this.endlessFuelHealthMultiplier;
       }
       if (mix) alive[kind] = (alive[kind] ?? 0) + 1;
       spawned++;
@@ -633,7 +679,9 @@ export class Combat {
     const view = this.spawnViewport ?? { x: player.x, z: player.z, halfWidth: 14, halfDepth: 12 };
     if (![view.x, view.z, view.halfWidth, view.halfDepth].every(Number.isFinite) || view.halfWidth <= 0 || view.halfDepth <= 0) return undefined;
     for (let attempt = 0; attempt < 48; attempt++) {
-      const angle = heading + (attempt < 12 ? (this.random() - .5) * .65 : (attempt - 12) * SPAWN_LAYOUT.goldenAngle);
+      // Endless formations never relocate a blocked wing to an unrelated side.
+      const angle = heading + (this.endlessRoster ? (attempt % 12 / 11 - .5) * .65
+        : attempt < 12 ? (this.random() - .5) * .65 : (attempt - 12) * SPAWN_LAYOUT.goldenAngle);
       const point = perimeterPoint(view, angle, attempt < 12 ? this.random() : (attempt % 3) / 2);
       const distance = Math.hypot(point.x - player.x, point.z - player.z);
       if (distance < SPAWN_LAYOUT.minDistance || distance > SPAWN_LAYOUT.maxDistance) continue;
@@ -763,7 +811,7 @@ export class Combat {
     this.tick++;
     if (this.infiniteWorld) {
       // Reclaim far-off objects without kill credit; a moving player never fills the pool.
-      for (const enemy of this.enemies) if (enemy.active && (enemy.x-player.x)**2 + (enemy.z-player.z)**2 > 46**2) enemy.active = false;
+      for (const enemy of this.enemies) if (enemy.active && !enemy.captureLocked && (enemy.x-player.x)**2 + (enemy.z-player.z)**2 > 46**2) enemy.active = false;
       for (const orb of this.orbs) if (orb.active && (orb.x-player.x)**2 + (orb.z-player.z)**2 > 48**2) orb.active = false;
     }
     if (this.encounters.enabled) this.encounters.beforeTick(dt);
@@ -803,7 +851,7 @@ export class Combat {
     // Spawns and pre-movement relics may have changed positions since tick entry.
     this.enemyIndex.rebuild(this.enemies);
     for (const enemy of this.enemies) {
-      if (!enemy.active) continue;
+      if (!enemy.active || enemy.captureLocked) continue;
       enemy.previousX = enemy.x;
       enemy.previousZ = enemy.z;
       enemy.slowTime = Math.max(0, (enemy.slowTime ?? 0) - dt);
@@ -827,7 +875,7 @@ export class Combat {
           const r=MOONDEW_SHELL.radius;
           for (const index of this.enemyBounds(enemy.x-r,enemy.z-r,enemy.x+r,enemy.z+r,this.crowdCandidates)) {
             const ally=this.enemies[index];
-            if (!ally.active || ally.spawnTime>0 || ally.rank || ally.kind==='moondew-shell' || ally.hp>=this.enemyHealth(ally)
+            if (!ally.active || ally.captureLocked || ally.spawnTime>0 || ally.rank || ally.kind==='moondew-shell' || ally.hp>=this.enemyHealth(ally)
               || Math.hypot(ally.x-enemy.x,ally.z-enemy.z)>r || this.covered(enemy.x,enemy.z,ally.x,ally.z)) continue;
             ally.hp=Math.min(this.enemyHealth(ally),ally.hp+this.enemyHealth(ally)*MOONDEW_SHELL.healFraction);
             this.effect(ally.x,ally.z,'collect',ally.kind);
@@ -840,7 +888,7 @@ export class Combat {
         enemy.specialTime = (enemy.specialTime ?? 0) + dt;
         if (enemy.specialTime >= TREASURE_RUNNER.lifetime) { enemy.active = false; this.treasureEscapes++; continue; }
       }
-      const type = ENEMY_TYPES[enemy.kind], radius = this.enemyRadius(enemy), ranged = rangedEnemyRule(enemy.kind);
+      const type = ENEMY_TYPES[enemy.kind], radius = this.enemyRadius(enemy), ranged = enemy.rank ? undefined : rangedEnemyRule(enemy.kind);
       const dx = player.x - enemy.x, dz = player.z - enemy.z;
       const length = Math.max(0.001, Math.hypot(dx, dz));
       let steerX = dx / length, steerZ = dz / length;
@@ -909,7 +957,8 @@ export class Combat {
             if (shot) Object.assign(shot, { style: ranged.style, active: true, x: enemy.x + enemy.aimX * .7, z: enemy.z + enemy.aimZ * .7, previousX: enemy.x, previousZ: enemy.z, vx: enemy.aimX * ranged.speed, vz: enemy.aimZ * ranged.speed, life: ranged.life });
             enemy.intent = 'chase'; enemy.intentCooldown = ranged.cooldown;
           }
-        } else if (!enemy.intentCooldown && length < ranged.range && !this.covered(enemy.x, enemy.z, player.x, player.z)) {
+        } else if (!enemy.intentCooldown && length < ranged.range && !this.covered(enemy.x, enemy.z, player.x, player.z)
+          && this.beginEndlessWarning(enemy, false)) {
           enemy.intent = 'windup'; enemy.intentTime = ranged.windup; enemy.aimX = dx / length; enemy.aimZ = dz / length;
         }
       }
@@ -1163,7 +1212,7 @@ export class Combat {
       let damage = 0;
       let contactDamage = 0;
       for (const enemy of this.enemies) {
-        if (!enemy.active || enemy.spawnTime > 0 || (enemy.freezeTime ?? 0) > 0) continue;
+        if (!enemy.active || enemy.captureLocked || enemy.spawnTime > 0 || (enemy.freezeTime ?? 0) > 0) continue;
         // Body contact is independent of special attack state, with relative
         // sweeps to catch player dashes/crossings between sampled positions.
         if (this.encounters.enabled && enemy.kind !== 'draft-treasure-runner') {
@@ -1377,8 +1426,9 @@ export class Combat {
   }
 
   clearWave() {
+    this.nextEndlessWarning = 0;
     this.clearTransientEffects(true);
-    for (const enemy of this.enemies) enemy.active = false;
+    for (const enemy of this.enemies) {enemy.active = false;enemy.captureLocked=false;enemy.captureScale=1;}
     for (const orb of this.orbs) orb.active = false;
     this.targetId = this.hurtFlash = this.invulnerability = 0;
     if (this.party) for (const member of this.party.members) member.targetId = 0;
@@ -1505,7 +1555,7 @@ export class Combat {
     }
     contacts.sort((a, b) => a.t - b.t || a.enemy.id - b.enemy.id);
     for (const { enemy, t } of contacts) {
-      if (!enemy.active) continue;
+      if (!enemy.active || enemy.captureLocked) continue;
       const x = shot.previousX + (shot.x - shot.previousX) * t, z = shot.previousZ + (shot.z - shot.previousZ) * t;
       ids.push(enemy.id); damaged.push(enemy.id);
       this.damageEnemy(enemy, shot.damage, shot.vx / WEAPON.speed, shot.vz / WEAPON.speed, 'player', this.projectileSource(shot));
@@ -1596,10 +1646,31 @@ export class Combat {
     }
   }
 
+  /** Only new windups are deferred. Existing telegraphs/attacks finish unchanged.
+   * Uses simulation time and run-local state; legacy/campaign keep original timing.
+   */
+  private beginEndlessWarning(enemy: Enemy, charge: boolean) {
+    if (!this.endlessRoster) return true;
+    const boss = this.encounters.bossState;
+    if (this.elapsed < this.nextEndlessWarning || this.encounters.elitePulsing
+      || (this.encounters.boss?.active && (boss.endsWith('windup') || boss === 'dash' || boss === 'spread'))
+      || this.sporeExplosions.some(e => e.active && !e.detonated)) return false;
+    let charges = 0;
+    for (const other of this.enemies) {
+      if (!other.active || other === enemy || other.rank || other.spawnTime > 0) continue;
+      const charging = other.kind === 'fast' || other.kind === 'molten-fruit' || other.kind === 'frost-fluff';
+      if (charging && (other.intent === 'windup' || other.intent === 'pounce')) charges++;
+      if (charge && other.kind === 'crystal-crawler' && other.intent === 'windup') return false;
+    }
+    if ((charge && charges >= 2) || (enemy.kind === 'crystal-crawler' && charges > 0)) return false;
+    this.nextEndlessWarning = this.elapsed + (enemy.kind === 'crystal-crawler' ? 1.3 : .45);
+    return true;
+  }
+
   private updatePounce(enemy: Enemy, dt: number, dx: number, dz: number, distance: number, rule: typeof POUNCE | typeof FORMAL_POUNCE | typeof MOLTEN_POUNCE | typeof FROST_GLIDE = POUNCE) {
     enemy.intentCooldown = Math.max(0, enemy.intentCooldown - dt);
     if (enemy.intent === 'chase') {
-      if (enemy.intentCooldown === 0 && distance <= rule.range) {
+      if (enemy.intentCooldown === 0 && distance <= rule.range && this.beginEndlessWarning(enemy, true)) {
         enemy.intent = 'windup'; enemy.intentTime = rule.windup;
         if(enemy.kind==='molten-fruit') enemy.grassRollDistance=0;
         if (this.encounters.enabled) {
@@ -1881,6 +1952,7 @@ export class Combat {
 
   private updateBurns(dt: number) {
     for (const enemy of this.enemies) {
+      if(enemy.captureLocked)continue;
       if (this.encounters.dying) break;
       if(enemy.active&&(enemy.pairBurnTime??0)>0&&enemy.pairBurnSource){
         const elapsed=Math.min(dt,enemy.pairBurnTime!);enemy.pairBurnTime=Math.max(0,enemy.pairBurnTime!-dt);enemy.pairBurnClock=(enemy.pairBurnClock??0)+elapsed;
@@ -1901,7 +1973,7 @@ export class Combat {
   }
 
   private damageEnemy(enemy: Enemy, damage: number, dx: number, dz: number, origin: 'player' | 'spore' = 'player', source?: RelicDamageSource) {
-    if (!enemy.active || enemy.spawnTime > 0 || enemy.hp <= 0) return;
+    if (!enemy.active || enemy.captureLocked || enemy.spawnTime > 0 || enemy.hp <= 0) return;
     if (!Number.isFinite(damage) || damage <= 0) return;
     if (source?.areaBudget) {
       const hits = source.areaBudget.hits, count = hits.get(enemy.id) ?? 0;
@@ -1970,19 +2042,7 @@ export class Combat {
         } else this.goldEarned += treasure ? TREASURE_RUNNER.coins : enemy.rank === 'boss' ? 0 : enemy.rank === 'elite' ? 18 : (enemy.kind === 'tank' || enemy.kind === 'sand-shell') ? 2 : 1;
         if (treasure) {
           this.treasureCaught++;
-          const items: TreasureReward['items'] = [];
-          const used = new Set<SkillId>();
-          const count = treasureItemCount(this.random());
-          for (let i = 0; i < count; i++) {
-            // Re-evaluate after each grant: slots, unique relics and prerequisites can change.
-            const candidates = this.progression.skills.filter(s => s.id !== 'weapon-pair-fusion' && !(this.progression.ranks['specialist-badge'] && WEAPON_CARDS[s.id] && !this.runBuild.has(WEAPON_CARDS[s.id]!)) && !used.has(s.id) && (factoryRelic(s.id)?.rewards.shop ?? true) && this.progression.canGrant(s.id));
-            const skill = candidates[Math.min(candidates.length - 1, Math.floor(this.random() * candidates.length))];
-            if (skill && this.grantUpgrade(skill.id)) {
-              used.add(skill.id); items.push({ title: skill.title, skill: skill.id });
-            } else { this.goldEarned += 12; items.push({ title: '金币补给 +12' }); }
-          }
-          const reward = this.treasureRewards.find(e => !e.active) ?? this.treasureRewards.reduce((oldest,e) => e.age > oldest.age ? e : oldest);
-          Object.assign(reward, { active: true, x: enemy.x, z: enemy.z, age: 0, coins: TREASURE_RUNNER.coins, items });
+          this.grantTreasure(treasureItemCount(this.random()), enemy);
         }
       }
       if (enemy.rank === 'boss') this.encounters.killedBoss(this);
