@@ -1,3 +1,4 @@
+import './sanctuary.css';
 import {
   readSanctuary, SANCTUARY_LEVEL_COSTS, SANCTUARY_MAX_LEVEL, SANCTUARY_REGIONS,
   type SanctuarySave,
