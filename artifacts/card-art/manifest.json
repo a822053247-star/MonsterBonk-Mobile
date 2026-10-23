@@ -1,0 +1,1770 @@
+[
+  {
+    "source": "upgrade/illustrations/relics/alchemist-ledger.png",
+    "output": "card-art/upgrade/illustrations/relics/alchemist-ledger.webp",
+    "sourceBytes": 97248,
+    "bytes": 26868,
+    "core": [
+      50.0,
+      24.0,
+      205.0,
+      228.0
+    ],
+    "coreSize": [
+      147.52,
+      194.15
+    ],
+    "scale": 0.95173
+  },
+  {
+    "source": "upgrade/illustrations/relics/azure-ward.png",
+    "output": "card-art/upgrade/illustrations/relics/azure-ward.webp",
+    "sourceBytes": 103117,
+    "bytes": 24450,
+    "core": [
+      36.0,
+      28.0,
+      220.0,
+      227.0
+    ],
+    "coreSize": [
+      153.98,
+      166.54
+    ],
+    "scale": 0.83687
+  },
+  {
+    "source": "upgrade/illustrations/relics/back-mirror.png",
+    "output": "card-art/upgrade/illustrations/relics/back-mirror.webp",
+    "sourceBytes": 101450,
+    "bytes": 28258,
+    "core": [
+      26.0,
+      92.0,
+      187.0,
+      291.0
+    ],
+    "coreSize": [
+      153.61,
+      189.87
+    ],
+    "scale": 0.95412
+  },
+  {
+    "source": "upgrade/illustrations/relics/blazing-satellite.png",
+    "output": "card-art/upgrade/illustrations/relics/blazing-satellite.webp",
+    "sourceBytes": 101775,
+    "bytes": 30076,
+    "core": [
+      36.0,
+      28.0,
+      220.0,
+      231.0
+    ],
+    "coreSize": [
+      168.88,
+      186.32
+    ],
+    "scale": 0.91784
+  },
+  {
+    "source": "upgrade/illustrations/relics/blood-pact.png",
+    "output": "card-art/upgrade/illustrations/relics/blood-pact.webp",
+    "sourceBytes": 98037,
+    "bytes": 30538,
+    "core": [
+      13.0,
+      90.0,
+      179.0,
+      300.0
+    ],
+    "coreSize": [
+      163.73,
+      207.12
+    ],
+    "scale": 0.98631
+  },
+  {
+    "source": "upgrade/illustrations/relics/charge-chamber.png",
+    "output": "card-art/upgrade/illustrations/relics/charge-chamber.webp",
+    "sourceBytes": 97617,
+    "bytes": 25124,
+    "core": [
+      44.0,
+      34.0,
+      211.0,
+      224.0
+    ],
+    "coreSize": [
+      153.6,
+      174.76
+    ],
+    "scale": 0.91976
+  },
+  {
+    "source": "upgrade/illustrations/relics/draft-bubble-spore.png",
+    "output": "card-art/upgrade/illustrations/relics/draft-bubble-spore.webp",
+    "sourceBytes": 103746,
+    "bytes": 30484,
+    "core": [
+      54.0,
+      35.0,
+      231.0,
+      244.0
+    ],
+    "coreSize": [
+      162.08,
+      191.38
+    ],
+    "scale": 0.91571
+  },
+  {
+    "source": "upgrade/illustrations/relics/draft-echo-bone-dice.png",
+    "output": "card-art/upgrade/illustrations/relics/draft-echo-bone-dice.webp",
+    "sourceBytes": 119382,
+    "bytes": 32018,
+    "core": [
+      48.0,
+      49.0,
+      243.0,
+      242.0
+    ],
+    "coreSize": [
+      173.31,
+      171.53
+    ],
+    "scale": 0.88875
+  },
+  {
+    "source": "upgrade/illustrations/relics/draft-kindling-flask.png",
+    "output": "card-art/upgrade/illustrations/relics/draft-kindling-flask.webp",
+    "sourceBytes": 103724,
+    "bytes": 24516,
+    "core": [
+      40.0,
+      47.0,
+      230.0,
+      258.0
+    ],
+    "coreSize": [
+      159.91,
+      177.58
+    ],
+    "scale": 0.84163
+  },
+  {
+    "source": "upgrade/illustrations/relics/draft-martyr-core.png",
+    "output": "card-art/upgrade/illustrations/relics/draft-martyr-core.webp",
+    "sourceBytes": 103692,
+    "bytes": 27526,
+    "core": [
+      49.0,
+      46.0,
+      230.0,
+      251.0
+    ],
+    "coreSize": [
+      159.68,
+      180.86
+    ],
+    "scale": 0.88222
+  },
+  {
+    "source": "upgrade/illustrations/relics/draft-slaughter-hourglass.png",
+    "output": "card-art/upgrade/illustrations/relics/draft-slaughter-hourglass.webp",
+    "sourceBytes": 97512,
+    "bytes": 28290,
+    "core": [
+      54.0,
+      45.0,
+      226.0,
+      256.0
+    ],
+    "coreSize": [
+      159.69,
+      195.9
+    ],
+    "scale": 0.92845
+  },
+  {
+    "source": "upgrade/illustrations/relics/draft-thorn-testament.png",
+    "output": "card-art/upgrade/illustrations/relics/draft-thorn-testament.webp",
+    "sourceBytes": 106244,
+    "bytes": 29576,
+    "core": [
+      57.0,
+      52.0,
+      230.0,
+      256.0
+    ],
+    "coreSize": [
+      156.07,
+      184.03
+    ],
+    "scale": 0.90211
+  },
+  {
+    "source": "upgrade/illustrations/relics/echo-rune.png",
+    "output": "card-art/upgrade/illustrations/relics/echo-rune.webp",
+    "sourceBytes": 756342,
+    "bytes": 30880,
+    "core": [
+      37.63,
+      43.37,
+      688.9,
+      555.18
+    ],
+    "coreSize": [
+      207.59,
+      163.13
+    ],
+    "scale": 0.31874
+  },
+  {
+    "source": "upgrade/illustrations/relics/elite-hunter.png",
+    "output": "card-art/upgrade/illustrations/relics/elite-hunter.webp",
+    "sourceBytes": 364959,
+    "bytes": 25734,
+    "core": [
+      76.0,
+      45.0,
+      403.0,
+      340.0
+    ],
+    "coreSize": [
+      177.91,
+      160.5
+    ],
+    "scale": 0.54407
+  },
+  {
+    "source": "upgrade/illustrations/relics/ember-sigil.png",
+    "output": "card-art/upgrade/illustrations/relics/ember-sigil.webp",
+    "sourceBytes": 91548,
+    "bytes": 31016,
+    "core": [
+      19.0,
+      110.0,
+      188.0,
+      293.0
+    ],
+    "coreSize": [
+      170.91,
+      185.07
+    ],
+    "scale": 1.0113
+  },
+  {
+    "source": "upgrade/illustrations/relics/far-lens.png",
+    "output": "card-art/upgrade/illustrations/relics/far-lens.webp",
+    "sourceBytes": 354761,
+    "bytes": 22724,
+    "core": [
+      44.0,
+      124.0,
+      395.0,
+      399.0
+    ],
+    "coreSize": [
+      182.3,
+      142.83
+    ],
+    "scale": 0.51937
+  },
+  {
+    "source": "upgrade/illustrations/relics/fleet-contract.png",
+    "output": "card-art/upgrade/illustrations/relics/fleet-contract.webp",
+    "sourceBytes": 329321,
+    "bytes": 27666,
+    "core": [
+      75.0,
+      108.0,
+      397.0,
+      401.0
+    ],
+    "coreSize": [
+      183.03,
+      166.55
+    ],
+    "scale": 0.56843
+  },
+  {
+    "source": "upgrade/illustrations/relics/heart-keeper.png",
+    "output": "card-art/upgrade/illustrations/relics/heart-keeper.webp",
+    "sourceBytes": 90589,
+    "bytes": 23762,
+    "core": [
+      57.0,
+      22.0,
+      198.0,
+      234.0
+    ],
+    "coreSize": [
+      133.6,
+      200.87
+    ],
+    "scale": 0.9475
+  },
+  {
+    "source": "upgrade/illustrations/relics/heavy-ammo.png",
+    "output": "card-art/upgrade/illustrations/relics/heavy-ammo.webp",
+    "sourceBytes": 344906,
+    "bytes": 21634,
+    "core": [
+      39.0,
+      106.0,
+      363.0,
+      400.0
+    ],
+    "coreSize": [
+      169.83,
+      154.1
+    ],
+    "scale": 0.52416
+  },
+  {
+    "source": "upgrade/illustrations/relics/hive-fuse.png",
+    "output": "card-art/upgrade/illustrations/relics/hive-fuse.webp",
+    "sourceBytes": 103740,
+    "bytes": 29680,
+    "core": [
+      20.0,
+      76.0,
+      171.0,
+      294.0
+    ],
+    "coreSize": [
+      142.64,
+      205.93
+    ],
+    "scale": 0.94464
+  },
+  {
+    "source": "upgrade/illustrations/relics/hunter-eye.png",
+    "output": "card-art/upgrade/illustrations/relics/hunter-eye.webp",
+    "sourceBytes": 735292,
+    "bytes": 35438,
+    "core": [
+      46.38,
+      46.4,
+      694.18,
+      545.2
+    ],
+    "coreSize": [
+      222.6,
+      171.4
+    ],
+    "scale": 0.34363
+  },
+  {
+    "source": "upgrade/illustrations/relics/last-stand.png",
+    "output": "card-art/upgrade/illustrations/relics/last-stand.webp",
+    "sourceBytes": 324760,
+    "bytes": 21452,
+    "core": [
+      64.0,
+      47.0,
+      406.0,
+      335.0
+    ],
+    "coreSize": [
+      181.94,
+      153.21
+    ],
+    "scale": 0.53198
+  },
+  {
+    "source": "upgrade/illustrations/relics/levelup-salute.png",
+    "output": "card-art/upgrade/illustrations/relics/levelup-salute.webp",
+    "sourceBytes": 85470,
+    "bytes": 21112,
+    "core": [
+      61.0,
+      18.0,
+      197.0,
+      239.0
+    ],
+    "coreSize": [
+      125.95,
+      204.68
+    ],
+    "scale": 0.92613
+  },
+  {
+    "source": "upgrade/illustrations/relics/mirror-prism.png",
+    "output": "card-art/upgrade/illustrations/relics/mirror-prism.webp",
+    "sourceBytes": 94619,
+    "bytes": 31034,
+    "core": [
+      22.0,
+      115.0,
+      194.0,
+      279.0
+    ],
+    "coreSize": [
+      177.2,
+      168.95
+    ],
+    "scale": 1.03021
+  },
+  {
+    "source": "upgrade/illustrations/relics/overload-core.png",
+    "output": "card-art/upgrade/illustrations/relics/overload-core.webp",
+    "sourceBytes": 724694,
+    "bytes": 28014,
+    "core": [
+      40.21,
+      38.87,
+      664.24,
+      574.74
+    ],
+    "coreSize": [
+      191.77,
+      164.68
+    ],
+    "scale": 0.30732
+  },
+  {
+    "source": "upgrade/illustrations/relics/prism-shower.png",
+    "output": "card-art/upgrade/illustrations/relics/prism-shower.webp",
+    "sourceBytes": 100968,
+    "bytes": 30550,
+    "core": [
+      33.0,
+      32.0,
+      195.0,
+      226.0
+    ],
+    "coreSize": [
+      161.51,
+      193.41
+    ],
+    "scale": 0.99695
+  },
+  {
+    "source": "upgrade/illustrations/relics/pristine-halo.png",
+    "output": "card-art/upgrade/illustrations/relics/pristine-halo.webp",
+    "sourceBytes": 87144,
+    "bytes": 32602,
+    "core": [
+      55.0,
+      37.0,
+      203.0,
+      218.0
+    ],
+    "coreSize": [
+      165.06,
+      201.86
+    ],
+    "scale": 1.11526
+  },
+  {
+    "source": "upgrade/illustrations/relics/reaper-decree.png",
+    "output": "card-art/upgrade/illustrations/relics/reaper-decree.webp",
+    "sourceBytes": 77142,
+    "bytes": 20422,
+    "core": [
+      62.0,
+      17.0,
+      194.0,
+      233.0
+    ],
+    "coreSize": [
+      135.86,
+      222.32
+    ],
+    "scale": 1.02924
+  },
+  {
+    "source": "upgrade/illustrations/relics/resonant-aftershock.png",
+    "output": "card-art/upgrade/illustrations/relics/resonant-aftershock.webp",
+    "sourceBytes": 92514,
+    "bytes": 25524,
+    "core": [
+      44.0,
+      37.0,
+      215.0,
+      220.0
+    ],
+    "coreSize": [
+      156.69,
+      167.68
+    ],
+    "scale": 0.91631
+  },
+  {
+    "source": "upgrade/illustrations/relics/rest-supply.png",
+    "output": "card-art/upgrade/illustrations/relics/rest-supply.webp",
+    "sourceBytes": 359976,
+    "bytes": 23462,
+    "core": [
+      55.0,
+      43.0,
+      385.0,
+      342.0
+    ],
+    "coreSize": [
+      176.49,
+      159.91
+    ],
+    "scale": 0.53482
+  },
+  {
+    "source": "upgrade/illustrations/relics/returning-crown.png",
+    "output": "card-art/upgrade/illustrations/relics/returning-crown.webp",
+    "sourceBytes": 99271,
+    "bytes": 35594,
+    "core": [
+      18.0,
+      101.0,
+      185.0,
+      296.0
+    ],
+    "coreSize": [
+      175.09,
+      204.44
+    ],
+    "scale": 1.04843
+  },
+  {
+    "source": "upgrade/illustrations/relics/reverse-tide.png",
+    "output": "card-art/upgrade/illustrations/relics/reverse-tide.webp",
+    "sourceBytes": 101558,
+    "bytes": 23742,
+    "core": [
+      41.0,
+      32.0,
+      217.0,
+      226.0
+    ],
+    "coreSize": [
+      153.5,
+      169.2
+    ],
+    "scale": 0.87215
+  },
+  {
+    "source": "upgrade/illustrations/relics/rhythm-seal.png",
+    "output": "card-art/upgrade/illustrations/relics/rhythm-seal.webp",
+    "sourceBytes": 81022,
+    "bytes": 21316,
+    "core": [
+      47.0,
+      30.0,
+      208.0,
+      225.0
+    ],
+    "coreSize": [
+      152.99,
+      185.3
+    ],
+    "scale": 0.95027
+  },
+  {
+    "source": "upgrade/illustrations/relics/scarlet-reprisal.png",
+    "output": "card-art/upgrade/illustrations/relics/scarlet-reprisal.webp",
+    "sourceBytes": 97373,
+    "bytes": 31110,
+    "core": [
+      43.0,
+      25.0,
+      217.0,
+      239.0
+    ],
+    "coreSize": [
+      169.38,
+      208.32
+    ],
+    "scale": 0.97347
+  },
+  {
+    "source": "upgrade/illustrations/relics/shattered-core.png",
+    "output": "card-art/upgrade/illustrations/relics/shattered-core.webp",
+    "sourceBytes": 712453,
+    "bytes": 28716,
+    "core": [
+      44.43,
+      40.46,
+      627.19,
+      546.92
+    ],
+    "coreSize": [
+      184.86,
+      160.66
+    ],
+    "scale": 0.31722
+  },
+  {
+    "source": "upgrade/illustrations/relics/slaughter-drum.png",
+    "output": "card-art/upgrade/illustrations/relics/slaughter-drum.webp",
+    "sourceBytes": 111934,
+    "bytes": 27156,
+    "core": [
+      19.0,
+      108.0,
+      208.0,
+      299.0
+    ],
+    "coreSize": [
+      162.12,
+      163.83
+    ],
+    "scale": 0.85777
+  },
+  {
+    "source": "upgrade/illustrations/relics/smokescreen-feather.png",
+    "output": "card-art/upgrade/illustrations/relics/smokescreen-feather.webp",
+    "sourceBytes": 85567,
+    "bytes": 17340,
+    "core": [
+      52.0,
+      21.0,
+      203.0,
+      235.0
+    ],
+    "coreSize": [
+      132.4,
+      187.63
+    ],
+    "scale": 0.8768
+  },
+  {
+    "source": "upgrade/illustrations/relics/specialist-badge.png",
+    "output": "card-art/upgrade/illustrations/relics/specialist-badge.webp",
+    "sourceBytes": 810297,
+    "bytes": 24078,
+    "core": [
+      61.36,
+      77.45,
+      691.02,
+      605.01
+    ],
+    "coreSize": [
+      180.28,
+      151.04
+    ],
+    "scale": 0.28631
+  },
+  {
+    "source": "upgrade/illustrations/relics/spore-crown.png",
+    "output": "card-art/upgrade/illustrations/relics/spore-crown.webp",
+    "sourceBytes": 120235,
+    "bytes": 28928,
+    "core": [
+      23.0,
+      97.0,
+      192.0,
+      300.0
+    ],
+    "coreSize": [
+      149.53,
+      179.61
+    ],
+    "scale": 0.8848
+  },
+  {
+    "source": "upgrade/illustrations/relics/starlit-magnet.png",
+    "output": "card-art/upgrade/illustrations/relics/starlit-magnet.webp",
+    "sourceBytes": 114192,
+    "bytes": 26300,
+    "core": [
+      37.0,
+      25.0,
+      218.0,
+      231.0
+    ],
+    "coreSize": [
+      153.18,
+      174.33
+    ],
+    "scale": 0.84628
+  },
+  {
+    "source": "upgrade/illustrations/relics/steady-cannon.png",
+    "output": "card-art/upgrade/illustrations/relics/steady-cannon.webp",
+    "sourceBytes": 347913,
+    "bytes": 21226,
+    "core": [
+      75.0,
+      109.0,
+      402.0,
+      404.0
+    ],
+    "coreSize": [
+      166.8,
+      150.48
+    ],
+    "scale": 0.5101
+  },
+  {
+    "source": "upgrade/illustrations/relics/storm-relay.png",
+    "output": "card-art/upgrade/illustrations/relics/storm-relay.webp",
+    "sourceBytes": 87804,
+    "bytes": 23276,
+    "core": [
+      56.0,
+      23.0,
+      198.0,
+      235.0
+    ],
+    "coreSize": [
+      133.12,
+      198.74
+    ],
+    "scale": 0.93746
+  },
+  {
+    "source": "upgrade/illustrations/relics/swift-weave.png",
+    "output": "card-art/upgrade/illustrations/relics/swift-weave.webp",
+    "sourceBytes": 107164,
+    "bytes": 31052,
+    "core": [
+      44.0,
+      21.0,
+      211.0,
+      237.0
+    ],
+    "coreSize": [
+      159.75,
+      206.63
+    ],
+    "scale": 0.9566
+  },
+  {
+    "source": "upgrade/illustrations/relics/tidal-magnet.png",
+    "output": "card-art/upgrade/illustrations/relics/tidal-magnet.webp",
+    "sourceBytes": 111720,
+    "bytes": 26844,
+    "core": [
+      17.0,
+      91.0,
+      184.0,
+      298.0
+    ],
+    "coreSize": [
+      144.62,
+      179.26
+    ],
+    "scale": 0.86598
+  },
+  {
+    "source": "upgrade/illustrations/relics/tidal-pearl.png",
+    "output": "card-art/upgrade/illustrations/relics/tidal-pearl.webp",
+    "sourceBytes": 727190,
+    "bytes": 25864,
+    "core": [
+      32.39,
+      33.82,
+      684.39,
+      584.77
+    ],
+    "coreSize": [
+      187.69,
+      158.61
+    ],
+    "scale": 0.28788
+  },
+  {
+    "source": "upgrade/illustrations/relics/tide-prism.png",
+    "output": "card-art/upgrade/illustrations/relics/tide-prism.webp",
+    "sourceBytes": 1789409,
+    "bytes": 29720,
+    "core": [
+      107.77,
+      151.85,
+      1180.52,
+      1097.25
+    ],
+    "coreSize": [
+      195.7,
+      172.47
+    ],
+    "scale": 0.18243
+  },
+  {
+    "source": "upgrade/illustrations/relics/venom-insignia.png",
+    "output": "card-art/upgrade/illustrations/relics/venom-insignia.webp",
+    "sourceBytes": 89384,
+    "bytes": 21534,
+    "core": [
+      53.0,
+      24.0,
+      208.0,
+      232.0
+    ],
+    "coreSize": [
+      136.26,
+      182.86
+    ],
+    "scale": 0.87912
+  },
+  {
+    "source": "upgrade/illustrations/relics/vital-contract.png",
+    "output": "card-art/upgrade/illustrations/relics/vital-contract.webp",
+    "sourceBytes": 378970,
+    "bytes": 23280,
+    "core": [
+      52.0,
+      37.0,
+      388.0,
+      359.0
+    ],
+    "coreSize": [
+      174.22,
+      166.96
+    ],
+    "scale": 0.51852
+  },
+  {
+    "source": "upgrade/illustrations/relics/void-vessel.png",
+    "output": "card-art/upgrade/illustrations/relics/void-vessel.webp",
+    "sourceBytes": 90275,
+    "bytes": 23880,
+    "core": [
+      58.0,
+      21.0,
+      195.0,
+      235.0
+    ],
+    "coreSize": [
+      130.6,
+      204.0
+    ],
+    "scale": 0.95327
+  },
+  {
+    "source": "upgrade/illustrations/relics/warp-eye.png",
+    "output": "card-art/upgrade/illustrations/relics/warp-eye.webp",
+    "sourceBytes": 99080,
+    "bytes": 24706,
+    "core": [
+      37.0,
+      28.0,
+      217.0,
+      231.0
+    ],
+    "coreSize": [
+      158.97,
+      179.29
+    ],
+    "scale": 0.88319
+  },
+  {
+    "source": "upgrade/illustrations/relics/wet-vines.png",
+    "output": "card-art/upgrade/illustrations/relics/wet-vines.webp",
+    "sourceBytes": 102326,
+    "bytes": 28630,
+    "core": [
+      15.0,
+      92.0,
+      177.0,
+      295.0
+    ],
+    "coreSize": [
+      150.05,
+      188.03
+    ],
+    "scale": 0.92624
+  },
+  {
+    "source": "upgrade/illustrations/skills/abyss-crown.png",
+    "output": "card-art/upgrade/illustrations/skills/abyss-crown.webp",
+    "sourceBytes": 588560,
+    "bytes": 23644,
+    "core": [
+      29.0,
+      65.0,
+      481.0,
+      482.0
+    ],
+    "coreSize": [
+      173.02,
+      159.63
+    ],
+    "scale": 0.38279
+  },
+  {
+    "source": "upgrade/illustrations/skills/abyss-vortex.png",
+    "output": "card-art/upgrade/illustrations/skills/abyss-vortex.webp",
+    "sourceBytes": 518390,
+    "bytes": 22496,
+    "core": [
+      37.0,
+      38.0,
+      491.0,
+      467.0
+    ],
+    "coreSize": [
+      174.43,
+      164.83
+    ],
+    "scale": 0.38422
+  },
+  {
+    "source": "upgrade/illustrations/skills/all-tides.png",
+    "output": "card-art/upgrade/illustrations/skills/all-tides.webp",
+    "sourceBytes": 598636,
+    "bytes": 27106,
+    "core": [
+      48.0,
+      37.0,
+      470.0,
+      479.0
+    ],
+    "coreSize": [
+      164.35,
+      172.14
+    ],
+    "scale": 0.38946
+  },
+  {
+    "source": "upgrade/illustrations/skills/area-expansion.png",
+    "output": "card-art/upgrade/illustrations/skills/area-expansion.webp",
+    "sourceBytes": 780075,
+    "bytes": 39386,
+    "core": [
+      40.95,
+      40.96,
+      682.05,
+      615.8
+    ],
+    "coreSize": [
+      208.24,
+      186.72
+    ],
+    "scale": 0.32481
+  },
+  {
+    "source": "upgrade/illustrations/skills/astral-wheel.png",
+    "output": "card-art/upgrade/illustrations/skills/astral-wheel.webp",
+    "sourceBytes": 448898,
+    "bytes": 36734,
+    "core": [
+      55.0,
+      57.0,
+      452.0,
+      457.0
+    ],
+    "coreSize": [
+      193.23,
+      194.69
+    ],
+    "scale": 0.48673
+  },
+  {
+    "source": "upgrade/illustrations/skills/azure-burst.png",
+    "output": "card-art/upgrade/illustrations/skills/azure-burst.webp",
+    "sourceBytes": 351816,
+    "bytes": 33206,
+    "core": [
+      81.0,
+      90.0,
+      452.0,
+      433.0
+    ],
+    "coreSize": [
+      201.81,
+      186.57
+    ],
+    "scale": 0.54395
+  },
+  {
+    "source": "upgrade/illustrations/skills/berserk-route.png",
+    "output": "card-art/upgrade/illustrations/skills/berserk-route.webp",
+    "sourceBytes": 528168,
+    "bytes": 23234,
+    "core": [
+      35.94,
+      48.39,
+      764.06,
+      468.29
+    ],
+    "coreSize": [
+      224.0,
+      129.18
+    ],
+    "scale": 0.30764
+  },
+  {
+    "source": "upgrade/illustrations/skills/bubble-weapon.png",
+    "output": "card-art/upgrade/illustrations/skills/bubble-weapon.webp",
+    "sourceBytes": 375801,
+    "bytes": 24324,
+    "core": [
+      32.86,
+      35.48,
+      634.88,
+      424.41
+    ],
+    "coreSize": [
+      224.0,
+      144.71
+    ],
+    "scale": 0.37208
+  },
+  {
+    "source": "upgrade/illustrations/skills/chain-bounce-grass.png",
+    "output": "card-art/upgrade/illustrations/skills/chain-bounce-grass.webp",
+    "sourceBytes": 626940,
+    "bytes": 22514,
+    "core": [
+      53.02,
+      47.51,
+      882.98,
+      493.32
+    ],
+    "coreSize": [
+      224.0,
+      120.32
+    ],
+    "scale": 0.26989
+  },
+  {
+    "source": "upgrade/illustrations/skills/chain-bounce-water.png",
+    "output": "card-art/upgrade/illustrations/skills/chain-bounce-water.webp",
+    "sourceBytes": 527264,
+    "bytes": 19494,
+    "core": [
+      36.88,
+      42.42,
+      894.22,
+      477.73
+    ],
+    "coreSize": [
+      224.0,
+      113.73
+    ],
+    "scale": 0.26127
+  },
+  {
+    "source": "upgrade/illustrations/skills/damage.png",
+    "output": "card-art/upgrade/illustrations/skills/damage.webp",
+    "sourceBytes": 839108,
+    "bytes": 27644,
+    "core": [
+      37.55,
+      49.57,
+      729.95,
+      681.95
+    ],
+    "coreSize": [
+      178.39,
+      162.93
+    ],
+    "scale": 0.25764
+  },
+  {
+    "source": "upgrade/illustrations/skills/deep-collapse.png",
+    "output": "card-art/upgrade/illustrations/skills/deep-collapse.webp",
+    "sourceBytes": 590305,
+    "bytes": 22442,
+    "core": [
+      52.0,
+      35.0,
+      460.0,
+      477.0
+    ],
+    "coreSize": [
+      151.32,
+      163.93
+    ],
+    "scale": 0.37088
+  },
+  {
+    "source": "upgrade/illustrations/skills/dream-dart-weapon.png",
+    "output": "card-art/upgrade/illustrations/skills/dream-dart-weapon.webp",
+    "sourceBytes": 869093,
+    "bytes": 26308,
+    "core": [
+      289.01,
+      222.88,
+      991.93,
+      1045.82
+    ],
+    "coreSize": [
+      188.92,
+      221.17
+    ],
+    "scale": 0.26876
+  },
+  {
+    "source": "upgrade/illustrations/skills/flame-sweep-weapon.png",
+    "output": "card-art/upgrade/illustrations/skills/flame-sweep-weapon.webp",
+    "sourceBytes": 13420,
+    "bytes": 27466,
+    "core": [
+      21.0,
+      33.0,
+      96.0,
+      108.0
+    ],
+    "coreSize": [
+      197.66,
+      197.66
+    ],
+    "scale": 2.63548
+  },
+  {
+    "source": "upgrade/illustrations/skills/frost-crystal-weapon.png",
+    "output": "card-art/upgrade/illustrations/skills/frost-crystal-weapon.webp",
+    "sourceBytes": 915444,
+    "bytes": 24650,
+    "core": [
+      107.77,
+      320.85,
+      1148.68,
+      1048.27
+    ],
+    "coreSize": [
+      224.0,
+      156.54
+    ],
+    "scale": 0.21519
+  },
+  {
+    "source": "upgrade/illustrations/skills/frost-crystal-weapon.svg",
+    "output": "card-art/upgrade/illustrations/skills/frost-crystal-weapon-vector.webp",
+    "sourceBytes": 1415641,
+    "bytes": 17400,
+    "core": [
+      94.96,
+      46.25,
+      1257.54,
+      524.18
+    ],
+    "coreSize": [
+      224.0,
+      92.08
+    ],
+    "scale": 0.19267
+  },
+  {
+    "source": "upgrade/illustrations/skills/frost-prism.png",
+    "output": "card-art/upgrade/illustrations/skills/frost-prism.webp",
+    "sourceBytes": 450769,
+    "bytes": 21944,
+    "core": [
+      74.0,
+      49.0,
+      437.0,
+      463.0
+    ],
+    "coreSize": [
+      152.93,
+      174.42
+    ],
+    "scale": 0.42129
+  },
+  {
+    "source": "upgrade/illustrations/skills/glacier-trail.png",
+    "output": "card-art/upgrade/illustrations/skills/glacier-trail.webp",
+    "sourceBytes": 1835,
+    "bytes": 12302,
+    "core": [
+      28.0,
+      47.0,
+      227.0,
+      165.0
+    ],
+    "coreSize": [
+      224.0,
+      132.82
+    ],
+    "scale": 1.12563
+  },
+  {
+    "source": "upgrade/illustrations/skills/glacier-trail.svg",
+    "output": "card-art/upgrade/illustrations/skills/glacier-trail-vector.webp",
+    "sourceBytes": 2166536,
+    "bytes": 21056,
+    "core": [
+      109.69,
+      70.16,
+      688.59,
+      320.29
+    ],
+    "coreSize": [
+      224.0,
+      96.78
+    ],
+    "scale": 0.38694
+  },
+  {
+    "source": "upgrade/illustrations/skills/haste.png",
+    "output": "card-art/upgrade/illustrations/skills/haste.webp",
+    "sourceBytes": 1235731,
+    "bytes": 25108,
+    "core": [
+      39.97,
+      52.4,
+      1244.03,
+      718.57
+    ],
+    "coreSize": [
+      224.0,
+      123.93
+    ],
+    "scale": 0.18604
+  },
+  {
+    "source": "upgrade/illustrations/skills/ice-radiance.png",
+    "output": "card-art/upgrade/illustrations/skills/ice-radiance.webp",
+    "sourceBytes": 428188,
+    "bytes": 34396,
+    "core": [
+      32.0,
+      54.0,
+      438.0,
+      456.0
+    ],
+    "coreSize": [
+      197.38,
+      195.44
+    ],
+    "scale": 0.48617
+  },
+  {
+    "source": "upgrade/illustrations/skills/leaf-weapon.png",
+    "output": "card-art/upgrade/illustrations/skills/leaf-weapon.webp",
+    "sourceBytes": 446284,
+    "bytes": 23152,
+    "core": [
+      42.27,
+      39.23,
+      729.22,
+      396.84
+    ],
+    "coreSize": [
+      224.0,
+      116.61
+    ],
+    "scale": 0.32608
+  },
+  {
+    "source": "upgrade/illustrations/skills/movement.png",
+    "output": "card-art/upgrade/illustrations/skills/movement.webp",
+    "sourceBytes": 341136,
+    "bytes": 29952,
+    "core": [
+      45.6,
+      32.84,
+      508.0,
+      399.4
+    ],
+    "coreSize": [
+      205.6,
+      162.98
+    ],
+    "scale": 0.44463
+  },
+  {
+    "source": "upgrade/illustrations/skills/multishot.png",
+    "output": "card-art/upgrade/illustrations/skills/multishot.webp",
+    "sourceBytes": 556615,
+    "bytes": 34458,
+    "core": [
+      31.09,
+      36.46,
+      656.86,
+      630.59
+    ],
+    "coreSize": [
+      205.33,
+      194.95
+    ],
+    "scale": 0.32813
+  },
+  {
+    "source": "upgrade/illustrations/skills/orbit.png",
+    "output": "card-art/upgrade/illustrations/skills/orbit.webp",
+    "sourceBytes": 289300,
+    "bytes": 34986,
+    "core": [
+      32.0,
+      28.0,
+      427.0,
+      389.0
+    ],
+    "coreSize": [
+      206.92,
+      189.11
+    ],
+    "scale": 0.52385
+  },
+  {
+    "source": "upgrade/illustrations/skills/pursuit-route.png",
+    "output": "card-art/upgrade/illustrations/skills/pursuit-route.webp",
+    "sourceBytes": 679749,
+    "bytes": 29864,
+    "core": [
+      35.02,
+      36.59,
+      765.65,
+      612.41
+    ],
+    "coreSize": [
+      209.19,
+      164.87
+    ],
+    "scale": 0.28631
+  },
+  {
+    "source": "upgrade/illustrations/skills/range.png",
+    "output": "card-art/upgrade/illustrations/skills/range.webp",
+    "sourceBytes": 312386,
+    "bytes": 25944,
+    "core": [
+      30.08,
+      32.5,
+      582.31,
+      359.89
+    ],
+    "coreSize": [
+      224.0,
+      132.8
+    ],
+    "scale": 0.40562
+  },
+  {
+    "source": "upgrade/illustrations/skills/resonance-seed-weapon.png",
+    "output": "card-art/upgrade/illustrations/skills/resonance-seed-weapon.webp",
+    "sourceBytes": 655620,
+    "bytes": 18408,
+    "core": [
+      217.98,
+      367.38,
+      1109.5,
+      920.91
+    ],
+    "coreSize": [
+      224.0,
+      139.08
+    ],
+    "scale": 0.25126
+  },
+  {
+    "source": "upgrade/illustrations/skills/returning-ring.png",
+    "output": "card-art/upgrade/illustrations/skills/returning-ring.webp",
+    "sourceBytes": 254834,
+    "bytes": 36398,
+    "core": [
+      14.0,
+      142.0,
+      340.0,
+      433.0
+    ],
+    "coreSize": [
+      224.0,
+      199.95
+    ],
+    "scale": 0.68712
+  },
+  {
+    "source": "upgrade/illustrations/skills/sakura-echo.png",
+    "output": "card-art/upgrade/illustrations/skills/sakura-echo.webp",
+    "sourceBytes": 869093,
+    "bytes": 26308,
+    "core": [
+      289.01,
+      222.88,
+      991.93,
+      1045.82
+    ],
+    "coreSize": [
+      188.92,
+      221.17
+    ],
+    "scale": 0.26876
+  },
+  {
+    "source": "upgrade/illustrations/skills/screen-barrage.png",
+    "output": "card-art/upgrade/illustrations/skills/screen-barrage.webp",
+    "sourceBytes": 1192890,
+    "bytes": 33420,
+    "core": [
+      77.96,
+      121.27,
+      817.7,
+      774.39
+    ],
+    "coreSize": [
+      223.09,
+      196.97
+    ],
+    "scale": 0.30158
+  },
+  {
+    "source": "upgrade/illustrations/skills/screen-nova.png",
+    "output": "card-art/upgrade/illustrations/skills/screen-nova.webp",
+    "sourceBytes": 1374755,
+    "bytes": 25254,
+    "core": [
+      102.21,
+      105.68,
+      821.17,
+      788.25
+    ],
+    "coreSize": [
+      186.6,
+      177.16
+    ],
+    "scale": 0.25954
+  },
+  {
+    "source": "upgrade/illustrations/skills/shatter-ring.png",
+    "output": "card-art/upgrade/illustrations/skills/shatter-ring.webp",
+    "sourceBytes": 2296,
+    "bytes": 22658,
+    "core": [
+      7.0,
+      7.0,
+      123.0,
+      120.0
+    ],
+    "coreSize": [
+      224.0,
+      218.21
+    ],
+    "scale": 1.93103
+  },
+  {
+    "source": "upgrade/illustrations/skills/shatter-ring.svg",
+    "output": "card-art/upgrade/illustrations/skills/shatter-ring-vector.webp",
+    "sourceBytes": 2166536,
+    "bytes": 31248,
+    "core": [
+      41.8,
+      61.85,
+      770.73,
+      509.81
+    ],
+    "coreSize": [
+      224.0,
+      137.66
+    ],
+    "scale": 0.3073
+  },
+  {
+    "source": "upgrade/illustrations/skills/shockwave.png",
+    "output": "card-art/upgrade/illustrations/skills/shockwave.webp",
+    "sourceBytes": 431166,
+    "bytes": 32842,
+    "core": [
+      37.31,
+      50.12,
+      559.69,
+      467.37
+    ],
+    "coreSize": [
+      211.5,
+      168.94
+    ],
+    "scale": 0.40489
+  },
+  {
+    "source": "upgrade/illustrations/skills/spark-weapon.png",
+    "output": "card-art/upgrade/illustrations/skills/spark-weapon.webp",
+    "sourceBytes": 375949,
+    "bytes": 19860,
+    "core": [
+      34.92,
+      34.88,
+      714.44,
+      415.67
+    ],
+    "coreSize": [
+      224.0,
+      125.52
+    ],
+    "scale": 0.32964
+  },
+  {
+    "source": "upgrade/illustrations/skills/split-on-hit-fire.png",
+    "output": "card-art/upgrade/illustrations/skills/split-on-hit-fire.webp",
+    "sourceBytes": 683808,
+    "bytes": 37874,
+    "core": [
+      54.55,
+      35.92,
+      694.8,
+      501.41
+    ],
+    "coreSize": [
+      224.0,
+      162.86
+    ],
+    "scale": 0.34986
+  },
+  {
+    "source": "upgrade/illustrations/skills/split-on-hit-thorn.png",
+    "output": "card-art/upgrade/illustrations/skills/split-on-hit-thorn.webp",
+    "sourceBytes": 731679,
+    "bytes": 40440,
+    "core": [
+      43.23,
+      30.66,
+      665.19,
+      547.76
+    ],
+    "coreSize": [
+      224.0,
+      186.23
+    ],
+    "scale": 0.36015
+  },
+  {
+    "source": "upgrade/illustrations/skills/spore-trail.png",
+    "output": "card-art/upgrade/illustrations/skills/spore-trail.webp",
+    "sourceBytes": 467171,
+    "bytes": 27698,
+    "core": [
+      31.0,
+      42.0,
+      491.0,
+      476.0
+    ],
+    "coreSize": [
+      212.5,
+      200.48
+    ],
+    "scale": 0.46195
+  },
+  {
+    "source": "upgrade/illustrations/skills/star-tide.png",
+    "output": "card-art/upgrade/illustrations/skills/star-tide.webp",
+    "sourceBytes": 332462,
+    "bytes": 31184,
+    "core": [
+      56.0,
+      144.0,
+      461.0,
+      434.0
+    ],
+    "coreSize": [
+      224.0,
+      160.4
+    ],
+    "scale": 0.55309
+  },
+  {
+    "source": "upgrade/illustrations/skills/still-sea.png",
+    "output": "card-art/upgrade/illustrations/skills/still-sea.webp",
+    "sourceBytes": 361366,
+    "bytes": 29764,
+    "core": [
+      84.0,
+      142.0,
+      462.0,
+      438.0
+    ],
+    "coreSize": [
+      201.69,
+      157.93
+    ],
+    "scale": 0.53356
+  },
+  {
+    "source": "upgrade/illustrations/skills/thorn-wheel-weapon.png",
+    "output": "card-art/upgrade/illustrations/skills/thorn-wheel-weapon.webp",
+    "sourceBytes": 1036450,
+    "bytes": 26598,
+    "core": [
+      129.81,
+      110.21,
+      1131.54,
+      1126.64
+    ],
+    "coreSize": [
+      207.96,
+      211.01
+    ],
+    "scale": 0.2076
+  },
+  {
+    "source": "upgrade/illustrations/skills/thunder-bud-weapon.png",
+    "output": "card-art/upgrade/illustrations/skills/thunder-bud-weapon.webp",
+    "sourceBytes": 2152,
+    "bytes": 24246,
+    "core": [
+      19.0,
+      18.0,
+      108.0,
+      104.0
+    ],
+    "coreSize": [
+      202.56,
+      195.73
+    ],
+    "scale": 2.27595
+  },
+  {
+    "source": "upgrade/illustrations/skills/thunder-bud-weapon.svg",
+    "output": "card-art/upgrade/illustrations/skills/thunder-bud-weapon-vector.webp",
+    "sourceBytes": 2166534,
+    "bytes": 30082,
+    "core": [
+      100.94,
+      42.51,
+      612.27,
+      486.23
+    ],
+    "coreSize": [
+      209.38,
+      181.7
+    ],
+    "scale": 0.40949
+  },
+  {
+    "source": "upgrade/illustrations/skills/tidal-blade-weapon.png",
+    "output": "card-art/upgrade/illustrations/skills/tidal-blade-weapon.webp",
+    "sourceBytes": 695454,
+    "bytes": 22440,
+    "core": [
+      195.94,
+      134.71,
+      1109.5,
+      1094.8
+    ],
+    "coreSize": [
+      213.14,
+      224.0
+    ],
+    "scale": 0.23331
+  },
+  {
+    "source": "upgrade/illustrations/skills/tidal-recall.png",
+    "output": "card-art/upgrade/illustrations/skills/tidal-recall.webp",
+    "sourceBytes": 520779,
+    "bytes": 23558,
+    "core": [
+      21.0,
+      76.0,
+      480.0,
+      470.0
+    ],
+    "coreSize": [
+      173.86,
+      149.24
+    ],
+    "scale": 0.37879
+  },
+  {
+    "source": "upgrade/illustrations/skills/tsunami-sanctuary.png",
+    "output": "card-art/upgrade/illustrations/skills/tsunami-sanctuary.webp",
+    "sourceBytes": 530994,
+    "bytes": 23204,
+    "core": [
+      28.0,
+      105.0,
+      492.0,
+      473.0
+    ],
+    "coreSize": [
+      181.13,
+      143.65
+    ],
+    "scale": 0.39036
+  },
+  {
+    "source": "upgrade/illustrations/skills/undertow-pyre.png",
+    "output": "card-art/upgrade/illustrations/skills/undertow-pyre.webp",
+    "sourceBytes": 596397,
+    "bytes": 25724,
+    "core": [
+      58.0,
+      37.0,
+      454.0,
+      482.0
+    ],
+    "coreSize": [
+      153.08,
+      172.02
+    ],
+    "scale": 0.38657
+  },
+  {
+    "source": "upgrade/illustrations/skills/vitality.png",
+    "output": "card-art/upgrade/illustrations/skills/vitality.webp",
+    "sourceBytes": 789046,
+    "bytes": 25708,
+    "core": [
+      35.55,
+      51.21,
+      691.03,
+      677.17
+    ],
+    "coreSize": [
+      167.71,
+      160.15
+    ],
+    "scale": 0.25585
+  },
+  {
+    "source": "upgrade/illustrations/weapon-pairs/blazing-thorn.png",
+    "output": "card-art/upgrade/illustrations/weapon-pairs/blazing-thorn.webp",
+    "sourceBytes": 63085,
+    "bytes": 20774,
+    "core": [
+      19.0,
+      46.0,
+      221.0,
+      214.0
+    ],
+    "coreSize": [
+      213.13,
+      177.25
+    ],
+    "scale": 1.05508
+  },
+  {
+    "source": "upgrade/illustrations/weapon-pairs/bramble-tide.png",
+    "output": "card-art/upgrade/illustrations/weapon-pairs/bramble-tide.webp",
+    "sourceBytes": 94851,
+    "bytes": 17464,
+    "core": [
+      35.0,
+      56.0,
+      228.0,
+      239.0
+    ],
+    "coreSize": [
+      157.28,
+      149.13
+    ],
+    "scale": 0.81492
+  },
+  {
+    "source": "upgrade/illustrations/weapon-pairs/steam-comet.png",
+    "output": "card-art/upgrade/illustrations/weapon-pairs/steam-comet.webp",
+    "sourceBytes": 77021,
+    "bytes": 16006,
+    "core": [
+      31.0,
+      40.0,
+      223.0,
+      218.0
+    ],
+    "coreSize": [
+      174.58,
+      161.85
+    ],
+    "scale": 0.90929
+  },
+  {
+    "source": "shop/health-potion.png",
+    "output": "card-art/shop/health-potion.webp",
+    "sourceBytes": 191698,
+    "bytes": 19926,
+    "core": [
+      77.0,
+      37.0,
+      328.0,
+      363.0
+    ],
+    "coreSize": [
+      145.66,
+      189.19
+    ],
+    "scale": 0.58033
+  }
+]

@@ -1,4 +1,5 @@
 import { CaptureCollection } from './capture-collection';
+import { CaptureSpawns } from './capture-spawns';
 import { CaptureHUD } from './capture-hud';
 import { PrisonView } from './prison-view';
 import { EnemyCapture } from './enemy-capture';
@@ -72,10 +73,10 @@ export class Game {
   private captureAnchor = new THREE.Object3D();
   private captureHUD?: CaptureHUD;
   private collection=new CaptureCollection((()=>{try{return window.localStorage;}catch{return undefined;}})());
+  private captureSpawns=new CaptureSpawns((()=>{try{return window.localStorage;}catch{return undefined;}})());
   private prison?: PrisonView;
   private captureReceipt='';
   private captureSerial=0;
-  private captureTreasure=0;
   private outcome: 'victory' | 'defeat' | null = null;
   private trialHornMounted = false;
   private dashAttack: DashStep = { active: false, started: false, fromX: 0, fromZ: 0, dx: 0, dz: 1 };
@@ -481,7 +482,7 @@ export class Game {
     this.sleep();this.mode='prison';this.input.setEnabled(false);
     document.getElementById('menu')!.inert=true;
     this.prison ??= new PrisonView(this.collection,()=>this.audio.play('collect'),()=>{
-      this.prison?.close();this.collection.flush();this.mode='menu';
+      this.prison?.close();this.collection.flush();this.captureSpawns.flush();this.mode='menu';
       document.getElementById('menu')!.inert=false;this.wake();document.getElementById('open-prison')?.focus();
     });
     this.audio.setActive(true);this.audio.unlock();this.prison.open();
@@ -490,6 +491,10 @@ export class Game {
   private tryCapture() {
     if (this.mode !== 'playing' || !this.capture?.attempt(this.combat,this.position)) return;
     const p = this.capture.pending!;
+    this.input.setEnabled(false);this.velocity.set(0,0);
+    this.previousPosition.copy(this.position);this.previousJump=this.jumpHeight;
+    this.monster.root.position.copy(this.position);this.partyView.stopAnimation();
+    this.accumulator=0;
     this.captureAnchor.position.set(p.enemy.x,.05,p.enemy.z);
     this.captureSession = this.captureVfx!.start({target:this.captureAnchor,scale:Math.max(.6,this.combat.enemyRadius(p.enemy))});
     this.audio.play('capture-start');
@@ -543,8 +548,10 @@ export class Game {
     this.combat.refreshWorld(0, 0, this.world.revision);
     this.enemyTest = partyPrototype && (variant === 'enemy-test' || variant === 'capture-test') ? new EnemyTestMode(variant === 'capture-test') : undefined;
     this.captureVfx?.clear(); this.captureSession = undefined;
-    this.captureReceipt=crypto.randomUUID();this.captureSerial=0;this.captureTreasure=0;
+    this.captureReceipt=crypto.randomUUID();this.captureSerial=0;
     const captureEnabled=partyPrototype && (variant==='fusion'||variant==='infinite'||variant==='capture-test');
+    this.combat.captureEnabled=captureEnabled;
+    this.combat.captureSpawnRoll=kind=>this.captureSpawns.roll(kind);
     this.capture = captureEnabled ? new EnemyCapture(Math.random,kind=>{
       this.collection.add(kind,`${this.captureReceipt}:${++this.captureSerial}`);
       if(!this.collection.saved && this.capture)this.capture.message+=' · 存档失败，请勿关闭页面';
@@ -589,7 +596,7 @@ export class Game {
     document.getElementById('gameover-screen')!.hidden = true;
     (document.activeElement as HTMLElement | null)?.blur();
     this.welcome.classList.remove('faded');
-    this.welcome.querySelector('h2')!.textContent = this.enemyTest ? '敌人测试 · 循环出场' : endless ? '无尽挑战，向远方出发。' : this.combat.fusionEnabled && species !== 'yanrong' ? `${CREATURES[species].name}，准备出发。` : this.combat.fusionEnabled ? '一簇火花，生长成烈焰。' : partyPrototype ? '草场已就绪，出发吧。' : this.challenge ? '三波迎战，冲出一条路。' : this.combat.isTrial ? '犄角已就绪，冲出一条路。' : '小小魔法，准备就绪。';
+    this.welcome.querySelector('h2')!.textContent = this.enemyTest ? (this.capture ? '捕捉测试 · 单只沙甲团兽' : '敌人测试 · 循环出场') : endless ? '无尽挑战，向远方出发。' : this.combat.fusionEnabled && species !== 'yanrong' ? `${CREATURES[species].name}，准备出发。` : this.combat.fusionEnabled ? '一簇火花，生长成烈焰。' : partyPrototype ? '草场已就绪，出发吧。' : this.challenge ? '三波迎战，冲出一条路。' : this.combat.isTrial ? '犄角已就绪，冲出一条路。' : '小小魔法，准备就绪。';
     this.welcome.querySelector('p')!.textContent = endless ? '六波循环生存 · 第五波旗帜大波与商店 · 第六波 Boss 循环' : this.combat.fusionEnabled && species !== 'yanrong' ? `${CREATURES[species].name}出战 · 摇杆移动 · 自动攻击 · 升级三选一` : this.combat.fusionEnabled ? '六波自动战斗 · 升级形成融合 · 前四波连续迎战，第五波后才可购物' : partyPrototype && variant === 'legacy-party' ? '三兽兼容模式 · 主控移动，伙伴跟随并自动攻击' : partyPrototype ? '摇杆操控焰绒 · 自动攻击 · 沿泥路绕过林地与水岸' : this.challenge ? '击败三波即可通关 · 冲锋命中 6 次、打断 2 次各加一星' : this.combat.isTrial ? '冲刺命中可击退和打断 · 留意黄色扑击预警线' : '移动躲避敌人，焰绒会自动施法 · 靠近拾取经验';
     this.accumulator = 0;
     this.placeCamera(true);
@@ -621,7 +628,7 @@ export class Game {
     this.audio.setActive(true); this.audio.unlock();
     this.mode = 'playing';
     const loading = this.sceneLoading;
-    this.input.setEnabled(!loading);
+    this.input.setEnabled(!loading && !this.capture?.pending);
     if (loading) this.showSceneLoading();
     this.audio.setActive(!loading);
     document.getElementById('pause-screen')!.hidden = true;
@@ -630,7 +637,7 @@ export class Game {
   }
 
   private showMenu() {
-    this.collection.flush();
+    this.collection.flush();this.captureSpawns.flush();
     this.startupPending = false;
     this.startupStartedAt = 0; this.startupFallback = false;
     this.worldEntered = false;
@@ -638,7 +645,7 @@ export class Game {
     this.combat.runBuild.clearPairFusions();
     this.audio.setWave();
     this.capture?.cancel(); this.captureVfx?.clear(); this.captureSession = undefined; this.capture = undefined; if (this.captureHUD) this.captureHUD.root.hidden = true;
-    this.run = undefined; this.enemyTest = undefined; this.combat.automaticSpawning = true;
+    this.run = undefined; this.enemyTest = undefined; this.combat.automaticSpawning = true; this.combat.captureEnabled = false;
     document.getElementById('shop-screen')!.hidden = true;
     this.world.setSample(new URLSearchParams(window.location.search).get('world') !== 'legacy');
     this.combat.infiniteWorld = false;
@@ -701,8 +708,28 @@ export class Game {
     }
   }
 
+  /** Capture uses its own clock while the battle simulation is frozen. */
+  private stepCapture(dt:number) {
+    if (this.capture) {
+      const p=this.capture.pending;
+      if(p)this.captureAnchor.position.set(p.enemy.x,.05,p.enemy.z);
+      this.capture.step(dt);
+      if(p && this.capture.pending && p.success!==null && !p.announced) {
+        p.announced=true;this.audio.play(p.success?'capture-success':'capture-failure');
+        if(p.success)this.captureSession?.succeed();else if(!p.retrying)this.captureSession?.fail();
+      }
+      if(p && !this.capture.pending && p.resultTime<.7)this.captureSession?.cancel();
+      this.captureVfx?.update(dt);
+    }
+  }
+
   private step(dt: number) {
     if (this.mode !== 'playing' || this.sceneLoading) return;
+    if(this.capture?.pending){
+      this.stepCapture(dt);
+      if(!this.capture.pending)this.input.setEnabled(true);
+      return;
+    }
     if (this.treasureDialog.sync()) return;
     if (this.run?.phase === 'intermission') {
       this.run.updateRest(dt, this.combat);
@@ -798,21 +825,7 @@ export class Game {
     }
     this.combat.attackViewport = this.cameraFootprint();
     this.combat.update(dt, this.position, this.dashAttack);
-    if (this.capture) {
-      if(this.combat.treasureCaught>this.captureTreasure){
-        for(let i=this.captureTreasure;i<this.combat.treasureCaught;i++)this.capture.grant();
-        this.captureTreasure=this.combat.treasureCaught;
-      }
-      const p=this.capture.pending;
-      if(p)this.captureAnchor.position.set(p.enemy.x,.05,p.enemy.z);
-      this.capture.step(dt);
-      if(p && this.capture.pending && p.success!==null && !p.announced) {
-        p.announced=true;this.audio.play(p.success?'capture-success':'capture-failure');
-        if(p.success)this.captureSession?.succeed();else this.captureSession?.fail();
-      }
-      if(p && !this.capture.pending && p.resultTime<.7)this.captureSession?.cancel();
-      this.captureVfx?.update(dt);
-    }
+    this.stepCapture(dt);
     if (this.combat.hp > 0 && this.treasureDialog.sync()) { this.input.reset(); this.input.setEnabled(false); this.accumulator = 0; return; }
     if (this.partyPrototype && this.combat.hp > 0) this.partyView.stepAnimation(dt, (this.position.x - this.previousPosition.x) / dt, (this.position.z - this.previousPosition.z) / dt);
     this.audio.playSkills(this.combat.soundEvents);
@@ -977,7 +990,7 @@ export class Game {
     document.getElementById('hud')!.inert = false;
     (document.activeElement as HTMLElement | null)?.blur();
     const loading = this.sceneLoading;
-    this.input.setEnabled(!loading);
+    this.input.setEnabled(!loading && !this.capture?.pending);
     this.audio.setWave(this.run.waveInCycle);
     this.audio.setActive(!loading); this.audio.unlock();
     if (loading) this.showSceneLoading(); else document.getElementById('world-loading')!.hidden = true;
@@ -1072,7 +1085,7 @@ export class Game {
     gold.hidden = true; // Only wave and elapsed time occupy the top center.
     const coins = this.run?.coins ?? this.combat.goldEarned;
     document.getElementById('hud-coins')!.textContent = Math.max(0, coins).toLocaleString('en-US');
-    if (this.enemyTest) wave.textContent = this.capture ? '捕捉测试 · 18种敌人' : '敌人测试';
+    if (this.enemyTest) wave.textContent = this.capture ? '捕捉测试 · 单只沙甲团兽' : '敌人测试';
     if (this.run) { wave.textContent = this.run.waveLabel; gold.textContent = `金币 ${this.run.coins}`; }
     renderBuildSummary(this.combat.usesRunBuild ? this.combat.runBuild : undefined, this.combat.fusions, this.combat.resonances);
     this.preparePortrait(this.party.leader.species);
@@ -1233,12 +1246,21 @@ export class Game {
       this.audio.setActive(true);
       this.renderTime = 0;
     }
-    if (this.mode === 'playing' && this.treasureDialog.sync()) { this.accumulator = 0; this.input.setEnabled(false); this.frameId = requestAnimationFrame(this.frame); return; }
-    if (this.mode === 'playing') this.input.setEnabled(true);
+    if (this.mode === 'playing' && !this.capture?.pending && this.treasureDialog.sync()) {
+      this.accumulator = 0; this.input.setEnabled(false);
+      if(this.treasureDialog.presentingDeath){
+        this.treasureDialog.advanceDeath(dt);
+        this.combatView.render(1,this.visualTime,this.monster.root.position);
+        this.renderer.render(this.scene,this.camera);
+      }
+      this.frameId = requestAnimationFrame(this.frame); return;
+    }
+    if (this.mode === 'playing') this.input.setEnabled(!this.capture?.pending);
     if (this.mode === 'shop') { this.run?.updateRest(dt); this.frameId = window.requestAnimationFrame(this.frame); return; }
     if (this.quality.sample(rawDt)) this.applyGraphics();
-    const speed = this.mode === 'playing' ? this.preferences.gameSpeed : 1;
-    this.visualTime += dt * speed;
+    const capturePaused=!!this.capture?.pending;
+    const speed = this.mode === 'playing' && !capturePaused ? this.preferences.gameSpeed : 1;
+    if(!capturePaused)this.visualTime += dt * speed;
     if (this.mode === 'playing') {
       // Retain 1/60-second collision/AI steps at every speed. A delayed frame
       // stays bounded at 5 * 10 ticks; render cadence and audio use real time.
@@ -1256,21 +1278,23 @@ export class Game {
       this.input.setEnabled(false); this.audio.setActive(false); this.accumulator = 0;
       this.frameId = window.requestAnimationFrame(this.frame); return;
     }
+    const captureActive=!!this.capture?.pending;
+    const alpha=captureActive ? 1 : this.accumulator / STEP;
     if (draw) {
       const renderDt = this.renderTime ? Math.min((time - this.renderTime) / 1000, STEP * 5) : dt;
       this.renderTime = time;
       if (this.mode !== 'menu') {
-        this.monster.root.position.lerpVectors(this.previousPosition, this.position, this.accumulator / STEP);
+        this.monster.root.position.lerpVectors(this.previousPosition, this.position, alpha);
         if (this.run?.phase !== 'intermission') {
           this.updateHUD();
-          this.combatView.render(this.accumulator / STEP, this.visualTime, this.monster.root.position);
+          this.combatView.render(alpha, this.visualTime, this.monster.root.position);
         }
-        if (this.partyPrototype) this.partyView.render(this.accumulator / STEP, this.visualTime, this.combat.hurtFlash / 0.25, this.combat.invulnerability);
+        if (this.partyPrototype) this.partyView.render(alpha, this.visualTime, this.combat.hurtFlash / 0.25, this.combat.invulnerability);
         this.monster.body.visible = true;
       }
     this.captureHUD?.render(this.capture,this.combat,this.position,this.camera,this.mode==='playing');
-    this.monster.animate(renderDt * speed, Math.min(1, this.velocity.length() / 4.6), this.dashRemaining > 0, this.visualTime, THREE.MathUtils.lerp(this.previousJump, this.jumpHeight, this.accumulator / STEP), this.combat.hurtFlash / 0.25);
-      this.placeCamera(false, renderDt * speed);
+    if(!captureActive)this.monster.animate(renderDt * speed, Math.min(1, this.velocity.length() / 4.6), this.dashRemaining > 0, this.visualTime, THREE.MathUtils.lerp(this.previousJump, this.jumpHeight, this.accumulator / STEP), this.combat.hurtFlash / 0.25);
+      this.placeCamera(false, captureActive ? 0 : renderDt * speed);
       this.monster.root.visible = this.mode !== 'menu' && (!this.partyPrototype || !this.partyView.hasPixelLeader);
       this.renderer.render(this.scene, this.camera);
       if (this.mode === 'playing') this.worldEntered = true;
@@ -1320,7 +1344,8 @@ export class Game {
       outcome: this.outcome,
       partyPrototype: this.partyPrototype,
       prototypeVariant: this.prototypeVariant,
-      capture:this.capture?{chances:this.capture.chances,caught:this.capture.caught,pending:this.capture.pending?{id:this.capture.pending.id,time:this.capture.pending.time,success:this.capture.pending.success}:null}:null,
+      capture:this.capture?{unlimitedSeals:true,caught:this.capture.caught,pending:this.capture.pending?{id:this.capture.pending.id,time:this.capture.pending.time,grade:this.capture.pending.grade,retriesLeft:this.capture.pending.retriesLeft,retrying:this.capture.pending.retrying,success:this.capture.pending.success}:null}:null,
+      captureSpawns:this.captureSpawns.inspect(),
       collection:this.collection.data.counts,prison:this.prison?.inspect(),
       fusionVisual: this.combatView.inspectFusion(),
       world: this.world.inspect(),
@@ -1357,7 +1382,7 @@ export class Game {
     this.input.dispose();
     this.monster.dispose();
     this.partyView.dispose();
-    this.capture?.cancel();this.captureVfx?.dispose(); this.captureHUD?.dispose();this.prison?.dispose();this.collection.flush(); this.captureAnchor.removeFromParent();
+    this.capture?.cancel();this.captureVfx?.dispose(); this.captureHUD?.dispose();this.prison?.dispose();this.collection.flush();this.captureSpawns.flush(); this.captureAnchor.removeFromParent();
     this.combatView.dispose();
     this.audio.dispose();
     this.world.dispose();

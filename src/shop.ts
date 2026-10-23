@@ -1,14 +1,14 @@
 import { factoryRelic } from './content/relic-registry';
 import type { Combat } from './combat';
 import { WEAPON_CARDS, type SkillDefinition, type SkillId } from './progression';
-import { endlessShopPrice } from './balance';
+import { endlessShopPrice,VITAL_CONTRACT } from './balance';
 
 export interface ShopItem {
-  kind: 'reward' | 'heal' | 'empty'; skill?: SkillId;
+  kind: 'reward' | 'heal' | 'contract' | 'empty'; skill?: SkillId; illustration?:'rest-supply'|'vital-contract';
   title: string; benefit: string; tradeoff?: string; price: number; sold: boolean;
 }
 
-/** Four bounded offers. A revision token makes queued taps harmless after mutations. */
+/** Three rewards and bounded rest services. Revision tokens reject queued stale taps. */
 export class RunShop {
   private offers: ShopItem[] = [];
   private revision = 1;
@@ -18,6 +18,8 @@ export class RunShop {
   purchases = 0;
   spent = 0;
   refreshSpent = 0;
+  private supplyBought=false;
+  private contractBought=false;
   get treasureRefreshes() { return this.freeRefreshes; }
   get items(): readonly ShopItem[] { return this.offers; }
   get token() { return `${this.session}:${this.revision}`; }
@@ -72,18 +74,36 @@ export class RunShop {
       this.reward(this.buildRelevant(normal, used), used),
       this.reward(this.choose(rare, used) ?? this.choose(normal, used), used),
     ];
+    if(this.endlessCycleIndex!==undefined){
+      this.offers.push({kind:'heal',title:'休整补给',benefit:'立即恢复35点生命，不超过最大生命；每次商店限购1次。',price:this.price(18,'heal'),sold:this.supplyBought,illustration:'rest-supply'});
+      this.offers.push({kind:'contract',title:'契约强化',benefit:'获得1级魔力浓缩：基础魔法伤害+20%，遵循原5级上限。',tradeoff:`最大生命乘${Math.round(VITAL_CONTRACT.health*100)}%，当前生命仅压至新上限；每次商店1次，本局最多${VITAL_CONTRACT.limit}次（已用${this.combat.vitalContracts}/${VITAL_CONTRACT.limit}）。`,price:Math.ceil(this.price(25)*VITAL_CONTRACT.priceFraction*(1+VITAL_CONTRACT.priceStep*this.combat.vitalContracts)/5)*5,sold:this.contractBought,illustration:'vital-contract'});
+      return;
+    }
     this.offers.push(this.combat.hp < this.combat.maxHp
       ? { kind: 'heal', title: '草场补给', benefit: '恢复 35 点生命，不超过最大生命。', price: this.price(18,'heal'), sold: false }
       : this.reward(normal.find(s => s.id === 'vitality' && !used.has(s.id)) ?? this.choose(normal, used), used));
   }
 
+  canBuy(index:number,coins:number){
+    const item=this.offers[index];
+    return !!item&&!item.sold&&item.kind!=='empty'&&Number.isSafeInteger(coins)&&coins>=item.price&&this.combat.hp>0
+      &&(item.kind!=='heal'||this.combat.hp<this.combat.maxHp)
+      &&(item.kind!=='contract'||!this.contractBought&&this.combat.canAcceptVitalContract)
+      &&(item.kind!=='reward'||!!item.skill&&this.combat.progression.canGrant(item.skill));
+  }
+
   buy(index: number, token: string, coins: number): number | undefined {
     if (token !== this.token || !Number.isSafeInteger(coins) || coins < 0) return;
     const item = this.offers[index];
-    if (!item || item.sold || item.kind === 'empty' || item.price > coins || this.combat.hp <= 0) return;
+    if (!item || !this.canBuy(index,coins)) return;
     if (item.kind === 'heal') {
       if (this.combat.hp >= this.combat.maxHp) return;
       this.combat.hp = Math.min(this.combat.maxHp, this.combat.hp + 35);
+      if(this.endlessCycleIndex!==undefined)this.supplyBought=true;
+    } else if(item.kind==='contract'){
+      if(!this.combat.acceptVitalContract())return;
+      this.contractBought=true;
+      item.tradeoff=item.tradeoff?.replace(/已用\d+\/3/,`已用${this.combat.vitalContracts}/3`);
     } else if (!item.skill || !this.combat.grantUpgrade(item.skill)) return;
     item.sold = true; this.revision++;
     this.purchases++; this.spent += item.price;
@@ -94,6 +114,9 @@ export class RunShop {
       const purchased = this.offers.map(s => s.sold ? s : undefined);
       this.roll(new Set(purchased.flatMap(s => s?.skill ? [s.skill] : []))); purchased.forEach((s, i) => { if (s) this.offers[i] = s; });
     }
+    // Other purchases can change the lens's capped range without invalidating it.
+    const lens=this.combat.progression.skills.find(s=>s.id==='far-lens');
+    if(lens)for(const offer of this.offers)if(!offer.sold&&offer.skill==='far-lens')offer.benefit=lens.benefit;
     return coins - item.price;
   }
 

@@ -1,0 +1,379 @@
+
+Running 39 tests using 1 worker
+
+
+
+(node:7752) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:7752) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[1/39] [chromium] › artifacts\capture-state-baseline\tests\combat-model.spec.ts:13:1 › three enemies have distinct pursuit speeds and durability
+[2/39] [chromium] › artifacts\capture-state-baseline\tests\combat-model.spec.ts:28:1 › targeting excludes blocked, distant, spawning and dead enemies
+[3/39] [chromium] › artifacts\capture-state-baseline\tests\combat-model.spec.ts:40:1 › magic bolts damage, flash, kill and drop XP which nearby players collect once
+[4/39] [chromium] › artifacts\capture-state-baseline\tests\combat-model.spec.ts:61:1 › contact damage has a shared invulnerability window and death freezes combat
+[5/39] [chromium] › artifacts\capture-state-baseline\tests\combat-model.spec.ts:81:1 › swept collision catches tunneling and only the first enemy is hit
+[6/39] [chromium] › artifacts\capture-state-baseline\tests\combat-model.spec.ts:91:1 › spawn positions stay near the player, inside the map and outside obstacles
+[7/39] [chromium] › artifacts\capture-state-baseline\tests\combat-model.spec.ts:109:1 › 30, 60 and 120 Hz frame schedules give identical fixed-step combat results
+[8/39] [chromium] › artifacts\capture-state-baseline\tests\combat-model.spec.ts:130:1 › all pools are bounded, full XP pool merges drops, and reset removes old entities
+[9/39] [chromium] › artifacts\capture-state-baseline\tests\endless-survival.spec.ts:22:1 › Endless Boss timeout enters forced enrage, then victory advances to wave seven
+  1) [chromium] › artifacts\capture-state-baseline\tests\endless-survival.spec.ts:22:1 › Endless Boss timeout enters forced enrage, then victory advances to wave seven 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 7
+    Received: 6
+
+      40 |   expect(run.coins).toBe(60);
+      41 |   run.updateRest(WAVE_INTERMISSION_SECONDS, combat);
+    > 42 |   expect(run.wave).toBe(7);
+         |                    ^
+      43 |   expect(run.phase).toBe('fighting');
+      44 |   expect(run.cycle).toBe(2);
+      45 |   expect(run.waveInCycle).toBe(1);
+        at D:\projects\MonsterBonk-Mobile\artifacts\capture-state-baseline\tests\endless-survival.spec.ts:42:20
+
+    Error Context: artifacts\capture-state-baseline\test-results\endless-survival-Endless-B-85983-tory-advances-to-wave-seven-chromium\error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    artifacts\capture-state-baseline\test-results\endless-survival-Endless-B-85983-tory-advances-to-wave-seven-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace artifacts\capture-state-baseline\test-results\endless-survival-Endless-B-85983-tory-advances-to-wave-seven-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+
+(node:16272) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+(node:16272) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[10/39] [chromium] › artifacts\capture-state-baseline\tests\endless-survival.spec.ts:53:1 › Every cycle repeats the fifth-wave shop and sixth-wave Boss without array overflow
+[11/39] [chromium] › artifacts\capture-state-baseline\tests\endless-survival.spec.ts:77:1 › cycle modifiers add real scheduled escorts rather than changing labels only
+  2) [chromium] › artifacts\capture-state-baseline\tests\endless-survival.spec.ts:77:1 › cycle modifiers add real scheduled escorts rather than changing labels only 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 2
+    Received: 0
+
+      90 |   run.update(.01, combat, origin);
+      91 |   expect(run.activeModifiers.map(modifier => modifier.id)).toEqual(['fast-advance']);
+    > 92 |   expect(run.inspect().director.pendingArrivals).toBe(2);
+         |                                                  ^
+      93 | });
+      94 |
+      95 | test('Endless difficulty and modifier count stay bounded, and campaign remains finite', () => {
+        at D:\projects\MonsterBonk-Mobile\artifacts\capture-state-baseline\tests\endless-survival.spec.ts:92:50
+
+    Error Context: artifacts\capture-state-baseline\test-results\endless-survival-cycle-mod-d6a5a-r-than-changing-labels-only-chromium\error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    artifacts\capture-state-baseline\test-results\endless-survival-cycle-mod-d6a5a-r-than-changing-labels-only-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace artifacts\capture-state-baseline\test-results\endless-survival-cycle-mod-d6a5a-r-than-changing-labels-only-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+
+(node:43000) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+(node:43000) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[12/39] [chromium] › artifacts\capture-state-baseline\tests\endless-survival.spec.ts:95:1 › Endless difficulty and modifier count stay bounded, and campaign remains finite
+  3) [chromium] › artifacts\capture-state-baseline\tests\endless-survival.spec.ts:95:1 › Endless difficulty and modifier count stay bounded, and campaign remains finite 
+
+    Error: expect(received).toBeCloseTo(expected)
+
+    Expected: 1.3
+    Received: 1.4497488345946126
+
+    Expected precision:    2
+    Expected difference: < 0.005
+    Received difference:   0.14974883459461252
+
+      100 |   expect(run.activeModifiers).toHaveLength(2);
+      101 |   expect(run.definition.cap).toBeLessThanOrEqual(128);
+    > 102 |   expect(combat.endlessEnemyHealthMultiplier).toBeCloseTo(1.3);
+          |                                               ^
+      103 |   expect(combat.endlessContactDamageMultiplier).toBeCloseTo(1.15);
+      104 |   expect(combat.endlessBossHealthMultiplier).toBeCloseTo(1.54);
+      105 |
+        at D:\projects\MonsterBonk-Mobile\artifacts\capture-state-baseline\tests\endless-survival.spec.ts:102:47
+
+    Error Context: artifacts\capture-state-baseline\test-results\endless-survival-Endless-d-1795b-and-campaign-remains-finite-chromium\error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    artifacts\capture-state-baseline\test-results\endless-survival-Endless-d-1795b-and-campaign-remains-finite-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace artifacts\capture-state-baseline\test-results\endless-survival-Endless-d-1795b-and-campaign-remains-finite-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+
+(node:40300) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+(node:40300) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[13/39] [chromium] › artifacts\capture-state-baseline\tests\run-flow.spec.ts:22:1 › survival waves connect seamlessly and only wave five rests for the shop
+  4) [chromium] › artifacts\capture-state-baseline\tests\run-flow.spec.ts:22:1 › survival waves connect seamlessly and only wave five rests for the shop 
+
+    Error: expect(received).toBeUndefined()
+
+    Received: {"combat": {"anchorInitialized": false, "anchorX": 0, "anchorZ": 0, "areaAttacks": [AreaAttacks], "areaBuffers": [Array], "areaDeaths": [Array], "areaFeedback": [Object], "attackViewport": undefined, "automaticSpawning": false, "balanceTelemetry": [Object], "blades": [BladeWeapons], "boundary": 32, "bubbleReadyAt": 0, "bursts": 0, "childShots": 0, "childWindow": 0, "childrenInWindow": 0, "childrenThisTick": 0, "collected": 0, "crowdCandidates": [Array], "crystalCoinRemainder": 0, "crystalExperienceRemainder": 0, "dashSerial": 0, "dream": [DreamCombat], "effects": [Array], "elapsed": 0, "encounters": [EnemyChallenge], "endlessCycleIndex": 0, "endlessRoster": undefined, "enemies": [Array], "enemyIndex": [SpatialIndex], "enemySlots": WeakMap {}, "fireClock": 0, "fleeGoal": [Object], "frost": [FrostCombat], "fusionEnabled": true, "goldEarned": 0, "grassMotion": [Object], "hits": 0, "hopCandidates": [Array], "hornHits": 0, "hornKills": 0, "hourglassReadyAt": 0, "hourglassUntil": 0, "hp": 100, "hurtFlash": 0, "iceSkills": [IceSkills], "infiniteWorld": false, "interrupts": 0, "invulnerability": 0, "kills": 0, "launchClock": 0, "melee": [Object], "navigation": [GroundNavigation], "navigationGoal": [Object], "nextEndlessWarning": 0, "nextId": 1, "nextRelicCast": 0, "nextRelicSource": 0, "nextWeapon": 0, "obstacleBuffer": [Array], "obstacleCandidates": [Array], "obstacleIndex": [ObstacleIndex], "obstacles": [Array], "orbitAngle": 0, "orbs": [Array], "party": [PartySystem], "pendingEchoes": [Array], "playerTurnRate": 0, "playerVelocityX": 0, "playerVelocityZ": 0, "positionAoe": [PositionAoe], "previousAnchorX": 0, "previousAnchorZ": 0, "previousOrbitAngle": 0, "previousWeapon": undefined, "progression": [Progression], "projectiles": [Array], "random": [Function anonymous], "recentRelicKills": [Array], "relicBehaviors": [CombatRelicBehaviors], "relicEvents": [Array], "relicTelemetry": [Object], "ruleset": "classic", "runBuild": [RunBuild], "salvo": undefined, "shockClock": 0, "shockwaves": [Array], "shotCandidates": [Array], "shotsFired": 0, "soundEvents": 0, "spatialActive": false, "spawnClock": 2.6, "spawnViewport": undefined, "spawned": 0, "sporeExplosions": [Array], "sporeKills": 0, "swarmCoinRemainder": 0, "swarmExperienceRemainder": 0, "targetCandidates": [Array], "targetId": 0, "thunder": [ThunderWeapon], "tick": 0, "treasureCaught": 0, "treasureEscapes": 0, "treasureRewards": [Array], "useNavigation": false, "waterAoe": [WaterAoe], "waterEvolution": [WaterEvolution], "weaponCastCount": 0, "worldRevision": -1}, "endlessCycleIndex": undefined, "freeRefreshes": 0, "offers": [[Object], [Object], [Object], [Object]], "paidRefreshes": 0, "purchases": 0, "random": [Function anonymous], "refreshSpent": 0, "refreshes": 0, "revision": 1, "session": 5, "spent": 0}
+
+      36 |     } else if(wave<6) {
+      37 |       expect(run.phase).toBe('intermission');
+    > 38 |       expect(run.shop).toBeUndefined();
+         |                        ^
+      39 |       run.updateRest(WAVE_INTERMISSION_SECONDS/2,c);
+      40 |       expect(run.phase).toBe('intermission');
+      41 |       run.updateRest(WAVE_INTERMISSION_SECONDS/2,c);
+        at D:\projects\MonsterBonk-Mobile\artifacts\capture-state-baseline\tests\run-flow.spec.ts:38:24
+
+    Error Context: artifacts\capture-state-baseline\test-results\run-flow-survival-waves-co-d4929-ave-five-rests-for-the-shop-chromium\error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    artifacts\capture-state-baseline\test-results\run-flow-survival-waves-co-d4929-ave-five-rests-for-the-shop-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace artifacts\capture-state-baseline\test-results\run-flow-survival-waves-co-d4929-ave-five-rests-for-the-shop-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+
+(node:25696) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+(node:25696) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[14/39] [chromium] › artifacts\capture-state-baseline\tests\run-flow.spec.ts:64:30 › wave 1 continues immediately with living enemies, loose XP and active combat state intact
+[15/39] [chromium] › artifacts\capture-state-baseline\tests\run-flow.spec.ts:64:30 › wave 2 continues immediately with living enemies, loose XP and active combat state intact
+[16/39] [chromium] › artifacts\capture-state-baseline\tests\run-flow.spec.ts:64:30 › wave 3 continues immediately with living enemies, loose XP and active combat state intact
+[17/39] [chromium] › artifacts\capture-state-baseline\tests\run-flow.spec.ts:64:30 › wave 4 continues immediately with living enemies, loose XP and active combat state intact
+[18/39] [chromium] › artifacts\capture-state-baseline\tests\run-flow.spec.ts:94:1 › unfinished elite and hostile warnings carry into wave five, then shop clears them
+[19/39] [chromium] › artifacts\capture-state-baseline\tests\run-flow.spec.ts:108:1 › real kills earn gold once and cannot be recycled into duplicates
+[20/39] [chromium] › artifacts\capture-state-baseline\tests\run-flow.spec.ts:117:1 › the fifth-wave shop still has atomic purchases, stale tokens and insufficient-fund protection
+  5) [chromium] › artifacts\capture-state-baseline\tests\run-flow.spec.ts:117:1 › the fifth-wave shop still has atomic purchases, stale tokens and insufficient-fund protection 
+
+    Error: expect(received).toBeUndefined()
+
+    Received: {"combat": {"anchorInitialized": false, "anchorX": 0, "anchorZ": 0, "areaAttacks": [AreaAttacks], "areaBuffers": [Array], "areaDeaths": [Array], "areaFeedback": [Object], "attackViewport": undefined, "automaticSpawning": false, "balanceTelemetry": [Object], "blades": [BladeWeapons], "boundary": 32, "bubbleReadyAt": 0, "bursts": 0, "childShots": 0, "childWindow": 0, "childrenInWindow": 0, "childrenThisTick": 0, "collected": 0, "crowdCandidates": [Array], "crystalCoinRemainder": 0, "crystalExperienceRemainder": 0, "dashSerial": 0, "dream": [DreamCombat], "effects": [Array], "elapsed": 0, "encounters": [EnemyChallenge], "endlessCycleIndex": 0, "endlessRoster": undefined, "enemies": [Array], "enemyIndex": [SpatialIndex], "enemySlots": WeakMap {}, "fireClock": 0, "fleeGoal": [Object], "frost": [FrostCombat], "fusionEnabled": true, "goldEarned": 0, "grassMotion": [Object], "hits": 0, "hopCandidates": [Array], "hornHits": 0, "hornKills": 0, "hourglassReadyAt": 0, "hourglassUntil": 0, "hp": 100, "hurtFlash": 0, "iceSkills": [IceSkills], "infiniteWorld": false, "interrupts": 0, "invulnerability": 0, "kills": 0, "launchClock": 0, "melee": [Object], "navigation": [GroundNavigation], "navigationGoal": [Object], "nextEndlessWarning": 0, "nextId": 1, "nextRelicCast": 0, "nextRelicSource": 0, "nextWeapon": 0, "obstacleBuffer": [Array], "obstacleCandidates": [Array], "obstacleIndex": [ObstacleIndex], "obstacles": [Array], "orbitAngle": 0, "orbs": [Array], "party": [PartySystem], "pendingEchoes": [Array], "playerTurnRate": 0, "playerVelocityX": 0, "playerVelocityZ": 0, "positionAoe": [PositionAoe], "previousAnchorX": 0, "previousAnchorZ": 0, "previousOrbitAngle": 0, "previousWeapon": undefined, "progression": [Progression], "projectiles": [Array], "random": [Function anonymous], "recentRelicKills": [Array], "relicBehaviors": [CombatRelicBehaviors], "relicEvents": [Array], "relicTelemetry": [Object], "ruleset": "classic", "runBuild": [RunBuild], "salvo": undefined, "shockClock": 0, "shockwaves": [Array], "shotCandidates": [Array], "shotsFired": 0, "soundEvents": 0, "spatialActive": false, "spawnClock": 2.6, "spawnViewport": undefined, "spawned": 0, "sporeExplosions": [Array], "sporeKills": 0, "swarmCoinRemainder": 0, "swarmExperienceRemainder": 0, "targetCandidates": [Array], "targetId": 0, "thunder": [ThunderWeapon], "tick": 0, "treasureCaught": 0, "treasureEscapes": 0, "treasureRewards": [Array], "useNavigation": false, "waterAoe": [WaterAoe], "waterEvolution": [WaterEvolution], "weaponCastCount": 0, "worldRevision": -1}, "endlessCycleIndex": undefined, "freeRefreshes": 0, "offers": [[Object], [Object], [Object], [Object]], "paidRefreshes": 0, "purchases": 0, "random": [Function anonymous], "refreshSpent": 0, "refreshes": 0, "revision": 1, "session": 5, "spent": 0}
+
+      14 |   f.run.update(f.run.definition.seconds, f.c, origin);
+      15 |   expect(f.run.phase).toBe('intermission');
+    > 16 |   expect(f.run.shop).toBeUndefined();
+         |                      ^
+      17 |   f.run.updateRest(WAVE_INTERMISSION_SECONDS, f.c);
+      18 |   expect(f.run.phase).toBe('shop');
+      19 |   return f.run.shop!;
+        at fifthShop (D:\projects\MonsterBonk-Mobile\artifacts\capture-state-baseline\tests\run-flow.spec.ts:16:22)
+        at D:\projects\MonsterBonk-Mobile\artifacts\capture-state-baseline\tests\run-flow.spec.ts:118:23
+
+    Error Context: artifacts\capture-state-baseline\test-results\run-flow-the-fifth-wave-sh-c7414-nsufficient-fund-protection-chromium\error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    artifacts\capture-state-baseline\test-results\run-flow-the-fifth-wave-sh-c7414-nsufficient-fund-protection-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace artifacts\capture-state-baseline\test-results\run-flow-the-fifth-wave-sh-c7414-nsufficient-fund-protection-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+(node:36004) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+(node:36004) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[21/39] [chromium] › artifacts\capture-state-baseline\tests\run-flow.spec.ts:130:1 › only fifth shop can heal and paid refreshes remain progressive
+  6) [chromium] › artifacts\capture-state-baseline\tests\run-flow.spec.ts:130:1 › only fifth shop can heal and paid refreshes remain progressive 
+
+    Error: expect(received).toBeUndefined()
+
+    Received: {"combat": {"anchorInitialized": false, "anchorX": 0, "anchorZ": 0, "areaAttacks": [AreaAttacks], "areaBuffers": [Array], "areaDeaths": [Array], "areaFeedback": [Object], "attackViewport": undefined, "automaticSpawning": false, "balanceTelemetry": [Object], "blades": [BladeWeapons], "boundary": 32, "bubbleReadyAt": 0, "bursts": 0, "childShots": 0, "childWindow": 0, "childrenInWindow": 0, "childrenThisTick": 0, "collected": 0, "crowdCandidates": [Array], "crystalCoinRemainder": 0, "crystalExperienceRemainder": 0, "dashSerial": 0, "dream": [DreamCombat], "effects": [Array], "elapsed": 0, "encounters": [EnemyChallenge], "endlessCycleIndex": 0, "endlessRoster": undefined, "enemies": [Array], "enemyIndex": [SpatialIndex], "enemySlots": WeakMap {}, "fireClock": 0, "fleeGoal": [Object], "frost": [FrostCombat], "fusionEnabled": true, "goldEarned": 0, "grassMotion": [Object], "hits": 0, "hopCandidates": [Array], "hornHits": 0, "hornKills": 0, "hourglassReadyAt": 0, "hourglassUntil": 0, "hp": 40, "hurtFlash": 0, "iceSkills": [IceSkills], "infiniteWorld": false, "interrupts": 0, "invulnerability": 0, "kills": 0, "launchClock": 0, "melee": [Object], "navigation": [GroundNavigation], "navigationGoal": [Object], "nextEndlessWarning": 0, "nextId": 1, "nextRelicCast": 0, "nextRelicSource": 0, "nextWeapon": 0, "obstacleBuffer": [Array], "obstacleCandidates": [Array], "obstacleIndex": [ObstacleIndex], "obstacles": [Array], "orbitAngle": 0, "orbs": [Array], "party": [PartySystem], "pendingEchoes": [Array], "playerTurnRate": 0, "playerVelocityX": 0, "playerVelocityZ": 0, "positionAoe": [PositionAoe], "previousAnchorX": 0, "previousAnchorZ": 0, "previousOrbitAngle": 0, "previousWeapon": undefined, "progression": [Progression], "projectiles": [Array], "random": [Function anonymous], "recentRelicKills": [Array], "relicBehaviors": [CombatRelicBehaviors], "relicEvents": [Array], "relicTelemetry": [Object], "ruleset": "classic", "runBuild": [RunBuild], "salvo": undefined, "shockClock": 0, "shockwaves": [Array], "shotCandidates": [Array], "shotsFired": 0, "soundEvents": 0, "spatialActive": false, "spawnClock": 2.6, "spawnViewport": undefined, "spawned": 0, "sporeExplosions": [Array], "sporeKills": 0, "swarmCoinRemainder": 0, "swarmExperienceRemainder": 0, "targetCandidates": [Array], "targetId": 0, "thunder": [ThunderWeapon], "tick": 0, "treasureCaught": 0, "treasureEscapes": 0, "treasureRewards": [Array], "useNavigation": false, "waterAoe": [WaterAoe], "waterEvolution": [WaterEvolution], "weaponCastCount": 0, "worldRevision": -1}, "endlessCycleIndex": undefined, "freeRefreshes": 0, "offers": [[Object], [Object], [Object], [Object]], "paidRefreshes": 0, "purchases": 0, "random": [Function anonymous], "refreshSpent": 0, "refreshes": 0, "revision": 1, "session": 5, "spent": 0}
+
+      14 |   f.run.update(f.run.definition.seconds, f.c, origin);
+      15 |   expect(f.run.phase).toBe('intermission');
+    > 16 |   expect(f.run.shop).toBeUndefined();
+         |                      ^
+      17 |   f.run.updateRest(WAVE_INTERMISSION_SECONDS, f.c);
+      18 |   expect(f.run.phase).toBe('shop');
+      19 |   return f.run.shop!;
+        at fifthShop (D:\projects\MonsterBonk-Mobile\artifacts\capture-state-baseline\tests\run-flow.spec.ts:16:22)
+        at D:\projects\MonsterBonk-Mobile\artifacts\capture-state-baseline\tests\run-flow.spec.ts:131:40
+
+    Error Context: artifacts\capture-state-baseline\test-results\run-flow-only-fifth-shop-c-7b95e-efreshes-remain-progressive-chromium\error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    artifacts\capture-state-baseline\test-results\run-flow-only-fifth-shop-c-7b95e-efreshes-remain-progressive-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace artifacts\capture-state-baseline\test-results\run-flow-only-fifth-shop-c-7b95e-efreshes-remain-progressive-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+(node:11128) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+(node:11128) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[22/39] [chromium] › artifacts\capture-state-baseline\tests\run-flow.spec.ts:143:1 › shop is not accessible during any earlier wave and unspent rewards accumulate
+[23/39] [chromium] › artifacts\capture-state-baseline\tests\run-flow.spec.ts:156:1 › death at the final boundary loses and historical modes do not inherit shops
+[24/39] [chromium] › artifacts\capture-state-baseline\tests\spore-floater.spec.ts:9:1 › floater locks aim, fires from bounded shared pool and resets reused state
+[25/39] [chromium] › artifacts\capture-state-baseline\tests\spore-floater.spec.ts:17:1 › floater retreats at close range and approaches outside firing range
+[26/39] [chromium] › artifacts\capture-state-baseline\tests\spore-floater.spec.ts:24:1 › heavy crystal troop slides without bob, winds up slowly and reuses hostile shots
+[27/39] [chromium] › artifacts\capture-state-baseline\tests\spore-floater.spec.ts:35:1 › scarlet flower warns then fires petal magic and resets its pooled slot
+[28/39] [chromium] › artifacts\capture-state-baseline\tests\spore-floater.spec.ts:46:1 › moondew support heals at most three ordinary allies, freezes and resets
+[29/39] [chromium] › artifacts\capture-state-baseline\tests\spore-floater.spec.ts:59:1 › molten fruit locks direction, charges, recovers and resets its roll
+[30/39] [chromium] › artifacts\capture-state-baseline\tests\wave-director.spec.ts:21:1 › six plans cover each wave, alternate pressure and harvest, and increase late arrival supply
+[31/39] [chromium] › artifacts\capture-state-baseline\tests\wave-director.spec.ts:42:1 › the final flag-wave surge is Endless-only and finite campaign pacing stays unchanged
+  7) [chromium] › artifacts\capture-state-baseline\tests\wave-director.spec.ts:42:1 › the final flag-wave surge is Endless-only and finite campaign pacing stays unchanged 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: "pressure"
+    Received: "release"
+
+      42 | test('the final flag-wave surge is Endless-only and finite campaign pacing stays unchanged', () => {
+      43 |   expect(directorStage(5, 72).beat).toBe('release');
+    > 44 |   expect(directorStage(5, 72, true).beat).toBe('pressure');
+         |                                           ^
+      45 |   expect(directorStage(5, 72, true).fodderPerSecond).toBe(6.5);
+      46 | });
+      47 |
+        at D:\projects\MonsterBonk-Mobile\artifacts\capture-state-baseline\tests\wave-director.spec.ts:44:43
+
+    Error Context: artifacts\capture-state-baseline\test-results\wave-director-the-final-fl-d8d1a-aign-pacing-stays-unchanged-chromium\error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    artifacts\capture-state-baseline\test-results\wave-director-the-final-fl-d8d1a-aign-pacing-stays-unchanged-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace artifacts\capture-state-baseline\test-results\wave-director-the-final-fl-d8d1a-aign-pacing-stays-unchanged-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+
+(node:28284) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+(node:28284) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[32/39] [chromium] › artifacts\capture-state-baseline\tests\wave-director.spec.ts:48:1 › opening gives growth space, then actual scheduled escorts appear without clearing any enemies
+[33/39] [chromium] › artifacts\capture-state-baseline\tests\wave-director.spec.ts:56:1 › nearby crowding slows fodder but cannot erase scheduled pressure
+[34/39] [chromium] › artifacts\capture-state-baseline\tests\wave-director.spec.ts:67:1 › harvest stops new escorts while increasing fodder and preserving surviving threats
+  8) [chromium] › artifacts\capture-state-baseline\tests\wave-director.spec.ts:67:1 › harvest stops new escorts while increasing fodder and preserving surviving threats 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 18
+    Received: 27
+
+      74 |   simulate(run,c,10);
+      75 |   const harvest=run.inspect().director;
+    > 76 |   expect(harvest.escortArrivals).toBe(pressure.escortArrivals);
+         |                                  ^
+      77 |   expect(harvest.fodderArrivals-pressure.fodderArrivals).toBeGreaterThan(pressure.fodderArrivals);
+      78 |   expect(survivor.active).toBe(true);
+      79 | });
+        at D:\projects\MonsterBonk-Mobile\artifacts\capture-state-baseline\tests\wave-director.spec.ts:76:34
+
+    Error Context: artifacts\capture-state-baseline\test-results\wave-director-harvest-stop-9c845-reserving-surviving-threats-chromium\error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    artifacts\capture-state-baseline\test-results\wave-director-harvest-stop-9c845-reserving-surviving-threats-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace artifacts\capture-state-baseline\test-results\wave-director-harvest-stop-9c845-reserving-surviving-threats-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+(node:22592) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+(node:22592) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[35/39] [chromium] › artifacts\capture-state-baseline\tests\wave-director.spec.ts:81:1 › quota, blocked placement and full population never turn an event into an over-cap burst
+[36/39] [chromium] › artifacts\capture-state-baseline\tests\wave-director.spec.ts:96:1 › authored escorts can use reserved space above the background target
+[37/39] [chromium] › artifacts\capture-state-baseline\tests\wave-director.spec.ts:106:1 › elite and Boss warnings suppress escorts without retaining catch-up debt
+[38/39] [chromium] › artifacts\capture-state-baseline\tests\wave-director.spec.ts:117:1 › seamless wave change retains pressure budget instead of restarting the opening ramp
+  9) [chromium] › artifacts\capture-state-baseline\tests\wave-director.spec.ts:117:1 › seamless wave change retains pressure budget instead of restarting the opening ramp 
+
+    Error: expect(received).toBeGreaterThanOrEqual(expected)
+
+    Expected: >= 60
+    Received:    57
+
+      119 |   simulate(run,c,.02);
+      120 |   expect(run.wave).toBe(3);
+    > 121 |   expect(run.inspect().director.populationTarget).toBeGreaterThanOrEqual(60);
+          |                                                   ^
+      122 | });
+      123 |
+      124 | test('director remains fixed-seed reproducible in real 60Hz Combat and RunFlow',()=>{
+        at D:\projects\MonsterBonk-Mobile\artifacts\capture-state-baseline\tests\wave-director.spec.ts:121:51
+
+    Error Context: artifacts\capture-state-baseline\test-results\wave-director-seamless-wav-ca427-restarting-the-opening-ramp-chromium\error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    artifacts\capture-state-baseline\test-results\wave-director-seamless-wav-ca427-restarting-the-opening-ramp-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace artifacts\capture-state-baseline\test-results\wave-director-seamless-wav-ca427-restarting-the-opening-ramp-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+
+(node:38472) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+(node:38472) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[39/39] [chromium] › artifacts\capture-state-baseline\tests\wave-director.spec.ts:124:1 › director remains fixed-seed reproducible in real 60Hz Combat and RunFlow
+  9 failed
+    [chromium] › artifacts\capture-state-baseline\tests\endless-survival.spec.ts:22:1 › Endless Boss timeout enters forced enrage, then victory advances to wave seven 
+    [chromium] › artifacts\capture-state-baseline\tests\endless-survival.spec.ts:77:1 › cycle modifiers add real scheduled escorts rather than changing labels only 
+    [chromium] › artifacts\capture-state-baseline\tests\endless-survival.spec.ts:95:1 › Endless difficulty and modifier count stay bounded, and campaign remains finite 
+    [chromium] › artifacts\capture-state-baseline\tests\run-flow.spec.ts:22:1 › survival waves connect seamlessly and only wave five rests for the shop 
+    [chromium] › artifacts\capture-state-baseline\tests\run-flow.spec.ts:117:1 › the fifth-wave shop still has atomic purchases, stale tokens and insufficient-fund protection 
+    [chromium] › artifacts\capture-state-baseline\tests\run-flow.spec.ts:130:1 › only fifth shop can heal and paid refreshes remain progressive 
+    [chromium] › artifacts\capture-state-baseline\tests\wave-director.spec.ts:42:1 › the final flag-wave surge is Endless-only and finite campaign pacing stays unchanged 
+    [chromium] › artifacts\capture-state-baseline\tests\wave-director.spec.ts:67:1 › harvest stops new escorts while increasing fodder and preserving surviving threats 
+    [chromium] › artifacts\capture-state-baseline\tests\wave-director.spec.ts:117:1 › seamless wave change retains pressure budget instead of restarting the opening ramp 
+  30 passed (9.6s)

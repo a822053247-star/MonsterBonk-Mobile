@@ -14,6 +14,8 @@ import { ICE_SKILL_IDS, ICE_SKILL_NAMES, iceSkillStats } from './ice-skills';
 import { dreamEchoStats } from './dream-combat';
 import { WATER_EVOLUTION_IDS, WATER_EVOLUTIONS, consumedByEvolution, isWaterEvolution } from './water-evolution';
 import { shopArt, preloadShopArt } from './shop-art';
+import {cardArtUrl} from './card-art';
+import {cardCopy} from './card-copy';
 import { formatEndlessRecordTime, readEndlessRecord, type EndlessRecord, type EndlessRunResult } from './endless-record';
 
 const icons = {
@@ -30,6 +32,7 @@ const icons = {
   wave: '<path d="M3 17a9 9 0 0 1 18 0M7 17a5 5 0 0 1 10 0M11 17a1 1 0 0 1 2 0M5 21h14"/>',
   battle: '<path d="m5 3 5 5-2 3-5-5 2-3Zm14 0 2 3-5 5-2-3 5-5ZM4 20 19 5M20 20 5 5M3 16l5 5m8 0 5-5"/>',
   compass: '<circle cx="12" cy="12" r="9"/><path d="m16 8-2 6-6 2 2-6 6-2Z"/>',
+  cage: '<path d="M5 8a7 7 0 0 1 14 0M4 8h16v12H4zM8 4v16M12 2v18M16 4v16M4 13h16M3 21h18"/>',
   close: '<path d="m6 6 12 12M6 18 18 6"/>',
   help: '<circle cx="12" cy="12" r="9"/><path d="M9 9a3 3 0 0 1 6 0c0 2-3 2-3 5m0 3v.1"/>',
   rotate: '<rect x="7" y="3" width="10" height="18" rx="2" transform="rotate(25 12 12)"/><path d="M3 8V4h4m14 12v4h-4"/>',
@@ -50,12 +53,12 @@ export function createUI(root: HTMLElement) {
         <div class="eyebrow"><span></span> 小小怪兽，大大冒险</div>
         <h1>幻兽<br/><span>幸存者</span></h1>
         <p class="menu-description">一只焰绒，从火花到爆裂火种。<br/>自动迎战，升级组合你的魔法。</p>
-        <div class="main-modes" aria-label="选择挑战玩法"><button id="start-fusion" class="mode-card campaign-mode">${icon('battle')}<span><strong>闯关挑战</strong></span>${icon('arrow')}</button><button id="start-infinite" class="mode-card infinite-mode">${icon('spark')}<span><strong>无尽挑战</strong></span>${icon('arrow')}</button></div>
+        <div class="main-modes" aria-label="挑战与幻兽囚坊"><button id="start-fusion" class="mode-card campaign-mode">${icon('battle')}<span><strong>闯关挑战</strong></span>${icon('arrow')}</button><button id="start-infinite" class="mode-card infinite-mode">${icon('spark')}<span><strong>无尽挑战</strong></span>${icon('arrow')}</button><button id="open-prison" class="mode-card prison-mode">${icon('cage')}<span><strong>幻兽囚坊</strong></span>${icon('arrow')}</button></div>
         <div id="endless-best-menu" class="endless-best-menu" aria-label="无尽个人最佳">无尽个人最佳 · 首次挑战后记录</div>
         <div class="menu-actions menu-utilities"><button id="choose-creature" class="secondary creature-select-entry" aria-label="选择出战幻兽">选择幻兽</button><button id="help" class="secondary" aria-label="操作指南">${icon('help')}<span>操作指南</span></button><button id="menu-settings" class="secondary settings-entry" aria-label="画质与声音设置">${icon('settings')}</button></div>
         
       </div>
-      <button id="open-prison" class="trial-entry practice-entry">幻兽囚坊 · 收藏与劳作</button><footer class="menu-footer" aria-label="测试与旧版模式入口"><button id="start-capture-test" class="trial-entry practice-entry">捕捉测试</button><button id="start-enemy-test" class="trial-entry practice-entry">敌人测试</button><button id="open-legacy" class="trial-entry practice-entry" aria-haspopup="dialog">旧版模式</button></footer>
+      <footer class="menu-footer" aria-label="测试与旧版模式入口"><button id="start-capture-test" class="trial-entry practice-entry">捕捉测试</button><button id="start-enemy-test" class="trial-entry practice-entry">敌人测试</button><button id="open-legacy" class="trial-entry practice-entry" aria-haspopup="dialog">旧版模式</button></footer>
     </section>
     <section id="legacy-picker" class="modal-screen" role="dialog" aria-modal="true" aria-labelledby="legacy-title" hidden><div class="modal legacy-card"><button id="close-legacy" class="icon-button close-button" aria-label="关闭旧版玩法">${icon('close')}</button><h2 id="legacy-title">旧版模式</h2><div class="legacy-options"><button id="start" class="secondary">${icon('leaf')} 单兽冒险</button><button id="start-trial" class="secondary">${icon('dash')} 犄角试炼</button><button id="start-challenge" class="secondary">${icon('battle')} 三波闯关</button></div></div></section>
     <section id="creature-picker" class="modal-screen" role="dialog" aria-modal="true" aria-labelledby="creature-picker-title" hidden>
@@ -102,7 +105,7 @@ export function createUI(root: HTMLElement) {
     </section>
     <section id="upgrade-screen" class="upgrade-screen" role="dialog" aria-modal="true" aria-labelledby="upgrade-heading" hidden>
       <div id="upgrade-panel" class="upgrade-panel" tabindex="-1">
-        <header class="upgrade-header"><div class="upgrade-heading-art"><img data-upgrade-art="banner" src="${uiArtUrl('common/forest-title-banner.png')}" alt="" draggable="false"/><h2 id="upgrade-heading">选择强化</h2></div><button id="upgrade-menu" class="text-button">返回菜单</button></header>
+        <header class="upgrade-header"><div class="upgrade-heading-art"><img data-upgrade-art="banner" src="${uiArtUrl('common/forest-upgrade-title.webp')}" alt="" draggable="false"/><h2 id="upgrade-heading">选择强化</h2></div><button id="upgrade-menu" class="text-button">返回菜单</button></header>
         <div class="upgrade-subtitle"><span id="upgrade-level">等级 02</span><p id="upgrade-instruction">选择一项</p><span class="paused-badge">战斗已暂停</span></div>
         <div id="upgrade-cards" class="upgrade-cards"></div><section id="weapon-pair-picker" class="weapon-pair-picker" aria-label="选择双武器配方" hidden><h3>选择双武器配方</h3><div id="weapon-pair-options"></div><button id="weapon-pair-cancel" class="secondary">返回普通升级</button></section>
         <footer class="upgrade-footer"><span>${icon('spark')} <span id="upgrade-queue">本次选择后继续</span></span><span>仅本局生效</span></footer>
@@ -161,7 +164,8 @@ export function renderUpgradeCards(progression: Progression, version: number) {
     const skill = progression.skills.find((candidate) => candidate.id === id)!;
     const rank = progression.ranks[id];
     const art = upgradeArt(skill, progression.fusionBase, progression.build?.attacks.map(a=>a.attackId));
-    if(id==='weapon-pair-fusion')art.illustrations=[`${import.meta.env.BASE_URL}${pairIcon(progression.build!.availablePairs()[0])}`];
+    if(id==='weapon-pair-fusion')art.illustrations=[cardArtUrl(`${import.meta.env.BASE_URL}${pairIcon(progression.build!.availablePairs()[0])}`)];
+    const summary=cardCopy({id,benefit:skill.benefit,tradeoff:skill.tradeoff});
     const preview = id==='weapon-pair-fusion'?'自愿融合 · 保留技能与遗物':id.endsWith('-weapon') && rank === 0
       ? `未装备 → ${rank + 1}级` : upgradePreview(skill, progression.ranks, !!progression.build) ?? '';
     const titlePath = `upgrade-title-${version}-${id}`;
@@ -169,11 +173,9 @@ export function renderUpgradeCards(progression: Progression, version: number) {
       <img class="skill-frame" data-upgrade-art="frame" src="${art.frame}" alt="" draggable="false"/>
       <span class="skill-card-meta"><span><img data-upgrade-art="gem" src="${art.gem}" alt="" draggable="false"/>${id==='weapon-pair-fusion'?'武器融合':skill.category === 'relic' ? '稀有道具' : skill.category === 'evolution' ? (isWaterEvolution(id) ? '组合进化' : '互斥进化') : id.endsWith('-weapon') ? (rank ? '武器强化' : '新武器') : rank === 0 && skill.effect.type === 'spell' ? '新技能' : '魔法强化'}</span><span>${id==='weapon-pair-fusion'?'自选配方':`${rank} → ${rank + 1}级`}<small> / ${skill.maxRank}</small></span></span>
       <h3 aria-label="${skill.title}">${curvedTitle(skill.title, titlePath, 'skill-title-arc')}</h3>
-      <span class="skill-content"><span class="skill-emblem${art.illustrations.length > 1 ? ' multiple-art' : ''}" aria-hidden="true"><span class="skill-art-fallback">${icon(skill.icon)}</span>${art.illustrations.map(url => `<img class="skill-illustration" data-upgrade-art="illustration" src="${url}" alt="" draggable="false"/>`).join('')}</span>
-      <strong class="skill-benefit">${skill.benefit}</strong>
-      <span class="skill-preview">${preview}</span></span>
-      ${skill.tradeoff ? `<p class="skill-tradeoff">代价：${skill.tradeoff}</p>` : ''}
-      <p class="skill-description">${skill.description}</p>
+      <span class="skill-content"><span class="skill-emblem${art.illustrations.length > 1 ? ' multiple-art' : ''}" aria-hidden="true"><span class="skill-art-fallback">${art.hideIcon?'':icon(skill.icon)}</span>${art.illustrations.map(url => `<img class="skill-illustration" data-upgrade-art="illustration" src="${url}" alt="" draggable="false"/>`).join('')}</span>
+      <strong class="skill-benefit">${summary.benefit}</strong></span>
+      ${summary.tradeoff ? `<p class="skill-tradeoff">${summary.tradeoff}</p>` : ''}
       <span class="skill-ranks" aria-hidden="true">${Array.from({ length: skill.maxRank }, (_, index) => `<i class="${index < rank ? 'filled' : index === rank ? 'next' : ''}"></i>`).join('')}</span>
       <span class="skill-pick">点击选择 ${icon('arrow')}</span>
     </button>`;
@@ -251,7 +253,7 @@ export function renderBuildSummary(build: RunBuild | undefined, fusions: readonl
     const relic = RELICS[id];
     const inactive = id === 'specialist-badge' && build.attacks.length > 1 ? '（副武器已装备，加成失效）' : '';
     const art=upgradeArt({id,category:'relic'},build.attacks[0].attackId);
-    return `<article class="build-relic"><img class="build-relic-icon" data-upgrade-art="build-relic" src="${art.illustrations[0]}" alt=""/><strong>${buildText(relic.title+inactive)}</strong><p>${buildText(relic.benefit)}</p><p class="build-tradeoff">代价：${buildText(relic.tradeoff)}</p></article>`;
+    return `<article class="build-relic">${art.illustrations.length?`<img class="build-relic-icon" data-upgrade-art="build-relic" src="${art.illustrations[0]}" alt=""/>`:""}<strong>${buildText(relic.title+inactive)}</strong><p>${buildText(relic.benefit)}</p><p class="build-tradeoff">代价：${buildText(relic.tradeoff)}</p></article>`;
   }).join('') : '<p class="build-empty">尚未获得稀有道具，升级时偶尔出现。</p>';
   document.getElementById('build-evolution')!.textContent = build.evolution ? `${evolution}：${EVOLUTIONS[build.evolution].benefit}；${EVOLUTIONS[build.evolution].tradeoff}` : '火花弹获得命中分裂后，可出现互斥进化路线。';
   document.getElementById('build-weapons')!.innerHTML += waterEvolutions.map(id => `<div class="build-weapon" data-element="water"><span class="build-weapon-art"><img data-upgrade-art="build-weapon" src="${uiArtUrl(`upgrade/illustrations/skills/${id}.png`)}" alt=""/></span><div class="build-weapon-copy"><span class="build-weapon-role">水系组合进化</span><strong>${WATER_EVOLUTIONS[id].title}</strong><small>${WATER_EVOLUTIONS[id].benefit}</small></div></div>`).join('');
@@ -279,18 +281,19 @@ export function renderRunShop(run: RunFlow, combat: Combat) {
   items.dataset.page = pageKey;
   items.innerHTML = shop.items.map((item, index) => {
     const art = shopArt(item, combat);
+    const summary=cardCopy({id:item.skill,benefit:item.benefit,tradeoff:item.tradeoff},item.kind);
     const fallback = `data:image/svg+xml,${encodeURIComponent(icon(art.icon).replace('<svg ', '<svg xmlns="http://www.w3.org/2000/svg" ').replace('currentColor','#86aa71'))}`;
-    const unavailable = item.sold || item.kind === 'empty' || item.price > run.coins;
-    const state = item.sold ? '已购买' : item.kind === 'empty' ? '暂无适用商品' : item.price > run.coins ? '金币不足' : '购买';
+    const unavailable = !shop.canBuy(index,run.coins);
+    const state = item.sold ? '已购买' : item.kind === 'empty' ? '暂无适用商品' : item.price > run.coins ? '金币不足' : item.kind==='heal'&&combat.hp>=combat.maxHp?'生命已满':item.kind==='contract'&&!combat.canAcceptVitalContract?'已达强化上限':'购买';
     const title = item.kind === 'reward' && item.skill?.endsWith('-weapon')
       ? item.title.replace(/^获得/, '').replace(/强化$/, '') : item.title;
     const titlePath = `shop-title-${shop.token.replace(/[^a-zA-Z0-9_-]/g, '-')}-${index}`;
     return `<article class="shop-item${item.sold ? ' sold' : ''}${item.price > run.coins ? ' unaffordable' : ''}" data-kind="${item.kind}" data-category="${art.category}" data-skill="${item.skill ?? ''}">
       <img class="shop-slot-art" data-upgrade-art="shop-slot" src="${uiArtUrl('shop/item-slot.png')}" alt="" draggable="false"/>
       <h3 aria-label="${title}">${curvedTitle(title, titlePath, 'shop-title-arc')}</h3><small class="shop-item-type">${art.label}</small>
-      <div class="shop-item-body"><span class="shop-illustration${art.images.length > 1 ? ' multiple-art' : ''}" aria-hidden="true"><span class="shop-art-fallback">${icon(art.icon)}</span>${art.images.map(src => `<img data-upgrade-art="shop-illustration" data-art-fallback="${fallback}" src="${src}" alt="" draggable="false"/>`).join('')}</span><p class="shop-benefit">${item.benefit}</p>${item.tradeoff ? `<p class="shop-cost">代价：${item.tradeoff}</p>` : ''}</div>
+      <div class="shop-item-body"><span class="shop-illustration${art.images.length > 1 ? ' multiple-art' : ''}" aria-hidden="true"><span class="shop-art-fallback">${art.hideIcon?'':icon(art.icon)}</span>${art.images.map(src => `<img data-upgrade-art="shop-illustration" data-art-fallback="${fallback}" src="${src}" alt="" draggable="false"/>`).join('')}</span><p class="shop-benefit">${summary.benefit}</p>${summary.tradeoff ? `<p class="shop-cost">${summary.tradeoff}</p>` : ''}</div>
       <div class="shop-purchase"><span class="shop-price" ${item.kind === 'empty' ? 'hidden' : ''}><img data-upgrade-art="coin" src="${uiArtUrl('common/coin.png')}" alt="" draggable="false"/>${item.price} 金币</span>
-      <button type="button" class="shop-buy" data-buy="${index}" data-shop-token="${shop.token}" aria-label="${item.title}，${item.price} 金币，${state}" ${unavailable ? 'disabled' : ''}><span class="shop-buy-label">${state}</span></button>
+      <button type="button" class="shop-buy" data-buy="${index}" data-shop-token="${shop.token}" aria-label="${item.title}，${item.benefit}${item.tradeoff?'，代价：'+item.tradeoff:''}，${item.price} 金币，${state}" ${unavailable ? 'disabled' : ''}><span class="shop-buy-label">${state}</span></button>
       </div>
     </article>`;
   }).join('');
@@ -343,11 +346,11 @@ export function renderEncounterStatus(combat: Combat, run?: RunFlow) {
   document.getElementById('encounter-health')!.textContent=`${Math.ceil(enemy.hp)} / ${max}`;
   document.getElementById('encounter-fill')!.style.width=`${Math.max(0,enemy.hp/max)*100}%`;
   const track=document.getElementById('encounter-track')!; track.setAttribute('aria-valuemax',String(max)); track.setAttribute('aria-valuenow',String(Math.ceil(enemy.hp)));
-  const hints:Record<string,string>={approach:'保持移动，留意下一次攻击', 'spread-windup':'扇形弹幕蓄力 · 离开紫色扇面',spread:'弹幕来袭 · 从间隙或侧面绕过', 'dash-windup':'锁定冲击 · 立即横向移出橙色长条',dash:'冲击！避开路径', 'summon-windup':'即将召唤 · 预留清怪空间',summon:'援兵出生预警 · 优先清理包围',recover:'攻击间隙 · 趁机反击',dying:'首领倒下……', 'quake-windup':'震地蓄力 · 离开金色圆环', quake:'地震冲击 · 避开裂地范围'};
+  const hints:Record<string,string>={'barrage-windup':'环形弹幕蓄力 · 拉开距离观察弹路',barrage:'环形弹幕扩散 · 从间隙穿行',approach:'保持移动，留意下一次攻击', 'spread-windup':'扇形弹幕蓄力 · 离开紫色扇面',spread:'弹幕来袭 · 从间隙或侧面绕过', 'dash-windup':'锁定冲击 · 立即横向移出橙色长条',dash:'冲击！避开路径', 'summon-windup':'即将召唤 · 预留清怪空间',summon:'援兵出生预警 · 优先清理包围',recover:'攻击间隙 · 趁机反击',dying:'首领倒下……', 'quake-windup':'震地蓄力 · 离开金色圆环', quake:'地震冲击 · 避开裂地范围'};
   document.getElementById('encounter-hint')!.textContent=enemy.spawnTime>0
     ? (boss ? (run?.endless ? '阶段 Boss · 超时后进入狂暴' : '最终挑战 · 90 秒内击败兽王') : '精英出现 · 击败额外获得 18 金币')
     : boss && run?.endless && run.bossOvertime ? '加时狂暴 · 继续战斗，击败首领后进入下一波'
-    : boss ? hints[c.bossState]??'' : c.elitePulsing?'震地蓄力 · 离开金色圆环':'绕开震地，或集中火力获取奖励';
+    : boss ? c.barrage.running?`${c.barrage.warning?'弹幕蓄力':'弹幕扩散'} · ${c.barrage.dodgeHint}`:hints[c.bossState]??'' : c.elitePulsing?'震地蓄力 · 离开金色圆环':'绕开震地，或集中火力获取奖励';
   document.getElementById('encounter-wave')!.textContent=run
     ? `${run.waveLabel} · ${run.bossOvertime ? `加时 ${Math.ceil(run.bossOvertimeElapsed)} 秒` : `剩余 ${Math.ceil(run.remaining)} 秒`} · 金币 ${run.coins}`
     : '';
@@ -357,7 +360,7 @@ export function renderWeaponPairPicker(build:RunBuild){
  const root=document.getElementById('weapon-pair-options')!;
  root.innerHTML=build.availablePairs().map(id=>{
    const parents=pairSources(id).map(source=>build.attacks.find(a=>a.attackId===source)!);
-   return `<button class="secondary weapon-pair-option" data-pair="${id}"><img src="${import.meta.env.BASE_URL}${pairIcon(id)}" alt=""/><span><strong>${parents.map(a=>ATTACKS[a.attackId].title+' Lv'+a.level).join(' + ')} → ${WEAPON_PAIR_RECIPES[id].title} Lv${pairLevel(parents[0].level,parents[1].level)}</strong><small>${id==='bramble-tide'?'连锁转为范围扩大，不产生跳跃。':id==='blazing-thorn'?'最多命中3敌；已有连锁改为定向跳跃。':'蒸汽爆发；继承分裂与最多2次连锁。'} 保留全部技能与遗物。</small></span></button>`;
+   return `<button class="secondary weapon-pair-option" data-pair="${id}"><img src="${cardArtUrl(`${import.meta.env.BASE_URL}${pairIcon(id)}`)}" alt=""/><span><strong>${parents.map(a=>ATTACKS[a.attackId].title+' Lv'+a.level).join(' + ')} → ${WEAPON_PAIR_RECIPES[id].title} Lv${pairLevel(parents[0].level,parents[1].level)}</strong><small>${id==='bramble-tide'?'连锁转为范围扩大，不产生跳跃。':id==='blazing-thorn'?'最多命中3敌；已有连锁改为定向跳跃。':'蒸汽爆发；继承分裂与最多2次连锁。'} 保留全部技能与遗物。</small></span></button>`;
  }).join('');
  document.getElementById('upgrade-panel')!.classList.add('choosing-pair');
  document.getElementById('upgrade-cards')!.hidden=true;document.getElementById('weapon-pair-picker')!.hidden=false;

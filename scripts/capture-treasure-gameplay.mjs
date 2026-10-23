@@ -17,6 +17,14 @@ try {
  window.drawChestGame=()=>{document.getElementById('world-loading').hidden=true;document.getElementById('welcome').hidden=true;g.placeCamera(true);g.partyView.render(1,0);g.monster.root.visible=!g.partyView.hasPixelLeader;g.updateHUD();g.combatView.render(1,0,g.position);g.renderer.render(g.scene,g.camera);};
  window.drawChestGame();g.treasureDialog.sync();
  });
+ await page.screenshot({path:'artifacts/treasure-gameplay/death-start.png'});
+ const deathBefore=await page.evaluate(()=>window.game.combat.elapsed);
+ // This preview sleeps Game.frame, so advance only its death presentation clock.
+ for(let i=0;i<73;i++){
+  await page.evaluate(()=>{const g=window.game;if(g.treasureDialog.presentingDeath)g.treasureDialog.advanceDeath(1/60);window.drawChestGame();});
+  if(i===35)await page.screenshot({path:'artifacts/treasure-gameplay/death-halfway.png'});
+ }
+ if(await page.evaluate(()=>window.game.combat.elapsed)!==deathBefore)throw new Error('Death presentation advanced combat');
  await page.waitForTimeout(800);
  for (const [width,height] of [[1280,720],[844,390]]) {
  await page.setViewportSize({width,height});await page.evaluate(()=>window.drawChestGame());await page.waitForTimeout(250);await page.evaluate(()=>window.drawChestGame());

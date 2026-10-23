@@ -1,6 +1,7 @@
 import {test,expect} from '@playwright/test';
-test('campaign capture keeps battle alive, freezes on pause, persists and enters prison after results',async({page})=>{
+for(const phone of [false,true])test(`campaign capture keeps battle alive, freezes on pause, persists and enters prison after results (${phone?'phone':'desktop'})`,async({page})=>{
  test.setTimeout(60_000);
+ if(phone)await page.setViewportSize({width:844,height:390});
  const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
  await page.route('**/capture-campaign-harness*',route=>route.fulfill({contentType:'text/html; charset=utf-8',body:`<div id="app"></div><script type="module">
  import '/src/style.css';import {createUI} from '/src/ui.ts';import {Game} from '/src/game.ts';
@@ -10,12 +11,16 @@ test('campaign capture keeps battle alive, freezes on pause, persists and enters
  await page.locator('#start-fusion').click();await page.waitForFunction(()=>!(window as any).game.sceneLoading);
  await page.evaluate(()=>{
   const g=(window as any).game;g.sleep();g.wake=()=>{};g.combat.clearWave();g.combat.encounters.beginWave(1);
-  g.combat.obstacles=[];g.combat.invulnerability=999;g.capture.random=()=>0;
+  g.combat.obstacles=[];g.combat.invulnerability=999;g.capture.random=()=>0;g.combat.captureSpawnRoll=()=>true;
   g.position.set(0,0,0);g.previousPosition.copy(g.position);g.party.syncLeader(g.position,0);
   const e=g.combat.spawn('normal',0,2,0);e.spawnTime=0;e.hp=3;window.target=e;
   window.draw=()=>{g.captureHUD.render(g.capture,g.combat,g.position,g.camera,true);g.combatView.render(1,g.visualTime,g.position);g.renderer.render(g.scene,g.camera);};
   (window as any).draw();
  });
+ await expect(page.locator('.capture-marker:visible')).toHaveText('按E 捕捉');
+ await expect(page.locator('.capture-status')).toHaveCount(0);
+ await expect(page.locator('.capture-start')).toHaveText('[E] 捕捉赤团');
+ await page.screenshot({path:`artifacts/capture-ready-${phone?'phone':'desktop'}.png`});
  await page.keyboard.press('e');
  expect(await page.evaluate(()=>(window as any).target.captureLocked)).toBe(true);
  await page.evaluate(()=>{const g=(window as any).game;g.pause('capture pause');for(let i=0;i<30;i++)g.step(1/60);});

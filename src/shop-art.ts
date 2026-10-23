@@ -14,6 +14,7 @@ export function preloadShopArt(shop: RunShop, combat: Combat) {
 
 /** Resolve appearance from the actual offer, never from its position in the shop. */
 export function shopArt(item: ShopItem, combat: Combat) {
+  if(item.illustration)return {hideIcon:false,label:item.kind==='contract'?'生命换强化':'恢复补给',category:item.kind,images:[uiArtUrl(`upgrade/illustrations/relics/${item.illustration}.png`)],icon:'heart' as const};
   if (item.kind === 'heal') return { label: '恢复补给', category: 'heal', images: [uiArtUrl('shop/health-potion.png')], icon: 'heart' as const };
   if (item.kind === 'empty' || !item.skill) return { label: '暂无商品', category: 'empty', images: [], icon: 'leaf' as const };
   const skill = combat.progression.skills.find(skill => skill.id === item.skill);
@@ -24,5 +25,5 @@ export function shopArt(item: ShopItem, combat: Combat) {
     : ['split-on-hit', 'area', 'chain'].includes(item.skill) ? '融合改造' : '魔法强化';
   const art = upgradeArt({ id: item.skill, category }, combat.progression.fusionBase,
     combat.runBuild.attacks.map(attack => attack.attackId));
-  return { label, category: category ?? 'normal', images: art.illustrations, icon: skill?.icon ?? 'spark' as const };
+  return { hideIcon:art.hideIcon, label, category: category ?? 'normal', images: art.illustrations, icon: skill?.icon ?? 'spark' as const };
 }

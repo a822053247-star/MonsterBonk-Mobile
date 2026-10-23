@@ -20,6 +20,18 @@ export class CaptureCollection {
     this.data.receipts.push(receipt);this.data.receipts=this.data.receipts.slice(-2048);
     return this.flush();
   }
+  release(kind:EnemyKind) {
+    const count=this.data.counts[kind]??0;
+    if(count<=0)return false;
+    const counts={...this.data.counts};
+    if(count===1)delete counts[kind];else counts[kind]=count-1;
+    const next:CollectionSave={...this.data,counts};
+    try {
+      if(!this.storage)throw new Error('storage unavailable');
+      this.storage.setItem(COLLECTION_KEY,JSON.stringify(next));
+      this.data=next;this.saved=true;return true;
+    } catch {this.saved=false;return false;}
+  }
   flush() {try {if(!this.storage)throw new Error('storage unavailable');this.storage.setItem(COLLECTION_KEY,JSON.stringify(this.data));this.saved=true;return true;}catch{this.saved=false;return false;}}
   owns(kind:EnemyKind) {return (this.data.counts[kind]??0)>0;}
 }

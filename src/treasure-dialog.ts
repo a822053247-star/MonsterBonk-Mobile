@@ -1,6 +1,6 @@
 import type { GameAudio } from './audio';
 import { treasurePresentation } from './treasure-presentation';
-import type { Combat } from './combat';
+import type { Combat, CombatEffect } from './combat';
 import type { TreasureReward } from './special-enemies';
 import { createTreasureCanvas } from './treasure-canvas';
 import { upgradeArt } from './upgrade-art';
@@ -20,6 +20,14 @@ export class TreasureDialog {
   private frame = 0;
   private lastTime = 0;
   private seen = new WeakSet<object>();
+  private deaths: CombatEffect[] = [];
+  get presentingDeath(){return this.deaths.length>0;}
+  /** Presentation only: enemies, wave timer, XP and damage stay frozen. */
+  advanceDeath(dt:number){
+    for(const death of this.deaths){death.time=Math.max(0,death.time-dt);death.active=death.time>0;}
+    this.deaths=this.deaths.filter(death=>death.active);
+    if(!this.presentingDeath&&this.current){this.root.hidden=false;this.lastTime=0;this.frame=requestAnimationFrame(this.tick);}
+  }
   constructor(private combat: Combat, private audio?: GameAudio, private canAnimate: () => boolean = () => true) {
     this.root.className = 'treasure-dialog'; this.root.hidden = true;
     this.root.setAttribute('role','dialog');this.root.setAttribute('aria-modal','true');this.root.setAttribute('aria-labelledby','treasure-title');
@@ -39,18 +47,23 @@ export class TreasureDialog {
   get active(){return !!this.current;}
   suspend(){this.root.hidden=true;this.lastTime=0;}
   sync(){
-    if(this.current&&this.canAnimate())this.root.hidden=false;
+    if(this.current&&this.canAnimate()&&!this.presentingDeath)this.root.hidden=false;
     if(this.current&&!this.current.active)this.reset();
     if(!this.current&&this.combat.hp>0){
       const event=this.combat.treasureRewards.find(e=>e.active&&!this.seen.has(e.items));
       if(event){
         this.seen.add(event.items);this.current=event;this.root.hidden=false;
         this.root.classList.toggle('first-boss-chest',event.source==='first-boss');
+        this.root.dataset.count=String(event.items.length);
+        this.root.classList.toggle('is-grand',event.items.length>=3);
         this.heading.textContent=event.source==='first-boss'?'首战告捷 · 金光宝箱':'发现宝藏！';
         const urls=event.items.map(i=>i.skill?upgradeArt({id:i.skill},this.combat.baseAttack,this.combat.runBuild.attacks.map(a=>a.attackId)).illustrations[0]:undefined);
         this.draw=createTreasureCanvas(this.canvas,event.items.map(i=>i.title),urls,true,(cue,index)=>this.audio?.playTreasure(cue,event.items.length,index));this.draw(0);
         this.resizeCanvas();this.draw(0);
-        this.arriving=true;this.arrivalAge=0;this.lastTime=0;this.root.classList.add('is-arriving');this.root.style.setProperty('--treasure-entry','0');this.button.disabled=true;this.button.textContent='宝藏正在显现…';this.frame=requestAnimationFrame(this.tick);
+        this.deaths=event.source==='first-boss'?[]:this.combat.areaDeaths.filter(d=>d.active&&d.enemyKind==='draft-treasure-runner'&&Math.hypot(d.x-event.x,d.z-event.z)<.1);
+        this.arriving=true;this.arrivalAge=0;this.lastTime=0;this.root.classList.add('is-arriving');this.root.style.setProperty('--treasure-entry','0');this.button.disabled=true;this.button.textContent='宝藏正在显现…';
+        if(this.presentingDeath)this.root.hidden=true;
+        else this.frame=requestAnimationFrame(this.tick);
       }
     }
     return this.active;
@@ -77,6 +90,6 @@ export class TreasureDialog {
       this.heading.textContent='宝藏已获得';this.button.disabled=false;this.button.textContent='继续战斗';this.button.focus();
     }else this.frame=requestAnimationFrame(this.tick);
   };
-  reset(){cancelAnimationFrame(this.frame);this.frame=0;this.current=undefined;this.draw=undefined;this.rolling=false;this.arriving=false;this.arrivalAge=0;this.audio?.stopTreasure();this.age=0;this.root.hidden=true;this.root.classList.remove('is-opening','is-arriving','first-boss-chest');this.root.style.removeProperty('--treasure-entry');this.root.style.removeProperty('--treasure-gold');}
+  reset(){cancelAnimationFrame(this.frame);this.deaths=[];this.frame=0;this.current=undefined;this.draw=undefined;this.rolling=false;this.arriving=false;this.arrivalAge=0;this.audio?.stopTreasure();this.age=0;this.root.hidden=true;this.root.classList.remove('is-opening','is-arriving','first-boss-chest','is-grand');delete this.root.dataset.count;this.root.style.removeProperty('--treasure-entry');this.root.style.removeProperty('--treasure-gold');}
   dispose(){this.reset();this.root.remove();}
 }

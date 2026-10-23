@@ -888,4 +888,15 @@ open_questions: ["最终数值与美术待定"]
 `abyss-lantern`：深蓝海洋灵体远程普通敌人，基础生命65、速度1、半径0.52、接触伤害6、经验5，沿用波次/无尽成长及普通死亡奖励。第三波24秒后的压力阶段及第四、第五波加入，同类最多2只，历史出怪列表不变，已加入敌人测试名单。rangedEnemyRule 复用远程逻辑：4单位内后退、7单位内缓行、9单位内无遮挡锁向蓄力0.9秒；复用 crystal 冷蓝敌弹及16槽池，速度4、寿命2.5秒、冷却3.2秒、伤害12，保留敌弹警示边和浅蓝尾迹，无额外控制状态。五方向素材按正面/右前/右侧/右后/背面导入，触须/灯珠沿用静态原图，模拟年龄驱动漂浮摇曳，不使用脚步帧。移动面向目标、施法/后仰锁向、冻结保留朝向；清场重开与GPU释放沿用既有路径。本次未运行测试或构建。
 
 
-战斗捕捉/幻兽囚坊：`src/enemy-capture.ts`、`src/capture-hud.ts`、`src/capture-collection.ts`、`src/prison-view.ts`、`src/prison-scene.ts`；完整接入、规则和验证见 [CAPTURE_PRISON.md](CAPTURE_PRISON.md)。正式闯关/无尽启用低血量靠近E与点击封印，永久收藏接局外劳作；旧模式不启用。
+战斗捕捉/幻兽囚坊：`src/enemy-capture.ts`、`src/capture-hud.ts`、`src/capture-collection.ts`、`src/prison-view.ts`、`src/prison-scene.ts`；完整接入、规则和验证见 [CAPTURE_PRISON.md](CAPTURE_PRISON.md)。可捕捉刷出概率与用户历史见 `src/capture-spawns.ts` / `src/capture-rules.ts`。正式闯关/无尽中抽中资格的个体40%血量转可捕捉并免伤（`Combat.isCaptureReady` / `src/capture-rules.ts`），可捕捉敌人不伤害角色，封印符无限，靠近E与点击封印；小游戏合格/优秀判定、不合格重试与加成见 `src/enemy-capture.ts`，界面见 `src/capture-hud.ts`；最终成功或失败均离场，成功永久收藏接局外劳作，囚坊同种入住数量受实际捕获数量限制；旧模式不启用。
+
+
+四位Boss环形弹幕（荆冠兽王、熔果暴君、晶甲重炮王、霜绒巨兽）：`src/boss-barrage.ts`、`src/boss-barrage-view.ts`，接入 `EnemyChallenge` / `EncounterView`；行为、预览与截图见 [BOSS_BARRAGE.md](BOSS_BARRAGE.md)。
+
+无尽Boss技能成长：`EnemyChallenge.spawnBoss` 按跨轮索引锁定伤害与节奏，技能伤害沿用接触伤害上限，`balance.ts:cycleBossFrequency` 提供有上限的对数节奏成长；保留预警与弹幕缺口。实际接入和倍率公式见 [BOSS_BARRAGE.md](BOSS_BARRAGE.md)「无尽实战成长」。
+
+无尽三位Boss各有三种弹幕，`endless-boss.ts:barragePatterns` 轮换、攻击表穿插三次弹幕段；新增四向焰流/熔核星爆、十字重炮/棱镜聚焦、六角飞雪/错位雪幕。模型与预警共用 `boss-barrage.ts` / `boss-barrage-view.ts`，详细发射与资源规则见 [BOSS_BARRAGE.md](BOSS_BARRAGE.md)「三位变体追加六种技能」。
+
+无尽新增八项通用内容：专注重炮、疾行契约、远距透镜、重型弹药、残血决意、精英猎手、休整补给、契约强化。六件遗物仅无尽出现；补给每店1次，契约每店1次、本局3次。规则与接入见 [ENDLESS_PASSIVES.md](ENDLESS_PASSIVES.md)，八项图标使用用户提供图集的透明裁切PNG；不新增粒子或弹池。
+
+卡片视觉管理：升级、商店与构筑卡图共用离线主体裁切、居中和等比缩放的256像素WebP；固定图片区、短效果和短代价由 `card-art.ts` / `card-copy.ts` / `style.css` 管理。规则与生成入口见 [CARD_ART_MANAGEMENT.md](CARD_ART_MANAGEMENT.md)，未修改战斗数值。

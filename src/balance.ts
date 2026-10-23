@@ -6,6 +6,7 @@ export const BUILD_BALANCE = {
   explosionRadius: 3.6, steamRadius: 3.5, pairRadius: 2.8,
   extraPelletDamage: .75, temporaryHaste: 1.5, childScale: .6,
 } as const;
+export const VITAL_CONTRACT={health:.95,limit:3,priceFraction:.6,priceStep:.1} as const;
 const PROJECTILE_RADII: Partial<Record<BaseAttackId, readonly [number, number]>> = {
   spark: [.20,.26], bubble: [.24,.34], leaf: [.20,.26],
   'frost-crystal': [.20,.28], 'dream-dart': [.20,.27], 'resonance-seed': [.20,.26],
@@ -33,6 +34,14 @@ export function cycleHealth(index: number, boss = false) {
 }
 
 export function cycleFuelHealth(index: number) { return Math.min(1.8, cycleHealth(index)); }
+
+/** Boss cadence follows the health curve's early steps and logarithmic tail.
+ * Only execution/recovery accelerate; authored warning windows stay readable. */
+export function cycleBossFrequency(index: number) {
+  const n = safeCycle(index);
+  return Math.min(1.35, 1 + .04 * Math.min(n,2)
+    + .10 * Math.log1p(Math.max(n-2,0)/2));
+}
 
 /** Authored prices depend on progress, never wallet size, DPS or player failures. */
 export function endlessShopBaseline(index: number) {

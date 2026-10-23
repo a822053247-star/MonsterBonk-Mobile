@@ -1,3 +1,4 @@
+import {BossBarrageView} from './boss-barrage-view';
 import { rangedEnemyRule } from './ranged-enemies';
 import * as THREE from 'three';
 import { COMBAT_LIMITS, type Combat } from './combat';
@@ -10,6 +11,7 @@ import { EliteQuakeView } from './elite-quake-view';
 export class EncounterView {
   readonly group = new THREE.Group();
   private boss?: CrownthornView;
+  private barrage=new BossBarrageView();
   private pose = new THREE.Object3D();
   private shots: THREE.InstancedMesh;
   private shotColor = new THREE.Color();
@@ -36,6 +38,7 @@ export class EncounterView {
     this.cone = new THREE.Mesh(new THREE.CircleGeometry(1,32,-.7,1.4),ground('#e295ff',.22));
     this.elite = new THREE.Mesh(new THREE.RingGeometry(.92,1,48),ground('#ffc85e',.85));
     this.fallback = new THREE.Mesh(new THREE.IcosahedronGeometry(1,1),new THREE.MeshBasicMaterial({color:'#bf9a52',wireframe:true}));
+    this.group.add(this.barrage.group);
     this.group.name='FormalEnemyChallenges'; this.group.add(this.shots,this.lane,this.cone,this.elite,this.fallback,this.quake.group);
     for (const quake of this.aftershocks) this.group.add(quake.group);
     this.group.add(this.bossQuake.group);
@@ -46,6 +49,7 @@ export class EncounterView {
     const c=this.combat.encounters;
     this.clear(); this.group.visible=c.enabled || c.shots.some(s=>s.active);
     if (!this.group.visible) return;
+    this.barrage.render(c.barrage,alpha,detail,this.billboard);
     for (const shot of c.shots) if(shot.active) {
       this.pose.position.set(THREE.MathUtils.lerp(shot.previousX,shot.x,alpha),.75,THREE.MathUtils.lerp(shot.previousZ,shot.z,alpha));
       this.pose.scale.setScalar(ENCOUNTER_RULES.shotRadius); this.pose.rotation.set(0,0,0); this.pose.updateMatrix();
@@ -124,9 +128,10 @@ export class EncounterView {
     this.sporeMarks.setColorAt(this.sporeMarks.count,this.shotColor.set(color));
     this.sporeMarks.setMatrixAt(this.sporeMarks.count++,this.pose.matrix);
   }
-  clear() { this.sporeRims.count=this.sporeMarks.count=this.muzzleCount=0; this.quake.clear(); this.bossQuake.clear(); for (const quake of this.aftershocks) quake.clear(); this.group.visible=false; this.shots.count=0; this.lane.visible=this.cone.visible=this.elite.visible=this.fallback.visible=false; if(this.boss) this.boss.group.visible=false; }
+  clear() { this.barrage.clear();this.sporeRims.count=this.sporeMarks.count=this.muzzleCount=0; this.quake.clear(); this.bossQuake.clear(); for (const quake of this.aftershocks) quake.clear(); this.group.visible=false; this.shots.count=0; this.lane.visible=this.cone.visible=this.elite.visible=this.fallback.visible=false; if(this.boss) this.boss.group.visible=false; }
   inspect() { return {quake:this.quake.inspect(),aftershocks:this.aftershocks.map(quake=>quake.inspect()),shots:this.shots.count,sporeRims:this.sporeRims.count,sporeMarks:this.sporeMarks.count,muzzles:this.muzzleCount,capacity:ENCOUNTER_RULES.hostileShots,boss:this.boss?.inspect()??null,lane:this.lane.visible,cone:this.cone.visible,elite:this.elite.visible,fallback:this.fallback.visible}; }
   dispose() {
+    this.barrage.dispose();
     this.quake.dispose();
     this.bossQuake.dispose();
     for (const quake of this.aftershocks) quake.dispose();

@@ -52,7 +52,7 @@ h1>em{font-size:12px;line-height:1;letter-spacing:4px;display:inline-block;backg
 .character-tag strong>span{font-size:11px;letter-spacing:2px;margin-left:4px;opacity:.7}
 .character-tag p{font-size:10px;margin:0;letter-spacing:1px}
 .tag-star{font-size:32px;margin-left:10px;color:#f6f2d0}
-.menu-footer{display:flex;align-items:center;justify-content:space-between;font-size:10px;letter-spacing:1.5px;color:#b3cbb8}
+.menu-footer{display:flex;align-items:center;justify-content:flex-start;font-size:10px;letter-spacing:1.5px;color:#b3cbb8}
 .menu-footer>span:first-child{display:flex;align-items:center;gap:9px}
 .menu-footer .icon{width:17px;height:17px;color:var(--lime)}
 .menu-footer i{font-style:normal;opacity:.5;margin:0 4px}
@@ -265,13 +265,13 @@ h1>em{font-size:12px;line-height:1;letter-spacing:4px;display:inline-block;backg
 
 /* Forest upgrade cards. Layout and art are independent of reward handling. */
 .upgrade-screen{background:radial-gradient(ellipse at 50% 35%,#284934a6,#102b26d9);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);padding:calc(14px + var(--safe-top)) calc(20px + var(--safe-right)) calc(12px + var(--safe-bottom)) calc(20px + var(--safe-left))}
-.upgrade-panel{--card-height:clamp(185px,calc(100dvh - 130px - var(--safe-top) - var(--safe-bottom)),510px);width:min(100%,1060px);display:flex;flex-direction:column;align-items:center;gap:7px}
+.upgrade-panel{--card-height:clamp(185px,calc(100dvh - 150px - var(--safe-top) - var(--safe-bottom)),510px);width:min(100%,1060px);display:flex;flex-direction:column;align-items:center;gap:7px}
 .upgrade-header{width:100%;position:relative;justify-content:center;min-height:48px;gap:0}
-.upgrade-heading-art{position:relative;width:250px;height:64px;display:grid;place-items:center;isolation:isolate}
-.upgrade-heading-art>img{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;image-rendering:pixelated;opacity:0;pointer-events:none;z-index:-1}
+.upgrade-heading-art{position:relative;width:250px;height:auto;aspect-ratio:3 / 1;flex-shrink:0;display:grid;place-items:center;isolation:isolate}
+.upgrade-heading-art>img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;image-rendering:auto;opacity:0;pointer-events:none;z-index:-1}
 .upgrade-heading-art.art-ready>img{opacity:1}
 .upgrade-header h2{color:#fff0c5;text-shadow:0 2px 4px #102c24;font-size:24px;letter-spacing:4px;margin:0}
-.upgrade-heading-art.art-ready h2{color:#553d27;text-shadow:0 1px #fff7df;font-size:20px;transform:translateY(4px)}
+.upgrade-heading-art.art-ready h2{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
 .upgrade-header>.text-button{position:absolute;right:0;top:10px;align-self:auto;color:#f3e6b7;margin:0;padding:8px 10px;border:1px solid #dcc68a66;border-radius:6px;background:#183e3280;font-size:11px}
 .upgrade-subtitle{margin:0;gap:10px;font-size:11px;color:#f0e8cd;justify-content:center;width:100%}
 .upgrade-subtitle>span:first-child{background:#e8d5a4;color:#3b513d;border:1px solid #b99b5f;border-radius:4px;padding:3px 8px;font-size:10px;letter-spacing:0}
@@ -327,10 +327,9 @@ h1>em{font-size:12px;line-height:1;letter-spacing:4px;display:inline-block;backg
 .upgrade-footer>span:first-child{color:#ece2bc}
 @media(max-height:450px){
   .upgrade-screen{padding:calc(7px + var(--safe-top)) calc(16px + var(--safe-right)) calc(6px + var(--safe-bottom)) calc(16px + var(--safe-left))}
-  .upgrade-panel{--card-height:clamp(175px,calc(100dvh - 104px - var(--safe-top) - var(--safe-bottom)),350px);gap:4px}
-  .upgrade-heading-art{height:45px;width:190px}
+  .upgrade-panel{--card-height:clamp(175px,calc(100dvh - 124px - var(--safe-top) - var(--safe-bottom)),350px);gap:4px}
+  .upgrade-heading-art{width:190px}
   .upgrade-header{min-height:45px}
-  .upgrade-heading-art.art-ready h2{font-size:16px;letter-spacing:2px;transform:translateY(3px)}
   .upgrade-header>.text-button{font-size:9px;top:8px;padding:5px 8px}
   .upgrade-subtitle{font-size:9px;gap:7px}
   .upgrade-subtitle p{font-size:9px}
@@ -415,16 +414,6 @@ h1>em{font-size:12px;line-height:1;letter-spacing:4px;display:inline-block;backg
 .shop-illustration>img.art-loaded{display:block}
 .shop-illustration.multiple-art>img{width:50%}
 .shop-illustration.multiple-art:not(.art-ready)>img{display:none}
-/* Trim the stray left-edge shard from the ring illustration, keeping the source intact. */
-.skill-card[data-skill="returning-ring"] .skill-illustration,
-.shop-item[data-skill="returning-ring"] .shop-illustration>img{
-  width:auto;max-width:100%;clip-path:inset(0 0 0 20%);transform:translateX(-6%);
-}
-/* Remove the neighbouring artwork along the ice illustration's left edge. */
-.skill-card[data-skill="ice-radiance"] .skill-illustration,
-.shop-item[data-skill="ice-radiance"] .shop-illustration>img{
-  width:auto;max-width:100%;clip-path:inset(0 0 0 10%);transform:translateX(-3%);
-}
 .shop-art-fallback{display:flex;align-items:center;justify-content:center;width:100%;height:100%;min-height:24px;color:#86aa71}
 .shop-art-fallback>.icon{width:40px;height:40px;max-height:100%}
 .shop-illustration.art-ready>.shop-art-fallback{display:none}
@@ -787,11 +776,10 @@ h1>em{font-size:12px;line-height:1;letter-spacing:4px;display:inline-block;backg
 }
 /* Desktop copy needs its own scale instead of inheriting the phone header. */
 @media(min-width:1000px) and (min-height:600px){
-  .upgrade-panel{--card-height:clamp(300px,calc(100dvh - 250px - var(--safe-top) - var(--safe-bottom)),510px);gap:12px}
+  .upgrade-panel{--card-height:clamp(300px,calc(100dvh - 278px - var(--safe-top) - var(--safe-bottom)),510px);gap:12px}
   .upgrade-header{min-height:92px}
-  .upgrade-heading-art{width:360px;height:92px}
-  .upgrade-header h2,.upgrade-heading-art.art-ready h2{font-size:32px;letter-spacing:4px}
-  .upgrade-heading-art.art-ready h2{transform:translateY(5px)}
+  .upgrade-heading-art{width:360px}
+  .upgrade-header h2{font-size:32px;letter-spacing:4px}
   .upgrade-header>.text-button{top:24px;font-size:14px;padding:11px 15px}
   .upgrade-subtitle{gap:14px;margin:0 0 20px;font-size:15px;line-height:1.4}
   .upgrade-subtitle p{font-size:15px}
@@ -868,9 +856,12 @@ h1>em{font-size:12px;line-height:1;letter-spacing:4px;display:inline-block;backg
 
 /* Three prototype entries stay touchable on narrow landscape phones. */
 .prototype-entries{flex-wrap:wrap;column-gap:14px;row-gap:0}
-.main-modes{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:min(360px,33.333vw);margin:16px 0 14px}
+.main-modes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;width:min(548px,50vw);margin:16px 0 14px}
 .mode-card{display:flex;align-items:center;gap:8px;min-height:58px;padding:10px;border:2px solid #ddbd78;border-radius:14px;box-shadow:0 5px 0 #483d24,0 9px 20px #09241d44;text-align:left;color:#fff2c9;background:linear-gradient(135deg,#82542b,#493e27);touch-action:manipulation}
 .mode-card.infinite-mode{border-color:#aaca8c;background:linear-gradient(135deg,#496d42,#254d3d);box-shadow:0 5px 0 #213f30,0 9px 20px #09241d44}
+.mode-card.prison-mode{border-color:#7d8992;color:#f1ead9;background:repeating-linear-gradient(90deg,#aab6bf12 0 2px,transparent 2px 15px),linear-gradient(135deg,#252a30,#080b0e);box-shadow:0 5px 0 #080b0e,0 9px 20px #09241d44}
+.prison-mode>.icon{color:#c4cdd3}
+.mode-card.prison-mode:active{box-shadow:0 2px 0 #080b0e}
 .mode-card>.icon{width:20px;height:20px;flex-shrink:0}.mode-card>.icon:last-child{display:none}
 .mode-card>span{display:flex;flex-direction:column;gap:9px}.mode-card strong{font-size:clamp(12px,1.9vw,17px);white-space:nowrap;letter-spacing:0}.mode-card small{font-size:11px;color:#eddfb8;white-space:nowrap}
 .menu .menu-copy{width:min(660px,70vw);max-width:none}.menu .menu-description{margin-bottom:14px}
@@ -880,7 +871,7 @@ h1>em{font-size:12px;line-height:1;letter-spacing:4px;display:inline-block;backg
 .hud .dash-button.cooling{background:conic-gradient(#e9cb84 var(--ready,0%),#243d30 0);border-color:#e5ca8c}.hud .dash-button.cooling>span{font-size:13px;font-weight:800;font-variant-numeric:tabular-nums;color:#ffe4a2}
 @media(max-height:600px) and (orientation:landscape){.main-modes{margin:12px 0}.mode-card{min-height:54px;padding:8px;gap:6px}.menu .menu-copy{width:min(620px,78vw)}.menu .menu-utilities .secondary{min-height:38px}.menu .prototype-entries .text-button{min-height:32px}.menu .menu-description{margin-bottom:8px}}
 @media(max-height:380px) and (orientation:landscape){.main-modes{margin:8px 0}.mode-card{min-height:48px;padding:6px;gap:4px}.mode-card>.icon{width:16px;height:16px}.mode-card>span{gap:6px}.menu .menu-utilities .secondary{min-height:34px}}
-@media(max-width:600px) and (orientation:portrait){.menu .menu-copy{width:100%}.main-modes{grid-template-columns:1fr}.mode-card{min-height:48px;padding:8px}}
+@media(max-width:600px) and (orientation:portrait){.menu .menu-copy{width:100%}.main-modes{width:100%;grid-template-columns:repeat(2,minmax(0,1fr))}.main-modes .campaign-mode{grid-column:1/-1}.mode-card{min-height:48px;padding:8px}}
 
 
 
@@ -1273,14 +1264,14 @@ h1>em{font-size:12px;line-height:1;letter-spacing:4px;display:inline-block;backg
 
 .treasure-dialog[hidden] { display: none; }
 .treasure-dialog { position: fixed; inset: 0; z-index: 150; display: grid; place-items: center; background: #08171480; padding: 16px; touch-action: none; }
-.treasure-dialog-panel { width: min(470px, 90vw); height: min(680px, calc(100dvh - 32px)); box-sizing: border-box; display: flex; flex-direction: column; align-items: center; padding: 20px 24px; background: #4b4d70; border: 5px solid #d3a957; outline: 3px solid #493a33; box-shadow: inset 0 0 0 3px #787899, 0 10px 40px #0009; color: #fff5d9; }
+.treasure-dialog-panel { width: min(820px, 88vw); height: min(820px, calc(100dvh - 40px)); box-sizing: border-box; display: flex; flex-direction: column; align-items: center; padding: 20px 24px; background: #4b4d70; border: 5px solid #d3a957; outline: 3px solid #493a33; box-shadow: inset 0 0 0 3px #787899, 0 10px 40px #0009; color: #fff5d9; }
 .treasure-dialog-panel h2 { margin: 0; font-size: clamp(22px, 3vw, 32px); letter-spacing: .08em; text-shadow: 2px 2px #272b47; }
-.treasure-dialog-panel canvas { min-height: 0; flex: 1; width: 100%; object-fit: fill; }
+.treasure-dialog-panel canvas { position: relative; min-height: 0; flex: 1; width: calc(100% + 72px); max-width: 96vw; object-fit: fill; pointer-events: none; }
 .treasure-dialog-button { flex-shrink: 0; min-width: 200px; min-height: 50px; margin-top: 12px; border: 3px solid #ffd675; border-radius: 7px; background: #293fc0; color: #fff5d9; font-size: 22px; font-weight: 800; box-shadow: 0 0 0 2px #252138, inset 0 0 0 2px #576bdd; }
 .treasure-dialog-button:disabled { opacity: .65; }
 @media (max-height: 500px) and (orientation: landscape) {
  .treasure-dialog { padding: 12px; }
- .treasure-dialog-panel { width: min(680px, 85vw); height: calc(100dvh - 24px); padding: 10px 20px; }
+ .treasure-dialog-panel { width: min(880px, 90vw); height: calc(100dvh - 24px); padding: 10px 20px; }
  .treasure-dialog-panel h2 { font-size: 23px; }
  .treasure-dialog-button { min-height: 42px; font-size: 19px; margin-top: 6px; }
 }
@@ -1298,3 +1289,31 @@ h1>em{font-size:12px;line-height:1;letter-spacing:4px;display:inline-block;backg
 
 .treasure-dialog.first-boss-chest { background: radial-gradient(ellipse at center, #fff1a8dd 0%, #bd7c1ddd 65%, #4e300dee 100%); }
 .treasure-dialog.first-boss-chest .treasure-dialog-panel { border-color: #fff0a0; box-shadow: 0 0 60px #ffdf69aa, inset 0 0 0 3px #d4a04d; }
+
+/* A fixed art stage: copy length cannot resize or move the visible subject. */
+.skill-card .skill-content{top:22%;bottom:28%;left:14%;right:14%;display:block;overflow:visible}
+.skill-card .skill-content .skill-emblem{position:absolute;inset:0 0 auto;width:100%;height:56%;max-width:none;max-height:none;overflow:hidden}
+.skill-card .skill-content .skill-illustration{width:100%;height:100%;max-width:100%;max-height:100%;object-fit:contain;object-position:center;image-rendering:auto;filter:none;transform:none;clip-path:none}
+.skill-card .skill-content .skill-benefit{position:absolute;top:64%;left:0;right:0;min-height:0;display:block;font-size:clamp(11px,calc(var(--card-height) * .036),17px);line-height:1.35;text-wrap:balance;overflow-wrap:normal}
+.skill-card .skill-preview{display:none}
+.skill-card .skill-card-meta{top:74%;left:15%;right:15%}
+.skill-card .skill-tradeoff{top:80%;left:15%;right:15%;font-size:clamp(10px,calc(var(--card-height) * .028),13px);line-height:1.35;text-wrap:balance}
+.skill-card .skill-ranks,.skill-card:not(.has-tradeoff) .skill-ranks{top:91%}
+.shop-item>.shop-item-type{top:20.5%;font-size:clamp(10px,calc(var(--shop-card-height) * .027),14px)}
+.shop-item .shop-item-body{top:23%;bottom:28%;left:14%;right:14%;display:block;overflow:visible}
+.shop-item .shop-illustration{position:absolute;inset:0 0 auto;width:100%;height:57%;min-height:0;max-height:none}
+.shop-item .shop-illustration>img{width:100%;height:100%;max-width:100%;object-fit:contain;object-position:center;image-rendering:auto;transform:none;clip-path:none}
+.shop-item .shop-benefit{position:absolute;top:61%;left:0;right:0;min-height:0;display:block;font-size:clamp(11px,calc(var(--shop-card-height) * .033),17px);line-height:1.35;text-wrap:balance;overflow-wrap:normal}
+.shop-item .shop-cost{position:absolute;top:83%;left:0;right:0;font-size:clamp(10px,calc(var(--shop-card-height) * .026),12px);line-height:1.3;text-wrap:balance;overflow-wrap:normal}
+@media(max-height:350px){
+ .skill-card .skill-content .skill-benefit,.shop-item .shop-benefit{font-size:10px;line-height:1.25}
+ .skill-card .skill-tradeoff,.shop-item .shop-cost{font-size:9px;line-height:1.25}
+}
+
+/* Treasure light can escape the frame while controls remain above the stage. */
+.treasure-dialog-panel { overflow: visible; isolation: isolate; background: #252342ee; }
+.treasure-dialog-panel h2, .treasure-dialog-button { position: relative; z-index: 2; }
+.treasure-dialog.is-grand .treasure-dialog-panel { width: min(1120px, 92vw); }
+.treasure-dialog.is-opening .treasure-dialog-panel::before { content: ''; position: absolute; z-index: -1; inset: -8vh -4vw; pointer-events: none; background: radial-gradient(ellipse, #ffdc6355, #ffb52422 48%, transparent 72%); }
+.treasure-dialog.is-opening.is-grand .treasure-dialog-panel::before { background: radial-gradient(ellipse at 20% 30%, #ff244c88, transparent 60%), radial-gradient(ellipse at 80% 35%, #ffcc6977, transparent 65%); }
+@media (prefers-reduced-motion: reduce) { .treasure-dialog.is-arriving .treasure-dialog-panel { transform: none; } }

@@ -1,9 +1,11 @@
+import {BossBarrage,BOSS_BARRAGE,type BarragePattern} from './boss-barrage';
 import type { Combat, Enemy } from './combat';
 import { FORMAL_SPAWN_CAPS } from './spawn-layout';
 import type { CrownthornAction } from './crownthorn-animation';
 import { ELITE_QUAKE_DURATION, type EliteQuakeEvent } from './elite-quake';
 import { ARENA_HALF_EXTENT, PLAYER_COLLISION_RADIUS } from './arena-boundary';
 import { endlessBossDefinition, type EndlessBossDefinition } from './endless-boss';
+import { cycleBossFrequency } from './balance';
 
 type Point = { x: number; z: number };
 export const ENCOUNTER_RULES = {
@@ -17,7 +19,7 @@ export const ENCOUNTER_RULES = {
 } as const;
 export const CAMPAIGN_ELITE_QUAKE = { warning: 2.2, cooldown: 3.6, reaction: .8, escapeMargin: .9, sideDistance: 5.5 } as const;
 export const CAMPAIGN_BOSS = { spreadCount: 7, enragedSpreadCount: 9, dashDuration: ENCOUNTER_RULES.dashDuration } as const;
-const CAMPAIGN_BOSS_PATTERN = ['spread-windup', 'dash-windup', 'summon-windup', 'dash-windup'] as const;
+const CAMPAIGN_BOSS_PATTERN = ['spread-windup', 'dash-windup', 'summon-windup', 'dash-windup', 'barrage-windup'] as const;
 /** Predict only when locking a warning. Bounded curvature makes an unchanged
  * circular path readable to enemies; a subsequent reversal invalidates the aim. */
 export function predictPosition(player: Point, vx: number, vz: number, turn: number, seconds: number): Point {
@@ -25,15 +27,20 @@ export function predictPosition(player: Point, vx: number, vz: number, turn: num
   const cosine=Math.abs(turn)<.01?0:(1-Math.cos(turn*seconds))/turn;
   return {x:player.x+vx*sine-vz*cosine,z:player.z+vx*cosine+vz*sine};
 }
-export type BossState = 'approach' | 'spread-windup' | 'spread' | 'dash-windup' | 'dash' | 'summon-windup' | 'summon' | 'quake-windup' | 'quake' | 'recover' | 'dying' | 'defeated';
-export interface HostileShot { style?: 'spore' | 'crystal' | 'petal' | 'thunder' | 'toxic' | 'boss'; active: boolean; x: number; z: number; previousX: number; previousZ: number; vx: number; vz: number; life: number }
+export type BossState = 'barrage-windup' | 'barrage' | 'approach' | 'spread-windup' | 'spread' | 'dash-windup' | 'dash' | 'summon-windup' | 'summon' | 'quake-windup' | 'quake' | 'recover' | 'dying' | 'defeated';
+export interface HostileShot { sourceEnemyId?: number; style?: 'spore' | 'crystal' | 'petal' | 'thunder' | 'toxic' | 'boss'; active: boolean; x: number; z: number; previousX: number; previousZ: number; vx: number; vz: number; life: number }
 
 /** Formal-run behavior only. Clocks are simulation clocks; renderers never call damage. */
 export class EnemyChallenge {
+  readonly barrage=new BossBarrage();
+  barrageChoice?:BarragePattern;
+  private barrageCount=0;
   enabled = false;
   wave = 0;
   boss?: Enemy;
   bossProfile?: EndlessBossDefinition;
+  bossDamageMultiplier=1;
+  bossFrequencyMultiplier=1;
   readonly bossQuake: EliteQuakeEvent = {active:false,age:0,x:0,z:0};
   readonly bossQuakeTarget = {x:0,z:0};
   private bossQuakeDue = false;
@@ -74,13 +81,13 @@ export class EnemyChallenge {
   get dying() { return this.bossState === 'dying' || this.defeated; }
   get action(): CrownthornAction | null {
     if (this.dying) return 'death';
-    if (this.bossState.startsWith('spread')) return 'spread-cast';
+    if (this.bossState.startsWith('spread') || this.bossState.startsWith('barrage')) return 'spread-cast';
     if (this.bossState.startsWith('summon')) return 'summon';
     if (this.bossState === 'dash-windup') return 'dash-windup';
     if (this.bossState === 'dash') return 'dash';
     return this.bossState === 'approach' ? null : this.enraged ? 'enraged-idle' : 'idle';
   }
-  clearShots() { for (const s of this.shots) { s.active = false; s.style = undefined; } }
+  clearShots() { this.barrage.clear();for (const s of this.shots) { s.active = false; s.style = undefined; s.sourceEnemyId = undefined; } }
   freezeEnemy(enemy: Enemy) {
     if (enemy !== this.elite) return;
     this.elitePulsing = this.pulseDue = false; this.eliteTime = 0;
@@ -89,8 +96,8 @@ export class EnemyChallenge {
   }
   reset() {
     this.enabled = false; this.releaseWindow = false; this.wave = 0; this.boss = this.elite = undefined;
-    this.campaign = true;
-    this.bossProfile = undefined; this.bossQuakeDue = false; this.quakeCount = 0;
+    this.campaign = true;this.barrageCount=0;this.barrageChoice=undefined;
+    this.bossProfile = undefined; this.bossDamageMultiplier=this.bossFrequencyMultiplier=1; this.bossQuakeDue = false; this.quakeCount = 0;
     Object.assign(this.bossQuake,{active:false,age:0,x:0,z:0});
     this.bossQuakeTarget.x = this.bossQuakeTarget.z = 0;
     this.bossState = 'approach'; this.forceEnraged = false; this.bossTime = this.eliteTime = this.pattern = 0;
@@ -133,6 +140,8 @@ export class EnemyChallenge {
   spawnBoss(combat: Combat, player: Point) {
     if (this.boss) return this.boss;
     this.bossProfile = combat.endlessRoster ? endlessBossDefinition(combat.endlessCycleIndex) : undefined;
+    this.bossDamageMultiplier=combat.endlessRoster?combat.endlessContactDamageMultiplier:1;
+    this.bossFrequencyMultiplier=combat.endlessRoster?cycleBossFrequency(combat.endlessCycleIndex):1;
     this.boss = combat.spawnRank('boss', player);
     if (this.boss) { this.forceEnraged = false; this.bossState = 'approach'; this.bossTime = 0; this.pattern = 0; }
     return this.boss;
@@ -176,14 +185,19 @@ export class EnemyChallenge {
     this.motion.x = x; this.motion.z = z;
     if (enemy === this.boss) {
       this.bossTime += dt;
+      if(this.bossState==='barrage-windup' && !this.barrage.running){
+        const patterns:readonly BarragePattern[]=this.bossProfile?.barragePatterns??['flower','spiral'];
+        const pattern=this.barrageChoice??patterns[this.barrageCount++%patterns.length];
+        this.barrage.start(enemy,player,this.enraged,pattern,combat,{damage:12*this.bossDamageMultiplier,frequency:this.bossFrequencyMultiplier});
+      }
       const distance = Math.hypot(player.x-enemy.x, player.z-enemy.z);
       const tempo = this.enraged ? .8 : 1;
-      if (this.bossState === 'approach' && (distance < 8 || this.bossTime > 3)) {
+      if (this.bossState === 'approach' && (distance < 8 || this.bossTime > 3/this.bossFrequencyMultiplier)) {
         const pattern = this.bossProfile ? (this.enraged ? this.bossProfile.enragedPattern : this.bossProfile.pattern) : CAMPAIGN_BOSS_PATTERN;
         const state=pattern[(this.pattern++ + (this.bossProfile && combat.endlessCycleIndex >= 4 ? 1 : 0)) % pattern.length];
         // A bounded lead punishes an unchanged orbit, but the displayed locked
         // warning never follows the player. Reversing/side-stepping stays safe.
-        const lead=(state==='dash-windup'?this.dashWindupDuration:this.spreadWindupDuration)+(state==='dash-windup'?.35:.7);
+        const lead=(state==='dash-windup'?this.dashWindupDuration:state==='barrage-windup'?BOSS_BARRAGE.warning:this.spreadWindupDuration)+(state==='dash-windup'?.35:.7);
         const predicted=predictPosition(player,combat.playerVelocityX,combat.playerVelocityZ,combat.playerTurnRate,lead);
         const tx=predicted.x-enemy.x, tz=predicted.z-enemy.z;
         const length=Math.max(.001,Math.hypot(tx,tz)); this.aimX=tx/length; this.aimZ=tz/length;
@@ -208,17 +222,19 @@ export class EnemyChallenge {
           const offset = -.7 + i * 1.4 / (count - 1);
           const vx = Math.sin(angle+offset), vz = Math.cos(angle+offset), speed = this.shotSpeed;
           const sx = enemy.x, sz = enemy.z;
-          Object.assign(shot,{style:this.bossProfile?.kind==='crystal-crawler'?'crystal':this.bossProfile?'thunder':'boss',active:true,x:sx,z:sz,previousX:sx,previousZ:sz,vx:vx*speed,vz:vz*speed,life:this.shotLife});
+          Object.assign(shot,{sourceEnemyId:undefined,style:this.bossProfile?.kind==='crystal-crawler'?'crystal':this.bossProfile?'thunder':'boss',active:true,x:sx,z:sz,previousX:sx,previousZ:sz,vx:vx*speed,vz:vz*speed,life:this.shotLife});
         }
         this.transition('spread');
-      } else if (this.bossState === 'dash-windup' && this.bossTime >= this.dashWindupDuration) this.transition('dash');
+      } else if(this.bossState==='barrage-windup' && this.bossTime>=BOSS_BARRAGE.warning)this.transition('barrage');
+      else if (this.bossState === 'dash-windup' && this.bossTime >= this.dashWindupDuration) this.transition('dash');
       else if (this.bossState === 'quake-windup' && this.bossTime >= this.quakeWindupDuration) { this.bossQuakeDue=true; this.transition('quake'); }
       else if (this.bossState === 'dash' && this.bossTime >= this.dashDuration) this.transition('recover');
       else if (this.bossState === 'summon-windup' && this.bossTime >= .9 * tempo) {
         for (let i = 0; i < 3 && combat.enemies.filter(e => e.active).length < ENCOUNTER_RULES.bossSupportCap; i++) combat.spawnEncounter('normal', enemy, 2.8, 4.2);
         this.transition('summon');
-      } else if ((this.bossState === 'spread' || this.bossState === 'summon' || this.bossState === 'quake') && this.bossTime >= .7) this.transition('recover');
-      else if (this.bossState === 'recover' && this.bossTime >= (this.bossProfile ? 1.5 : this.enraged ? 1.15 : 1.4)) this.transition('approach');
+      } else if(this.bossState==='barrage'){if(!this.barrage.running)this.transition('recover');}
+      else if ((this.bossState === 'spread' || this.bossState === 'summon' || this.bossState === 'quake') && this.bossTime >= .7/this.bossFrequencyMultiplier) this.transition('recover');
+      else if (this.bossState === 'recover' && this.bossTime >= (this.bossProfile ? 1.5 : this.enraged ? 1.15 : 1.4)/this.bossFrequencyMultiplier) this.transition('approach');
       if (this.bossState === 'dash') { this.motion.x = this.aimX*this.dashSpeed; this.motion.z = this.aimZ*this.dashSpeed; }
       else if (this.bossState !== 'approach') this.motion.x = this.motion.z = 0;
       else { const speed = this.bossProfile ? this.bossProfile.speed / combat.enemySpeed(enemy) : ENCOUNTER_RULES.bossSpeed/.75; this.motion.x *= speed; this.motion.z *= speed; }
@@ -242,10 +258,11 @@ export class EnemyChallenge {
   }
   advanceHazards(dt: number, combat: Combat, player: Point, previous: Point) {
     if (this.dying) { this.clearShots(); return; }
+    this.barrage.update(dt,combat,player,previous);
     if(this.bossQuakeDue && this.boss?.active) {
       Object.assign(this.bossQuake,{active:true,age:0,x:this.bossQuakeTarget.x,z:this.bossQuakeTarget.z});
       if(Math.hypot(player.x-this.bossQuake.x,player.z-this.bossQuake.z)<ENCOUNTER_RULES.elitePulseRadius+PLAYER_COLLISION_RADIUS
-        && !combat.covered(this.bossQuake.x,this.bossQuake.z,player.x,player.z)) combat.hitPlayer(ENCOUNTER_RULES.elitePulseDamage);
+        && !combat.covered(this.bossQuake.x,this.bossQuake.z,player.x,player.z)) combat.hitPlayer(ENCOUNTER_RULES.elitePulseDamage*this.bossDamageMultiplier);
     }
     if (this.pulseDue && this.elite?.active) {
       const locked = this.eliteQuakeTargets[0].active;
@@ -267,13 +284,13 @@ export class EnemyChallenge {
       shot.x+=shot.vx*travel; shot.z+=shot.vz*travel; shot.life-=dt;
       const wall = combat.hostileWallHit(shot.previousX,shot.previousZ,shot.x,shot.z,ENCOUNTER_RULES.shotRadius);
       const hit = combat.hostilePlayerHit(shot.previousX-previous.x,shot.previousZ-previous.z,shot.x-player.x,shot.z-player.z,ENCOUNTER_RULES.shotRadius+.62);
-      if (hit < wall && hit !== Infinity) { combat.hitPlayer(12); shot.active=false; }
+      if (hit < wall && hit !== Infinity) { combat.hitPlayer(12*(shot.sourceEnemyId===undefined?this.bossDamageMultiplier:1)); shot.active=false; }
       else if (wall !== Infinity || shot.life<=0) shot.active=false;
     }
   }
   inspect() {
-    return { enabled:this.enabled,wave:this.wave,boss:this.boss ? {id:this.boss.id,hp:this.boss.hp,maxHp:this.boss.maxHp,x:this.boss.x,z:this.boss.z,spawning:this.boss.spawnTime>0,
-      name:this.bossName,kind:this.boss.kind,state:this.bossState,time:this.bossTime,enraged:this.enraged,aimX:this.aimX,aimZ:this.aimZ} : null,
+    return { enabled:this.enabled,wave:this.wave,barrage:this.barrage.inspect(),boss:this.boss ? {id:this.boss.id,hp:this.boss.hp,maxHp:this.boss.maxHp,x:this.boss.x,z:this.boss.z,spawning:this.boss.spawnTime>0,
+      name:this.bossName,kind:this.boss.kind,state:this.bossState,time:this.bossTime,enraged:this.enraged,aimX:this.aimX,aimZ:this.aimZ,damageMultiplier:this.bossDamageMultiplier,frequencyMultiplier:this.bossFrequencyMultiplier} : null,
       elite:this.elite?.active ? {id:this.elite.id,hp:this.elite.hp,pulsing:this.elitePulsing,time:this.eliteTime} : null,
       shots:this.shots.filter(s=>s.active).map(s=>({x:s.x,z:s.z,vx:s.vx,vz:s.vz})),limit:ENCOUNTER_RULES.hostileShots };
   }

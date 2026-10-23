@@ -167,6 +167,8 @@ export class RunFlow {
     return ((this.endless || this.waveInCycle === 4) && combat.encounters.elitePulsing)
       || (this.isBossWave && (combat.encounters.bossState === 'dash-windup'
         || combat.encounters.bossState === 'spread-windup'
+        || combat.encounters.bossState === 'barrage-windup'
+        || combat.encounters.bossState === 'barrage'
         || combat.encounters.bossState === 'summon-windup'));
   }
 

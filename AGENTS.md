@@ -28,10 +28,11 @@
 | 特效 | `src/visuals/vfx-presets.ts`、`src/visuals/vfx-resolver.ts` | 对应 `*-view.ts`、`src/quality.ts`；携宝兽宝箱见 `src/treasure-canvas.ts`、`src/treasure-presentation.ts`、`src/treasure-dialog.ts`、`src/special-enemy-view.ts` |
 | 无限地图/地形卡顿 | `src/world.ts`、`src/infinite-world.ts`；接入指南「无限地图地形生成」 | `src/infinite-terrain.ts`、`src/infinite-terrain-baker.ts`、`src/infinite-terrain.worker.ts` |
 | 战斗碰撞/敌人拥挤卡顿 | `src/spatial-index.ts`、`src/combat.ts`、`src/navigation.ts`；接入指南「战斗空间索引」 | 地图障碍物变更通过 `World.revision` 使索引和导航缓存失效 |
-| Boss 技能预览 | `src/boss-skills-preview.ts`、`boss-skills-preview.html` | 复用 `src/enemy-challenge.ts`、`src/combat-view.ts`；无尽变体技能表见 `src/endless-boss.ts`，首通宝箱见 `RunFlow.resolveBoundary` / `Combat.grantTreasure`；动画素材预览另见 `src/crownthorn-preview.ts` |
+| Boss 技能预览 | `src/boss-skills-preview.ts`、`boss-skills-preview.html` | 复用 `src/enemy-challenge.ts`、`src/combat-view.ts`；Boss环形弹幕见 `src/boss-barrage.ts` / `src/boss-barrage-view.ts` 与 `docs/BOSS_BARRAGE.md`；无尽变体技能表见 `src/endless-boss.ts`，首通宝箱见 `RunFlow.resolveBoundary` / `Combat.grantTreasure`；动画素材预览另见 `src/crownthorn-preview.ts` |
 | 精英地震/躲避预览 | `src/elite-quake-view.ts`、`src/enemy-challenge.ts` | 演练专用调度在 `src/quake-drill.ts`；入口 `src/elite-quake-preview.ts`，说明见 `docs/ELITE-QUAKE.md` |
 | 界面/流程 | `src/ui.ts`、`src/game.ts`、`src/run-flow.ts` 的相关调用 | `src/style.css`、`src/shop.ts`、`src/upgrade-art.ts` |
-| 无尽成长/经济 | `src/balance.ts` 的 `buildExperienceThreshold`、`cycleHealth`、`cycleFuelHealth`、`endlessShopPrice` | `Progression.endless` / `RunFlow.prepare`、`src/shop.ts`；区间收入与最近12店记录见 `RunFlow.inspect().economy`，静态预算见 `docs/ENDLESS_LONG_RUN_CALIBRATION.md` |
+| 卡片主体大小/简短文案 | `src/card-art.ts`、`src/card-copy.ts`、`src/upgrade-art.ts` | 离线素材生成与固定布局入口见 `docs/CARD_ART_MANAGEMENT.md`；原图保留，运行时共用规范化图片 |
+| 无尽成长/经济 | `src/balance.ts` 的 `buildExperienceThreshold`、`cycleHealth`、`cycleFuelHealth`、`cycleBossFrequency`、`endlessShopPrice` | `Progression.endless` / `RunFlow.prepare`、`src/shop.ts`；区间收入与最近12店记录见 `RunFlow.inspect().economy`，静态预算见 `docs/ENDLESS_LONG_RUN_CALIBRATION.md` |
 
 ## 阅读与验证
 
@@ -42,4 +43,4 @@
 - 工具输出保留摘要与失败详情，完整日志按需落盘。最终说明改动、验证及未解决问题。
 
 
-战斗捕捉/幻兽囚坊：`src/enemy-capture.ts`、`src/capture-hud.ts`、`src/capture-collection.ts`、`src/prison-view.ts`、`src/prison-scene.ts`；完整接入、规则和验证见 [CAPTURE_PRISON.md](docs/CAPTURE_PRISON.md)。正式闯关/无尽启用低血量靠近E与点击封印，永久收藏接局外劳作；旧模式不启用。
+战斗捕捉/幻兽囚坊：`src/enemy-capture.ts`、`src/capture-hud.ts`、`src/capture-collection.ts`、`src/prison-view.ts`、`src/prison-scene.ts`；完整接入、规则和验证见 [CAPTURE_PRISON.md](docs/CAPTURE_PRISON.md)。可捕捉刷出概率与用户历史见 `src/capture-spawns.ts` / `src/capture-rules.ts`。正式闯关/无尽中抽中资格的个体40%血量转可捕捉并免伤（`Combat.isCaptureReady` / `src/capture-rules.ts`），可捕捉敌人不伤害角色，封印符无限，靠近E与点击封印；小游戏合格/优秀判定、不合格重试与加成见 `src/enemy-capture.ts`，界面见 `src/capture-hud.ts`；最终成功或失败均离场，成功永久收藏接局外劳作，囚坊同种入住数量受实际捕获数量限制；旧模式不启用。

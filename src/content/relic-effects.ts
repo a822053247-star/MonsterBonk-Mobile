@@ -41,6 +41,10 @@ export function matchesTarget(target: ModifierTarget, attack: BaseAttackId, cont
 /** Mutates the existing volley rule snapshot; no separate damage or collision pipeline. */
 export function applyRelicDefinition(rules: AttackRules, definition: RelicDefinition, attack: BaseAttackId, context: RelicContext) {
   if (!meetsRequirements(definition.requirements, context)) return;
+  const passive=definition.behavior;
+  if(passive?.handler==='steady-cannon'){rules.damageMultiplier*=passive.damage;rules.intervalMultiplier*=passive.interval;}
+  if(passive?.handler==='far-lens')rules.rangeMultiplier*=passive.range;
+  if(passive?.handler==='heavy-ammo'&&attack!=='tidal-blade'&&(context.capabilities?.find(w=>w.origins.includes(attack))??weaponCapabilities(attack,context.ranks)).tags.includes('projectile'))rules.damageMultiplier*=passive.damage;
   const tags = attackTags(attack, context);
   for (const modifier of definition.modifiers) {
     if (meetsRequirements(modifier.requirements ?? {}, context) && matchesTarget(modifier.target, attack, context)

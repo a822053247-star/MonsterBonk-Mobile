@@ -4,6 +4,7 @@ import { relicIcon, generatedIcon } from './content/relic-icons';
 import type { RelicDefinition } from './content/content-types';
 import type { BaseAttackId } from './fusion';
 import type { SkillDefinition, SkillId } from './progression';
+import {cardArtUrl,cardArtImages} from './card-art';
 
 /** Presentation only. Categories and availability still come from Progression. */
 const LEGACY_UPGRADE_ART = {
@@ -67,10 +68,10 @@ const LEGACY_UPGRADE_ART = {
 
 export const UPGRADE_ART: Partial<Record<SkillId, readonly string[]>> = {
   ...LEGACY_UPGRADE_ART,...Object.fromEntries(PAIR_IDS.map(id=>[`${id}-weapon`,[`weapon-pairs/${id}.png`]])),
- ...Object.fromEntries(Object.values(FACTORY_RELICS).map(d => [d.id, [generatedIcon(d.art)]])),
+ ...Object.fromEntries(Object.values(FACTORY_RELICS).map((d:RelicDefinition) => [d.id, d.art.hidden?[]:[generatedIcon(d.art)]])),
 };
 
-export const uiArtUrl = (path: string) => `${import.meta.env.BASE_URL}assets/ui/${path}`;
+export const uiArtUrl = (path: string) => cardArtUrl(`${import.meta.env.BASE_URL}assets/ui/${path}`);
 
 export function upgradeArt(skill: Pick<SkillDefinition, 'id' | 'category'>, base: BaseAttackId, weapons?: readonly BaseAttackId[]) {
   const equipped = weapons ?? [base];
@@ -92,7 +93,7 @@ export function upgradeArt(skill: Pick<SkillDefinition, 'id' | 'category'>, base
   // All offers share the same parchment geometry and content safe areas.
   // Category/element are conveyed through dynamic labels, gems and ink colors.
   const frame = 'common';
-  return { illustrations: definition ? [relicIcon(definition.art, import.meta.env.BASE_URL)] : illustrations.map(path => uiArtUrl(`upgrade/illustrations/${path}`)), element: ['dream-dart-weapon', 'resonance-seed-weapon', 'sakura-echo'].includes(skill.id) ? 'pink' : ['frost-crystal-weapon', 'shatter-ring', 'glacier-trail'].includes(skill.id) ? 'ice' : skill.id === 'thunder-bud-weapon' ? 'electric' : element, category,
+  return { hideIcon:!!definition?.art.hidden, illustrations: cardArtImages(definition ? definition.art.hidden?[]:[relicIcon(definition.art, import.meta.env.BASE_URL)] : illustrations.map(path => uiArtUrl(`upgrade/illustrations/${path}`))), element: ['dream-dart-weapon', 'resonance-seed-weapon', 'sakura-echo'].includes(skill.id) ? 'pink' : ['frost-crystal-weapon', 'shatter-ring', 'glacier-trail'].includes(skill.id) ? 'ice' : skill.id === 'thunder-bud-weapon' ? 'electric' : element, category,
     frame: uiArtUrl(`upgrade/card-frames/${frame}.png`),
     gem: uiArtUrl(`upgrade/gem-${category === 'relic' ? 'rare' : category === 'evolution' ? 'legendary' : 'common'}.png`),
   };
@@ -117,12 +118,13 @@ export function bindUpgradeArt(root: HTMLElement, definitions: readonly RelicDef
   root.querySelectorAll<HTMLImageElement>('img[data-upgrade-art]').forEach(image => {
     if (image.dataset.artBound === 'true') return;
     image.dataset.artBound = 'true';
+    if(image.src.includes('/assets/ui/card-art/'))image.style.imageRendering='auto';
     if (image.dataset.upgradeArt === 'shop-illustration' || image.dataset.upgradeArt === 'illustration') {
       image.loading = 'eager'; image.fetchPriority = 'high';
     }
     // Dedicated illustrations can be high resolution; generated pixel icons retain nearest sampling.
     if (/\/(?:screen-nova|screen-barrage|azure-burst|star-tide|still-sea|returning-ring|abyss-vortex|ice-radiance|spore-trail|tidal-recall|tsunami-sanctuary|astral-wheel|abyss-crown|undertow-pyre|deep-collapse|frost-prism|all-tides)\.png$/.test(image.src)
-      || /\/frost-crystal-weapon\.svg$/.test(image.src)
+      || /\/(?:frost-crystal-weapon\.svg|rest-supply\.png|vital-contract\.png)$/.test(image.src)
       || definitions.some(d => d.art.png && image.src === new URL(relicIcon(d.art, import.meta.env.BASE_URL), document.baseURI).href)) image.style.imageRendering = 'auto';
     const sync = () => {
       const ready = image.complete && image.naturalWidth > 0;
@@ -136,7 +138,7 @@ export function bindUpgradeArt(root: HTMLElement, definitions: readonly RelicDef
     };
     image.addEventListener('load', sync, { once: true });
     const fallback = () => {
-      const definition = definitions.find(d => image.src === new URL(relicIcon(d.art, import.meta.env.BASE_URL), document.baseURI).href);
+      const definition = definitions.find(d => image.src === new URL(cardArtUrl(relicIcon(d.art, import.meta.env.BASE_URL)), document.baseURI).href);
       if (definition && image.dataset.iconFallback !== 'true') { image.dataset.iconFallback = 'true'; image.src = generatedIcon(definition.art); }
       else if (image.dataset.artFallback && image.dataset.iconFallback !== 'true') {
         image.dataset.iconFallback = 'true'; image.src = image.dataset.artFallback;

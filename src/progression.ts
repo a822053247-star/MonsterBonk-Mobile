@@ -1,6 +1,7 @@
 import {WEAPON_PAIR_RECIPES,PAIR_IDS,type PairSkillId,type WeaponPairId} from './weapon-pair-fusion';
 import { buildExperienceThreshold } from './balance';
 import { factoryRelic } from './content/relic-registry';
+import { ENDLESS_PASSIVE_RULES } from './content/relics/endless-passives';
 import { meetsRequirements, type ContentSkillId } from './content/content-types';
 import { ATTACKS, type RunBuild } from './run-build';
 import type { BaseAttackId } from './fusion';
@@ -192,6 +193,8 @@ export function calculateStats(ranks: SkillRanks, formal = false): Readonly<Skil
     else if (rank > 0) Object.assign(stats, skill.effect.levels[rank - 1]);
   }
   if (formal) {
+    if(ranks['fleet-contract']){stats.moveMultiplier*=ENDLESS_PASSIVE_RULES['fleet-contract'].movement;stats.maxHp*=ENDLESS_PASSIVE_RULES['fleet-contract'].maxHp;}
+    if(ranks['heavy-ammo'])stats.projectileCount=Math.max(1,stats.projectileCount-ENDLESS_PASSIVE_RULES['heavy-ammo'].removeShots);
     stats.rangeMultiplier = 1 + .12 * Math.min(5, Math.max(0, ranks.range || 0));
     const orbit = Math.min(3,Math.max(0,ranks.orbit || 0));
     if (orbit) { stats.orbitDamage=[12,17,22][orbit-1]; stats.orbitRadius=[2.1,2.3,2.5][orbit-1]; }
@@ -291,6 +294,9 @@ export class Progression {
       if(pair)return this.build!.attacks.some(a=>a.pairId===pair&&a.level<5);
       if(WEAPON_CARDS[skill.id]&&this.build!.consumed(WEAPON_CARDS[skill.id]!))return false;
       const definition = factoryRelic(skill.id);
+      if (definition?.endlessOnly && !this.endless) return false;
+      if(skill.id==='heavy-ammo'&&(this.ranks.multishot<2||!this.build!.attacks.some(a=>ATTACKS[a.attackId].kind==='projectile')))return false;
+      if(skill.id==='far-lens'&&!this.build!.farLensPreview().some(p=>p.after>p.before+1e-6))return false;
       if (definition && !meetsRequirements(definition.requirements, this.build!.relicContext)) return false;
       const weapon = WEAPON_CARDS[skill.id];
       if (skill.id === 'sakura-echo') return this.build!.hasOrigin('dream-dart') || this.build!.hasOrigin('resonance-seed');
@@ -310,6 +316,7 @@ export class Progression {
       if (skill.id === 'split-on-hit') return this.build!.hasOrigin('spark') || this.build!.hasOrigin('leaf');
       return true;
     }).map(skill => {
+      if(skill.id==='far-lens')return {...skill,benefit:this.build!.farLensPreview().map(p=>`${p.title}射程 ${p.before.toFixed(2)} → ${p.after.toFixed(2)}${p.after<=p.before+1e-6?'（已封顶，无代价）':''}`).join('；')};
       const weapon = WEAPON_CARDS[skill.id];
       if (!weapon || !this.build!.has(weapon)) return skill;
       const title = skill.title.replace('获得', '');

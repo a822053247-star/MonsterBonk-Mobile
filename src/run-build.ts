@@ -6,6 +6,9 @@ import type { RelicContext } from './content/content-types';
 import { BUILD_BALANCE, slotInterval, weaponProjectileRadius } from './balance';
 import { FLAME_SWEEP } from './flame-sweep';
 import { bladeStats } from './blade-weapons';
+import { flameSweepStats } from './flame-sweep';
+import type { AttackRules } from './relics';
+import { ENDLESS_PASSIVE_RULES } from './content/relics/endless-passives';
 import {weaponCapabilities,inheritWeaponCapabilities,assertFusionPreservesRelics,type WeaponCapabilities} from './content/weapon-traits';
 
 export const MAX_WEAPON_LEVEL = 5;
@@ -83,7 +86,31 @@ export class RunBuild {
       rules.pairRadius=Math.min(BUILD_BALANCE.pairRadius,recipe.radius+(attack.pairId==='blazing-thorn'?0:.2*(attack.level-3)));
       rules.slowDuration=recipe.slowDuration*(this.relics.includes('tidal-pearl')?1.4:1);rules.pierceBonus=0;
     }
+    if(attack&&this.relics.includes('far-lens')){
+      const lens=ENDLESS_PASSIVE_RULES['far-lens'];
+      const before=this.weaponRange(attack,{...rules,rangeMultiplier:rules.rangeMultiplier/lens.range}),after=this.weaponRange(attack,rules);
+      const gain=Math.max(0,Math.min(1,(after/before-1)/(lens.range-1)));
+      rules.intervalMultiplier*=1+(lens.interval-1)*gain;
+    }
     return rules;
+  }
+  /** Matches the authored weapon family caps, for both casts and offer previews. */
+  weaponRange(attack:EquippedAttack,rules:AttackRules){
+    const id=attack.attackId,multiplier=(1+.12*Math.min(5,Math.max(0,this.skillRanks.range??0)))*rules.rangeMultiplier;
+    if(id==='flame-sweep')return flameSweepStats(attack.level,multiplier,rules.areaMultiplier).radius;
+    if(id==='thorn-wheel'||id==='tidal-blade'){
+      const stats=bladeStats(id,attack.level);
+      return Math.min(id==='thorn-wheel'?BUILD_BALANCE.wheelRadius:BUILD_BALANCE.bladeRange,(id==='thorn-wheel'?stats.radius:stats.range)*multiplier);
+    }
+    return Math.min(id==='thunder-bud'?BUILD_BALANCE.lightningRange:BUILD_BALANCE.projectileRange,ATTACKS[id].range*multiplier);
+  }
+  farLensPreview(){
+    const lens=ENDLESS_PASSIVE_RULES['far-lens'],owned=this.relics.includes('far-lens');
+    return this.attacks.map(attack=>{
+      const rules=this.rules(attack.attackId),base=rules.rangeMultiplier/(owned?lens.range:1);
+      const before=this.weaponRange(attack,{...rules,rangeMultiplier:base}),after=this.weaponRange(attack,{...rules,rangeMultiplier:base*lens.range});
+      return {title:this.title(attack),before,after};
+    });
   }
   title(attack:EquippedAttack){return attack.pairId?WEAPON_PAIR_RECIPES[attack.pairId].title:ATTACKS[attack.attackId].title;}
   hasOrigin(id:BaseAttackId){return this.attacks.some(a=>(a.sources??[a.attackId]).includes(id));}

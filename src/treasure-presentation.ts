@@ -2,7 +2,7 @@ export type TreasureCue = 'open' | 'tick' | 'reveal' | 'finish';
 /** Seconds; independent of game speed. Results wait for explicit continuation. */
 export function treasurePresentation(count: number) {
   const n=Math.max(1,Math.min(5,Math.floor(count))),i=n-1;
-  return { count:n, transition:.75, intro:.4, opening:.65, roll:[1.1,1.6,2.25,3,3.8][i], gap:[0,.18,.24,.3,.36][i], settle:.25, finale:[.55,.7,.9,1.15,1.45][i], particles:35+n*13, rays:8+n*3, shake:.25+n*.15 };
+  return { count:n, transition:.75, intro:.4, opening:.65, roll:[2,2.4,2.8,3.3,3.8][i], gap:[0,.22,.28,.34,.4][i], settle:.25, finale:[.55,.7,.9,1.15,1.45][i], particles:35+n*13, rays:8+n*3, shake:.25+n*.15 };
 }
 /** Deterministic bounded samples; same mixer, mute and voice lifecycle as combat audio. */
 export function synthesizeTreasureCue(cue:TreasureCue,count:number,index:number,rate:number){

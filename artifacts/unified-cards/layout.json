@@ -1,0 +1,872 @@
+[
+  {
+    "width": 1280,
+    "ids": [
+      "damage",
+      "range",
+      "multishot"
+    ],
+    "cards": [
+      {
+        "id": "damage",
+        "stage": {
+          "x": 0.1420750192298991,
+          "y": 0.221078431372549,
+          "width": 0.7158499615402018,
+          "height": 0.278890931372549
+        },
+        "images": [
+          {
+            "src": "/assets/ui/card-art/upgrade/illustrations/skills/damage.webp",
+            "loaded": true
+          }
+        ],
+        "text": "伤害 +20%"
+      },
+      {
+        "id": "range",
+        "stage": {
+          "x": 0.1420750192298991,
+          "y": 0.221078431372549,
+          "width": 0.7158499615402018,
+          "height": 0.278890931372549
+        },
+        "images": [
+          {
+            "src": "/assets/ui/card-art/upgrade/illustrations/skills/range.webp",
+            "loaded": true
+          }
+        ],
+        "text": "攻击范围 +12%"
+      },
+      {
+        "id": "multishot",
+        "stage": {
+          "x": 0.1420685910777305,
+          "y": 0.221078431372549,
+          "width": 0.715862817844539,
+          "height": 0.278890931372549
+        },
+        "images": [
+          {
+            "src": "/assets/ui/card-art/upgrade/illustrations/skills/multishot.webp",
+            "loaded": true
+          }
+        ],
+        "text": "投射物数量 +1"
+      }
+    ]
+  },
+  {
+    "width": 1280,
+    "ids": [
+      "steady-cannon",
+      "fleet-contract",
+      "far-lens"
+    ],
+    "cards": [
+      {
+        "id": "steady-cannon",
+        "stage": {
+          "x": 0.1420750192298991,
+          "y": 0.221078431372549,
+          "width": 0.7158499615402018,
+          "height": 0.278890931372549
+        },
+        "images": [
+          {
+            "src": "/assets/ui/card-art/upgrade/illustrations/relics/steady-cannon.webp",
+            "loaded": true
+          }
+        ],
+        "text": "武器伤害 +30%"
+      },
+      {
+        "id": "fleet-contract",
+        "stage": {
+          "x": 0.1420750192298991,
+          "y": 0.221078431372549,
+          "width": 0.7158499615402018,
+          "height": 0.278890931372549
+        },
+        "images": [
+          {
+            "src": "/assets/ui/card-art/upgrade/illustrations/relics/fleet-contract.webp",
+            "loaded": true
+          }
+        ],
+        "text": "移速 +15%"
+      },
+      {
+        "id": "far-lens",
+        "stage": {
+          "x": 0.1420685910777305,
+          "y": 0.221078431372549,
+          "width": 0.715862817844539,
+          "height": 0.278890931372549
+        },
+        "images": [
+          {
+            "src": "/assets/ui/card-art/upgrade/illustrations/relics/far-lens.webp",
+            "loaded": true
+          }
+        ],
+        "text": "射程最多 +20%"
+      }
+    ]
+  },
+  {
+    "width": 1280,
+    "ids": [
+      "heavy-ammo",
+      "last-stand",
+      "elite-hunter"
+    ],
+    "cards": [
+      {
+        "id": "heavy-ammo",
+        "stage": {
+          "x": 0.1420750192298991,
+          "y": 0.221078431372549,
+          "width": 0.7158499615402018,
+          "height": 0.278890931372549
+        },
+        "images": [
+          {
+            "src": "/assets/ui/card-art/upgrade/illustrations/relics/heavy-ammo.webp",
+            "loaded": true
+          }
+        ],
+        "text": "单发伤害 +50%"
+      },
+      {
+        "id": "last-stand",
+        "stage": {
+          "x": 0.1420750192298991,
+          "y": 0.221078431372549,
+          "width": 0.7158499615402018,
+          "height": 0.278890931372549
+        },
+        "images": [
+          {
+            "src": "/assets/ui/card-art/upgrade/illustrations/relics/last-stand.webp",
+            "loaded": true
+          }
+        ],
+        "text": "生命≤35%：直击 +30%"
+      },
+      {
+        "id": "elite-hunter",
+        "stage": {
+          "x": 0.1420685910777305,
+          "y": 0.221078431372549,
+          "width": 0.715862817844539,
+          "height": 0.278890931372549
+        },
+        "images": [
+          {
+            "src": "/assets/ui/card-art/upgrade/illustrations/relics/elite-hunter.webp",
+            "loaded": true
+          }
+        ],
+        "text": "精英/Boss直击 +25%"
+      }
+    ]
+  },
+  {
+    "width": 1280,
+    "ids": [
+      "thunder-bud-weapon",
+      "shatter-ring",
+      "glacier-trail"
+    ],
+    "cards": [
+      {
+        "id": "thunder-bud-weapon",
+        "stage": {
+          "x": 0.1420750192298991,
+          "y": 0.221078431372549,
+          "width": 0.7158499615402018,
+          "height": 0.278890931372549
+        },
+        "images": [
+          {
+            "src": "/assets/ui/card-art/upgrade/illustrations/skills/thunder-bud-weapon-vector.webp",
+            "loaded": true
+          }
+        ],
+        "text": "雷电连击多敌"
+      },
+      {
+        "id": "shatter-ring",
+        "stage": {
+          "x": 0.1420750192298991,
+          "y": 0.221078431372549,
+          "width": 0.7158499615402018,
+          "height": 0.278890931372549
+        },
+        "images": [
+          {
+            "src": "/assets/ui/card-art/upgrade/illustrations/skills/shatter-ring-vector.webp",
+            "loaded": true
+          }
+        ],
+        "text": "扩散冰环"
+      },
+      {
+        "id": "glacier-trail",
+        "stage": {
+          "x": 0.1420685910777305,
+          "y": 0.221078431372549,
+          "width": 0.715862817844539,
+          "height": 0.278890931372549
+        },
+        "images": [
+          {
+            "src": "/assets/ui/card-art/upgrade/illustrations/skills/glacier-trail-vector.webp",
+            "loaded": true
+          }
+        ],
+        "text": "移动铺冰"
+      }
+    ]
+  },
+  {
+    "width": 1280,
+    "ids": [
+      "mirror-prism",
+      "tide-prism",
+      "back-mirror"
+    ],
+    "cards": [
+      {
+        "id": "mirror-prism",
+        "stage": {
+          "x": 0.1420750192298991,
+          "y": 0.221078431372549,
+          "width": 0.7158499615402018,
+          "height": 0.278890931372549
+        },
+        "images": [
+          {
+            "src": "/assets/ui/card-art/upgrade/illustrations/relics/mirror-prism.webp",
+            "loaded": true
+          }
+        ],
+        "text": "主弹命中后折射"
+      },
+      {
+        "id": "tide-prism",
+        "stage": {
+          "x": 0.1420750192298991,
+          "y": 0.221078431372549,
+          "width": 0.7158499615402018,
+          "height": 0.278890931372549
+        },
+        "images": [
+          {
+            "src": "/assets/ui/card-art/upgrade/illustrations/relics/tide-prism.webp",
+            "loaded": true
+          }
+        ],
+        "text": "水系范围攻击的实际效果半径 +25%"
+      },
+      {
+        "id": "back-mirror",
+        "stage": {
+          "x": 0.1420685910777305,
+          "y": 0.221078431372549,
+          "width": 0.715862817844539,
+          "height": 0.278890931372549
+        },
+        "images": [
+          {
+            "src": "/assets/ui/card-art/upgrade/illustrations/relics/back-mirror.webp",
+            "loaded": true
+          }
+        ],
+        "text": "定期追加背后射击"
+      }
+    ]
+  },
+  {
+    "width": 1280,
+    "ids": [
+      "split-on-hit",
+      "chain",
+      "draft-boiling-core"
+    ],
+    "cards": [
+      {
+        "id": "split-on-hit",
+        "stage": {
+          "x": 0.1420750192298991,
+          "y": 0.221078431372549,
+          "width": 0.7158499615402018,
+          "height": 0.278890931372549
+        },
+        "images": [
+          {
+            "src": "/assets/ui/card-art/split-elements.webp",
+            "loaded": true
+          }
+        ],
+        "text": "命中后分裂"
+      },
+      {
+        "id": "chain",
+        "stage": {
+          "x": 0.1420750192298991,
+          "y": 0.221078431372549,
+          "width": 0.7158499615402018,
+          "height": 0.278890931372549
+        },
+        "images": [
+          {
+            "src": "/assets/ui/card-art/chain-elements.webp",
+            "loaded": true
+          }
+        ],
+        "text": "弹射至附近敌人"
+      },
+      {
+        "id": "draft-boiling-core",
+        "stage": {
+          "x": 0.1420685910777305,
+          "y": 0.221078431372549,
+          "width": 0.715862817844539,
+          "height": 0.278890931372549
+        },
+        "images": [
+          {
+            "src": "/assets/ui/card-art/boiling-core.webp",
+            "loaded": true
+          }
+        ],
+        "text": "水火连击触发蒸爆"
+      }
+    ]
+  },
+  {
+    "width": 1280,
+    "ids": [
+      "azure-burst",
+      "returning-ring",
+      "ice-radiance"
+    ],
+    "cards": [
+      {
+        "id": "azure-burst",
+        "stage": {
+          "x": 0.1420750192298991,
+          "y": 0.221078431372549,
+          "width": 0.7158499615402018,
+          "height": 0.278890931372549
+        },
+        "images": [
+          {
+            "src": "/assets/ui/card-art/upgrade/illustrations/skills/azure-burst.webp",
+            "loaded": true
+          }
+        ],
+        "text": "自动锁定敌群"
+      },
+      {
+        "id": "returning-ring",
+        "stage": {
+          "x": 0.1420750192298991,
+          "y": 0.221078431372549,
+          "width": 0.7158499615402018,
+          "height": 0.278890931372549
+        },
+        "images": [
+          {
+            "src": "/assets/ui/card-art/upgrade/illustrations/skills/returning-ring.webp",
+            "loaded": true
+          }
+        ],
+        "text": "随身水环"
+      },
+      {
+        "id": "ice-radiance",
+        "stage": {
+          "x": 0.1420685910777305,
+          "y": 0.221078431372549,
+          "width": 0.715862817844539,
+          "height": 0.278890931372549
+        },
+        "images": [
+          {
+            "src": "/assets/ui/card-art/upgrade/illustrations/skills/ice-radiance.webp",
+            "loaded": true
+          }
+        ],
+        "text": "光束与圆环交替"
+      }
+    ]
+  },
+  {
+    "width": 1280,
+    "ids": [
+      "tsunami-sanctuary",
+      "all-tides",
+      "frost-prism"
+    ],
+    "cards": [
+      {
+        "id": "tsunami-sanctuary",
+        "stage": {
+          "x": 0.1420750192298991,
+          "y": 0.221078431372549,
+          "width": 0.7158499615402018,
+          "height": 0.278890931372549
+        },
+        "images": [
+          {
+            "src": "/assets/ui/card-art/upgrade/illustrations/skills/tsunami-sanctuary.webp",
+            "loaded": true
+          }
+        ],
+        "text": "震爆后留下减速领域"
+      },
+      {
+        "id": "all-tides",
+        "stage": {
+          "x": 0.1420750192298991,
+          "y": 0.221078431372549,
+          "width": 0.7158499615402018,
+          "height": 0.278890931372549
+        },
+        "images": [
+          {
+            "src": "/assets/ui/card-art/upgrade/illustrations/skills/all-tides.webp",
+            "loaded": true
+          }
+        ],
+        "text": "往返水环，归心后爆发"
+      },
+      {
+        "id": "frost-prism",
+        "stage": {
+          "x": 0.1420685910777305,
+          "y": 0.221078431372549,
+          "width": 0.715862817844539,
+          "height": 0.278890931372549
+        },
+        "images": [
+          {
+            "src": "/assets/ui/card-art/upgrade/illustrations/skills/frost-prism.webp",
+            "loaded": true
+          }
+        ],
+        "text": "冰棱齐射后交叉反射"
+      }
+    ]
+  },
+  {
+    "width": 1280,
+    "ids": [
+      "steam-comet-weapon",
+      "bramble-tide-weapon",
+      "blazing-thorn-weapon"
+    ],
+    "cards": [
+      {
+        "id": "steam-comet-weapon",
+        "stage": {
+          "x": 0.1420750192298991,
+          "y": 0.221078431372549,
+          "width": 0.7158499615402018,
+          "height": 0.278890931372549
+        },
+        "images": [
+          {
+            "src": "/assets/ui/card-art/upgrade/illustrations/weapon-pairs/steam-comet.webp",
+            "loaded": true
+          }
+        ],
+        "text": "蒸汽彗星溅射"
+      },
+      {
+        "id": "bramble-tide-weapon",
+        "stage": {
+          "x": 0.1420750192298991,
+          "y": 0.221078431372549,
+          "width": 0.7158499615402018,
+          "height": 0.278890931372549
+        },
+        "images": [
+          {
+            "src": "/assets/ui/card-art/upgrade/illustrations/weapon-pairs/bramble-tide.webp",
+            "loaded": true
+          }
+        ],
+        "text": "藤潮爆发控场"
+      },
+      {
+        "id": "blazing-thorn-weapon",
+        "stage": {
+          "x": 0.1420685910777305,
+          "y": 0.221078431372549,
+          "width": 0.715862817844539,
+          "height": 0.278890931372549
+        },
+        "images": [
+          {
+            "src": "/assets/ui/card-art/upgrade/illustrations/weapon-pairs/blazing-thorn.webp",
+            "loaded": true
+          }
+        ],
+        "text": "烈焰荆棘贯穿"
+      }
+    ]
+  },
+  {
+    "width": 844,
+    "ids": [
+      "steady-cannon",
+      "fleet-contract",
+      "far-lens"
+    ],
+    "cards": [
+      {
+        "id": "steady-cannon",
+        "stage": {
+          "x": 0.1437232236682564,
+          "y": 0.22209821428571427,
+          "width": 0.7125535526634872,
+          "height": 0.2779017857142857
+        },
+        "images": [
+          {
+            "src": "/assets/ui/card-art/upgrade/illustrations/relics/steady-cannon.webp",
+            "loaded": true
+          }
+        ],
+        "text": "武器伤害 +30%"
+      },
+      {
+        "id": "fleet-contract",
+        "stage": {
+          "x": 0.1437232236682564,
+          "y": 0.22209821428571427,
+          "width": 0.7125535526634872,
+          "height": 0.2779017857142857
+        },
+        "images": [
+          {
+            "src": "/assets/ui/card-art/upgrade/illustrations/relics/fleet-contract.webp",
+            "loaded": true
+          }
+        ],
+        "text": "移速 +15%"
+      },
+      {
+        "id": "far-lens",
+        "stage": {
+          "x": 0.1437232236682564,
+          "y": 0.22209821428571427,
+          "width": 0.7125535526634872,
+          "height": 0.2779017857142857
+        },
+        "images": [
+          {
+            "src": "/assets/ui/card-art/upgrade/illustrations/relics/far-lens.webp",
+            "loaded": true
+          }
+        ],
+        "text": "射程最多 +20%"
+      }
+    ]
+  },
+  {
+    "width": 844,
+    "ids": [
+      "thunder-bud-weapon",
+      "shatter-ring",
+      "glacier-trail"
+    ],
+    "cards": [
+      {
+        "id": "thunder-bud-weapon",
+        "stage": {
+          "x": 0.1437232236682564,
+          "y": 0.22209821428571427,
+          "width": 0.7125535526634872,
+          "height": 0.2779017857142857
+        },
+        "images": [
+          {
+            "src": "/assets/ui/card-art/upgrade/illustrations/skills/thunder-bud-weapon-vector.webp",
+            "loaded": true
+          }
+        ],
+        "text": "雷电连击多敌"
+      },
+      {
+        "id": "shatter-ring",
+        "stage": {
+          "x": 0.1437232236682564,
+          "y": 0.22209821428571427,
+          "width": 0.7125535526634872,
+          "height": 0.2779017857142857
+        },
+        "images": [
+          {
+            "src": "/assets/ui/card-art/upgrade/illustrations/skills/shatter-ring-vector.webp",
+            "loaded": true
+          }
+        ],
+        "text": "扩散冰环"
+      },
+      {
+        "id": "glacier-trail",
+        "stage": {
+          "x": 0.1437232236682564,
+          "y": 0.22209821428571427,
+          "width": 0.7125535526634872,
+          "height": 0.2779017857142857
+        },
+        "images": [
+          {
+            "src": "/assets/ui/card-art/upgrade/illustrations/skills/glacier-trail-vector.webp",
+            "loaded": true
+          }
+        ],
+        "text": "移动铺冰"
+      }
+    ]
+  },
+  {
+    "width": 844,
+    "ids": [
+      "split-on-hit",
+      "chain",
+      "draft-boiling-core"
+    ],
+    "cards": [
+      {
+        "id": "split-on-hit",
+        "stage": {
+          "x": 0.1437232236682564,
+          "y": 0.22209821428571427,
+          "width": 0.7125535526634872,
+          "height": 0.2779017857142857
+        },
+        "images": [
+          {
+            "src": "/assets/ui/card-art/split-elements.webp",
+            "loaded": true
+          }
+        ],
+        "text": "命中后分裂"
+      },
+      {
+        "id": "chain",
+        "stage": {
+          "x": 0.1437232236682564,
+          "y": 0.22209821428571427,
+          "width": 0.7125535526634872,
+          "height": 0.2779017857142857
+        },
+        "images": [
+          {
+            "src": "/assets/ui/card-art/chain-elements.webp",
+            "loaded": true
+          }
+        ],
+        "text": "弹射至附近敌人"
+      },
+      {
+        "id": "draft-boiling-core",
+        "stage": {
+          "x": 0.1437232236682564,
+          "y": 0.22209821428571427,
+          "width": 0.7125535526634872,
+          "height": 0.2779017857142857
+        },
+        "images": [
+          {
+            "src": "/assets/ui/card-art/boiling-core.webp",
+            "loaded": true
+          }
+        ],
+        "text": "水火连击触发蒸爆"
+      }
+    ]
+  },
+  {
+    "width": 568,
+    "ids": [
+      "steady-cannon",
+      "fleet-contract",
+      "far-lens"
+    ],
+    "cards": [
+      {
+        "id": "steady-cannon",
+        "stage": {
+          "x": 0.14497816593886462,
+          "y": 0.2228156887755102,
+          "width": 0.7100436681222707,
+          "height": 0.2771843112244898
+        },
+        "images": [
+          {
+            "src": "/assets/ui/card-art/upgrade/illustrations/relics/steady-cannon.webp",
+            "loaded": true
+          }
+        ],
+        "text": "武器伤害 +30%"
+      },
+      {
+        "id": "fleet-contract",
+        "stage": {
+          "x": 0.14497816593886462,
+          "y": 0.2228156887755102,
+          "width": 0.7100436681222707,
+          "height": 0.2771843112244898
+        },
+        "images": [
+          {
+            "src": "/assets/ui/card-art/upgrade/illustrations/relics/fleet-contract.webp",
+            "loaded": true
+          }
+        ],
+        "text": "移速 +15%"
+      },
+      {
+        "id": "far-lens",
+        "stage": {
+          "x": 0.14497816593886462,
+          "y": 0.2228156887755102,
+          "width": 0.7100436681222707,
+          "height": 0.2771843112244898
+        },
+        "images": [
+          {
+            "src": "/assets/ui/card-art/upgrade/illustrations/relics/far-lens.webp",
+            "loaded": true
+          }
+        ],
+        "text": "射程最多 +20%"
+      }
+    ]
+  },
+  {
+    "width": 568,
+    "ids": [
+      "thunder-bud-weapon",
+      "shatter-ring",
+      "glacier-trail"
+    ],
+    "cards": [
+      {
+        "id": "thunder-bud-weapon",
+        "stage": {
+          "x": 0.14497816593886462,
+          "y": 0.2228156887755102,
+          "width": 0.7100436681222707,
+          "height": 0.2771843112244898
+        },
+        "images": [
+          {
+            "src": "/assets/ui/card-art/upgrade/illustrations/skills/thunder-bud-weapon-vector.webp",
+            "loaded": true
+          }
+        ],
+        "text": "雷电连击多敌"
+      },
+      {
+        "id": "shatter-ring",
+        "stage": {
+          "x": 0.14497816593886462,
+          "y": 0.2228156887755102,
+          "width": 0.7100436681222707,
+          "height": 0.2771843112244898
+        },
+        "images": [
+          {
+            "src": "/assets/ui/card-art/upgrade/illustrations/skills/shatter-ring-vector.webp",
+            "loaded": true
+          }
+        ],
+        "text": "扩散冰环"
+      },
+      {
+        "id": "glacier-trail",
+        "stage": {
+          "x": 0.14497816593886462,
+          "y": 0.2228156887755102,
+          "width": 0.7100436681222707,
+          "height": 0.2771843112244898
+        },
+        "images": [
+          {
+            "src": "/assets/ui/card-art/upgrade/illustrations/skills/glacier-trail-vector.webp",
+            "loaded": true
+          }
+        ],
+        "text": "移动铺冰"
+      }
+    ]
+  },
+  {
+    "width": 568,
+    "ids": [
+      "split-on-hit",
+      "chain",
+      "draft-boiling-core"
+    ],
+    "cards": [
+      {
+        "id": "split-on-hit",
+        "stage": {
+          "x": 0.14497816593886462,
+          "y": 0.2228156887755102,
+          "width": 0.7100436681222707,
+          "height": 0.2771843112244898
+        },
+        "images": [
+          {
+            "src": "/assets/ui/card-art/split-elements.webp",
+            "loaded": true
+          }
+        ],
+        "text": "命中后分裂"
+      },
+      {
+        "id": "chain",
+        "stage": {
+          "x": 0.14497816593886462,
+          "y": 0.2228156887755102,
+          "width": 0.7100436681222707,
+          "height": 0.2771843112244898
+        },
+        "images": [
+          {
+            "src": "/assets/ui/card-art/chain-elements.webp",
+            "loaded": true
+          }
+        ],
+        "text": "弹射至附近敌人"
+      },
+      {
+        "id": "draft-boiling-core",
+        "stage": {
+          "x": 0.14497816593886462,
+          "y": 0.2228156887755102,
+          "width": 0.7100436681222707,
+          "height": 0.2771843112244898
+        },
+        "images": [
+          {
+            "src": "/assets/ui/card-art/boiling-core.webp",
+            "loaded": true
+          }
+        ],
+        "text": "水火连击触发蒸爆"
+      }
+    ]
+  }
+]

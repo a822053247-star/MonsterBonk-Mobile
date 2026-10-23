@@ -68,6 +68,7 @@ export class SpecialEnemyView {
     this.treasureTracker.render(alpha);
     for (let i=0;i<this.combat.treasureRewards.length;i++) {
       const event = this.combat.treasureRewards[i]; if (!event.active) continue;
+      if(this.combat.areaDeaths.some(d=>d.active&&d.enemyKind==='draft-treasure-runner'&&Math.hypot(d.x-event.x,d.z-event.z)<.1))continue;
       const progress = event.age/TREASURE_RUNNER.rewardDuration, popup = this.rewards[i];
       popup.visible = true; popup.position.set(event.x,0,event.z).addScaledVector(this.up,this.enemyHeight('draft-treasure-runner')+.1+progress);
       for (let j=0;j<8;j++) {

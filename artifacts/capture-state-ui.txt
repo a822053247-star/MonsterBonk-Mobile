@@ -1,0 +1,24 @@
+
+Running 4 tests using 1 worker
+
+
+
+(node:16888) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:16888) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[1/4] [chromium] › tests\capture-campaign-ui.spec.ts:2:33 › campaign capture keeps battle alive, freezes on pause, persists and enters prison after results (desktop)
+[2/4] [chromium] › tests\capture-campaign-ui.spec.ts:2:33 › campaign capture keeps battle alive, freezes on pause, persists and enters prison after results (phone)
+
+(node:23516) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+(node:23516) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[3/4] [webkit] › tests\capture-campaign-ui.spec.ts:2:33 › campaign capture keeps battle alive, freezes on pause, persists and enters prison after results (desktop)
+[4/4] [webkit] › tests\capture-campaign-ui.spec.ts:2:33 › campaign capture keeps battle alive, freezes on pause, persists and enters prison after results (phone)
+  4 passed (13.7s)

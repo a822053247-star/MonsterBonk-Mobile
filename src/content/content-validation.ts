@@ -17,6 +17,8 @@ export function validateRelicContent(values: readonly unknown[], refs: ContentRe
     if (ids.has(d.id)) fail('duplicate ID'); ids.add(d.id);
     if (typeof d.title !== 'string' || !d.title.trim() || /[<>]/.test(d.title) || d.category !== 'relic' || d.rarity !== 'rare' || d.maxRank !== 1) fail('missing/invalid card metadata');
     if (!Array.isArray(d.modes) || d.modes.length !== 1 || d.modes[0] !== 'formal') fail('content must be formal-only');
+    if(d.endlessOnly!==undefined&&typeof d.endlessOnly!=='boolean')fail('invalid endless-only flag');
+    if(d.art?.hidden!==undefined&&typeof d.art.hidden!=='boolean')fail('invalid icon visibility');
     if (!Array.isArray(d.tags) || !d.tags.length || d.tags.some(t => !has(CONTENT_TAGS,t))) fail('unknown tags');
     const requirements = (r: RelicDefinition['requirements']) => {
       if (!r || typeof r !== 'object') { fail('missing requirements'); return; }
@@ -35,7 +37,7 @@ export function validateRelicContent(values: readonly unknown[], refs: ContentRe
         const value = (d.behavior as unknown as Record<string,unknown>)[field];
         const limit = field === 'degrees' ? 360 : field === 'cooldown' ? 60 : field === 'cap' ? 12 : 10;
         if (typeof value !== 'number' || !Number.isFinite(value) || value <= 0 || value > limit) fail(`invalid behavior parameter ${field}`);
-        if (['every','cap','count','kills','healCap','sameHits','coins','experience','targets','pierce'].includes(field) && !Number.isInteger(value)) fail(`integer required: ${field}`);
+        if (['every','cap','count','kills','healCap','sameHits','coins','experience','targets','pierce','removeShots'].includes(field) && !Number.isInteger(value)) fail(`integer required: ${field}`);
       }
     }
     if (!validModifiers) fail('missing modifiers');

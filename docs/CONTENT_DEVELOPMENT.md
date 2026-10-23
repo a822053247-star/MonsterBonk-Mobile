@@ -44,7 +44,7 @@
 
 无尽第四批（2026-10-23）：`RunFlow.prepare` 明确设置 `Progression.endless`，`reset` 清除；正式构筑的无尽升级需求为原6/4L加 `0.08*max(L-25,0)^2` 后向上取整，闯关/历史保留原曲线。沿用逐级扣经验、动态等级上限、已购等级扣除与宝箱授予路径，不提高经验掉落或增加无限属性。
 
-`cycleHealth` 保留前两次跨段的0.16/0.28增量，此后危险怪/精英用0.32、Boss用0.60的对数项 `ln(1+max(n-2,0)/2)` 缓升。`cycleFuelHealth` 取危险怪倍率且最高1.8；草团在 `spawnSwarm` 覆盖基础血量后应用一次，晶屑在普通 `spawn`/独立群生和 `enemyMaxHp` 均取燃料倍率，不再叠加危险怪倍率。Boss/精英仍用各自基础血量，普通危险怪仍保留原波内倍率。没有同步提高伤害、普通移速、池容量或Boss预警频率。非有限深度退回0，极深合法深度限制为安全整数，公式结果有限。
+`cycleHealth` 保留前两次跨段的0.16/0.28增量，此后危险怪/精英用0.32、Boss用0.60的对数项 `ln(1+max(n-2,0)/2)` 缓升。`cycleFuelHealth` 取危险怪倍率且最高1.8；草团在 `spawnSwarm` 覆盖基础血量后应用一次，晶屑在普通 `spawn`/独立群生和 `enemyMaxHp` 均取燃料倍率，不再叠加危险怪倍率。Boss/精英仍用各自基础血量，普通危险怪仍保留原波内倍率。此次生命/经济调整未同步提高伤害、普通移速、池容量或Boss预警频率；后续Boss技能成长见下方环形弹幕入口。非有限深度退回0，极深合法深度限制为安全整数，公式结果有限。
 
 `RunShop` 第五个可选参数传入无尽段索引（首店为0，`undefined` 保留闯关原价），购买、治疗和刷新共用 `endlessShopPrice`，UI直接显示实际扣款价。普通基准105起，前两次跨段各加18，再用28的对数项缓升；普通商品按原价/25限0.9–1.2，遗物1.4、进化1.5、治疗0.7；付费刷新为原递增价乘3Q/105，统一上取整到5金币，免费刷新仍为0。固定波奖、击杀收入、携宝、点金秘典、Boss60金币和跨段存币保留，不根据钱包或玩家伤害改价。
 
@@ -149,7 +149,7 @@
 
 死亡结算在 `Combat.damageEnemy`，数量概率与生命周期在 `src/special-enemies.ts`。每件奖励重查 `Progression.canGrant`，经 `Combat.grantUpgrade` 应用；过滤融合选择、重复 ID、工厂商店禁用遗物和专精徽章下的新武器。无候选时发金币补给，保留原金币/经验和刷新券。`src/treasure-canvas.ts` 由用户提供的 astral-relics-reference-rebuild 改编，删除独立页面、示例道具、音频和 RAF；实际奖励标题驱动光柱。`SpecialEnemyView` 固定池管理半分辨率画布纹理，模拟年龄驱动动画，暂停冻结，清场隐藏，dispose 释放。验证：`tests/treasure-chest*.spec.ts` 与特殊敌人、成长测试。
 
-宝箱现由 `src/treasure-dialog.ts` 在屏幕中央呈现，`Game.step/frame` 在弹窗活动期间冻结战斗与波次；点击开启后播放 Canvas 演出，结果保留到点击继续。场景视图只保留金币散开/浮字，关闭弹窗消费表现事件。重开及 dispose 清理弹窗与 RAF，后台/竖屏停止演出计时。手机横屏使用宽面板，奖励仅以实际图标在宝箱上方揭晓，不重复排列中文名称。Canvas 按可用宽高响应式绘制，开启时使用放射光束、彩色光柱、冲击环、金币及道具粒子喷涌和有界震动；结果图标保留到继续。实际场景截图及暂停/继续验证：`node scripts/capture-treasure-gameplay.mjs`（本地 Vite 5175）。
+宝箱现由 `src/treasure-dialog.ts` 在屏幕中央呈现，`Game.step/frame` 在弹窗活动期间冻结战斗与波次；点击开启后播放 Canvas 演出，结果保留到点击继续。场景视图只保留金币散开/浮字，关闭弹窗消费表现事件。重开及 dispose 清理弹窗与 RAF，后台/竖屏停止演出计时。手机横屏使用宽面板，奖励以实际图标在宝箱上方揭晓，停轮后显示对应名称。Canvas 按可用宽高响应式绘制，开启时使用放射光束、彩色光柱、冲击环、金币及道具粒子喷涌和有界震动；结果图标保留到继续。实际场景截图及暂停/继续验证：`node scripts/capture-treasure-gameplay.mjs`（本地 Vite 5175）。
 
 满屏金光由 `TreasureDialog` 的 CSS 光幕提供，Canvas 的 `glow()` 输出与开箱/最终爆发同步的强度；光幕覆盖整个视口且位于面板后方，结果时降至微光，关闭/重开清零。
 
@@ -241,4 +241,17 @@
 `abyss-lantern`：深蓝海洋灵体远程普通敌人，基础生命65、速度1、半径0.52、接触伤害6、经验5，沿用波次/无尽成长及普通死亡奖励。第三波24秒后的压力阶段及第四、第五波加入，同类最多2只，历史出怪列表不变，已加入敌人测试名单。rangedEnemyRule 复用远程逻辑：4单位内后退、7单位内缓行、9单位内无遮挡锁向蓄力0.9秒；复用 crystal 冷蓝敌弹及16槽池，速度4、寿命2.5秒、冷却3.2秒、伤害12，保留敌弹警示边和浅蓝尾迹，无额外控制状态。五方向素材按正面/右前/右侧/右后/背面导入，触须/灯珠沿用静态原图，模拟年龄驱动漂浮摇曳，不使用脚步帧。移动面向目标、施法/后仰锁向、冻结保留朝向；清场重开与GPU释放沿用既有路径。本次未运行测试或构建。
 
 
-战斗捕捉/幻兽囚坊：`src/enemy-capture.ts`、`src/capture-hud.ts`、`src/capture-collection.ts`、`src/prison-view.ts`、`src/prison-scene.ts`；完整接入、规则和验证见 [CAPTURE_PRISON.md](CAPTURE_PRISON.md)。正式闯关/无尽启用低血量靠近E与点击封印，永久收藏接局外劳作；旧模式不启用。
+战斗捕捉/幻兽囚坊：`src/enemy-capture.ts`、`src/capture-hud.ts`、`src/capture-collection.ts`、`src/prison-view.ts`、`src/prison-scene.ts`；完整接入、规则和验证见 [CAPTURE_PRISON.md](CAPTURE_PRISON.md)。可捕捉刷出概率与用户历史见 `src/capture-spawns.ts` / `src/capture-rules.ts`。正式闯关/无尽中抽中资格的个体40%血量转可捕捉并免伤（`Combat.isCaptureReady` / `src/capture-rules.ts`），可捕捉敌人不伤害角色，封印符无限，靠近E与点击封印；小游戏合格/优秀判定、不合格重试与加成见 `src/enemy-capture.ts`，界面见 `src/capture-hud.ts`；最终成功或失败均离场，成功永久收藏接局外劳作，囚坊同种入住数量受实际捕获数量限制；旧模式不启用。
+
+
+四位Boss环形弹幕（荆冠兽王、熔果暴君、晶甲重炮王、霜绒巨兽）：`src/boss-barrage.ts`、`src/boss-barrage-view.ts`，接入 `EnemyChallenge` / `EncounterView`；行为、预览与截图见 [BOSS_BARRAGE.md](BOSS_BARRAGE.md)。
+
+无尽Boss技能成长：真实出生路径在 `EnemyChallenge.spawnBoss` 锁定现有接触伤害倍率及 `balance.ts` 的 `cycleBossFrequency`；扇形/环形/地震共用Boss伤害倍率，发射与恢复节奏缓升，预警时长固定。危险怪蓄力与护卫入场在整段环形弹幕期间错峰。公式、波次对应与范围见 [BOSS_BARRAGE.md](BOSS_BARRAGE.md)「无尽实战成长」。
+
+无尽三位Boss各有三种弹幕，`endless-boss.ts:barragePatterns` 轮换、攻击表穿插三次弹幕段；新增四向焰流/熔核星爆、十字重炮/棱镜聚焦、六角飞雪/错位雪幕。模型与预警共用 `boss-barrage.ts` / `boss-barrage-view.ts`，详细发射与资源规则见 [BOSS_BARRAGE.md](BOSS_BARRAGE.md)「三位变体追加六种技能」。
+
+无尽通用遗物与服务：`src/content/relics/endless-passives.ts` 注册六项低开销被动，`endlessOnly` 控制无尽候选、`art.png` 绑定用户原图裁切的卡片图标，服务图标由 `ShopItem.illustration` 指定；`src/shop.ts` 提供固定补给与契约服务，`Combat.vitalContracts` 保存本局限次。效果、价格与结算边界见 [ENDLESS_PASSIVES.md](ENDLESS_PASSIVES.md)。
+
+宝箱演出调整（2026-10-24）：携宝兽死亡使用 `Combat.areaDeaths` 保留1.2秒淡出，`TreasureDialog.presentingDeath` / `advanceDeath` 与 `Game.frame` 配合，在冻结战斗时仅推进对应死亡特效并重绘场景，结束后再开始弹窗淡入；`SpecialEnemyView` 在死亡阶段隐藏奖励浮字。首通Boss宝箱不追加携宝死亡等待。1–5件均扩大面板和滚动图标，采用连续滚动后减速停靠；3–5件使用更宽亮红/金/紫光柱。透明Canvas横向越过边框，外层光晕允许溢出，按钮保留在最上层。验证：`tests/treasure-dialog-sequence.spec.ts` 覆盖死亡先后、战斗冻结、重开清理、桌面/手机横屏五档滚动和显式继续；既有宝箱/音效用例继续回归。
+
+卡片图标与文案统一：新增/替换卡图后按 [CARD_ART_MANAGEMENT.md](CARD_ART_MANAGEMENT.md) 生成透明主体规范化WebP；`card-art.ts` 统一实际加载地址，`card-copy.ts` 生成短文案，图片大小不随说明长度变化。原数值与详细规则仍来自原内容定义。

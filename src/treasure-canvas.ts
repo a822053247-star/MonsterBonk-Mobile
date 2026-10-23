@@ -11,7 +11,7 @@ type Reel = { result: Reward; strip: Reward[]; stoppedAt: number; stopped: boole
 const W = 900, H = 988;
 const settings = treasurePresentation(titles.length);
 const PANEL = { x: 25, y: 52, w: 850, h: 558 };
-const laneColors = ['#c14cff', '#ffcc3f', '#23caff', '#ff663f', '#ff6549'];
+const laneColors = settings.count >= 3 ? ['#ff3158', '#ffca46', '#c967ff', '#ff2446', '#fff088'] : ['#d35cff', '#ffd34f'];
 const CELL = 70;
 
 const rewards: Reward[] = titles.map((name, i) => ({ name, image: artUrls[i] ? Object.assign(new Image(), { src: artUrls[i] }) : undefined, tier: 'COMMON', icon: 'prism', color: laneColors[i], bright: '#fff4a0', dark: '#40117e' }));
@@ -512,13 +512,13 @@ function update(dt:number){
 /** Responsive stage: rewards above the chest, all drawing fills the available area. */
 function drawModal() {
   const h = canvas.height, w = canvas.width;
-  const centerX = w / 2, chestY = h * .70;
-  const chestScale = Math.min(w / 680, h / 540);
+  const centerX = w / 2, chestY = h * .80;
+  const chestScale = Math.min(w / 850, h / 760);
   const active = phase !== 'idle' && phase !== 'intro';
   const climax = phase === 'opening' || phase === 'burst';
-  const energy = climax ? 1 : phase === 'rolling' ? .72 : phase === 'result' ? .3 : 0;
+  const energy = climax ? 1 : phase === 'rolling' ? .72 : phase === 'result' ? .5 : 0;
   ctx.clearRect(0,0,w,h);ctx.save();
-  ctx.fillStyle='#4b4d70';ctx.fillRect(0,0,w,h);
+  // Transparent stage lets the light spill beyond the framed panel.
   if (energy) {
     const aura=ctx.createRadialGradient(centerX,chestY,5,centerX,chestY,Math.max(w,h)*.85);
     aura.addColorStop(0,`rgba(255,255,195,${energy})`);
@@ -536,26 +536,60 @@ function drawModal() {
   const kick=shake*Math.min(w,h)/988;
   if(kick)ctx.translate(Math.sin(time*87)*kick,Math.cos(time*113)*kick*.65);
   if(active){
-    const spacing=Math.min(w*.8/selectedCount,145), top=h*.2;
+    const spacing=Math.min(w*.88/selectedCount,selectedCount===1?320:260), top=h*.28;
+    // A lane is one ray from the chest through its final reward center.
+    const beamX=(laneX:number,y:number)=>centerX+(laneX-centerX)*(chestY-y)/(chestY-top);
     for(let i=0;i<selectedCount;i++){
       const x=centerX+(i-(selectedCount-1)/2)*spacing;
-      const beam=ctx.createLinearGradient(x,top,x,chestY);
-      beam.addColorStop(0,laneColors[i]+'cc');beam.addColorStop(.7,laneColors[i]+'66');beam.addColorStop(1,'#fff5aacc');
-      pathPoly([[centerX-16,chestY],[centerX+16,chestY],[x+spacing*.44,0],[x-spacing*.44,0]],beam);
+      const width=spacing*(selectedCount>=3?1.04:.94);
+      const upperX=beamX(x,0);
+      ctx.save();ctx.globalCompositeOperation='screen';
+      const beam=ctx.createLinearGradient(x,0,x,chestY);
+      beam.addColorStop(0,laneColors[i]+'88');beam.addColorStop(.4,laneColors[i]+'dd');beam.addColorStop(1,'#fff5aacc');
+      ctx.shadowColor=laneColors[i];ctx.shadowBlur=selectedCount>=3?42:28;
+      pathPoly([[centerX-30,chestY],[centerX+30,chestY],[upperX+width*.5,0],[upperX-width*.5,0]],beam);
+      const core=ctx.createLinearGradient(upperX,0,centerX,chestY);
+      core.addColorStop(0,'#ffffff00');core.addColorStop(.4,selectedCount>=3?'#fff5df99':'#fff5df66');core.addColorStop(1,'#ffffff00');
+      pathPoly([[centerX-8,chestY],[centerX+8,chestY],[upperX+width*.16,0],[upperX-width*.16,0]],core);
+      ctx.restore();
+    }
+    // Finish every beam before drawing rewards so neighboring light cannot wash out icons.
+    for(let i=0;i<selectedCount;i++){
+      const x=centerX+(i-(selectedCount-1)/2)*spacing;
       const reel=reels[i];
-      const scale=Math.min(spacing/165,h/430);
+      const scale=Math.min(spacing/165,h/510,1.4);
       const stopped=reel?.stopped||phase==='burst'||phase==='result';
-      if(stopped)drawMedallion(x,top,rewards[i],scale*(1+Math.sin(Math.min(1,reel?.pop??1)*Math.PI)*.16),true);
-      else {
-        ctx.save();ctx.beginPath();ctx.rect(x-spacing*.4,0,spacing*.8,h*.43);ctx.clip();
-        for(let j=-1;j<4;j++){
-          const progress=clamp(phaseTime/(reel?.stoppedAt??settings.roll));
-          const scroll=phase==='rolling'?easeOut(progress)*h*(8+i*.5):time*180;
-          const y=((scroll+j*h*.18)%(h*.6))-h*.1;
-          const reward=rewards[(Math.floor(phaseTime*8)+i+j+rewards.length)%rewards.length];
-          if(reward.image?.complete&&reward.image.naturalWidth)ctx.drawImage(reward.image,x-24,y-24,48,48);
-          else diamond(x,y,18,reward.color,'#fff6b0');
-        }ctx.restore();
+      if(stopped){
+        drawMedallion(x,top,rewards[i],scale*(1+Math.sin(Math.min(1,reel?.pop??1)*Math.PI)*.16),true);
+        const labelSize=Math.min(24,spacing/7);
+        // Short rows keep the actual reward readable even with five lanes.
+        const chars=Math.max(4,Math.floor(spacing/labelSize)-1);
+        rr(x-spacing*.46,top+92*scale-labelSize*.7,spacing*.92,Math.ceil(rewards[i].name.length/chars)*labelSize*1.2+labelSize*.5,8,'#17112bc9');
+        for(let start=0;start<rewards[i].name.length;start+=chars)
+          txt(rewards[i].name.slice(start,start+chars),x,top+92*scale+(start/chars)*labelSize*1.2,labelSize,'#fff8df');
+      } else if(phase==='rolling') {
+        const bottom=h*.53, half=spacing*.48;
+        ctx.save();ctx.beginPath();
+        ctx.moveTo(beamX(x,0)-half,0);ctx.lineTo(beamX(x,0)+half,0);
+        ctx.lineTo(beamX(x,bottom)+half,bottom);ctx.lineTo(beamX(x,bottom)-half,bottom);ctx.closePath();ctx.clip();
+        const size=134*scale, cell=size*1.4;
+        const progress=clamp(phaseTime/(reel?.stoppedAt??settings.roll));
+        // Constant readable motion followed by a distinct braking phase.
+        const travel=progress<.65?progress/.825:1-(1-progress)**2/(.7*.825);
+        const steps=18+i*2;
+        const offset=travel*steps*cell;
+        const base=Math.floor(offset/cell);
+        for(let j=base-3;j<=base+3;j++){
+          const y=top+j*cell-offset;
+          const index=((j+i)%rewards.length+rewards.length)%rewards.length;
+          const reward=rewards[index];
+          ctx.globalAlpha=clamp(1-Math.abs(y-top)/(h*.38),.18,1);
+          // Same art, centerline and scale on both sides of the final stop.
+          drawMedallion(beamX(x,y),y,j===steps?rewards[i]:reward,scale);
+        }
+        ctx.restore();
+        rr(x-spacing*.43,top-cell*.46,spacing*.86,cell*.92,12,'#100d3b22','#fff2bd99',2);
+        pathPoly([[x-spacing*.48,top-10],[x-spacing*.38,top],[x-spacing*.48,top+10]],'#fff5bb');
       }
       const pulse=revealPulse[i];
       if(pulse>0){ctx.strokeStyle='#fff8bf';ctx.lineWidth=3;ctx.globalAlpha=pulse;ctx.beginPath();ctx.arc(x,top,spacing*.4+(1-pulse)*spacing*.35,0,Math.PI*2);ctx.stroke();ctx.globalAlpha=1;}

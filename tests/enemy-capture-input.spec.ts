@@ -5,8 +5,8 @@ test('E requires proximity, triggers effect and cue once, and ignores repeat/pau
  import {EnemyCapture} from '/src/enemy-capture.ts'; import {StarSealCaptureSystem} from '/src/visuals/star-seal-capture.ts';
  createUI(document.getElementById('app'));const g=window.game=new Game();g.sleep();g.wake=()=>{};
  g.capture=new EnemyCapture(()=>0);g.captureVfx=new StarSealCaptureSystem(g.scene,1);g.scene.add(g.captureAnchor);
- g.combat.clearWave();g.combat.hp=100;g.position.set(0,0,0);g.mode='playing';
- window.enemy=g.combat.spawn('normal',0,4,0);window.enemy.spawnTime=0;window.enemy.hp=1;
+ g.combat.clearWave();g.combat.captureEnabled=true;g.combat.captureSpawnRoll=()=>true;g.combat.hp=100;g.position.set(0,0,0);g.mode='playing';
+ window.enemy=g.combat.spawn('normal',0,20,0);window.enemy.spawnTime=0;window.enemy.hp=1;
  window.cues=[];g.audio.play=kind=>{if(kind.startsWith('capture-'))window.cues.push(kind);return true};
  window.ready=true;
  </script>`}));

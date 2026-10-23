@@ -22,7 +22,8 @@ export interface RelicDefinition<Id extends string = string> {
   id: Id; title: string; category: 'relic'; rarity: 'rare'; modes: readonly ['formal'];
   tags: readonly ContentTag[]; requirements: Requirements; modifiers: readonly RelicModifier[];
   behavior?: RelicBehavior;
-  art: { symbol: 'prism' | 'orb'; palette: 'water' | 'fire' | 'grass'; png?: string };
+  endlessOnly?: boolean;
+  art: { symbol: 'prism' | 'orb'; palette: 'water' | 'fire' | 'grass'; png?: string; hidden?: boolean };
   vfx: { preset: string; target: ModifierTarget };
   maxRank: 1; rewards: { upgrade: boolean; shop: boolean };
   /** Optional copy must match generated effect copy; numbers have a single source. */

@@ -1,5 +1,5 @@
 /** Adapted from the supplied 幻兽囚坊 Canvas scene. Source systems retained; battle collection owns unlocks. */
-export interface PrisonOptions { owns:(asset:string)=>boolean; image:(asset:string)=>string; cue:(pitch:number,duration:number,kind:OscillatorType)=>void }
+export interface PrisonOptions { release:(asset:string)=>boolean; count:(asset:string)=>number; owns:(asset:string)=>boolean; image:(asset:string)=>string; cue:(pitch:number,duration:number,kind:OscillatorType)=>void }
 export function mountPrison(root:ShadowRoot,options:PrisonOptions) {
  const abort=new AbortController();let frame=0;
  const element=(id:string)=>root.getElementById(id);
@@ -25,12 +25,17 @@ interface Save { version: 7; monsters: Monster[]; goods: Goods; pending: Goods; 
 interface Particle extends Point { vx: number; vy: number; life: number; max: number; radius: number; color: string }
 interface FloatingText extends Point { text: string; life: number; max: number; color: string }
 interface Visual extends Point { speed: number; walking: boolean }
-interface FrameLayout { cells: Point[]; stations: Record<Job, Point>; chest: Point; capture: Point; pause: Point; sound: Point; rest: Rect; room: Rect; board: Point; gate: Point; build: Record<Building, Point> }
+interface Departure { monster: Monster; visual: Visual; fade: number }
+interface FrameLayout { cells: Point[]; stations: Record<Job, Point>; chest: Point; backpack: Point; pause: Point; sound: Point; rest: Rect; room: Rect; board: Point; gate: Point; build: Record<Building, Point> }
 const KEY = 'monsterbonk:prison-scene:v1';
 const PIT_CAP = 36;
 const CYCLE_SECONDS = 12;
 const PER_ROUND = 4;
 const MAX_MONSTERS = 6;
+const CREATURE_MOTION = .4;
+const FIREFLY_MOTION = .35;
+const CELL_INNER_HEIGHT = 142;
+const CREATURE_CELL_RATIO = .5;
 const JOBS: Job[] = ['mine', 'haul', 'grow'];
 const PERSONALITIES: Personality[] = ['curious', 'sleepy', 'mischief', 'friendly', 'shy', 'energetic'];
 const PERSONALITY_INFO: Record<Personality, { name: string; glyph: string }> = {
@@ -79,6 +84,9 @@ const MONSTERS = [
 const INITIAL_SPECIES: number[] = []; // 熔火果、月露贝、岩甲虫
 const OLD_SPECIES = [9, 8, 11, 10, 17, 0] as const; // map old placeholder creatures to the real roster
 const images=MONSTERS.map(m=>{const image=new Image();image.src=options.image(m.asset);return image;});
+const spriteBounds=new Map<number,Rect>();
+const spriteScan=document.createElement('canvas');
+const spriteScanContext=spriteScan.getContext('2d',{willReadFrequently:true});
 let rosterOpen = false;
 
 const JOB_NAMES: Record<Job, string> = { mine: '挖矿', haul: '搬运', grow: '种植' };
@@ -95,6 +103,7 @@ let shownCost: Building | null = null, costLife = 0;
 let audioOn = true;
 const particles: Particle[] = [], texts: FloatingText[] = [];
 const visuals = new Map<number, Visual>();
+const departures: Departure[] = [];
 const sparks = Array.from({ length: 45 }, (_, i) => ({ seed: (i * 13.71) % 1, x: (i * 279.23) % 1, y: (i * 179.11) % 1 }));
 
 function initial(): Save {
@@ -175,7 +184,12 @@ function load(): Save {
   } catch { return initial(); }
 }
 let state = load();
-state.monsters=state.monsters.filter(m=>options.owns(MONSTERS[m.species].asset));
+const residentCounts=new Map<number,number>();
+state.monsters=state.monsters.filter(m=>{
+ const n=(residentCounts.get(m.species)??0)+1;
+ if(n>options.count(MONSTERS[m.species].asset))return false;
+ residentCounts.set(m.species,n);return true;
+});
 function store(): void { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch { say('囚坊存档失败，请勿关闭页面'); } }
 function say(message: string, seconds = 2.1): void { toastMessage = message; toastLife = seconds; announcer.textContent = message; }
 function ding(pitch = 440, duration = .10, kind: OscillatorType = 'sine'): void {
@@ -222,10 +236,41 @@ function layout(): FrameLayout {
     garden: { x: stations.grow.x+(portrait?117:-122), y: stations.grow.y-(portrait?105:113) },
   };
   return { room, cells, stations, chest, board, gate, build,
-    capture: { x: W - 62, y: portrait ? 54 : 57 },
+    backpack: { x: W - 62, y: portrait ? 54 : 57 },
     pause: { x: W - 120, y: portrait ? 54 : 57 },
     sound: { x: W - 177, y: portrait ? 54 : 57 },
     rest: { x: portrait ? W / 2 + 124 : W / 2 + 165, y: H - (portrait ? 61 : 45), w: 110, h: 43 } };
+}
+function cellWidth(l:FrameLayout):number{
+  return portrait?142:Math.min(146,(l.room.w-65)/6-.5);
+}
+function creatureScale():number{
+  return Math.min(cellWidth(layout())-2,CELL_INNER_HEIGHT)*CREATURE_CELL_RATIO/120;
+}
+/** Cache visible bounds once per asset, so transparent margins cannot change body size. */
+function prepareSprite(species:number):void{
+  const image=images[species],ctx=spriteScanContext;
+  if(!ctx || !image.complete || !image.naturalWidth || !image.naturalHeight)return;
+  const w=image.naturalWidth,h=image.naturalHeight;
+  let bounds:Rect={x:0,y:0,w,h};
+  try{
+    spriteScan.width=w;spriteScan.height=h;ctx.drawImage(image,0,0);
+    const pixels=ctx.getImageData(0,0,w,h).data;
+    let left=w,right=-1,top=h,bottom=-1;
+    for(let y=0;y<h;y++)for(let x=0;x<w;x++){
+      if(pixels[(y*w+x)*4+3]<=8)continue;
+      left=Math.min(left,x);right=Math.max(right,x);top=Math.min(top,y);bottom=Math.max(bottom,y);
+    }
+    if(right>=left && bottom>=top)bounds={x:left,y:top,w:right-left+1,h:bottom-top+1};
+  }catch{/* Retain the full image if pixel access is unavailable. */}
+  spriteBounds.set(species,bounds);
+}
+function drawMonsterSprite(ctx:CanvasRenderingContext2D,species:number,width:number,height:number,bottom:number):void{
+  const image=images[species];
+  const bounds=spriteBounds.get(species)??{x:0,y:0,w:image.naturalWidth,h:image.naturalHeight};
+  if(!bounds.w || !bounds.h)return;
+  const ratio=Math.min(width/bounds.w,height/bounds.h),w=bounds.w*ratio,h=bounds.h*ratio;
+  ctx.drawImage(image,bounds.x,bounds.y,bounds.w,bounds.h,-w/2,bottom-h,w,h);
 }
 function home(id: number): Point { const cell = layout().cells[id - 1]; return { x: cell.x, y: cell.y + 35 }; }
 function mix(a: Point, b: Point, t: number): Point {
@@ -271,28 +316,65 @@ function choose(id: number): void {
   if (!state.monsters.some(m => m.id === id)) return;
   selected = id;
   const m = state.monsters.find(monster => monster.id === id)!;
-  say(`${m.name} · ${PERSONALITY_INFO[m.personality].name}`, 1.4);
+  say(`囚室${m.id}的幻兽 · ${PERSONALITY_INFO[m.personality].name}`, 1.4);
   ding(490, .07);
+  showMonsterMenu(m);
 }
 function assign(job: Job): void {
+  closeMonsterMenu();
   const m = state.monsters.find(m => m.id === selected);
   if (!m) { say('先点一只怪物'); return; }
-  if (m.job === job) { say(`${m.name}已经在${JOB_NAMES[job]}了`); return; }
+  if (m.job === job) { say(`囚室${m.id}的幻兽已经在${JOB_NAMES[job]}了`); return; }
   if (state.monsters.filter(other => other.job === job).length >= 2) { say('这个工位已经满了'); ding(170, .1); return; }
   if (m.cargo) { state.pitOre = Math.min(PIT_CAP, state.pitOre + m.cargo); m.cargo = 0; }
   if (state.escape?.id === m.id) { say('先把这只怪物带回囚室'); return; }
   m.job = job; m.progress = 0;
   const pt = layout().stations[job]; emit(pt.x, pt.y - 16, '#b7eac6', 12, 60);
-  say(job === 'haul' ? `${m.name}会把矿石送往仓库` : `${m.name}去${JOB_NAMES[job]}了`); ding(610, .14); store();
+  say(job === 'haul' ? `囚室${m.id}的幻兽会把矿石送往仓库` : `囚室${m.id}的幻兽去${JOB_NAMES[job]}了`); ding(610, .14); store();
 }
 function rest(): void {
+  closeMonsterMenu();
   const m = state.monsters.find(m => m.id === selected);
   if (!m || !m.job) return;
   if (m.cargo) { state.pitOre = Math.min(PIT_CAP, state.pitOre + m.cargo); m.cargo = 0; }
   m.job = null; m.progress = 0;
-  say(`${m.name}回囚室休息了`); ding(380, .11); store();
+  say(`囚室${m.id}的幻兽回囚室休息了`); ding(380, .11); store();
 }
-function capture(): void { showRoster(); }
+function removeResident(id:number, release:boolean):void{
+  const monster=state.monsters.find(m=>m.id===id);
+  if(!monster)return;
+  if(release && !options.release(MONSTERS[monster.species].asset)){
+    say('放生未保存，请稍后重试');return;
+  }
+  const source=visuals.get(id)??{...home(id),speed:0,walking:false};
+  if(monster.cargo)state.pitOre=Math.min(PIT_CAP,state.pitOre+monster.cargo);
+  if(state.escape?.id===id){state.escape=null;state.escapeTimer=75;}
+  if(state.social?.a===id || state.social?.b===id)state.social=null;
+  state.monsters=state.monsters.filter(m=>m.id!==id);
+  visuals.delete(id);selected=null;closeMonsterMenu();
+  if(release){
+    departures.push({monster:{...monster,job:null,progress:0,cargo:0},visual:{...source,walking:true},fade:0});
+    say('已放生 · 幻兽正走向出口');ding(560,.16);
+  }else{
+    emit(source.x,source.y-45,'#c7ebca',12,45);
+    say('已放回怪物背包');ding(490,.1);
+  }
+  store();
+}
+function updateDepartures(dt:number):void{
+  const gate=layout().gate;
+  for(let i=departures.length-1;i>=0;i--){
+    const leaving=departures[i],v=leaving.visual;
+    const dx=gate.x-v.x,dy=gate.y-v.y,d=Math.hypot(dx,dy);
+    if(d>2){
+      const step=Math.min(d,dt*(portrait?350:450)*CREATURE_MOTION);
+      v.x+=dx/d*step;v.y+=dy/d*step;v.walking=true;
+    }else{
+      v.walking=false;leaving.fade+=dt/.85;
+      if(leaving.fade>=1)departures.splice(i,1);
+    }
+  }
+}
 function collect(): void {
   const total = JOBS.reduce((sum, job) => sum + state.pending[job], 0);
   if (!total) { say('仓库还没有产物'); return; }
@@ -415,7 +497,7 @@ function resolveSocial(): void {
 function fireflyPos(): Point {
   const f = state.firefly;
   const l = layout();
-  const t = clock * .40 + (f?.phase ?? 0);
+  const t = clock * .40 * FIREFLY_MOTION + (f?.phase ?? 0);
   const spanX = portrait ? .25 : .29;
   const centerY = portrait ? .29 : .31;
   return {
@@ -425,7 +507,7 @@ function fireflyPos(): Point {
 }
 function startFirefly(): void {
   if (state.firefly || state.escape || state.social) return;
-  state.firefly = { remaining: 10, taps: 0, phase: clock * .53 + state.firefliesCaught * 2.37 };
+  state.firefly = { remaining: 10, taps: 0, phase: clock * .53 * FIREFLY_MOTION + state.firefliesCaught * 2.37 };
   state.fireflyTimer = 48;
   const p = fireflyPos();
   emit(p.x, p.y, '#c5f7ec', 15, 80);
@@ -441,7 +523,7 @@ function catchFirefly(): void {
   emit(p.x, p.y, '#baf9e8', 13 + f.taps * 3, 95 + f.taps * 12);
   ding(660 + f.taps * 100, .08);
   if (f.taps < 3) {
-    f.phase += .78;
+    f.phase += .22;
     f.remaining = Math.min(12, f.remaining + .7);
     floatText(p.x, p.y - 22, `${f.taps}/3`, '#c7fff0');
     say(f.taps === 1 ? '追上了！它又飞走了' : '快抓到了！再追一次', 1.1);
@@ -466,13 +548,13 @@ function catchFirefly(): void {
   store();
 }
 function startEscape(): void {
-  if (state.monsters.length < 2 || state.escape) return;
+  if (state.monsters.length < 2 || state.escape || departures.length) return;
   const candidate = state.monsters.find(m => !m.job) ?? state.monsters[state.socialCount % state.monsters.length];
   const source = visuals.get(candidate.id) ?? home(candidate.id);
   state.escape = { id: candidate.id, origin: { x: source.x, y: source.y }, elapsed: 0 };
   state.social = null;
   state.socialTimer = Math.max(state.socialTimer, 12);
-  say(`${candidate.name}正在偷偷溜向出口！点击它或出口落闸`, 4);
+  say(`囚室${candidate.id}的幻兽正在偷偷溜向出口！点击它或出口落闸`, 4);
   ding(270, .24, 'sawtooth'); store();
 }
 function endEscape(caught: boolean): void {
@@ -532,13 +614,14 @@ function tickSceneEvents(dt: number): void {
 function tick(dt: number): void {
   if (state.paused || rosterOpen) return;
   clock += dt;
+  updateDepartures(dt);
   tickSceneEvents(dt);
   for (const p of state.monsters) {
     const visual = visuals.get(p.id)!;
     const target = workPos(p);
     const dx = target.x - visual.x, dy = target.y - visual.y;
     const distance = Math.hypot(dx, dy);
-    const step = Math.min(distance, dt * (portrait ? 350 : 450));
+    const step = Math.min(distance, dt * (portrait ? 350 : 450) * CREATURE_MOTION);
     if (distance > 2) { visual.x += dx / distance * step; visual.y += dy / distance * step; }
     else { visual.x = target.x; visual.y = target.y; }
     visual.walking = distance > 4;
@@ -898,8 +981,8 @@ function drawBackdrop(l: FrameLayout): void {
   glow(W*.49, H*.28, W*.48, '#b8a06f1d');
   drawOutsideCavern();
   for (const dust of sparks) {
-    const px = dust.x * W + Math.sin(clock*.24 + dust.seed*18)*16;
-    const py = (dust.y*H + clock*(7 + dust.seed*13)) % H;
+    const px = dust.x * W + Math.sin(clock*.24*FIREFLY_MOTION + dust.seed*18)*16;
+    const py = (dust.y*H + clock*FIREFLY_MOTION*(7 + dust.seed*13)) % H;
     disc(px, py, 1 + dust.seed*1.7, 1+ dust.seed*.7, `rgba(243,219,149,${.1 + .25*(.5 + Math.sin(clock+dust.seed*15)*.5)})`);
   }
   const { x, y, w, h } = l.room;
@@ -953,6 +1036,7 @@ function archShape(x: number, y: number, width: number, height: number): void {
 }
 function drawGate(l: FrameLayout): void {
   const p = l.gate, e = state.escape, alert = !!e;
+  const open=departures.length>0 && !alert,lift=open?70:alert?17:0;
   const pulse = .6 + .4 * Math.sin(clock * 8);
   c.save(); c.translate(p.x,p.y);
   glow(0,-51,alert?126:72,alert ? '#f27e5173' : '#d9bc6230');
@@ -963,12 +1047,12 @@ function drawGate(l: FrameLayout): void {
   archShape(0,-47,78,113);c.fillStyle='#142326';c.fill();
   for(let i=-2;i<=2;i++){
     const x=i*17;
-    line(x,-98+(alert?Math.sin(clock*9)*2:0),x,7-(alert?17:0),'#a9b2a1',6);
-    disc(x,-8-(alert?17:0),3.5,3.5,'#c1c8a8');
+    line(x,-98+(alert?Math.sin(clock*9)*2:0),x,7-lift,'#a9b2a1',6);
+    disc(x,-8-lift,3.5,3.5,'#c1c8a8');
   }
-  line(-42,-48-(alert?17:0),42,-48-(alert?17:0),'#adb9a0',6);
+  line(-42,-48-lift*.55,42,-48-lift*.55,'#adb9a0',6);
   box(-28,-9,56,23,alert?'#8a4940':'#655841',5,alert?'#f4c07e':'#b3a379');
-  write(alert?'落闸':'出口',0,2,alert?17:14,alert?'#fff0bd':'#d6cfb0','center','900');
+  write(alert?'落闸':open?'放行':'出口',0,2,alert?17:14,alert?'#fff0bd':'#d6cfb0','center','900');
   if(alert){
     c.lineWidth=5;c.strokeStyle='#ffd890';c.beginPath();
     c.arc(0,-47,67,-Math.PI/2,-Math.PI/2+Math.PI*2*(1-e!.elapsed/ESCAPE_SECONDS));c.stroke();
@@ -982,13 +1066,13 @@ function drawGate(l: FrameLayout): void {
   }
 }
 function drawCellsBack(l: FrameLayout): void {
-  const cellW=portrait?142:Math.min(146,(l.room.w-65)/6-.5);
+  const cellW=cellWidth(l);
   for(let i=0;i<6;i++){
     const p=l.cells[i], isOccupied=state.monsters.some(m=>m.id===i+1);
     glow(p.x,p.y-38,75,isOccupied?'#ddac6340':'#1a282c12');
     archShape(p.x,p.y,cellW+17,152);
     c.fillStyle='#59635d';c.fill();c.strokeStyle='#1d322e';c.lineWidth=4;c.stroke();
-    archShape(p.x,p.y+4,cellW-2,142);
+    archShape(p.x,p.y+4,cellW-2,CELL_INNER_HEIGHT);
     const grad=c.createLinearGradient(0,p.y-85,0,p.y+62);grad.addColorStop(0,'#0e2125');grad.addColorStop(1,'#1d3535');
     c.fillStyle=grad;c.fill();c.strokeStyle='#87917b';c.lineWidth=2;c.stroke();
     disc(p.x,p.y+58,cellW*.48,12,'#142824');
@@ -1000,7 +1084,7 @@ function drawCellsBack(l: FrameLayout): void {
   }
 }
 function drawCellsFront(l: FrameLayout): void {
-  const cellW=portrait?142:Math.min(146,(l.room.w-65)/6-.5);
+  const cellW=cellWidth(l);
   for(let i=0;i<6;i++){
     const p=l.cells[i];
     for(let k=-2;k<=2;k++) {
@@ -1137,21 +1221,24 @@ function drawStationFront(job: Job, p: Point): void {
   c.restore();
 }
 
-function creature(m: Monster, v: Visual): void {
-  const escaping = state.escape?.id === m.id;
-  const sceneMood = state.social && (state.social.a === m.id || state.social.b === m.id) ? state.social.kind : null;
+function creature(m: Monster, v: Visual, leaving=false): void {
+  const bodyScale=creatureScale();
+  c.save();c.translate(v.x,v.y);c.scale(bodyScale,bodyScale);c.translate(-v.x,-v.y);
+  const motionTime=clock*CREATURE_MOTION;
+  const escaping = !leaving && state.escape?.id === m.id;
+  const sceneMood = !leaving && state.social && (state.social.a === m.id || state.social.b === m.id) ? state.social.kind : null;
   const isWorking = !!m.job && !escaping && sceneMood !== 'nap' && sceneMood !== 'bicker'
     && (!v.walking || m.job === 'haul');
-  const isSelected = selected === m.id;
-  const idlePulse = Math.sin(clock * .9 + m.id * 1.71);
-  const idleHop = !m.job && m.personality === 'energetic' && idlePulse > .72 ? -8 * ((idlePulse - .72) / .28) : 0;
-  const bob=(sceneMood==='nap' ? .6*Math.sin(clock*1.5+m.id)
-    : sceneMood==='bicker' ? Math.abs(Math.sin(clock*10+m.id))*5
-    : v.walking?Math.abs(Math.sin(clock*11+m.id))*7 : isWorking ? Math.abs(Math.sin(clock*(m.job==='mine'?8:4)+m.id))*4 : Math.sin(clock*2.1+m.id)*2.4) + idleHop;
-  const wiggle=escaping ? Math.sin(clock*14+m.id)*.17
-    : sceneMood==='bicker' ? Math.sin(clock*14+m.id)*.16
+  const isSelected = !leaving && selected === m.id;
+  const idlePulse = Math.sin(motionTime * .9 + m.id * 1.71);
+  const idleHop = !m.job && m.personality === 'energetic' && idlePulse > .72 ? -3 * ((idlePulse - .72) / .28) : 0;
+  const bob=(sceneMood==='nap' ? .6*Math.sin(motionTime*1.5+m.id)
+    : sceneMood==='bicker' ? Math.abs(Math.sin(motionTime*10+m.id))*2
+    : v.walking?Math.abs(Math.sin(motionTime*11+m.id))*3 : isWorking ? Math.abs(Math.sin(motionTime*(m.job==='mine'?8:4)+m.id))*4 : Math.sin(motionTime*2.1+m.id)*2.4) + idleHop;
+  const wiggle=escaping ? Math.sin(motionTime*14+m.id)*.17
+    : sceneMood==='bicker' ? Math.sin(motionTime*14+m.id)*.16
     : sceneMood==='nap' ? -.17
-    : v.walking?Math.sin(clock*11+m.id)*.1:isWorking?Math.sin(clock*5+m.id)*.045:Math.sin(clock*1.8+m.id)*.022 + (m.personality==='mischief'?Math.sin(clock*3+m.id)*.04:0);
+    : v.walking?Math.sin(motionTime*11+m.id)*.1:isWorking?Math.sin(motionTime*5+m.id)*.045:Math.sin(motionTime*1.8+m.id)*.022 + (m.personality==='mischief'?Math.sin(motionTime*3+m.id)*.04:0);
   disc(v.x,v.y+3,39,12,'#071d1db5');
   if(escaping){
     glow(v.x,v.y-34,70,'#ff8e534e');
@@ -1159,96 +1246,95 @@ function creature(m: Monster, v: Visual): void {
     c.beginPath();c.ellipse(v.x,v.y+2,46,17,0,0,Math.PI*2);c.stroke();c.restore();
   }
   if(isSelected){
-    c.save();c.lineWidth=3;c.strokeStyle='#f5d58d';c.setLineDash([12,5]);c.lineDashOffset=-clock*27;
+    c.save();c.lineWidth=3;c.strokeStyle='#f5d58d';c.setLineDash([12,5]);c.lineDashOffset=-motionTime*27;
     c.beginPath();c.ellipse(v.x,v.y+2,45,17,0,0,Math.PI*2);c.stroke();c.setLineDash([]);
     glow(v.x,v.y-45,73,'#e5ca8240');
     c.restore();
   }
   c.save();c.translate(v.x,v.y-bob);
   c.rotate(wiggle);
-  const size=portrait?.98:1.02;c.scale(size,size);
   // Draw the user's actual monster, not a procedural substitute. Each atlas tile has a transparent background.
   const sprite = Math.max(0, Math.min(MONSTERS.length - 1, m.species));
   if (images[sprite].complete && images[sprite].naturalWidth > 0) {
     c.imageSmoothingEnabled = true;
-    c.drawImage(images[sprite], -60, -115, 120, 120);
+    drawMonsterSprite(c,sprite,120,120,0);
   } else {
-    disc(0, -50, 33, 33, '#adccb4');
-    write('?', 0, -51, 31, '#223c37', 'center');
+    disc(0, -60, 60, 60, '#adccb4');
+    write('?', 0, -60, 31, '#223c37', 'center');
   }
   if(m.job&&isWorking){
     if(m.job==='mine'){
-      c.save();c.translate(25,-33);c.rotate(-.40+Math.sin(clock*9+m.id)*.58);
+      c.save();c.translate(25,-33);c.rotate(-.40+Math.sin(motionTime*9+m.id)*.58);
       line(0,14,4,-24,'#c79764',6);
       c.beginPath();c.moveTo(-15,-25);c.quadraticCurveTo(1,-37,23,-19);
       c.lineTo(15,-11);c.quadraticCurveTo(0,-27,-12,-12);c.closePath();c.fillStyle='#b9d0c2';c.fill();c.strokeStyle='#395353';c.lineWidth=2.5;c.stroke();
       c.restore();
-      if(Math.sin(clock*9+m.id)>.82){
+      if(Math.sin(motionTime*9+m.id)>.82){
         disc(61,-8,3,3,'#ffd68d');disc(73,-22,2,2,'#fff0aa');
       }
     }else if(m.job==='haul'){
-      c.save();c.translate(24+Math.sin(clock*3+m.id)*8,-16);c.rotate(Math.sin(clock*4)*.06);
+      c.save();c.translate(24+Math.sin(motionTime*3+m.id)*8,-16);c.rotate(Math.sin(motionTime*4)*.06);
       woodCrate(0,0,.78);
       if (m.cargo) { crystal(0,-32,35,'#8fe3c6'); glow(0,-47,28,'#94eac07a'); }
       c.restore();
     }else{
-      c.save();c.translate(24,-30);c.rotate(Math.sin(clock*4+m.id)*.38-.23);
+      c.save();c.translate(24,-30);c.rotate(Math.sin(motionTime*4+m.id)*.38-.23);
       box(-1,-11,29,25,'#78c0b2',7,'#244d50');
       line(23,-10,35,-17,'#87dcd3',6);line(35,-17,38,-8,'#87dcd3',5);
       disc(6,-13,9,5,'#b8efe4');
       c.restore();
-      if(Math.sin(clock*4+m.id)>.18){
-        disc(60,-5+Math.sin(clock*9)*4,3,6,'#9ae4e4c2');
-        disc(70,2+Math.sin(clock*8)*3,2,4,'#c1f4ee');
+      if(Math.sin(motionTime*4+m.id)>.18){
+        disc(60,-5+Math.sin(motionTime*9)*4,3,6,'#9ae4e4c2');
+        disc(70,2+Math.sin(motionTime*8)*3,2,4,'#c1f4ee');
       }
     }
   }
   c.restore();
-  if(isSelected){
-    const textY=v.y-(m.job?99:100);
-    box(v.x-34,textY-17,68,27,'#233a34e8',10,'#d1b57b');
-    write(m.name,v.x,textY-3,14,'#ffebbc','center','700');
-  }
   if(escaping){
-    c.save();c.translate(v.x+37,v.y-103+Math.sin(clock*7)*4);
+    c.save();c.translate(v.x+37,v.y-103+Math.sin(motionTime*7)*4);
     disc(0,0,17,17,'#e79c62');write('!',0,-1,22,'#422e25','center','900');c.restore();
   }
   // Idling creatures glance around, blink and watch floating dungeon fireflies.
-  if(!m.job && !escaping){
-    const phase=clock*.8+m.id*1.71;
+  if(!m.job && !escaping && !leaving){
+    const phase=motionTime*.8+m.id*1.71;
     if(Math.sin(phase)>.82){
       glow(v.x-35,v.y-77,14,'#c0dca439');
-      disc(v.x-35+Math.sin(clock*2+m.id)*4,v.y-83+Math.sin(clock*1.5)*3,2.5,2.5,'#f4ebad');
+      disc(v.x-35+Math.sin(motionTime*2+m.id)*4,v.y-83+Math.sin(motionTime*1.5)*3,2.5,2.5,'#f4ebad');
     }
     if(Math.sin(phase*.7) < -.86){
       // A brief sleepy exhale: no rest mechanic or timer changes.
-      c.globalAlpha=.35+.25*Math.sin(clock*2+m.id);
+      c.globalAlpha=.35+.25*Math.sin(motionTime*2+m.id);
       disc(v.x+42,v.y-66,7,4,'#d9e7cf');c.globalAlpha=1;
     }
   }
   // Personality is purely cosmetic: it changes idle animation, never job access or yield.
-  if(!m.job && !escaping && !isSelected){
-    const beat = Math.sin(clock*.74 + m.id*1.91 + m.species*.13);
+  if(!m.job && !escaping && !isSelected && !leaving){
+    const beat = Math.sin(motionTime*.74 + m.id*1.91 + m.species*.13);
     if(beat > .72){
       const info = PERSONALITY_INFO[m.personality];
-      const bx = v.x + 34 + Math.sin(clock*1.6+m.id)*3;
-      const by = v.y - 82 + Math.sin(clock*2+m.id)*4;
+      const bx = v.x + 34 + Math.sin(motionTime*1.6+m.id)*3;
+      const by = v.y - 82 + Math.sin(motionTime*2+m.id)*4;
       glow(bx,by,22,m.personality==='friendly'?'#f5c7dc3c':'#c5e4d23b');
       disc(bx,by,13,13,'#203a34e8');
       write(info.glyph,bx,by,15,m.personality==='mischief'?'#ffc58d':m.personality==='friendly'?'#f8cfe0':'#d5efcf','center','900');
     }
-    if(m.personality==='curious' && Math.sin(clock*.45+m.id*2.1)>.94){
+    if(m.personality==='curious' && Math.sin(motionTime*.45+m.id*2.1)>.94){
       glow(v.x-35,v.y-77,14,'#c0dca439');
-      disc(v.x-35+Math.sin(clock*2+m.id)*4,v.y-83+Math.sin(clock*1.5)*3,2.5,2.5,'#f4ebad');
+      disc(v.x-35+Math.sin(motionTime*2+m.id)*4,v.y-83+Math.sin(motionTime*1.5)*3,2.5,2.5,'#f4ebad');
     }
-    if(m.personality==='sleepy' && Math.sin(clock*.7+m.id)>.84){
-      c.globalAlpha=.65;write('ᶻᶻ',v.x+39,v.y-87+Math.sin(clock*2)*3,15,'#c4d4c0','center');c.globalAlpha=1;
+    if(m.personality==='sleepy' && Math.sin(motionTime*.7+m.id)>.84){
+      c.globalAlpha=.65;write('ᶻᶻ',v.x+39,v.y-87+Math.sin(motionTime*2)*3,15,'#c4d4c0','center');c.globalAlpha=1;
     }
   }
+  c.restore();
 }
 function drawMonsters(): void {
   const order=state.monsters.slice().sort((a,b)=>(visuals.get(a.id)?.y??0)-(visuals.get(b.id)?.y??0));
   for(const m of order){const v=visuals.get(m.id);if(v)creature(m,v);}
+  for(const leaving of departures){
+    c.save();c.globalAlpha=Math.max(0,1-leaving.fade);
+    creature(leaving.monster,leaving.visual,true);c.restore();
+  }
 }
 function drawSocial(): void {
   const e = state.social, p = socialSpot();
@@ -1369,19 +1455,20 @@ function drawFireflyJars(l: FrameLayout): void {
   }
 }
 function drawFirefly(): void {
+  const motionTime=clock*FIREFLY_MOTION;
   const f = state.firefly;
   if (!f) return;
   const p = fireflyPos();
-  const pulse = .75 + Math.sin(clock * 9) * .25;
+  const pulse = .75 + Math.sin(motionTime * 9) * .25;
   glow(p.x, p.y, 58 * pulse, '#9fffe3a0');
   c.save(); c.translate(p.x, p.y);
   c.globalAlpha = .45;
   for (let i = 0; i < 4; i++) {
-    const t = clock * 2 + i * .8;
+    const t = motionTime * 2 + i * .8;
     disc(-Math.sin(t) * (12 + i * 4), Math.cos(t) * (8 + i * 3), 2 + (i % 2), 2 + (i % 2), '#d3fff0');
   }
   c.globalAlpha = 1;
-  c.rotate(Math.sin(clock * 6) * .12);
+  c.rotate(Math.sin(motionTime * 6) * .12);
   poly([{x:-4,y:0},{x:-20,y:-15},{x:-18,y:2},{x:-5,y:7}], '#9bead9','#d9fff2',1.5);
   poly([{x:4,y:0},{x:20,y:-15},{x:18,y:2},{x:5,y:7}], '#9bead9','#d9fff2',1.5);
   disc(0, 1, 7, 11, '#e8ffb5');
@@ -1426,12 +1513,12 @@ function drawVfx():void{
 }
 
 function drawGoodsIcon(job: Job, x: number, y: number): void {
-  c.save();c.translate(x,y);
+  c.save();c.translate(x,y+(job==='mine'?2.5:job==='grow'?4.5:0));
   if(job==='mine'){
     poly([{x:-13,y:6},{x:-11,y:-7},{x:-2,y:-17},{x:11,y:-8},{x:13,y:5},{x:0,y:12}], '#a4ddc6','#426b69',2);
     poly([{x:-11,y:-7},{x:-2,y:-17},{x:0,y:11}], '#daf4cb');
   }else if(job==='haul'){
-    woodCrate(0,12,.47);
+    woodCrate(0,10.5,.65);
   }else{
     line(0,10,0,-6,'#80b783',3);
     poly([{x:0,y:-2},{x:-15,y:-17},{x:-14,y:-1},{x:0,y:8}], '#87d79c','#3d6656',1);
@@ -1446,6 +1533,20 @@ function iconButton(p:Point, glyph:string, active=false):void{
   write(glyph,p.x,p.y+1,22,active?'#ffedae':'#cdd5bd','center','800');
   c.restore();
 }
+function backpackButton(p:Point):void{
+  iconButton(p,'',true);
+  c.save();c.translate(p.x,p.y);
+  c.strokeStyle='#ffedb4';c.lineWidth=2;c.lineJoin='round';
+  // Handle, shoulder straps, main bag and front pocket share the control's center.
+  c.beginPath();c.arc(0,-10,6,Math.PI,0);c.stroke();
+  box(-14,-6,5,18,'#a79c6b',3);
+  box(9,-6,5,18,'#a79c6b',3);
+  box(-11,-11,22,28,'#dcc188',6,'#ffedb4');
+  box(-8,2,16,11,'#758267',3,'#f7e4b2');
+  line(-6,5,6,5,'#f7e4b2',1.5);
+  box(-3,-7,6,6,'#68775e',2);
+  c.restore();
+}
 function drawHud(l:FrameLayout):void{
   const topGrad=c.createLinearGradient(0,0,0,portrait?155:102);
   topGrad.addColorStop(0,'#0a191dee');topGrad.addColorStop(1,'#0a191d00');
@@ -1453,32 +1554,26 @@ function drawHud(l:FrameLayout):void{
   const titleX=portrait?33:Math.max(35,(W-1420)/2+36);
   write('幻兽囚坊',titleX,portrait?47:49,portrait?33:37,COLORS.cream,'left','900');
   write('小 小 劳 作 间',titleX+2,portrait?81:83,11,'#aaaf96','left','700');
-  if(portrait){
-    for(let i=0;i<3;i++){
-      const job=JOBS[i],xx=108+i*198,yy=119;
-      drawGoodsIcon(job,xx-28,yy);
-      write(String(state.goods[job]),xx,yy,17,'#e4dcb9','left','750');
-    }
-  }else{
-    const resStart=W-570;
-    for(let i=0;i<3;i++){
-      const job=JOBS[i],xx=resStart+i*107,yy=58;
-      drawGoodsIcon(job,xx,yy);
-      write(String(state.goods[job]),xx+19,yy+1,17,'#f3e8c6','left','800');
-    }
+  // All four resource symbols share one centerline and equal-width slots.
+  const resourceY=portrait?119:58;
+  const resourceStart=portrait?58:W-650;
+  const resourceGap=portrait?(W-104)/4:107;
+  for(let i=0;i<4;i++){
+    const x=resourceStart+i*resourceGap;
+    if(i===0){
+      disc(x,resourceY,15,15,'#c9a268');
+      write('★',x,resourceY,19,'#49392d','center','900');
+    }else drawGoodsIcon(JOBS[i-1],x,resourceY);
+    const value=i===0?state.seals:state.goods[JOBS[i-1]];
+    write(String(value),x+23,resourceY,17,'#f3e8c6','left','800');
   }
-  const badgeX=portrait?W-285:W-640;
-  disc(badgeX,portrait?57:58,15,15,'#c9a268');
-  write('★',badgeX,portrait?56:57,19,'#49392d','center','900');
-  write(String(state.seals),badgeX+23,portrait?57:58,17,'#f9e4b8','left','800');
-  iconButton({x:W-236,y:l.sound.y},'☷');
   iconButton(l.sound,audioOn?'♫':'♪');
   if(!audioOn){line(l.sound.x-9,l.sound.y+10,l.sound.x+12,l.sound.y-11,'#ad8170',2.2);}
   iconButton(l.pause,state.paused?'▶':'Ⅱ',state.paused);
-  iconButton(l.capture,'☷',true);
-  if(state.monsters.length<MAX_MONSTERS){
+  backpackButton(l.backpack);
+  if(state.monsters.length<MAX_MONSTERS && MONSTERS.some((m,species)=>options.count(m.asset)>state.monsters.filter(resident=>resident.species===species).length)){
     const pulse=.6+.4*Math.sin(clock*2);
-    c.globalAlpha=pulse;disc(l.capture.x+17,l.capture.y-19,4.5,4.5,'#f8d688');c.globalAlpha=1;
+    c.globalAlpha=pulse;disc(l.backpack.x+17,l.backpack.y-19,4.5,4.5,'#f8d688');c.globalAlpha=1;
   }
   // In-world instruction and the one action button appear only when useful.
   const m=state.monsters.find(p=>p.id===selected);
@@ -1488,8 +1583,7 @@ function drawHud(l:FrameLayout):void{
     box(mid-182,y-25,350,53,'#172c2bdf',26,'#758b70');
     disc(mid-147,y,18,18,'#b3a06d');
     write(String(m.id).padStart(2,'0'),mid-147,y,13,'#23362d','center','900');
-    write(m.name,mid-115,y,18,'#fff0c9');
-    write(m.job?`· ${JOB_NAMES[m.job]}中`:'· 等待安排',mid-51,y,13,'#aabfaa','left','500');
+    write(m.job?`${JOB_NAMES[m.job]}中`:'等待安排',mid-115,y,13,'#aabfaa','left','500');
     if(m.job){
       box(l.rest.x-l.rest.w/2,l.rest.y-l.rest.h/2,l.rest.w,l.rest.h,'#435a46',22,'#c8b17d');
       write('收工',l.rest.x,l.rest.y+1,15,'#f2e1af','center');
@@ -1545,10 +1639,9 @@ function distance(a:Point,b:Point):number{return Math.hypot(a.x-b.x,a.y-b.y);}
 function hitRect(x:number,y:number,r:Rect):boolean{return x>=r.x-r.w/2&&x<=r.x+r.w/2&&y>=r.y-r.h/2&&y<=r.y+r.h/2;}
 function target(x:number,y:number):string|null{
   const l=layout();
-  if(distance({x,y},{x: W - 236, y:l.sound.y})<31)return 'roster';
   if(distance({x,y},l.pause)<31)return 'pause';
   if(distance({x,y},l.sound)<31)return 'sound';
-  if(distance({x,y},l.capture)<33)return 'capture';
+  if(distance({x,y},l.backpack)<33)return 'backpack';
   if(state.paused)return null;
   if(state.firefly && distance({x,y},fireflyPos())<58)return 'firefly';
   if(state.escape){
@@ -1580,11 +1673,11 @@ function target(x:number,y:number):string|null{
   return null;
 }
 function activate(t:string|null):void{
+  if(!t?.startsWith('monster-'))closeMonsterMenu();
   if(!t)return;
-  if(t==='roster'){showRoster();return;}
   if(t==='pause'){togglePause();ding(420,.09);return;}
   if(t==='sound'){audioOn=!audioOn;say(audioOn?'音效已开启':'音效已关闭');ding(660,.1);return;}
-  if(t==='capture'){if(!state.paused)capture();return;}
+  if(t==='backpack'){showRoster();return;}
   if(state.paused)return;
   if(t==='escape'){endEscape(true);return;}
   if(t==='firefly'){catchFirefly();return;}
@@ -1606,42 +1699,77 @@ rosterScreen.id = 'roster-screen';
 rosterScreen.hidden = true;
 rosterScreen.setAttribute('role', 'dialog');
 rosterScreen.setAttribute('aria-modal', 'true');
-rosterScreen.setAttribute('aria-label', '怪物名册');
-rosterScreen.innerHTML = `<div class="roster-panel"><header class="roster-top"><div><small>战斗捕获名册 · 所有怪物均可劳作</small><h2>怪物名册</h2></div><button id="close-roster" aria-label="关闭名册">×</button></header>
-<div id="roster-grid" class="roster-grid"></div><footer id="roster-caption">点击怪物加入囚室；六间已满时替换选中的怪物</footer></div>`;
+rosterScreen.setAttribute('aria-label', '怪物背包');
+rosterScreen.innerHTML = `<div class="roster-panel"><header class="roster-top"><div><small>所有已捕获怪物 · 点击自动放入囚笼</small><h2>怪物背包</h2></div><button id="close-roster" aria-label="关闭怪物背包">×</button></header>
+<div id="roster-grid" class="roster-grid"></div><footer id="roster-caption">点击怪物自动放入空囚笼；满员时替换选中的怪物</footer></div>`;
 root.appendChild(rosterScreen);
+const monsterMenu=document.createElement('section');
+monsterMenu.className='monster-actions';monsterMenu.hidden=true;
+monsterMenu.setAttribute('role','group');monsterMenu.setAttribute('aria-label','幻兽操作');
+monsterMenu.innerHTML=`<header><strong class="monster-actions-title"></strong><button type="button" class="monster-actions-close" aria-label="关闭幻兽操作">×</button></header>
+<p>也可直接点击工位安排劳作</p>
+<div class="monster-actions-buttons"><button type="button" data-monster-action="backpack">放回背包</button><button type="button" data-monster-action="release">放生</button></div>
+<small>放生后幻兽会离开，不再保留在背包中</small>`;
+root.appendChild(monsterMenu);
+let monsterMenuId:number|null=null;
+function closeMonsterMenu():void{
+  monsterMenu.hidden=true;monsterMenuId=null;
+}
+function showMonsterMenu(monster:Monster):void{
+  monsterMenuId=monster.id;
+  monsterMenu.querySelector('.monster-actions-title')!.textContent=`囚室${monster.id}的幻兽`;
+  monsterMenu.hidden=false;
+  monsterMenu.querySelector<HTMLButtonElement>('[data-monster-action="backpack"]')!.focus({preventScroll:true});
+}
+monsterMenu.querySelector<HTMLButtonElement>('.monster-actions-close')!.onclick=()=>{
+  closeMonsterMenu();canvas.focus({preventScroll:true});
+};
+monsterMenu.addEventListener('click',event=>{
+  const button=(event.target as Element).closest<HTMLButtonElement>('[data-monster-action]');
+  if(!button || monsterMenuId===null)return;
+  removeResident(monsterMenuId,button.dataset.monsterAction==='release');
+  if(monsterMenu.hidden)canvas.focus({preventScroll:true});
+});
+
 function rosterThumbnail(canvas: HTMLCanvasElement, species: number): void {
  const ctx=canvas.getContext('2d'),image=images[species];
- if(ctx && image.complete && image.naturalWidth)ctx.drawImage(image,0,0,canvas.width,canvas.height);
+ if(ctx && image.complete && image.naturalWidth){
+   ctx.save();ctx.translate(canvas.width/2,canvas.height);drawMonsterSprite(ctx,species,canvas.width,canvas.height,0);ctx.restore();
+ }
 }
 function refreshRoster(): void {
   const grid = element('roster-grid')!;
   grid.textContent = '';
   for (let i = 0; i < MONSTERS.length; i++) {
     if(!options.owns(MONSTERS[i].asset))continue;
-    const existing = state.monsters.find(m => m.species === i);
+    const residents = state.monsters.filter(m => m.species === i);
+    const captured = options.count(MONSTERS[i].asset);
     const button = document.createElement('button');
-    button.className = 'roster-monster' + (existing ? ' is-active' : '');
+    button.className = 'roster-monster' + (residents.length ? ' is-active' : '');
     button.type = 'button';
     button.dataset.species = String(i);
-    button.title = MONSTERS[i].name;
+    button.setAttribute('aria-label', `幻兽${i+1}，拥有${captured}只，已入住${residents.length}只`);
     const thumb = document.createElement('canvas');
     thumb.width = thumb.height = 88;
     thumb.setAttribute('aria-hidden', 'true');
     rosterThumbnail(thumb, i);
     const caption = document.createElement('span');
-    caption.textContent = MONSTERS[i].name;
+    caption.textContent = `拥有 ×${captured}`;
     button.append(thumb, caption);
-    if (existing) {
+    if (residents.length) {
       const mark = document.createElement('i');
-      mark.textContent = '囚室' + existing.id;
+      mark.textContent = `入住 ×${residents.length}`;
       button.append(mark);
     }
     grid.appendChild(button);
   }
-  element('roster-caption')!.textContent = `已安排 ${state.monsters.length}/6 只 · ${MONSTERS.filter(m=>options.owns(m.asset)).length}种已捕获 · 点怪物入住或替换；未捕获请先去战斗`;
+  const owned=MONSTERS.filter(m=>options.owns(m.asset));
+  element('roster-caption')!.textContent = owned.length
+    ? `囚笼 ${state.monsters.length}/6 · 背包共 ${owned.reduce((total,m)=>total+options.count(m.asset),0)} 只 · 点击自动入住，满员时替换`
+    : '背包暂时为空，先去战斗捕捉怪物';
 }
 function showRoster(): void {
+  closeMonsterMenu();
   rosterOpen = true;
   refreshRoster();
   rosterScreen.hidden = false;
@@ -1654,8 +1782,10 @@ function closeRoster(): void {
 }
 function placeSpecies(species: number): void {
   if (!Number.isInteger(species) || species < 0 || species >= MONSTERS.length || !options.owns(MONSTERS[species].asset)) return;
-  const existing = state.monsters.find(m => m.species === species);
-  if (existing) { selected = existing.id; closeRoster(); say(`选中了 ${existing.name}`); return; }
+  const residents=state.monsters.filter(m=>m.species===species);
+  if(residents.length>=options.count(MONSTERS[species].asset)){
+    selected=residents[0]?.id??selected;closeRoster();say('已捕获的同种幻兽已全部入住');return;
+  }
   if (state.monsters.length < MAX_MONSTERS) {
     const id = Array.from({length: MAX_MONSTERS}, (_, i)=>i+1).find(slot=>!state.monsters.some(m=>m.id===slot))!;
     const m: Monster = { id, species, name: MONSTERS[species].name, personality: personalityFor(species, id), job: null, progress: 0, cycles: 0, cargo: 0 };
@@ -1663,8 +1793,10 @@ function placeSpecies(species: number): void {
     visuals.set(id, { ...home(id), speed: 0, walking: false });
     selected = id;
   } else {
-    const replacement = state.monsters.find(m=>m.id===selected)
-      ?? state.monsters.find(m=>!m.job && m.id!==state.escape?.id) ?? state.monsters[0];
+    const replacement = state.monsters.find(m=>m.id===selected && m.species!==species)
+      ?? state.monsters.find(m=>m.species!==species && !m.job && m.id!==state.escape?.id)
+      ?? state.monsters.find(m=>m.species!==species);
+    if(!replacement){closeRoster();say('六间囚室已满');return;}
     if (replacement.cargo) state.pitOre = Math.min(PIT_CAP, state.pitOre + replacement.cargo);
     if (state.escape?.id === replacement.id) state.escape = null;
     if (state.social?.a === replacement.id || state.social?.b === replacement.id) state.social = null;
@@ -1681,7 +1813,7 @@ function placeSpecies(species: number): void {
   const pt = home(selected!);
   emit(pt.x, pt.y - 45, '#c7ebca', 26, 100);
   ding(720, .14);
-  say(`${MONSTERS[species].name}进入囚室！`);
+  say(`幻兽进入囚室${selected}！`);
   store();
 }
 element('close-roster')!.addEventListener('click', closeRoster);
@@ -1690,7 +1822,11 @@ rosterScreen.addEventListener('click', event => {
   const btn = (event.target as Element).closest<HTMLButtonElement>('[data-species]');
   if (btn) placeSpecies(Number(btn.dataset.species));
 });
-for(const image of images)image.addEventListener('load',()=>{if(rosterOpen)refreshRoster();});
+images.forEach((image,species)=>{
+ const loaded=()=>{prepareSprite(species);if(rosterOpen)refreshRoster();};
+ image.addEventListener('load',loaded,{signal:abort.signal});
+ if(image.complete && image.naturalWidth)loaded();
+});
 
 function coords(evt:PointerEvent):Point{
   const rect=canvas.getBoundingClientRect();
@@ -1710,6 +1846,10 @@ canvas.addEventListener('pointermove',event=>{
 canvas.addEventListener('pointerleave',()=>{hovered=null;canvas.style.cursor='default';});
 window.addEventListener('keydown',event=>{
   if (event.repeat) return;
+  if(!monsterMenu.hidden && monsterMenu.contains(root.activeElement)){
+    if(event.key==='Escape'){closeMonsterMenu();canvas.focus({preventScroll:true});}
+    return;
+  }
   if (rosterOpen) { if (event.key === 'Escape') closeRoster(); return; }
   if(/^[1-6]$/.test(event.key)){choose(Number(event.key));return;}
   const key=event.key.toLowerCase();
@@ -1717,13 +1857,12 @@ window.addEventListener('keydown',event=>{
   if(key==='w')assign('haul');
   if(key==='e')assign('grow');
   if(key==='r')rest();
-  if(key==='c')capture();
   if(key==='m')showRoster();
   if(key==='enter')collect();
   if(key==='b')deliverCommission();
   if(key==='f')resolveSocial();
   if(key==='g' && state.escape)endEscape(true);
-  if(key==='escape')selected=null;
+  if(key==='escape'){selected=null;closeMonsterMenu();}
   if(key===' '){event.preventDefault();togglePause();}
 }, {signal:abort.signal});
 window.addEventListener('resize',resize,{signal:abort.signal});

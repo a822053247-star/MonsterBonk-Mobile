@@ -1,7 +1,8 @@
 import type { RelicDefinition, Requirements, ContentTag } from '../content-types';
 import { gigapackCopy, GIGAPACK_FIELDS, type GigapackBehavior } from './gigapack-relics';
+import {endlessPassiveCopy,ENDLESS_PASSIVE_FIELDS,type EndlessPassiveBehavior} from './endless-passives';
 
-export type RelicBehavior = GigapackBehavior
+export type RelicBehavior = GigapackBehavior | EndlessPassiveBehavior
   | { handler: 'refract'; damage: number; count: number }
   | { handler: 'return'; damage: number }
   | { handler: 'pull'; distance: number; cooldown: number }
@@ -39,6 +40,7 @@ export const SECOND_RELIC_BATCH = [
 export function behaviorCopy(b: RelicBehavior) {
   const pct=(n:number)=>`${Number((n*100).toPrecision(8))}%`;
   switch(b.handler){
+    case 'steady-cannon':case 'fleet-contract':case 'far-lens':case 'heavy-ammo':case 'last-stand':case 'elite-hunter':return endlessPassiveCopy(b);
     case 'refract':return {benefit:`主弹命中折射 ${b.count} 名敌人 · ${pct(b.damage)}原伤`,tradeoff:`每根攻击链最多 ${b.count} 次；折射不再派生`};
     case 'return':return {benefit:`飞叶射程结束后返回 · ${pct(b.damage)}原伤`,tradeoff:'返回只命中此弹尚未命中的敌人'};
     case 'pull':return {benefit:`水系范围牵引普通怪 ${b.distance} 单位`,tradeoff:`冷却 ${b.cooldown} 秒；精英和Boss免疫位移`};
@@ -54,6 +56,7 @@ export function behaviorCopy(b: RelicBehavior) {
 
 /** Known handler schemas are shared by authoring validation and event dispatch. */
 export const BEHAVIOR_FIELDS = {
+  ...ENDLESS_PASSIVE_FIELDS,
   ...GIGAPACK_FIELDS,
   refract:['damage','count'],return:['damage'],pull:['distance','cooldown'],mine:['every','delay','radius','damage','cap'],
   'fire-zone':['duration','interval','damage','cooldown','cap','radius'],'poison-zone':['duration','interval','damage','cooldown','cap','radius'],

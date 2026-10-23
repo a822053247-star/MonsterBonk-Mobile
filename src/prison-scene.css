@@ -17,3 +17,16 @@
 #roster-caption{text-align:center;border-top:1px solid #bcb78642;padding:11px 12px;color:#cbd8b6;font-size:11px}
 @media(max-width:650px){.roster-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;padding:10px}.roster-top{padding:10px 14px}.roster-top h2{font-size:19px}.roster-monster{min-height:108px}.roster-monster canvas{height:77px;width:77px}.roster-monster span{font-size:10px}}
 @media(max-height:460px) and (orientation:landscape){.roster-top{padding:7px 15px}.roster-top h2{font-size:18px}.roster-grid{grid-template-columns:repeat(6,minmax(0,1fr));padding:9px;gap:8px}.roster-monster{min-height:93px;padding:1px 1px 5px}.roster-monster canvas{height:66px;width:66px}#roster-caption{padding:4px}}
+
+.monster-actions[hidden]{display:none!important}
+.monster-actions{position:absolute;right:18px;bottom:88px;z-index:8;width:min(320px,calc(100% - 24px));padding:14px;border:2px solid #b4a378;border-radius:16px;background:#172d2bf5;color:#f8e9c5;box-shadow:0 10px 32px #0007;touch-action:manipulation}
+.monster-actions header{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.monster-actions-title{font-size:16px}
+.monster-actions-close{display:grid;place-items:center;width:44px;height:44px;border:1px solid #a5b39777;border-radius:10px;background:#30483e;color:#f8e9c5;font-size:26px;cursor:pointer}
+.monster-actions p{margin:4px 0 12px;font-size:12px;color:#c1cfb7}
+.monster-actions-buttons{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.monster-actions-buttons button{min-height:48px;padding:9px;border:1px solid #b5c797;border-radius:10px;background:#46674e;color:#fff3cd;font:inherit;font-weight:700;cursor:pointer}
+.monster-actions-buttons [data-monster-action="release"]{background:#564737;border-color:#c9a36d}
+.monster-actions button:focus-visible{outline:3px solid #fff0ae;outline-offset:3px}
+.monster-actions small{display:block;margin-top:10px;font-size:11px;line-height:1.5;color:#cbbb9a}
+@media(max-height:460px) and (orientation:landscape){.monster-actions{bottom:62px;padding:10px}.monster-actions p{margin:2px 0 8px}.monster-actions small{margin-top:6px}}
