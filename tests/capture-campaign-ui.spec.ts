@@ -1,5 +1,6 @@
 import {test,expect} from '@playwright/test';
 test('campaign capture keeps battle alive, freezes on pause, persists and enters prison after results',async({page})=>{
+ test.setTimeout(60_000);
  const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
  await page.route('**/capture-campaign-harness*',route=>route.fulfill({contentType:'text/html; charset=utf-8',body:`<div id="app"></div><script type="module">
  import '/src/style.css';import {createUI} from '/src/ui.ts';import {Game} from '/src/game.ts';

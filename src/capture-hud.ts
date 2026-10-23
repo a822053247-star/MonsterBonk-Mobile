@@ -17,7 +17,7 @@ export class CaptureHUD {
     this.status.className='capture-status';this.status.setAttribute('role','status');
     this.start.className='capture-start';this.start.textContent='[E] 捕捉';this.start.onclick=onStart;
     this.seal.className='capture-seal';this.seal.setAttribute('aria-label','点击完成封印');
-    this.seal.innerHTML='<svg viewBox="0 0 160 160" aria-hidden="true"><circle cx="80" cy="80" r="25" class="seal-target"/><circle cx="80" cy="80" r="68" class="seal-moving"/></svg><span>点击封印</span>';
+    this.seal.innerHTML='<svg viewBox="0 0 160 160" aria-hidden="true"><circle cx="80" cy="80" r="24.4" class="seal-target"/><circle cx="80" cy="80" r="68" class="seal-moving"/></svg><span>点击封印</span>';
     this.seal.onclick=onSeal;this.circle=this.seal.querySelector('.seal-moving')!;
     this.orb.className='capture-orb';
     this.root.append(this.status,this.start,this.seal,this.orb);
