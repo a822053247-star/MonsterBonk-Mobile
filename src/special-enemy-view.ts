@@ -17,6 +17,7 @@ export class SpecialEnemyView {
   private rewards: THREE.Sprite[] = [];
   private coins: THREE.InstancedMesh;
 
+
   constructor(private combat: Combat, private enemyHeight: (kind: EnemyKind) => number = kind => ENEMY_PIXEL_HEIGHTS[kind]) {
     this.group.name = 'SpecialEnemyEffects';
     this.treasureTracker = new TreasureTrackerView(combat,enemyHeight);
@@ -42,6 +43,7 @@ export class SpecialEnemyView {
     }
     for (let i=0;i<TREASURE_RUNNER.rewardCapacity;i++) {
       const popup = new THREE.Sprite(reward); popup.visible = false; popup.scale.set(3.6,.9,1); this.group.add(popup); this.rewards.push(popup);
+
     }
     this.coins = new THREE.InstancedMesh(own(new THREE.CylinderGeometry(1,1,.25,10)),basic('#ffd365'),TREASURE_RUNNER.rewardCapacity*8);
     for (const mesh of [this.coins]) { mesh.count = 0; mesh.frustumCulled = false; mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage); this.group.add(mesh); }

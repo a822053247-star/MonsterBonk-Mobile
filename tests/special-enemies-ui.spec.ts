@@ -30,7 +30,7 @@ test('new enemy art, spore warning/burst and visible treasure rewards render on 
   </script></body></html>`}));
   await page.goto('/special-enemies-harness?world=fixed'); await page.waitForFunction(()=>'game' in window);
   await page.locator('#start-fusion').click(); await page.evaluate(()=>(window as any).game.sleep());
-  await expect.poll(()=>page.evaluate(()=>(window as any).game.combatView.inspect().batches.filter((b:any)=>b.loaded).length)).toBe(6);
+  await expect.poll(()=>page.evaluate(()=>(window as any).game.combatView.inspect().batches.filter((b:any)=>b.loaded).length)).toBe(18);
   await expect.poll(()=>page.evaluate(()=>{const v=(window as any).game.combatView.specialEnemies.inspectSpore();return v.warning.loaded&&v.fire.loaded&&v.smoke.loaded})).toBe(true);
   for(const width of [1280,568]) {
     await page.setViewportSize({width,height:width===1280?720:320});

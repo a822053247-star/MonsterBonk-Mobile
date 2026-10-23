@@ -1,3 +1,4 @@
+import { synthesizeTreasureCue, type TreasureCue } from './treasure-presentation';
 import { SKILL_SOUNDS, SKILL_SOUND_PRIORITY, SOUND_RULES, synthesizeSound, isCombinationImpact, type Sound } from './sound-design';
 type MusicTrack = 'original' | 'grassland' | 'boss';
 const MUSIC_FILES = { grassland: 'bgm-grassland.ogg', boss: 'BossBattle.ogg' } as const;
@@ -23,9 +24,13 @@ export class GameAudio {
   private harvestTier = 0;
   private harvestNextPulse = 0;
   private running = false;
+  private playbackRevision = 0;
   private disposed = false;
   private unavailable = false;
   private played = 0;
+  private treasureBuffers = new Map<string, AudioBuffer>();
+  private treasurePlayed = 0;
+  private treasureVoices = new Set<AudioBufferSourceNode>();
   private lastSound = new Map<Sound, number>();
   private lastSkill = -Infinity;
   private quietUntil = 0;
@@ -119,6 +124,7 @@ export class GameAudio {
     this.startLoop(buffer, track);
   }
   setActive(active: boolean) {
+    this.playbackRevision++;
     this.running = active;
     this.updateGain();
     if (active && (this.music || this.sound) && this.context) void this.context.resume().catch(() => {});
@@ -170,7 +176,7 @@ export class GameAudio {
     const background = kind === 'cast' || kind === 'hit' || kind === 'collect';
     const important = isCombinationImpact(kind) || kind === 'nova' || kind === 'harvest' || kind === 'harvest-big' || kind === 'harvest-epic';
     const limit = background ? 4 : important || kind === 'hurt' || kind === 'level' ? 8 : 6;
-    if (!ctx || ctx.state !== 'running' || !this.running || !this.sound) return false;
+    if (!ctx || ctx.state !== 'running' || (!this.running && kind !== 'death') || !this.sound) return false;
     if (background && ctx.currentTime < this.quietUntil) return false;
     if (ctx.currentTime - (this.lastSound.get(kind) ?? -Infinity) < SOUND_RULES[kind].interval) return false;
     if (this.voices.size >= limit) {
@@ -186,12 +192,13 @@ export class GameAudio {
       buffer.copyToChannel(samples, 0);
       this.buffers.set(kind, buffer);
     }
+    const revision = this.playbackRevision;
     const source = ctx.createBufferSource(); source.buffer = buffer; source.connect(this.effectsGain!);
     const count = this.playedSounds.get(kind) ?? 0;
     if (kind === 'cast' || kind === 'hit') source.playbackRate.value = [.97, 1.02, 1, .99][count % 4];
     this.playedSounds.set(kind, count + 1);
     this.voices.add(source); this.voiceKinds.set(source, kind);
-    source.onended = () => { this.voices.delete(source); this.voiceKinds.delete(source); source.disconnect(); }; source.start(); this.played++;
+    source.onended = () => { this.voices.delete(source); this.voiceKinds.delete(source); source.disconnect(); if(kind==='death'&&!this.running&&revision===this.playbackRevision)void ctx.suspend().catch(()=>{}); }; source.start(); this.played++;
     if (kind === 'nova' || kind === 'collapse-impact' || kind === 'tide-finish' || kind === 'harvest-big' || kind === 'harvest-epic') {
       this.quietUntil = Math.max(this.quietUntil, ctx.currentTime + .12);
       if (this.music && this.musicGain) {
@@ -202,8 +209,28 @@ export class GameAudio {
     }
     return true;
   }
-  inspect() { return { music: this.music, sound: this.sound, active: this.running, state: this.unavailable ? 'unavailable' : this.context?.state ?? 'locked', supported: !!(window.AudioContext || (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext), voices: this.voices.size, played: this.played,
+  stopTreasure(){for(const voice of this.treasureVoices){voice.stop();voice.disconnect();this.voices.delete(voice);}this.treasureVoices.clear();}
+  /** Let the terminal cue finish after battle/music stop; later lifecycle changes cancel it. */
+  playDeath() {
+    this.setActive(false);
+    const ctx=this.context,revision=this.playbackRevision;
+    if(!ctx||!this.sound||this.disposed)return;
+    void ctx.resume().then(()=>{
+      if(this.disposed||revision!==this.playbackRevision||this.running||!this.sound)return;
+      this.lastSound.delete('death');this.play('death');
+    }).catch(()=>{});
+  }
+  playTreasure(cue: TreasureCue, count: number, index = 0) {
+    const ctx=this.context;
+    if(!ctx||ctx.state!=='running'||!this.running||!this.sound||this.voices.size>=8)return false;
+    const key=`${cue}:${count}:${cue==='reveal'?index:0}`;
+    let buffer=this.treasureBuffers.get(key);
+    if(!buffer){const samples=synthesizeTreasureCue(cue,count,index,ctx.sampleRate);buffer=ctx.createBuffer(1,samples.length,ctx.sampleRate);buffer.copyToChannel(samples,0);this.treasureBuffers.set(key,buffer);}
+    const source=ctx.createBufferSource();source.buffer=buffer;source.connect(this.effectsGain!);this.voices.add(source);this.treasureVoices.add(source);
+    source.onended=()=>{this.voices.delete(source);this.treasureVoices.delete(source);source.disconnect();};source.start();this.treasurePlayed++;return true;
+  }
+  inspect() { return { treasurePlayed:this.treasurePlayed, music: this.music, sound: this.sound, active: this.running, state: this.unavailable ? 'unavailable' : this.context?.state ?? 'locked', supported: !!(window.AudioContext || (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext), voices: this.voices.size, played: this.played,
     track: this.track, playingTrack: this.playingTrack ?? null, looping: this.loop?.loop ?? false, musicStarts: this.musicStarts,
     loadedTracks: [...this.musicBuffers.keys()], failedTracks: [...this.failedTracks], playedSounds: Object.fromEntries(this.playedSounds) }; }
-  dispose() { this.disposed = true; this.requests.abort(); this.setActive(false); this.loop?.stop(); this.loop?.disconnect(); this.buffers.clear(); this.musicBuffers.clear(); this.originalLoop = undefined; if (this.context) void this.context.close().catch(() => {}); }
+  dispose() { this.disposed = true; this.stopTreasure();this.requests.abort(); this.setActive(false); this.loop?.stop(); this.loop?.disconnect(); this.buffers.clear();this.treasureBuffers.clear(); this.musicBuffers.clear(); this.originalLoop = undefined; if (this.context) void this.context.close().catch(() => {}); }
 }

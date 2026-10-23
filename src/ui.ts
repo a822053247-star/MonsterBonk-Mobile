@@ -55,7 +55,7 @@ export function createUI(root: HTMLElement) {
         <div class="menu-actions menu-utilities"><button id="choose-creature" class="secondary creature-select-entry" aria-label="选择出战幻兽">选择幻兽</button><button id="help" class="secondary" aria-label="操作指南">${icon('help')}<span>操作指南</span></button><button id="menu-settings" class="secondary settings-entry" aria-label="画质与声音设置">${icon('settings')}</button></div>
         
       </div>
-      <footer class="menu-footer" aria-label="旧版模式入口"><button id="open-legacy" class="trial-entry practice-entry" aria-haspopup="dialog">旧版模式</button></footer>
+      <footer class="menu-footer" aria-label="测试与旧版模式入口"><button id="start-enemy-test" class="trial-entry practice-entry">敌人测试</button><button id="open-legacy" class="trial-entry practice-entry" aria-haspopup="dialog">旧版模式</button></footer>
     </section>
     <section id="legacy-picker" class="modal-screen" role="dialog" aria-modal="true" aria-labelledby="legacy-title" hidden><div class="modal legacy-card"><button id="close-legacy" class="icon-button close-button" aria-label="关闭旧版玩法">${icon('close')}</button><h2 id="legacy-title">旧版模式</h2><div class="legacy-options"><button id="start" class="secondary">${icon('leaf')} 单兽冒险</button><button id="start-trial" class="secondary">${icon('dash')} 犄角试炼</button><button id="start-challenge" class="secondary">${icon('battle')} 三波闯关</button></div></div></section>
     <section id="creature-picker" class="modal-screen" role="dialog" aria-modal="true" aria-labelledby="creature-picker-title" hidden>
@@ -356,7 +356,7 @@ export function renderHudWeaponIcons(combat: Combat) {
   const key = ids.join(',')+pairs.map(a=>a.pairId).join(',') + [...water, ...position, ...ice, ...waterEvolutions].map(id => id + combat.progression.ranks[id]).join(',') + ':echo' + echoRank;
   if (root.dataset.weapons === key) return;
   root.dataset.weapons = key;
-  root.innerHTML = ids.map(id => `<span class="hud-weapon-icon" title="${ATTACKS[id].title}">${icon(id === 'bubble' || id === 'tidal-blade' || id === 'frost-crystal' ? 'wave' : id === 'flame-sweep' ? 'battle' : id === 'thunder-bud' ? 'spark' : 'leaf')}<img data-upgrade-art="hud-weapon" src="${uiArtUrl(`upgrade/illustrations/skills/${id}-weapon.png`)}" alt="${ATTACKS[id].title}" draggable="false"/></span>`).join('');
+  root.innerHTML = ids.map(id => `<span class="hud-weapon-icon" title="${ATTACKS[id].title}">${icon(id === 'bubble' || id === 'tidal-blade' || id === 'frost-crystal' ? 'wave' : id === 'flame-sweep' ? 'battle' : id === 'thunder-bud' ? 'spark' : 'leaf')}<img data-upgrade-art="hud-weapon" src="${uiArtUrl(`upgrade/illustrations/skills/${id}-weapon.${id === 'frost-crystal' ? 'svg' : 'png'}`)}" alt="${ATTACKS[id].title}" draggable="false"/></span>`).join('');
   root.innerHTML+=pairs.map(a=>`<span class="hud-weapon-icon" title="${combat.runBuild.title(a)} ${a.level}级；来源：${a.sources!.map(id=>ATTACKS[id].title).join('+')}"><img data-upgrade-art="hud-weapon" src="${import.meta.env.BASE_URL}${pairIcon(a.pairId!)}" alt="${combat.runBuild.title(a)}"/></span>`).join('');
   root.innerHTML += ice.map(id => `<span class="hud-weapon-icon" title="${ICE_SKILL_NAMES[id]} ${combat.progression.ranks[id]}级"><img data-upgrade-art="hud-weapon" src="${uiArtUrl(`upgrade/illustrations/skills/${id}.png`)}" alt="${ICE_SKILL_NAMES[id]}"/></span>`).join('');
   if (echoRank > 0) root.innerHTML += `<span class="hud-weapon-icon" title="绯樱回响 ${echoRank}级"><img data-upgrade-art="hud-weapon" src="${uiArtUrl('upgrade/illustrations/skills/sakura-echo.png')}" alt="绯樱回响"/></span>`;

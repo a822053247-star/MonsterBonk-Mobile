@@ -1,3 +1,5 @@
+import { MOONDEW_SHELL } from './special-enemies';
+import { rangedEnemyRule } from './ranged-enemies';
 import type { Combat, EnemyKind } from './combat';
 import { RunShop } from './shop';
 import { CRYSTAL_SWARM, SPORE_BOMBER, TREASURE_RUNNER } from './special-enemies';
@@ -224,7 +226,7 @@ export class RunFlow {
     const mix = this.mixedCaps(combat, stage, cap);
     if (this.escorts.length) {
       const kind = this.escorts.shift()!;
-      const limit = kind === 'fast' ? mix.fastCap : kind === 'tank' ? mix.tankCap : mix.sporeAllowed ? mix.sporeCap : 0;
+      const limit = kind==='sand-shell' ? 2 : kind==='frost-fluff' ? 1 : kind==='nightshade-bat' ? 3 : kind==='molten-fruit' ? 2 : kind==='moondew-shell' ? MOONDEW_SHELL.maxAlive : rangedEnemyRule(kind) ? rangedEnemyRule(kind)!.cap : kind === 'fast' ? mix.fastCap : kind === 'tank' ? mix.tankCap : mix.sporeAllowed ? mix.sporeCap : 0;
       const occupied = combat.enemies.filter(e => e.active && !e.rank && e.kind === kind).length;
       // Two adjacent approach lanes leave the opposite side available for escape.
       const heading = this.escortHeading + (this.escortIndex++ % 2 ? .7 : -.7);

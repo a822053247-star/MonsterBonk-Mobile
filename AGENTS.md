@@ -25,7 +25,7 @@
 | 新遗物 | `src/content/relic-registry.ts`、一个同机制的 `src/content/relics/` 定义 | `src/content/content-types.ts`、`src/content/relic-effects.ts`；工厂说明见 `docs/relic-content-factory-v1.md` |
 | 融合 | `src/weapon-pair-fusion.ts`、`src/run-build.ts`；技能触发融合另见 `src/fusion.ts` | `src/relics.ts`、`src/content/weapon-traits.ts`、`src/combat.ts` |
 | 波次/出怪 | `src/wave-director.ts`、`src/enemy-challenge.ts`、`src/combat.ts` 的生成路径 | `src/run-flow.ts`、`src/spawn-layout.ts`；Boss 共用攻击循环；无尽跨轮成长另见 `src/balance.ts` |
-| 特效 | `src/visuals/vfx-presets.ts`、`src/visuals/vfx-resolver.ts` | 对应 `*-view.ts`、`src/quality.ts` |
+| 特效 | `src/visuals/vfx-presets.ts`、`src/visuals/vfx-resolver.ts` | 对应 `*-view.ts`、`src/quality.ts`；携宝兽宝箱见 `src/treasure-canvas.ts`、`src/treasure-presentation.ts`、`src/treasure-dialog.ts`、`src/special-enemy-view.ts` |
 | 无限地图/地形卡顿 | `src/world.ts`、`src/infinite-world.ts`；接入指南「无限地图地形生成」 | `src/infinite-terrain.ts`、`src/infinite-terrain-baker.ts`、`src/infinite-terrain.worker.ts` |
 | 战斗碰撞/敌人拥挤卡顿 | `src/spatial-index.ts`、`src/combat.ts`、`src/navigation.ts`；接入指南「战斗空间索引」 | 地图障碍物变更通过 `World.revision` 使索引和导航缓存失效 |
 | Boss 技能预览 | `src/boss-skills-preview.ts`、`boss-skills-preview.html` | 复用 `src/enemy-challenge.ts`、`src/combat-view.ts`；动画素材预览另见 `src/crownthorn-preview.ts` |

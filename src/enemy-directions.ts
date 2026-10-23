@@ -2,6 +2,18 @@ import { screenFacing, type Facing8, type ScreenBasis } from './creature-animati
 
 export const ENEMY_DIRECTION_LAYOUT = { columns: 5, cell: 256, bodyHeight: 200, footY: 240 } as const;
 export const ENEMY_DIRECTION_ASSETS = {
+  'enemy-abyss-lantern': 'enemies/direction/abyss-lantern/runtime.normalized.png',
+  'enemy-mirror-wisp': 'enemies/direction/mirror-wisp/runtime.normalized.png',
+  'enemy-sand-shell': 'enemies/direction/sand-shell/runtime.normalized.png',
+  'enemy-toxic-shroom': 'enemies/direction/toxic-shroom/runtime.normalized.png',
+  'enemy-thunder-bell': 'enemies/direction/thunder-bell/runtime.normalized.png',
+  'enemy-frost-fluff': 'enemies/direction/frost-fluff/runtime.normalized.png',
+  'enemy-nightshade-bat': 'enemies/direction/nightshade-bat/runtime.normalized.png',
+  'enemy-molten-fruit': 'enemies/direction/molten-fruit/runtime.normalized.png',
+  'enemy-moondew-shell': 'enemies/direction/moondew-shell/runtime.normalized.png',
+  'enemy-scarlet-flower': 'enemies/direction/scarlet-flower/runtime.normalized.png',
+  'enemy-crystal-crawler': 'enemies/direction/crystal-crawler/runtime.normalized.png',
+  'enemy-spore-floater': 'enemies/direction/spore-floater/runtime.normalized.png',
   'enemy-normal': 'enemies/direction/grass-monster-directions/runtime.normalized.png',
   'enemy-fast': 'enemies/direction/runner-bug-directions/runtime.normalized.png',
   'enemy-tank': 'enemies/direction/rock-armor-bug-directions/runtime.normalized.png',

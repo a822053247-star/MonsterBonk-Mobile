@@ -128,6 +128,8 @@ export class Input {
   }
 
   setEnabled(enabled: boolean) {
+    // Repeated frame-level synchronization must preserve held keys and pointer capture.
+    if (this.enabled === enabled) return;
     this.enabled = enabled;
     this.reset();
   }

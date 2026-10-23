@@ -1,0 +1,56 @@
+{
+  "url": "http://localhost:5173/",
+  "browser": "Chromium headless, SwiftShader",
+  "viewport": "1280x720",
+  "samples": [
+    {
+      "label": "cold-1",
+      "menuMs": 1427,
+      "prepareMs": 942,
+      "openToReadyMs": 2433,
+      "assetRequests": 59
+    },
+    {
+      "label": "cold-2",
+      "menuMs": 500,
+      "prepareMs": 812,
+      "openToReadyMs": 1954,
+      "assetRequests": 58
+    },
+    {
+      "label": "cold-3",
+      "menuMs": 889,
+      "prepareMs": 825,
+      "openToReadyMs": 2057,
+      "assetRequests": 59
+    },
+    {
+      "label": "cache-seed",
+      "menuMs": 543,
+      "prepareMs": 801,
+      "openToReadyMs": 1957,
+      "assetRequests": 59
+    },
+    {
+      "label": "warm-1",
+      "menuMs": 1076,
+      "prepareMs": 826,
+      "openToReadyMs": 1964,
+      "assetRequests": 59
+    },
+    {
+      "label": "warm-2",
+      "menuMs": 957,
+      "prepareMs": 801,
+      "openToReadyMs": 1810,
+      "assetRequests": 59
+    },
+    {
+      "label": "warm-3",
+      "menuMs": 944,
+      "prepareMs": 785,
+      "openToReadyMs": 1779,
+      "assetRequests": 59
+    }
+  ]
+}

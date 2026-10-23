@@ -2,11 +2,13 @@ import * as THREE from 'three';
 import type { Combat } from './combat';
 import { WaterAtlas } from './water-aoe-view';
 
-/** UV selection from the supplied 1254px crystal cluster; source PNG stays unchanged. */
+/** Original crystal cluster is retained for impact/thaw fragments. */
 const CRYSTAL_RECT = { x: 337, y: 280, width: 132, height: 260, sheet: 1254 } as const;
+const BOLT_RECT = { x: 158, y: 212, width: 1314, height: 573, sheetWidth: 1619, sheetHeight: 971,
+  anchorX: 1110, anchorY: 530 } as const;
 export class FrostView {
   readonly group = new THREE.Group();
-  readonly crystals = new WaterAtlas('crystal', 1, 1, 'frost', 24, false);
+  readonly crystals = new WaterAtlas('crystal-bolt', 1, 1, 'frost', 24, false, true);
   readonly shells = new WaterAtlas('freeze-shell', 1, 1, 'frost', 256, false);
   private shards = new WaterAtlas('crystal', 1, 1, 'frost', 240, false);
   readonly rings = new WaterAtlas('shatter-ring', 3, 2, 'frost', 2, false);
@@ -39,7 +41,15 @@ export class FrostView {
         'diffuseColor.a = min(1.0, diffuseColor.a * 2.0);\n#include <alphatest_fragment>');
     };
     trailMaterial.customProgramCacheKey = () => 'glacier-trail-readable-alpha-v1';
-    for (const atlas of [this.crystals, this.shards]) {
+    const boltUv = this.crystals.mesh.geometry.getAttribute('uv');
+    for (let i = 0; i < boltUv.count; i++) boltUv.setXY(i,
+      (BOLT_RECT.x + boltUv.getX(i) * BOLT_RECT.width) / BOLT_RECT.sheetWidth,
+      1 - (BOLT_RECT.y + BOLT_RECT.height - boltUv.getY(i) * BOLT_RECT.height) / BOLT_RECT.sheetHeight);
+    boltUv.needsUpdate = true;
+    // The collision point follows the solid ice body; the painted trail stays behind it.
+    this.crystals.mesh.geometry.translate(.5 - (BOLT_RECT.anchorX - BOLT_RECT.x) / BOLT_RECT.width,
+      (BOLT_RECT.anchorY - BOLT_RECT.y) / BOLT_RECT.height - .5, 0);
+    for (const atlas of [this.shards]) {
       const uv = atlas.mesh.geometry.getAttribute('uv');
       for (let i = 0; i < uv.count; i++) uv.setXY(i, (CRYSTAL_RECT.x + uv.getX(i) * CRYSTAL_RECT.width) / CRYSTAL_RECT.sheet,
         1 - (CRYSTAL_RECT.y + CRYSTAL_RECT.height - uv.getY(i) * CRYSTAL_RECT.height) / CRYSTAL_RECT.sheet);
@@ -65,7 +75,8 @@ export class FrostView {
       if (!shot.active || shot.attackId !== 'frost-crystal' || shot.vfxPresetId) continue;
       const x = THREE.MathUtils.lerp(shot.previousX, shot.x, alpha), z = THREE.MathUtils.lerp(shot.previousZ, shot.z, alpha);
       const scale=combat.projectileRadius(shot)/.2;
-      this.crystals.putRect(0, x, z, .82*scale, 1.5*scale, .98, Math.atan2(shot.vx, shot.vz) + Math.PI, .3);
+      this.crystals.putRect(0, x, z, 2.15 * scale, 2.15 * BOLT_RECT.height / BOLT_RECT.width * scale,
+        .98, -Math.atan2(shot.vz, shot.vx), .3);
     }
     for (const enemy of combat.enemies) {
       if (!enemy.active || enemy.spawnTime > 0 || !(enemy.freezeTime! > 0)) continue;
@@ -86,6 +97,6 @@ export class FrostView {
     for (const atlas of this.atlases) atlas.finish();
   }
   clear() { for (const atlas of this.atlases) atlas.begin(); }
-  inspect() { return { plane: 'xz', crystalRect: CRYSTAL_RECT, atlases: this.atlases.map(a => ({ name: a.mesh.name, ...a.inspect() })) }; }
+  inspect() { return { plane: 'xz', crystalRect: CRYSTAL_RECT, projectileRect: BOLT_RECT, atlases: this.atlases.map(a => ({ name: a.mesh.name, ...a.inspect() })) }; }
   dispose() { this.clear(); this.group.removeFromParent(); for (const atlas of this.atlases) atlas.dispose(); }
 }

@@ -13,7 +13,7 @@ export class WaterAtlas {
   loaded = false;
   failed = false;
   private disposed = false;
-  constructor(name: string, columns: number, rows: number, root = 'water-aoe', capacity = CAPACITY, circular = true) {
+  constructor(name: string, columns: number, rows: number, root = 'water-aoe', capacity = CAPACITY, circular = true, smooth = false) {
     this.frames = new THREE.InstancedBufferAttribute(new Float32Array(capacity), 1);
     const geometry = new THREE.PlaneGeometry(1, 1);
     geometry.setAttribute('waterFrame', this.frames); this.frames.setUsage(THREE.DynamicDrawUsage);
@@ -39,7 +39,7 @@ export class WaterAtlas {
     this.mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
     this.texture = new THREE.TextureLoader().load(`${import.meta.env.BASE_URL}assets/${root}/${name}.png`, texture => {
       if (this.disposed) { texture.dispose(); return; }
-      texture.colorSpace = THREE.SRGBColorSpace; texture.minFilter = texture.magFilter = THREE.NearestFilter;
+      texture.colorSpace = THREE.SRGBColorSpace; texture.minFilter = texture.magFilter = smooth ? THREE.LinearFilter : THREE.NearestFilter;
       texture.generateMipmaps = false; material.map = texture; material.needsUpdate = true; this.loaded = true;
     }, undefined, () => { if (!this.disposed) this.failed = true; });
   }

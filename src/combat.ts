@@ -1,3 +1,6 @@
+import { MOONDEW_SHELL } from './special-enemies';
+import { rangedEnemyRule } from './ranged-enemies';
+import { factoryRelic } from './content/relic-registry';
 import { ARENA_HALF_EXTENT, clampToRectangularBoundary, isInsideRectangularBoundary } from './arena-boundary';
 import { AreaAttacks, AREA_RULES, BARRAGE_RULES } from './area-attacks';
 import { WaterAoe } from './water-aoe';
@@ -23,8 +26,8 @@ import type { BaseAttackId } from './fusion';
 import { ENEMY_MOTION } from './enemy-motion';
 import { GRASS_BLOB, stepGrassRoll } from './grass-blob';
 import { PLAYER_FEEDBACK } from './player-feedback';
-import { CRYSTAL_SWARM, SPORE_BOMBER, TREASURE_RUNNER, type SporeExplosion, type TreasureReward } from './special-enemies';
-import { Progression, SKILL_RULES, type SkillId } from './progression';
+import { CRYSTAL_SWARM, SPORE_BOMBER, TREASURE_RUNNER, treasureHealthMultiplier, treasureItemCount, type SporeExplosion, type TreasureReward } from './special-enemies';
+import { Progression, SKILL_RULES, WEAPON_CARDS, type SkillId } from './progression';
 import { HORN, POUNCE, type DashStep, type EnemyIntent, type Ruleset } from './trial';
 import { CREATURES, type PartySystem, type SpeciesId } from './party';
 import { ENDLESS_SCALING } from './wave-director';
@@ -34,8 +37,20 @@ import { BURST_SEED, resolveFusions, DEEP_BUBBLE, CHAIN_BUBBLE, THORN_SCATTER, J
 
 /** Combat owns no DOM/GPU state. Every clock and movement is measured in seconds. */
 export const COMBAT_LIMITS = { enemies: 256, projectiles: 24, orbs: 96, effects: 48, shockwaves: 2 } as const;
-export type EnemyKind = 'normal' | 'fast' | 'tank' | 'draft-crystal-swarm' | 'draft-spore-bomber' | 'draft-treasure-runner';
+export type EnemyKind = 'abyss-lantern' | 'mirror-wisp' | 'sand-shell' | 'toxic-shroom' | 'thunder-bell' | 'frost-fluff' | 'nightshade-bat' | 'molten-fruit' | 'moondew-shell' | 'scarlet-flower' | 'crystal-crawler' | 'spore-floater' | 'normal' | 'fast' | 'tank' | 'draft-crystal-swarm' | 'draft-spore-bomber' | 'draft-treasure-runner';
 export const ENEMY_TYPES = {
+  'abyss-lantern': { name: '深海灯灵', hp: 65, speed: 1, radius: .52, damage: 6, xp: 5, color: '#49cfe2' },
+  'mirror-wisp': { name: '镜晶灵', hp: 90, speed: 1.05, radius: .5, damage: 6, xp: 5, color: '#d2e6ef' },
+  'sand-shell': { name: '沙甲团兽', hp: 160, speed: .7, radius: .8, damage: 12, xp: 7, color: '#bd925c' },
+  'toxic-shroom': { name: '毒菇幽灵', hp: 55, speed: 1, radius: .55, damage: 6, xp: 4, color: '#bd74ed' },
+  'thunder-bell': { name: '雷铃兽', hp: 60, speed: 1.15, radius: .5, damage: 6, xp: 4, color: '#ffd34e' },
+  'frost-fluff': { name: '霜绒兽', hp: 150, speed: .85, radius: .75, damage: 14, xp: 7, color: '#d6efff' },
+  'nightshade-bat': { name: '夜影蝠', hp: 36, speed: 2.1, radius: .42, damage: 6, xp: 3, color: '#594061' },
+  'molten-fruit': { name: '熔果冲撞兽', hp: 80, speed: 1.8, radius: .65, damage: 12, xp: 5, color: '#ff8144' },
+  'moondew-shell': { name: '月露软壳兽', hp: 100, speed: .6, radius: .65, damage: 0, xp: 6, color: '#b3e8e2' },
+  'scarlet-flower': { name: '绯花漂游术士', hp: 70, speed: .95, radius: .55, damage: 6, xp: 5, color: '#ff76b5' },
+  'crystal-crawler': { name: '晶甲重炮', hp: 180, speed: .65, radius: .8, damage: 12, xp: 8, color: '#70cfff' },
+  'spore-floater': { name: '孢子浮囊射手', hp: 48, speed: 1.1, radius: .55, damage: 6, xp: 4, color: '#add85a' },
   normal: { name: '赤团', hp: 30, speed: 1.25, radius: 0.55, damage: 8, xp: 3, color: '#e59472' },
   fast: { name: '疾芽', hp: 18, speed: 2.7, radius: 0.4, damage: 6, xp: 2, color: '#edd779' },
   tank: { name: '岩甲', hp: 100, speed: 0.75, radius: 0.85, damage: 16, xp: 8, color: '#a58b6e' },
@@ -55,6 +70,8 @@ export const RED_BLOB_BASH = GRASS_BLOB;
 /** Five enemy silhouettes share normal group slots; spores remain live-capped. */
 export const FORMAL_MIX: readonly EnemyKind[] = ['normal','fast','draft-crystal-swarm','tank','draft-crystal-swarm','normal','fast','draft-crystal-swarm','tank','draft-crystal-swarm','normal','draft-spore-bomber'] as const;
 export const FORMAL_POUNCE = { ...POUNCE, range: 6, windup: .85, speed: 13, duration: .5, recovery: 1.1, cooldown: 2 } as const;
+export const MOLTEN_POUNCE = { ...FORMAL_POUNCE, windup: .75, speed: 10, duration: .6, recovery: 1.2, cooldown: 2.4, maxAlive: 2 } as const;
+export const FROST_GLIDE = { ...FORMAL_POUNCE, range: 4.8, windup: 1, speed: 7, duration: .5, recovery: 1.4, cooldown: 3.2, maxAlive: 1 } as const;
 export const SWARM_RULES = { health: [12, 14, 16, 18, 20, 22], minDistance: 7.5, maxDistance: 14, halfAngle: .42, laneAngle: .78, xp: 1, killsPerXp: 3, killsPerCoin: 9, contactDamage: 3 } as const;
 type Point = { x: number; z: number };
 type Obstacle = Point & { radius: number };
@@ -231,7 +248,7 @@ export class Combat {
   /** Passive diagnostic counters; never influence combat decisions or the RNG. */
   readonly balanceTelemetry = { damageEvents: 0, projectileBlockedAttempts: 0, sporeChainKills: 0, derivedDenied: 0, queuePeak: 0 };
   readonly sporeExplosions: SporeExplosion[] = Array.from({ length: SPORE_BOMBER.capacity }, () => ({ active: false, x: 0, z: 0, createdAt: 0, age: 0, detonated: false, sourceEnemyId: 0, origin: 'player' }));
-  readonly treasureRewards: TreasureReward[] = Array.from({ length: TREASURE_RUNNER.rewardCapacity }, () => ({ active: false, x: 0, z: 0, age: 0, coins: 0 }));
+  readonly treasureRewards: TreasureReward[] = Array.from({ length: TREASURE_RUNNER.rewardCapacity }, () => ({ active: false, x: 0, z: 0, age: 0, coins: 0, items: [] }));
   private fleeGoal = { x: 0, z: 0 };
   private grassMotion = { x: 0, z: 0 };
   readonly runBuild = new RunBuild();
@@ -492,7 +509,7 @@ export class Combat {
     enemy.burnTime = enemy.burnClock = enemy.burnDamage = enemy.burnStacks = 0; enemy.burnSource = undefined;
     if (this.encounters.enabled) enemy.hp = enemy.maxHp =
       (kind==='fast'?40:kind==='tank'?FORMAL_ROCK_HP:kind==='draft-spore-bomber'?FORMAL_SPORE_HP:ENEMY_TYPES[kind].hp)
-      *(ENCOUNTER_RULES.waveHealth[this.encounters.wave-1]??1)*(kind==='draft-crystal-swarm'?Math.min(2.5,this.endlessEnemyHealthMultiplier):this.endlessEnemyHealthMultiplier);
+      *(kind==='draft-treasure-runner'?treasureHealthMultiplier(this.encounters.wave):1)*(ENCOUNTER_RULES.waveHealth[this.encounters.wave-1]??1)*(kind==='draft-crystal-swarm'?Math.min(2.5,this.endlessEnemyHealthMultiplier):this.endlessEnemyHealthMultiplier);
     this.spawned++;
     if (this.spatialActive) this.enemyIndex.update(this.enemySlots.get(enemy)!);
     return enemy;
@@ -578,6 +595,12 @@ export class Combat {
       const candidate: EnemyKind = mix ? cycle[this.spawned % cycle.length]
         : i === available - 1 ? escort : 'normal';
       const quota = candidate === 'fast' ? mix?.fastCap
+        : candidate === 'sand-shell' ? 2
+        : candidate === 'frost-fluff' ? FROST_GLIDE.maxAlive
+        : candidate === 'nightshade-bat' ? 3
+        : candidate === 'molten-fruit' ? MOLTEN_POUNCE.maxAlive
+        : candidate === 'moondew-shell' ? MOONDEW_SHELL.maxAlive
+        : rangedEnemyRule(candidate) ? rangedEnemyRule(candidate)!.cap
         : candidate === 'tank' ? mix?.tankCap
         : candidate === 'draft-crystal-swarm' ? (mix?.crystalAllowed ? mix.crystalCap : 0)
         : candidate === 'draft-spore-bomber' ? (mix?.sporeAllowed ? mix.sporeCap : 0)
@@ -796,12 +819,28 @@ export class Combat {
       }
       if (enemy.spawnTime > 0) { enemy.spawnTime = Math.max(0, enemy.spawnTime - dt); continue; }
       if (this.frost.tickEnemy(enemy, dt)) continue;
+      if (enemy.kind === 'moondew-shell') {
+        enemy.specialTime = (enemy.specialTime ?? 0) + dt;
+        if (enemy.specialTime >= MOONDEW_SHELL.interval) {
+          enemy.specialTime %= MOONDEW_SHELL.interval;
+          let healed = 0;
+          const r=MOONDEW_SHELL.radius;
+          for (const index of this.enemyBounds(enemy.x-r,enemy.z-r,enemy.x+r,enemy.z+r,this.crowdCandidates)) {
+            const ally=this.enemies[index];
+            if (!ally.active || ally.spawnTime>0 || ally.rank || ally.kind==='moondew-shell' || ally.hp>=this.enemyHealth(ally)
+              || Math.hypot(ally.x-enemy.x,ally.z-enemy.z)>r || this.covered(enemy.x,enemy.z,ally.x,ally.z)) continue;
+            ally.hp=Math.min(this.enemyHealth(ally),ally.hp+this.enemyHealth(ally)*MOONDEW_SHELL.healFraction);
+            this.effect(ally.x,ally.z,'collect',ally.kind);
+            if(++healed>=MOONDEW_SHELL.targets)break;
+          }
+        }
+      }
       const runner = enemy.kind === 'draft-treasure-runner';
       if (runner) {
         enemy.specialTime = (enemy.specialTime ?? 0) + dt;
         if (enemy.specialTime >= TREASURE_RUNNER.lifetime) { enemy.active = false; this.treasureEscapes++; continue; }
       }
-      const type = ENEMY_TYPES[enemy.kind], radius = this.enemyRadius(enemy);
+      const type = ENEMY_TYPES[enemy.kind], radius = this.enemyRadius(enemy), ranged = rangedEnemyRule(enemy.kind);
       const dx = player.x - enemy.x, dz = player.z - enemy.z;
       const length = Math.max(0.001, Math.hypot(dx, dz));
       let steerX = dx / length, steerZ = dz / length;
@@ -850,24 +889,45 @@ export class Combat {
       const desiredX = steerX / steeringLength, desiredZ = steerZ / steeringLength;
       // The ordinary rock troop has weight: it turns in a wide arc rather than
       // snapping toward the player like a red blob. Ranked elite/Boss unchanged.
-      const steeringResponse = this.encounters.enabled && enemy.kind === 'tank' && !enemy.rank
+      const steeringResponse = enemy.kind==='nightshade-bat' ? 3.6 : ranged ? ranged.turn : this.encounters.enabled && (enemy.kind === 'tank' || enemy.kind === 'sand-shell') && !enemy.rank
         ? ROCK_MARCH.turnResponse : 14;
       const smoothing = 1 - Math.exp(-steeringResponse * dt);
       enemy.steerX = (enemy.steerX ?? desiredX) + (desiredX - (enemy.steerX ?? desiredX)) * smoothing;
       enemy.steerZ = (enemy.steerZ ?? desiredZ) + (desiredZ - (enemy.steerZ ?? desiredZ)) * smoothing;
       const smoothLength = Math.max(1, Math.hypot(enemy.steerX, enemy.steerZ));
       let moveX = enemy.steerX / smoothLength * type.speed, moveZ = enemy.steerZ / smoothLength * type.speed;
+      if (ranged) {
+        const retreat = length < ranged.retreat;
+        if (retreat) { moveX = -dx / length * type.speed; moveZ = -dz / length * type.speed; }
+        else if (length < ranged.hold) { moveX *= ranged.drift; moveZ *= ranged.drift; }
+        enemy.intentCooldown = Math.max(0, enemy.intentCooldown - dt);
+        if (enemy.intent === 'windup') {
+          moveX = moveZ = 0;
+          enemy.intentTime = Math.max(0, enemy.intentTime - dt);
+          if (enemy.intentTime <= 1e-8) {
+            const shot = this.encounters.shots.find(s => !s.active);
+            if (shot) Object.assign(shot, { style: ranged.style, active: true, x: enemy.x + enemy.aimX * .7, z: enemy.z + enemy.aimZ * .7, previousX: enemy.x, previousZ: enemy.z, vx: enemy.aimX * ranged.speed, vz: enemy.aimZ * ranged.speed, life: ranged.life });
+            enemy.intent = 'chase'; enemy.intentCooldown = ranged.cooldown;
+          }
+        } else if (!enemy.intentCooldown && length < ranged.range && !this.covered(enemy.x, enemy.z, player.x, player.z)) {
+          enemy.intent = 'windup'; enemy.intentTime = ranged.windup; enemy.aimX = dx / length; enemy.aimZ = dz / length;
+        }
+      }
       if (runner && (enemy.specialTime ?? 0) < TREASURE_RUNNER.linger) moveX = moveZ = 0;
-      if (this.hasAttackIntents && !enemy.rank && !runner) {
+      if (this.hasAttackIntents && !enemy.rank && !runner && !ranged && enemy.kind!=='moondew-shell') {
         enemy.stagger = Math.max(0, enemy.stagger - dt);
         if (enemy.stagger > 0) { moveX = moveZ = 0; }
-        else if (enemy.kind === 'fast') {
-          const rule = this.encounters.enabled ? FORMAL_POUNCE : POUNCE;
+        else if (enemy.kind === 'nightshade-bat') {
+          // Continuous gliding contact attacker: no stop-and-cast or wing beats.
+          enemy.intent='chase'; enemy.intentTime=enemy.intentCooldown=0;
+        }
+        else if (enemy.kind === 'fast' || enemy.kind === 'molten-fruit' || enemy.kind === 'frost-fluff') {
+          const rule = enemy.kind==='frost-fluff' ? FROST_GLIDE : enemy.kind==='molten-fruit' ? MOLTEN_POUNCE : this.encounters.enabled ? FORMAL_POUNCE : POUNCE;
           if (!this.encounters.enabled || enemy.intent !== 'chase' || !this.covered(enemy.x,enemy.z,player.x,player.z)) this.updatePounce(enemy, dt, dx, dz, length, rule);
           if (enemy.intent === 'pounce') { moveX = enemy.aimX * rule.speed; moveZ = enemy.aimZ * rule.speed; }
           else if (this.encounters.enabled && enemy.intent === 'recover') {
             // Disengage after a missed leap; players can punish the recovery.
-            moveX = -dx / length * type.speed * .55; moveZ = -dz / length * type.speed * .55;
+            moveX = enemy.kind==='frost-fluff' ? 0 : -dx / length * type.speed * .55; moveZ = enemy.kind==='frost-fluff' ? 0 : -dz / length * type.speed * .55;
           } else if (enemy.intent !== 'chase') { moveX = moveZ = 0; }
           else if (this.encounters.enabled && length > 2.2 && length < 8 && enemy.intentCooldown > 0) {
             // Alternate flanking sides per enemy; lock-on/charge remains fully telegraphed.
@@ -883,7 +943,7 @@ export class Combat {
             stepGrassRoll(enemy,dt,enemy.steerX,enemy.steerZ,type.speed,this.grassMotion);
             moveX=this.grassMotion.x; moveZ=this.grassMotion.z;
           }
-        } else if (this.encounters.enabled && enemy.kind === 'tank') {
+        } else if (this.encounters.enabled && (enemy.kind === 'tank' || enemy.kind === 'sand-shell')) {
           // No windup/pounce/recover: a heavy, continuously moving body-blocker,
           // distinct from red's stationary circle and sprinter's directional dash.
           enemy.intent = 'chase';
@@ -920,7 +980,7 @@ export class Combat {
       if (!this.infiniteWorld) clampToRectangularBoundary(enemy, this.boundary, radius);
       this.enemyIndex.update(this.enemySlots.get(enemy)!);
       const travelled = Math.hypot(enemy.walkX, enemy.walkZ);
-      if(this.encounters.enabled && enemy.kind==='normal' && !enemy.rank && enemy.intent==='chase')
+      if((this.encounters.enabled && enemy.kind==='normal' && !enemy.rank && enemy.intent==='chase') || (enemy.kind==='molten-fruit' && enemy.intent==='pounce'))
         enemy.grassRollDistance=(enemy.grassRollDistance ?? 0)+travelled;
       const moving = Math.min(1, travelled / Math.max(.001, type.speed * dt));
       enemy.walkAmount = (enemy.walkAmount ?? 0) + (moving - (enemy.walkAmount ?? 0)) * (1 - Math.exp(-12 * dt));
@@ -1097,7 +1157,7 @@ export class Combat {
       this.waterEvolution.update(dt, ranks, this.stats.damageMultiplier);
     }
     if (!this.encounters.dying) this.updateSporeExplosions(player);
-    if (this.encounters.enabled) this.encounters.advanceHazards(dt,this,player,{x:this.previousAnchorX,z:this.previousAnchorZ});
+    if (this.encounters.enabled || this.encounters.shots.some(s => s.active)) this.encounters.advanceHazards(dt,this,player,{x:this.previousAnchorX,z:this.previousAnchorZ});
     // Resolve hits after magic: an enemy killed on this tick cannot bite.
     if (this.invulnerability === 0) {
       let damage = 0;
@@ -1107,7 +1167,7 @@ export class Combat {
         // Body contact is independent of special attack state, with relative
         // sweeps to catch player dashes/crossings between sampled positions.
         if (this.encounters.enabled && enemy.kind !== 'draft-treasure-runner') {
-          const bodyRadius = this.enemyRadius(enemy)+(enemy.kind==='tank' && !enemy.rank ? ROCK_MARCH.contactPadding : PLAYER_FEEDBACK.bodyPadding);
+          const bodyRadius = this.enemyRadius(enemy)+((enemy.kind==='tank' || enemy.kind==='sand-shell') && !enemy.rank ? ROCK_MARCH.contactPadding : PLAYER_FEEDBACK.bodyPadding);
           const contact = segmentHit(enemy.previousX-this.previousAnchorX,enemy.previousZ-this.previousAnchorZ,
             enemy.x-player.x,enemy.z-player.z,0,0,bodyRadius);
           if(contact!==Infinity && !this.covered(enemy.x,enemy.z,player.x,player.z))
@@ -1120,7 +1180,7 @@ export class Combat {
         const pounceHit = this.hasAttackIntents && (enemy.intent === 'pounce' || enemy.rank === 'boss') && segmentHit(enemy.previousX - this.previousAnchorX, enemy.previousZ - this.previousAnchorZ, enemy.x - player.x, enemy.z - player.z, 0, 0, this.enemyRadius(enemy) + 0.62) !== Infinity;
         const radius = this.encounters.enabled && !enemy.rank && enemy.kind === 'normal'
           ? RED_BLOB_BASH.radius
-          : this.encounters.enabled && !enemy.rank && enemy.kind === 'tank'
+          : this.encounters.enabled && !enemy.rank && (enemy.kind === 'tank' || enemy.kind === 'sand-shell')
             ? this.enemyRadius(enemy) + ROCK_MARCH.contactPadding
             : this.enemyRadius(enemy) + 0.62;
         // Red blobs hit inside a stationary warning ring. Rocks require actual
@@ -1536,11 +1596,12 @@ export class Combat {
     }
   }
 
-  private updatePounce(enemy: Enemy, dt: number, dx: number, dz: number, distance: number, rule: typeof POUNCE | typeof FORMAL_POUNCE = POUNCE) {
+  private updatePounce(enemy: Enemy, dt: number, dx: number, dz: number, distance: number, rule: typeof POUNCE | typeof FORMAL_POUNCE | typeof MOLTEN_POUNCE | typeof FROST_GLIDE = POUNCE) {
     enemy.intentCooldown = Math.max(0, enemy.intentCooldown - dt);
     if (enemy.intent === 'chase') {
       if (enemy.intentCooldown === 0 && distance <= rule.range) {
         enemy.intent = 'windup'; enemy.intentTime = rule.windup;
+        if(enemy.kind==='molten-fruit') enemy.grassRollDistance=0;
         if (this.encounters.enabled) {
           const lead=rule.windup+Math.min(rule.duration,distance/rule.speed);
           const point=predictPosition({x:enemy.x+dx,z:enemy.z+dz},this.playerVelocityX,this.playerVelocityZ,this.playerTurnRate,lead);
@@ -1619,7 +1680,7 @@ export class Combat {
       if (enemy.active) {
         enemy.knockX = dash.dx * HORN.knockback; enemy.knockZ = dash.dz * HORN.knockback;
         enemy.stagger = HORN.stagger;
-        if (enemy.kind === 'fast') { enemy.intent = 'recover'; enemy.intentTime = POUNCE.recovery; }
+        if (enemy.kind === 'fast' || enemy.kind === 'molten-fruit' || enemy.kind === 'frost-fluff') { enemy.intent = 'recover'; enemy.intentTime = enemy.kind==='frost-fluff' ? FROST_GLIDE.recovery : enemy.kind==='molten-fruit' ? MOLTEN_POUNCE.recovery : POUNCE.recovery; }
       }
       this.effect(ex, ez, 'hit');
     }
@@ -1874,7 +1935,7 @@ export class Combat {
     if (this.usesRunBuild && origin === 'player' && source) this.frost.hit(enemy, source);
     if (this.usesRunBuild && origin === 'player' && source) this.dream.hit(enemy, damage, source);
     enemy.flash = 0.16;
-    const strength = enemy.rank === 'boss' ? 0 : enemy.kind === 'tank' ? 1.2 : 3;
+    const strength = enemy.rank === 'boss' ? 0 : (enemy.kind === 'tank' || enemy.kind === 'sand-shell') ? 1.2 : 3;
     enemy.knockX = dx * strength;
     enemy.knockZ = dz * strength;
     if (this.encounters.enabled && enemy.kind === 'normal' && !enemy.rank && enemy.intent === 'windup'
@@ -1906,11 +1967,22 @@ export class Combat {
         } else if (enemy.swarm) {
           this.swarmCoinRemainder++;
           if (this.swarmCoinRemainder === SWARM_RULES.killsPerCoin) { this.goldEarned++; this.swarmCoinRemainder = 0; }
-        } else this.goldEarned += treasure ? TREASURE_RUNNER.coins : enemy.rank === 'boss' ? 0 : enemy.rank === 'elite' ? 18 : enemy.kind === 'tank' ? 2 : 1;
+        } else this.goldEarned += treasure ? TREASURE_RUNNER.coins : enemy.rank === 'boss' ? 0 : enemy.rank === 'elite' ? 18 : (enemy.kind === 'tank' || enemy.kind === 'sand-shell') ? 2 : 1;
         if (treasure) {
           this.treasureCaught++;
+          const items: TreasureReward['items'] = [];
+          const used = new Set<SkillId>();
+          const count = treasureItemCount(this.random());
+          for (let i = 0; i < count; i++) {
+            // Re-evaluate after each grant: slots, unique relics and prerequisites can change.
+            const candidates = this.progression.skills.filter(s => s.id !== 'weapon-pair-fusion' && !(this.progression.ranks['specialist-badge'] && WEAPON_CARDS[s.id] && !this.runBuild.has(WEAPON_CARDS[s.id]!)) && !used.has(s.id) && (factoryRelic(s.id)?.rewards.shop ?? true) && this.progression.canGrant(s.id));
+            const skill = candidates[Math.min(candidates.length - 1, Math.floor(this.random() * candidates.length))];
+            if (skill && this.grantUpgrade(skill.id)) {
+              used.add(skill.id); items.push({ title: skill.title, skill: skill.id });
+            } else { this.goldEarned += 12; items.push({ title: '金币补给 +12' }); }
+          }
           const reward = this.treasureRewards.find(e => !e.active) ?? this.treasureRewards.reduce((oldest,e) => e.age > oldest.age ? e : oldest);
-          Object.assign(reward, { active: true, x: enemy.x, z: enemy.z, age: 0, coins: TREASURE_RUNNER.coins });
+          Object.assign(reward, { active: true, x: enemy.x, z: enemy.z, age: 0, coins: TREASURE_RUNNER.coins, items });
         }
       }
       if (enemy.rank === 'boss') this.encounters.killedBoss(this);

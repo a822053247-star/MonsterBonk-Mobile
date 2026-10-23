@@ -1,3 +1,5 @@
+import { EnemyTestMode } from './enemy-test-mode';
+import { TreasureDialog } from './treasure-dialog';
 import {type WeaponPairId} from './weapon-pair-fusion';
 import {renderWeaponPairPicker} from './ui';
 import * as THREE from 'three';
@@ -48,7 +50,7 @@ export class Game {
   private startupPending = false;
   private worldEntered = false;
   private selectedSpecies: SpeciesId = 'yanrong';
-  private prototypeVariant: 'sample' | 'fusion' | 'legacy-party' | 'infinite' = 'sample';
+  private prototypeVariant: 'sample' | 'fusion' | 'legacy-party' | 'infinite' | 'enemy-test' = 'sample';
   private world: World;
   private combat: Combat;
   private combatView: CombatView;
@@ -57,6 +59,7 @@ export class Game {
   private runRuleset: Ruleset = 'classic';
   private challenge?: Challenge;
   private run?: RunFlow;
+  private enemyTest?: EnemyTestMode;
   private outcome: 'victory' | 'defeat' | null = null;
   private trialHornMounted = false;
   private dashAttack: DashStep = { active: false, started: false, fromX: 0, fromZ: 0, dx: 0, dz: 1 };
@@ -99,6 +102,8 @@ export class Game {
   private damageOverlay = document.querySelector<HTMLElement>('#damage-overlay')!;
   private trails: { mesh: THREE.Mesh; remaining: number }[] = [];
 
+  private treasureDialog: TreasureDialog;
+
   constructor() {
     const canvas = document.querySelector<HTMLCanvasElement>('#game-canvas')!;
     this.renderer = new THREE.WebGLRenderer({ canvas, antialias: false, alpha: false, powerPreference: 'high-performance' });
@@ -117,6 +122,7 @@ export class Game {
     this.scene.add(this.world.group, this.monster.root, this.partyView.group);
     this.monster.root.visible = false;
     this.combat = new Combat(this.world.obstacles, ARENA_HALF_EXTENT);
+    this.treasureDialog = new TreasureDialog(this.combat,this.audio,()=>this.mode==='playing'&&!this.portrait&&!this.contextLost);
     this.combatView = new CombatView(this.combat);
     this.scene.add(this.combatView.group);
     const trailGeometry = new THREE.RingGeometry(0.4, 0.5, 12);
@@ -165,6 +171,7 @@ export class Game {
     }, options);
     click('start-infinite', () => this.start('classic', true, true, 'infinite'));
     click('start-fusion', () => this.start('classic', true, true, 'fusion'));
+    click('start-enemy-test', () => this.start('classic', true, true, 'enemy-test'));
     click('choose-creature', () => {
       document.getElementById('menu')!.inert = true;
       for (const image of document.querySelectorAll<HTMLImageElement>('[data-creature-src]')) if (!image.src) image.src = image.dataset.creatureSrc!;
@@ -417,7 +424,7 @@ export class Game {
     this.prototypeVariant = partyPrototype ? variant : 'sample';
     this.applyGraphics();
     // Infinite world and Endless survival are paired here; the formal fusion challenge remains finite.
-    this.combat.fusionEnabled = partyPrototype && (variant === 'fusion' || variant === 'infinite');
+    this.combat.fusionEnabled = partyPrototype && (variant === 'fusion' || variant === 'infinite' || variant === 'enemy-test');
     this.combatView.setFusion(this.combat.fusionEnabled, this.selectedSpecies !== 'yanrong');
     const endless = partyPrototype && variant === 'infinite';
     this.world.setSample(!endless && partyPrototype && new URLSearchParams(window.location.search).get('world') !== 'legacy', newMap);
@@ -447,12 +454,15 @@ export class Game {
     this.jumpHeight = this.previousJump = this.jumpVelocity = 0;
     this.elapsed = this.cooldown = this.dashRemaining = this.distance = 0;
     this.intermissionHudSecond = -1;
+    this.treasureDialog.reset();
     this.combat.reset(ruleset);
     this.world.update(0, 0);
     this.combat.refreshWorld(0, 0, this.world.revision);
-    this.run = this.combat.usesRunBuild ? new RunFlow(Math.random, endless ? 'endless' : 'campaign') : undefined;
+    this.enemyTest = partyPrototype && variant === 'enemy-test' ? new EnemyTestMode() : undefined;
+    this.run = this.combat.usesRunBuild && !this.enemyTest ? new RunFlow(Math.random, endless ? 'endless' : 'campaign') : undefined;
+    if (this.enemyTest) this.combat.encounters.beginWave(1);
     if (this.run && new URLSearchParams(window.location.search).get('meleeDev') === 'flame-sweep') this.combat.grantUpgrade('flame-sweep-weapon');
-    this.combat.automaticSpawning = !this.run;
+    this.combat.automaticSpawning = !this.run && !this.enemyTest;
     this.run?.prepare(this.combat,this.position);
     document.getElementById('shop-screen')!.hidden = true;
     this.party.syncLeader(this.position, this.facing);
@@ -481,7 +491,7 @@ export class Game {
     document.getElementById('gameover-screen')!.hidden = true;
     (document.activeElement as HTMLElement | null)?.blur();
     this.welcome.classList.remove('faded');
-    this.welcome.querySelector('h2')!.textContent = endless ? '无尽挑战，向远方出发。' : this.combat.fusionEnabled && species !== 'yanrong' ? `${CREATURES[species].name}，准备出发。` : this.combat.fusionEnabled ? '一簇火花，生长成烈焰。' : partyPrototype ? '草场已就绪，出发吧。' : this.challenge ? '三波迎战，冲出一条路。' : this.combat.isTrial ? '犄角已就绪，冲出一条路。' : '小小魔法，准备就绪。';
+    this.welcome.querySelector('h2')!.textContent = this.enemyTest ? '敌人测试 · 循环出场' : endless ? '无尽挑战，向远方出发。' : this.combat.fusionEnabled && species !== 'yanrong' ? `${CREATURES[species].name}，准备出发。` : this.combat.fusionEnabled ? '一簇火花，生长成烈焰。' : partyPrototype ? '草场已就绪，出发吧。' : this.challenge ? '三波迎战，冲出一条路。' : this.combat.isTrial ? '犄角已就绪，冲出一条路。' : '小小魔法，准备就绪。';
     this.welcome.querySelector('p')!.textContent = endless ? '六波循环生存 · 第五波旗帜大波与商店 · 第六波 Boss 循环' : this.combat.fusionEnabled && species !== 'yanrong' ? `${CREATURES[species].name}出战 · 摇杆移动 · 自动攻击 · 升级三选一` : this.combat.fusionEnabled ? '六波自动战斗 · 升级形成融合 · 前四波连续迎战，第五波后才可购物' : partyPrototype && variant === 'legacy-party' ? '三兽兼容模式 · 主控移动，伙伴跟随并自动攻击' : partyPrototype ? '摇杆操控焰绒 · 自动攻击 · 沿泥路绕过林地与水岸' : this.challenge ? '击败三波即可通关 · 冲锋命中 6 次、打断 2 次各加一星' : this.combat.isTrial ? '冲刺命中可击退和打断 · 留意黄色扑击预警线' : '移动躲避敌人，焰绒会自动施法 · 靠近拾取经验';
     this.accumulator = 0;
     this.placeCamera(true);
@@ -493,6 +503,9 @@ export class Game {
   private pause(reason: string) {
     if (this.mode !== 'playing') return;
     this.mode = 'paused';
+    this.treasureDialog.suspend();
+    // Loading no longer advances while paused; never let its higher overlay hide Resume.
+    document.getElementById('world-loading')!.hidden = true;
     document.getElementById('area-combo')!.hidden = true;
     this.input.setEnabled(false);
     this.velocity.set(0, 0);
@@ -509,7 +522,10 @@ export class Game {
     if (this.mode !== 'paused' || document.hidden || this.portrait || this.contextLost) return;
     this.audio.setActive(true); this.audio.unlock();
     this.mode = 'playing';
-    this.input.setEnabled(true);
+    const loading = this.sceneLoading;
+    this.input.setEnabled(!loading);
+    if (loading) this.showSceneLoading();
+    this.audio.setActive(!loading);
     document.getElementById('pause-screen')!.hidden = true;
     (document.activeElement as HTMLElement | null)?.blur();
     this.wake();
@@ -521,7 +537,7 @@ export class Game {
     document.getElementById('world-loading')!.hidden = true;
     this.combat.runBuild.clearPairFusions();
     this.audio.setWave();
-    this.run = undefined; this.combat.automaticSpawning = true;
+    this.run = undefined; this.enemyTest = undefined; this.combat.automaticSpawning = true;
     document.getElementById('shop-screen')!.hidden = true;
     this.world.setSample(new URLSearchParams(window.location.search).get('world') !== 'legacy');
     this.combat.infiniteWorld = false;
@@ -586,6 +602,7 @@ export class Game {
 
   private step(dt: number) {
     if (this.mode !== 'playing' || this.sceneLoading) return;
+    if (this.treasureDialog.sync()) return;
     if (this.run?.phase === 'intermission') {
       this.run.updateRest(dt, this.combat);
       this.syncRunPhase();
@@ -595,6 +612,7 @@ export class Game {
     if (this.combat.progression.awaitingChoice && !this.combat.encounters.dying) { this.openUpgrade(); return; }
     if (this.run && this.run.remaining <= 1e-8) { this.run.resolveBoundary(this.combat); if (this.syncRunPhase()) return; }
     this.run?.prepare(this.combat,this.position);
+    this.enemyTest?.step(dt,this.combat,this.position);
     this.previousPosition.copy(this.position);
     this.previousJump = this.jumpHeight;
     if (this.input.consumeJump() && !this.partyPrototype && this.jumpHeight === 0) { this.jumpVelocity = 6; this.audio.play('jump'); }
@@ -679,6 +697,7 @@ export class Game {
     }
     this.combat.attackViewport = this.cameraFootprint();
     this.combat.update(dt, this.position, this.dashAttack);
+    if (this.combat.hp > 0 && this.treasureDialog.sync()) { this.input.reset(); this.input.setEnabled(false); this.accumulator = 0; return; }
     if (this.partyPrototype && this.combat.hp > 0) this.partyView.stepAnimation(dt, (this.position.x - this.previousPosition.x) / dt, (this.position.z - this.previousPosition.z) / dt);
     this.audio.playSkills(this.combat.soundEvents);
     this.audio.playHarvest(this.combat.kills - kills);
@@ -813,6 +832,7 @@ export class Game {
   }
 
   private endRun(outcome: 'victory' | 'defeat' = 'defeat') {
+    if(this.mode==='gameover')return;
     const endlessResult = this.run?.endless ? {
       wave: this.run.wave,
       cycle: this.run.cycle,
@@ -828,7 +848,8 @@ export class Game {
     this.hideUpgrade();
     this.mode = 'gameover';
     this.outcome = outcome;
-    this.audio.setActive(false);
+    if(outcome==='defeat'&&this.combat.hp<=0)this.audio.playDeath();
+    else this.audio.setActive(false);
     this.input.setEnabled(false);
     this.velocity.set(0, 0);
     this.dashRemaining = 0;
@@ -886,10 +907,11 @@ export class Game {
     renderWeaponCooldowns(this.combat);
     renderHudWeaponIcons(this.combat);
     const wave = document.getElementById('run-wave')!, gold = document.getElementById('run-gold')!;
-    wave.hidden = !this.run;
+    wave.hidden = !this.run && !this.enemyTest;
     gold.hidden = true; // Only wave and elapsed time occupy the top center.
     const coins = this.run?.coins ?? this.combat.goldEarned;
     document.getElementById('hud-coins')!.textContent = Math.max(0, coins).toLocaleString('en-US');
+    if (this.enemyTest) wave.textContent = '敌人测试';
     if (this.run) { wave.textContent = this.run.waveLabel; gold.textContent = `金币 ${this.run.coins}`; }
     renderBuildSummary(this.combat.usesRunBuild ? this.combat.runBuild : undefined, this.combat.fusions, this.combat.resonances);
     const fusionStatus = document.getElementById('fusion-status')!;
@@ -1083,6 +1105,8 @@ export class Game {
       this.audio.setActive(true);
       this.renderTime = 0;
     }
+    if (this.mode === 'playing' && this.treasureDialog.sync()) { this.accumulator = 0; this.input.setEnabled(false); this.frameId = requestAnimationFrame(this.frame); return; }
+    if (this.mode === 'playing') this.input.setEnabled(true);
     if (this.mode === 'shop') { this.run?.updateRest(dt); this.frameId = window.requestAnimationFrame(this.frame); return; }
     if (this.quality.sample(rawDt)) this.applyGraphics();
     const speed = this.mode === 'playing' ? this.preferences.gameSpeed : 1;
@@ -1191,6 +1215,7 @@ export class Game {
   }
 
   dispose() {
+    this.treasureDialog.dispose();
     this.disposed = true;
     this.sleep();
     clearTimeout(this.toastTimeout);

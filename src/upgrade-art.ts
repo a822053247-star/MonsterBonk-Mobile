@@ -54,7 +54,7 @@ const LEGACY_UPGRADE_ART = {
   'thorn-wheel-weapon': ['skills/thorn-wheel-weapon.png'],
   'tidal-blade-weapon': ['skills/tidal-blade-weapon.png'],
   'thunder-bud-weapon': ['skills/thunder-bud-weapon.svg'],
-  'frost-crystal-weapon': ['skills/frost-crystal-weapon.png'],
+  'frost-crystal-weapon': ['skills/frost-crystal-weapon.svg'],
   'overload-core': ['relics/overload-core.png'],
   'hunter-eye': ['relics/hunter-eye.png'],
   'shattered-core': ['relics/shattered-core.png'],
@@ -105,6 +105,7 @@ export function bindUpgradeArt(root: HTMLElement, definitions: readonly RelicDef
     image.dataset.artBound = 'true';
     // Dedicated illustrations can be high resolution; generated pixel icons retain nearest sampling.
     if (/\/(?:screen-nova|screen-barrage|azure-burst|star-tide|still-sea|returning-ring|abyss-vortex|ice-radiance|spore-trail|tidal-recall|tsunami-sanctuary|astral-wheel|abyss-crown|undertow-pyre|deep-collapse|frost-prism|all-tides)\.png$/.test(image.src)
+      || /\/frost-crystal-weapon\.svg$/.test(image.src)
       || definitions.some(d => d.art.png && image.src === new URL(relicIcon(d.art, import.meta.env.BASE_URL), document.baseURI).href)) image.style.imageRendering = 'auto';
     const sync = () => {
       const ready = image.complete && image.naturalWidth > 0;

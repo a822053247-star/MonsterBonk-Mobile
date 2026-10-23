@@ -5,7 +5,7 @@ import { ENEMY_DIRECTION_LAYOUT, ENEMY_DIRECTION_FRAMES, enemyFacing } from './e
 import type { Facing8, ScreenBasis } from './creature-animation';
 
 type PixelEnemyKind = EnemyKind;
-export const ENEMY_PIXEL_HEIGHTS = { normal: 1.7, fast: 1.45, tank: 2.3, 'draft-crystal-swarm': 1.3, 'draft-spore-bomber': 2, 'draft-treasure-runner': 2.4 } as const;
+export const ENEMY_PIXEL_HEIGHTS = { 'abyss-lantern': 2, 'mirror-wisp': 1.9, 'sand-shell': 2.05, 'toxic-shroom': 1.85, 'thunder-bell': 1.8, 'frost-fluff': 2.15, 'nightshade-bat': 1.6, 'molten-fruit': 1.9, 'moondew-shell': 1.8, 'scarlet-flower': 2.1, 'crystal-crawler': 2.3, 'spore-floater': 1.85, normal: 1.7, fast: 1.45, tank: 2.3, 'draft-crystal-swarm': 1.3, 'draft-spore-bomber': 2, 'draft-treasure-runner': 2.4 } as const;
 type Batch = {
   mesh: THREE.InstancedMesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>;
   hurt: THREE.InstancedBufferAttribute;

@@ -1072,7 +1072,7 @@ h1>em{font-size:12px;line-height:1;letter-spacing:4px;display:inline-block;backg
   .hud .xp-row{margin-left:33%;width:64%;margin-top:-8px;height:15px}
   .hud .xp-track{height:11px}
   .hud .xp-row>span:last-child{font-size:8px;min-width:35px}
-  .hud .run-status{top:96px;left:50%;min-height:57px;min-width:118px;padding:5px 9px}
+  .hud .run-status{top:0;left:50%;min-height:57px;min-width:118px;padding:5px 9px}
   .hud #run-wave{font-size:13px}
   .hud #timer{font-size:22px}
   .hud .hud-actions{gap:4px}
@@ -1263,3 +1263,28 @@ h1>em{font-size:12px;line-height:1;letter-spacing:4px;display:inline-block;backg
 }
 /* Dedicated, bounded mass-kill feedback; simulation time controls its visibility. */
 .area-combo { position: fixed; top: 22%; left: 50%; transform: translateX(-50%); z-index: 30; pointer-events: none; color: #ffe5a5; font-size: clamp(22px, 4vw, 38px); font-weight: 900; text-shadow: 0 3px 0 #713317, 0 0 16px #ff922c; }
+
+.treasure-dialog[hidden] { display: none; }
+.treasure-dialog { position: fixed; inset: 0; z-index: 150; display: grid; place-items: center; background: #08171480; padding: 16px; touch-action: none; }
+.treasure-dialog-panel { width: min(470px, 90vw); height: min(680px, calc(100dvh - 32px)); box-sizing: border-box; display: flex; flex-direction: column; align-items: center; padding: 20px 24px; background: #4b4d70; border: 5px solid #d3a957; outline: 3px solid #493a33; box-shadow: inset 0 0 0 3px #787899, 0 10px 40px #0009; color: #fff5d9; }
+.treasure-dialog-panel h2 { margin: 0; font-size: clamp(22px, 3vw, 32px); letter-spacing: .08em; text-shadow: 2px 2px #272b47; }
+.treasure-dialog-panel canvas { min-height: 0; flex: 1; width: 100%; object-fit: fill; }
+.treasure-dialog-button { flex-shrink: 0; min-width: 200px; min-height: 50px; margin-top: 12px; border: 3px solid #ffd675; border-radius: 7px; background: #293fc0; color: #fff5d9; font-size: 22px; font-weight: 800; box-shadow: 0 0 0 2px #252138, inset 0 0 0 2px #576bdd; }
+.treasure-dialog-button:disabled { opacity: .65; }
+@media (max-height: 500px) and (orientation: landscape) {
+ .treasure-dialog { padding: 12px; }
+ .treasure-dialog-panel { width: min(680px, 85vw); height: calc(100dvh - 24px); padding: 10px 20px; }
+ .treasure-dialog-panel h2 { font-size: 23px; }
+ .treasure-dialog-button { min-height: 42px; font-size: 19px; margin-top: 6px; }
+}
+
+/* Full viewport light wash stays behind the readable reward panel. */
+.treasure-dialog::before { content: ''; position: absolute; inset: 0; pointer-events: none; opacity: var(--treasure-gold, 0); transition: opacity 120ms linear; background: radial-gradient(ellipse at 50% 58%, #ffffe8 0%, #fffbb8ed 30%, #ffe343db 65%, #ffcf25cc 100%); box-shadow: inset 0 0 100px #fff8a6; }
+.treasure-dialog-panel { position: relative; z-index: 1; }
+.treasure-dialog.is-opening .treasure-dialog-panel { box-shadow: inset 0 0 0 3px #787899, 0 0 36px #fff89c, 0 0 100px #ffdf48aa; }
+
+.treasure-dialog.is-arriving { background: rgb(8 23 20 / calc(var(--treasure-entry, 0) * .5)); }
+.treasure-dialog.is-arriving .treasure-dialog-panel { opacity: var(--treasure-entry, 0); transform: translateY(calc((1 - var(--treasure-entry, 0)) * 24px)) scale(calc(.9 + var(--treasure-entry, 0) * .1)); }
+
+/* Keep both practice entries reachable on short landscape menus. */
+.menu-footer{gap:8px;flex-wrap:wrap}

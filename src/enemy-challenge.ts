@@ -25,7 +25,7 @@ export function predictPosition(player: Point, vx: number, vz: number, turn: num
   return {x:player.x+vx*sine-vz*cosine,z:player.z+vx*cosine+vz*sine};
 }
 export type BossState = 'approach' | 'spread-windup' | 'spread' | 'dash-windup' | 'dash' | 'summon-windup' | 'summon' | 'recover' | 'dying' | 'defeated';
-export interface HostileShot { active: boolean; x: number; z: number; previousX: number; previousZ: number; vx: number; vz: number; life: number }
+export interface HostileShot { style?: 'spore' | 'crystal' | 'petal' | 'thunder' | 'toxic' | 'boss'; active: boolean; x: number; z: number; previousX: number; previousZ: number; vx: number; vz: number; life: number }
 
 /** Formal-run behavior only. Clocks are simulation clocks; renderers never call damage. */
 export class EnemyChallenge {
@@ -69,7 +69,7 @@ export class EnemyChallenge {
     if (this.bossState === 'dash') return 'dash';
     return this.bossState === 'approach' ? null : this.enraged ? 'enraged-idle' : 'idle';
   }
-  clearShots() { for (const s of this.shots) s.active = false; }
+  clearShots() { for (const s of this.shots) { s.active = false; s.style = undefined; } }
   freezeEnemy(enemy: Enemy) {
     if (enemy !== this.elite) return;
     this.elitePulsing = this.pulseDue = false; this.eliteTime = 0;
@@ -181,7 +181,7 @@ export class EnemyChallenge {
           const offset = -.7 + i * 1.4 / (count - 1);
           const vx = Math.sin(angle+offset), vz = Math.cos(angle+offset), speed = ENCOUNTER_RULES.spreadSpeed*(this.enraged ? 1.1 : 1);
           const sx = enemy.x, sz = enemy.z;
-          Object.assign(shot,{active:true,x:sx,z:sz,previousX:sx,previousZ:sz,vx:vx*speed,vz:vz*speed,life:ENCOUNTER_RULES.spreadLife});
+          Object.assign(shot,{style:'boss',active:true,x:sx,z:sz,previousX:sx,previousZ:sz,vx:vx*speed,vz:vz*speed,life:ENCOUNTER_RULES.spreadLife});
         }
         this.transition('spread');
       } else if (this.bossState === 'dash-windup' && this.bossTime >= this.dashWindupDuration) this.transition('dash');

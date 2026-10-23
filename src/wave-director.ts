@@ -1,7 +1,7 @@
 /** Time-authored difficulty. Fodder feeds growth; bounded escorts create pressure.
  * Rates never depend on the player's damage or chosen upgrades. */
 export type DirectorBeat = 'warmup' | 'pressure' | 'release';
-export type DirectorEscort = 'fast' | 'tank' | 'draft-spore-bomber';
+export type DirectorEscort = 'abyss-lantern' | 'mirror-wisp' | 'sand-shell' | 'toxic-shroom' | 'thunder-bell' | 'frost-fluff' | 'nightshade-bat' | 'molten-fruit' | 'moondew-shell' | 'scarlet-flower' | 'crystal-crawler' | 'spore-floater' | 'fast' | 'tank' | 'draft-spore-bomber';
 export interface DirectorStage {
   readonly end: number;
   readonly beat: DirectorBeat;
@@ -51,14 +51,14 @@ function stage(end: number, beat: DirectorBeat, rate: number, every: number,
 const F = 'fast', T = 'tank', S = 'draft-spore-bomber';
 export const WAVE_DIRECTOR: readonly WaveDirectorPlan[] = [
   {stages:[stage(20,'warmup',1.8,0,[],0),stage(40,'pressure',2,9,[F,F],3),stage(65,'release',3,0,[],0)],crystalFirst:8,sporeFirst:null,treasureFirst:null},
-  {stages:[stage(12,'release',3.2,0,[],0),stage(36,'pressure',2.6,7,[F,T],5,2),stage(55,'release',3.6,0,[],0),stage(70,'pressure',2.8,8,[F,T],4,2)],crystalFirst:0,sporeFirst:null,treasureFirst:22},
-  {stages:[stage(24,'pressure',3.2,6,[F,F,T,S],8,3,1),stage(44,'pressure',4,10,[F,T],5,2,1),stage(75,'release',5,0,[],0)],crystalFirst:0,sporeFirst:12,treasureFirst:30},
-  {stages:[stage(12,'release',4,0,[],0),stage(35,'pressure',3,10,[T],3,2),stage(55,'pressure',4.5,10,[F,T],5,3),stage(75,'release',6,0,[],0)],crystalFirst:0,sporeFirst:null,treasureFirst:40},
-  {stages:[stage(22,'pressure',4,5,[F,F,T,S],10,4,1),stage(50,'pressure',4.8,8,[F,T],7,3,1),stage(80,'release',5.8,0,[],0)],crystalFirst:0,sporeFirst:12,treasureFirst:30},
-  {stages:[stage(10,'warmup',1.8,0,[],0),stage(30,'pressure',2.4,10,[F],3,1),stage(45,'release',3.6,0,[],0),stage(65,'pressure',2.6,10,[F,T],4,1),stage(90,'release',3.8,0,[],0)],crystalFirst:0,sporeFirst:null,treasureFirst:38},
+  {stages:[stage(12,'release',3.2,0,[],0),stage(36,'pressure',2.6,7,[F,T,'nightshade-bat'],5,2),stage(55,'release',3.6,0,[],0),stage(70,'pressure',2.8,8,[F,T,'molten-fruit'],4,2)],crystalFirst:0,sporeFirst:null,treasureFirst:22},
+  {stages:[stage(24,'pressure',3.2,6,[F,F,T,S,'spore-floater','thunder-bell','sand-shell'],8,3,1),stage(44,'pressure',4,10,[F,T,'scarlet-flower','nightshade-bat','frost-fluff','toxic-shroom','abyss-lantern'],5,2,1),stage(75,'release',5,0,[],0)],crystalFirst:0,sporeFirst:12,treasureFirst:30},
+  {stages:[stage(12,'release',4,0,[],0),stage(35,'pressure',3,10,[T,'crystal-crawler','moondew-shell','frost-fluff','sand-shell','mirror-wisp','abyss-lantern'],3,2),stage(55,'pressure',4.5,10,[F,T,'scarlet-flower','molten-fruit','nightshade-bat','thunder-bell','toxic-shroom'],5,3),stage(75,'release',6,0,[],0)],crystalFirst:0,sporeFirst:null,treasureFirst:40},
+  {stages:[stage(22,'pressure',4,5,[F,F,T,S,'spore-floater','crystal-crawler','molten-fruit','thunder-bell','sand-shell'],10,4,1),stage(50,'pressure',4.8,8,[F,T,'scarlet-flower','moondew-shell','nightshade-bat','frost-fluff','toxic-shroom','mirror-wisp','abyss-lantern'],7,3,1),stage(80,'release',5.8,0,[],0)],crystalFirst:0,sporeFirst:12,treasureFirst:30},
+  {stages:[stage(10,'warmup',1.8,0,[],0),stage(30,'pressure',2.4,10,[F],3,1),stage(45,'release',3.6,0,[],0),stage(65,'pressure',2.6,10,[F,T,'crystal-crawler','mirror-wisp'],4,1),stage(90,'release',3.8,0,[],0)],crystalFirst:0,sporeFirst:null,treasureFirst:38},
 ];
 const endlessFlagWave: WaveDirectorPlan={...WAVE_DIRECTOR[4],stages:[...WAVE_DIRECTOR[4].stages.slice(0,2),
-  stage(70,'pressure',5.2,5,[F,F,T,S],12,5,1),stage(80,'release',5.8,0,[],0)]};
+  stage(70,'pressure',5.2,5,[F,F,T,S,'spore-floater'],12,5,1),stage(80,'release',5.8,0,[],0)]};
 export const ENDLESS_WAVE_DIRECTOR: readonly WaveDirectorPlan[]=WAVE_DIRECTOR.map((plan,i)=>i===4?endlessFlagWave:plan);
 /** Stop new dangerous arrivals before a harvest; never delete living enemies. */
 export function releaseLeadIn(wave:number,elapsed:number,endless=false){

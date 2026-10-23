@@ -1,0 +1,56 @@
+{
+  "url": "http://127.0.0.1:5175/",
+  "browser": "Chromium headless, SwiftShader",
+  "viewport": "844x390",
+  "samples": [
+    {
+      "label": "cold-1",
+      "menuMs": 1247,
+      "prepareMs": 966,
+      "openToReadyMs": 2269,
+      "assetRequests": 59
+    },
+    {
+      "label": "cold-2",
+      "menuMs": 985,
+      "prepareMs": 805,
+      "openToReadyMs": 1840,
+      "assetRequests": 59
+    },
+    {
+      "label": "cold-3",
+      "menuMs": 944,
+      "prepareMs": 804,
+      "openToReadyMs": 1787,
+      "assetRequests": 59
+    },
+    {
+      "label": "cache-seed",
+      "menuMs": 1056,
+      "prepareMs": 769,
+      "openToReadyMs": 1868,
+      "assetRequests": 59
+    },
+    {
+      "label": "warm-1",
+      "menuMs": 923,
+      "prepareMs": 753,
+      "openToReadyMs": 1724,
+      "assetRequests": 59
+    },
+    {
+      "label": "warm-2",
+      "menuMs": 964,
+      "prepareMs": 796,
+      "openToReadyMs": 1799,
+      "assetRequests": 59
+    },
+    {
+      "label": "warm-3",
+      "menuMs": 835,
+      "prepareMs": 823,
+      "openToReadyMs": 1707,
+      "assetRequests": 59
+    }
+  ]
+}

@@ -9,7 +9,7 @@ export const PIXEL_CREATURE_ASSETS: Readonly<Record<SpeciesId, string>> = {
   bubblesalamander: 'creatures/paopaoyuan.png',
   sproutspike: 'creatures/yacishou.png',
 };
-export const PIXEL_ENEMY_ASSETS = { 'enemy-normal': 'enemies/grass-monster.png', 'enemy-fast': 'enemies/runner-bug.png', 'enemy-tank': 'enemies/rock-armor-bug.png', 'enemy-draft-crystal-swarm': 'enemies/draft-crystal-swarm.png', 'enemy-draft-spore-bomber': 'enemies/draft-spore-bomber.png', 'enemy-draft-treasure-runner': 'enemies/draft-treasure-runner.png' } as const;
+export const PIXEL_ENEMY_ASSETS = { 'enemy-abyss-lantern': 'enemies/abyss-lantern.png', 'enemy-mirror-wisp': 'enemies/mirror-wisp.png', 'enemy-sand-shell': 'enemies/sand-shell.png', 'enemy-toxic-shroom': 'enemies/toxic-shroom.png', 'enemy-thunder-bell': 'enemies/thunder-bell.png', 'enemy-frost-fluff': 'enemies/frost-fluff.png', 'enemy-nightshade-bat': 'enemies/nightshade-bat.png', 'enemy-molten-fruit': 'enemies/molten-fruit.png', 'enemy-moondew-shell': 'enemies/moondew-shell.png', 'enemy-scarlet-flower': 'enemies/scarlet-flower.png', 'enemy-crystal-crawler': 'enemies/crystal-crawler.png', 'enemy-spore-floater': 'enemies/spore-floater.png', 'enemy-normal': 'enemies/grass-monster.png', 'enemy-fast': 'enemies/runner-bug.png', 'enemy-tank': 'enemies/rock-armor-bug.png', 'enemy-draft-crystal-swarm': 'enemies/draft-crystal-swarm.png', 'enemy-draft-spore-bomber': 'enemies/draft-spore-bomber.png', 'enemy-draft-treasure-runner': 'enemies/draft-treasure-runner.png' } as const;
 export const PIXEL_ANIMATION_ASSETS = {
   'yanrong-walk': 'creatures/animation/yanrong-animation-sheet.normalized.png',
   'yanrong-diagonal': 'creatures/animation/yanrong-diagonal-walk.normalized.png',

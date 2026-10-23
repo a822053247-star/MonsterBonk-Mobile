@@ -1,3 +1,4 @@
+import { rangedEnemyRule } from './ranged-enemies';
 import * as THREE from 'three';
 import { GigapackView } from './gigapack-view';
 import { GIGAPACK_BINDINGS } from './visuals/gigapack-presets';
@@ -5,7 +6,7 @@ import { COMBAT_CLARITY, WATER_IMPACT_VISUAL, impactVisualPosition, impactSize, 
 import { enemyPose } from './enemy-motion';
 import { grassBlobPose, grassBlobRoll, grassCrowdMotionScale } from './grass-blob';
 import { GrassBlobView } from './grass-blob-view';
-import { Combat, COMBAT_LIMITS, ENEMY_TYPES, FORMAL_POUNCE } from './combat';
+import { Combat, COMBAT_LIMITS, ENEMY_TYPES, FORMAL_POUNCE, MOLTEN_POUNCE, FROST_GLIDE } from './combat';
 import { EncounterView } from './encounter-view';
 import { SKILL_RULES } from './progression';
 import { POUNCE } from './trial';
@@ -77,6 +78,8 @@ export class CombatView {
   private pounceLanes: THREE.InstancedMesh;
   private pounceArrows: THREE.InstancedMesh;
   private recoveryRings: THREE.InstancedMesh;
+  private flowerRings: THREE.InstancedMesh;
+  private thunderRings: THREE.InstancedMesh;
   private pixelEnemies?: EnemyPixelView;
   private pixelsEnabled = false;
   private firePixels?: FirePixelView;
@@ -129,6 +132,8 @@ export class CombatView {
     this.gems = make(new THREE.OctahedronGeometry(1), basic('#91f7d8'), COMBAT_LIMITS.orbs);
     this.gemRings = make(ring, new THREE.MeshBasicMaterial({ color: '#bdfbdf', transparent: true, opacity: 0.45, side: THREE.DoubleSide, depthWrite: false }), COMBAT_LIMITS.orbs);
     this.sparks = make(new THREE.OctahedronGeometry(1), basic('#ffffff'), (COMBAT_LIMITS.effects + COMBAT_LIMITS.enemies) * 4);
+    this.flowerRings = make(new THREE.RingGeometry(.94,1,40), new THREE.MeshBasicMaterial({color:'#ff83c6',transparent:true,opacity:.85,side:THREE.DoubleSide,depthWrite:false,toneMapped:false}), COMBAT_LIMITS.enemies);
+    this.thunderRings = make(new THREE.RingGeometry(.94,1,40), new THREE.MeshBasicMaterial({color:'#ffdc48',transparent:true,opacity:.85,side:THREE.DoubleSide,depthWrite:false,toneMapped:false}), COMBAT_LIMITS.enemies);
     this.target = make(ring, basic('#fff0ac'), 1);
     this.orbitBalls = make(sphere, new THREE.MeshBasicMaterial({ color: '#72dbe5', transparent: true, opacity: 0.65, depthWrite: false }), SKILL_RULES.maxOrbitBalls);
     this.orbitCores = make(sphere, basic('#effffe'), SKILL_RULES.maxOrbitBalls);
@@ -223,7 +228,17 @@ export class CombatView {
       const frozen = (enemy.freezeTime ?? 0) > 0;
       const motion = enemyPose(enemy.kind, enemy.walkPhase ?? 0, enemy.walkAmount ?? 0, this.enemyPose);
       if(this.combat.encounters.enabled && enemy.kind==='normal' && !enemy.rank && !frozen) grassBlobPose(enemy,motion);
+      if (enemy.kind === 'abyss-lantern') { motion.bob=.3+Math.sin(enemy.age*1.8+enemy.id)*.07; motion.lean=Math.sin(enemy.age*1.4+enemy.id)*.035; motion.squash=0; }
+      if (enemy.kind === 'mirror-wisp') { motion.bob=.25+Math.sin(enemy.age*1.9+enemy.id)*.055; motion.lean*=.5; motion.squash=0; }
+      if (enemy.kind === 'toxic-shroom') { motion.bob=.1+Math.sin(enemy.age*2+enemy.id)*.035; motion.lean*=.6; }
+      if (enemy.kind === 'nightshade-bat') { motion.bob=.32+Math.sin(enemy.age*2.2+enemy.id)*.065; motion.lean=Math.sin(enemy.age*1.7+enemy.id)*.035; motion.squash=0; }
+      if (enemy.kind === 'spore-floater' || enemy.kind === 'scarlet-flower' || enemy.kind === 'thunder-bell') { motion.bob = .24 + Math.sin(enemy.age * 2.8 + enemy.id) * .09; motion.lean += Math.sin(enemy.age * 2 + enemy.id) * .025; }
+      if(enemy.kind==='frost-fluff') { motion.bob=0; motion.lean*=.3; motion.squash=enemy.intent==='windup'?-.06:0; }
+      if(enemy.kind==='molten-fruit' && enemy.intent==='windup') { motion.bob=0; motion.squash=-.12; }
       if (frozen) motion.bob = motion.lean = motion.squash = 0;
+      const ranged = rangedEnemyRule(enemy.kind);
+      const sporeRecoil = ranged && !frozen ? Math.max(0,(enemy.intentCooldown-(ranged.cooldown-.22))/.22) : 0;
+      motion.lean += sporeRecoil * enemy.aimX * .16; motion.squash -= sporeRecoil * .08;
       const bob = motion.bob;
       const y = size * tall + bob;
       const color = frozen ? '#a4dcff' : enemy.flash > 0 ? '#fff5d6' : this.combat.hasAttackIntents && enemy.intent === 'windup' ? '#ffba5c' : this.combat.hasAttackIntents && enemy.intent === 'recover' ? '#a3ccb5' : type.color;
@@ -232,9 +247,19 @@ export class CombatView {
         const tint = frozen ? '#a4dcff' : enemy.rank === 'elite' ? '#ffd997' : this.combat.hasAttackIntents && enemy.intent === 'windup' ? '#ffba5c' : this.combat.hasAttackIntents && enemy.intent === 'recover' ? '#a3ccb5' : '#ffffff';
         this.enemyMovement.id = enemy.id;
         this.enemyMovement.dx = enemy.walkX ?? 0; this.enemyMovement.dz = enemy.walkZ ?? 0;
-        this.pixelEnemies!.put(enemy.kind, x, z, bob, this.combat.usesRunBuild ? Math.min(1, enemy.flash / .16) * .3 : enemy.flash > 0, tint, motion.lean, motion.squash, enemy.rank==='elite'?1.35:1, 1, this.enemyMovement, this.combat.encounters.enabled && enemy.kind==='normal' && !enemy.rank && !frozen ? grassBlobRoll(enemy,grassMotionScale) : 0, frozen);
+        if((ranged && (enemy.intent==='windup' || sporeRecoil>0)) || ((enemy.kind==='molten-fruit'||enemy.kind==='frost-fluff') && (enemy.intent==='windup'||enemy.intent==='pounce'))) { this.enemyMovement.dx=enemy.aimX; this.enemyMovement.dz=enemy.aimZ; }
+        if (enemy.kind === 'scarlet-flower' || enemy.kind === 'thunder-bell' || enemy.kind === 'toxic-shroom' || enemy.kind === 'mirror-wisp' || enemy.kind === 'abyss-lantern') {
+          // A strafing/backpedalling caster faces its target, never its feet.
+          // Keep the committed shot direction through windup and recoil.
+          const locked = enemy.intent === 'windup' || sporeRecoil > 0;
+          this.enemyMovement.dx = frozen ? 0 : locked ? enemy.aimX : Math.sin(enemy.facing);
+          this.enemyMovement.dz = frozen ? 0 : locked ? enemy.aimZ : Math.cos(enemy.facing);
+        }
+        this.pixelEnemies!.put(enemy.kind, x-enemy.aimX*sporeRecoil*.14, z-enemy.aimZ*sporeRecoil*.14, bob, this.combat.usesRunBuild ? Math.min(1, enemy.flash / .16) * .3 : enemy.flash > 0, tint, motion.lean, motion.squash, enemy.rank==='elite'?1.35:1, 1, this.enemyMovement, enemy.kind==='molten-fruit' && enemy.intent==='pounce' && !frozen ? (enemy.grassRollDistance??0)/size * (enemy.aimX<0?1:-1) : this.combat.encounters.enabled && enemy.kind==='normal' && !enemy.rank && !frozen ? grassBlobRoll(enemy,grassMotionScale) : 0, frozen);
       } else if (enemy.kind !== 'tank') this.put(this.body, x, y, z, size, size * tall, size, 0, enemy.facing, 0, color);
-      this.put(this.shadows, x, 0.04, z, size * 1.1, size * 0.8, 1, -Math.PI / 2);
+      if(enemy.kind==='scarlet-flower') this.put(this.flowerRings,x,.065,z,size+.25,size+.25,1,-Math.PI/2);
+      else if(enemy.kind==='thunder-bell') this.put(this.thunderRings,x,.065,z,size+.25,size+.25,1,-Math.PI/2);
+      else this.put(this.shadows, x, 0.04, z, size * 1.1, size * 0.8, 1, -Math.PI / 2);
       const fx = Math.sin(enemy.facing), fz = Math.cos(enemy.facing);
       if (!pixel && enemy.kind !== 'tank') for (const side of [-1, 1]) {
         this.put(this.eyes, x + fx * size * 0.87 + fz * size * 0.35 * side, y + size * 0.25, z + fz * size * 0.87 - fx * size * 0.35 * side, size * 0.105, size * 0.18, size * 0.105);
@@ -249,21 +274,21 @@ export class CombatView {
         this.put(this.healthBack, bx, by, bz, width, 0.075, 1, -0.55);
         this.put(this.healthFill, bx - width * (1 - fraction) / 2, by + 0.005, bz + 0.01, width * fraction, 0.052, 1, -0.55);
       }
-      if (enemy.id === this.combat.targetId) this.put(this.target, x, 0.055, z, size + 0.2, size + 0.2, 1, -Math.PI / 2, 0, time);
+      if (enemy.kind!=='scarlet-flower' && enemy.kind!=='thunder-bell' && enemy.id === this.combat.targetId) this.put(this.target, x, 0.055, z, size + 0.2, size + 0.2, 1, -Math.PI / 2, 0, time);
       if (this.combat.hasAttackIntents) {
-        if (enemy.kind==='fast' && (enemy.intent === 'windup' || enemy.intent === 'pounce')) {
-          const rule=this.combat.encounters.enabled?FORMAL_POUNCE:POUNCE;
+        if ((enemy.kind==='fast' || enemy.kind==='molten-fruit' || enemy.kind==='frost-fluff') && (enemy.intent === 'windup' || enemy.intent === 'pounce')) {
+          const rule=enemy.kind==='frost-fluff'?FROST_GLIDE:enemy.kind==='molten-fruit'?MOLTEN_POUNCE:this.combat.encounters.enabled?FORMAL_POUNCE:POUNCE;
           const length = rule.speed * rule.duration, angle = Math.atan2(enemy.aimX, enemy.aimZ);
           this.put(this.pounceLanes, x + enemy.aimX * length / 2, 0.075, z + enemy.aimZ * length / 2, 0.9, length, 1, -Math.PI / 2, 0, angle);
           this.put(this.pounceArrows, x + enemy.aimX * length, 0.085, z + enemy.aimZ * length, 0.4, 0.4, 1, -Math.PI / 2, 0, angle - Math.PI / 2);
         }
-        if(this.combat.encounters.enabled && enemy.kind!=='fast' && enemy.kind!=='normal' && !enemy.rank && (enemy.intent==='windup'||enemy.intent==='pounce')) {
+        if(this.combat.encounters.enabled && enemy.kind!=='fast' && enemy.kind!=='molten-fruit' && enemy.kind!=='frost-fluff' && enemy.kind!=='normal' && !ranged && enemy.kind!=='moondew-shell' && enemy.kind!=='nightshade-bat' && enemy.kind!=='sand-shell' && !enemy.rank && (enemy.intent==='windup'||enemy.intent==='pounce')) {
           // Circular stationary danger for red blobs; directional lanes belong
           // exclusively to fast sprinters. Ground ring matches actual hit radius.
           const warningRadius = size + .62;
           this.put(this.warnings,x,.09,z,warningRadius,warningRadius,1,-Math.PI/2);
         }
-        if (enemy.intent === 'recover' || enemy.stagger > 0) this.put(this.recoveryRings, x, 0.08, z, size + 0.3, size + 0.3, 1, -Math.PI / 2);
+        if (enemy.kind!=='scarlet-flower' && enemy.kind!=='thunder-bell' && (enemy.intent === 'recover' || enemy.stagger > 0)) this.put(this.recoveryRings, x, 0.08, z, size + 0.3, size + 0.3, 1, -Math.PI / 2);
       }
     }
     for (const shot of this.combat.projectiles) {

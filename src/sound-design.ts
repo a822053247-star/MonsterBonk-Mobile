@@ -5,9 +5,10 @@ export type CombinationSound = typeof COMBINATION_SOUNDS[number];
 export function isCombinationSound(kind: string): kind is CombinationSound { return (COMBINATION_SOUNDS as readonly string[]).includes(kind); }
 export function isCombinationImpact(kind: string) { return kind === 'collapse-impact' || kind === 'spore-ignite' || kind === 'tide-finish'; }
 export type SkillSound = keyof typeof SKILL_SOUNDS;
-export type Sound = 'cast' | 'hit' | 'hurt' | 'collect' | 'dash' | 'jump' | 'level' | 'harvest' | 'harvest-big' | 'harvest-epic' | SkillSound;
+export type Sound = 'death' | 'cast' | 'hit' | 'hurt' | 'collect' | 'dash' | 'jump' | 'level' | 'harvest' | 'harvest-big' | 'harvest-epic' | SkillSound;
 export const SKILL_SOUND_PRIORITY: readonly SkillSound[] = ['nova', 'tide-finish', 'collapse-impact', 'spore-ignite', 'prism-reflect', 'prism-shot', 'tide-return', 'vortex-charge', 'hourglass', 'echo', 'shockwave', 'sweep', 'blossom', 'frost', 'lightning', 'burst', 'water', 'thorn'];
 export const SOUND_RULES: Record<Sound, { seconds: number; interval: number; volume: number; from: number; to: number; noise: number }> = {
+  death: { seconds: .72, interval: .8, volume: .55, from: 280, to: 48, noise: .08 },
   blossom: { seconds: .24, interval: .16, volume: .23, from: 980, to: 1560, noise: .12 },
   lightning: { seconds: .13, interval: .12, volume: .22, from: 1000, to: 140, noise: .72 },
   frost: { seconds: .22, interval: .16, volume: .25, from: 1800, to: 450, noise: .32 },
@@ -52,6 +53,7 @@ export function synthesizeSound(kind: Sound, rate: number) {
     const frequency = rule.from + (rule.to - rule.from) * progress;
     phase += 2 * Math.PI * frequency / rate;
     let tone = Math.sin(phase) * .8 + Math.sin(phase * 2) * .12;
+    if (kind === 'death') tone = (Math.sin(phase) + .35 * Math.sin(phase * 1.19) + .15 * Math.sin(phase * .5)) / 1.5;
     if (kind === 'water') tone *= .7 + .3 * Math.sin(progress * Math.PI * 5);
     if (kind === 'echo') tone *= .55 + .45 * Math.cos(progress * Math.PI * 4);
     if (kind === 'level' || kind === 'hourglass') tone = (Math.sin(phase) + Math.sin(phase * 1.25) * .4 + Math.sin(phase * 1.5) * .3) / 1.7;
