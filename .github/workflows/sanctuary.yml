@@ -1,0 +1,36 @@
+name: Sanctuary habitat
+
+on:
+  pull_request:
+    paths:
+      - 'src/sanctuary.ts'
+      - 'src/sanctuary-ui.ts'
+      - 'src/sanctuary.css'
+      - 'src/ui.ts'
+      - 'src/game.ts'
+      - 'tests/sanctuary.spec.ts'
+      - '.github/workflows/sanctuary.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'src/sanctuary.ts'
+      - 'src/sanctuary-ui.ts'
+      - 'src/sanctuary.css'
+      - 'src/ui.ts'
+      - 'src/game.ts'
+      - 'tests/sanctuary.spec.ts'
+      - '.github/workflows/sanctuary.yml'
+
+jobs:
+  sanctuary:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium webkit
+      - run: npx playwright test tests/sanctuary.spec.ts --project=chromium --project=webkit
