@@ -12,6 +12,8 @@ import { elementalClip, type ElementalFusionId } from './fusion-pixels';
 import type { SkillId } from './progression';
 import { ENDLESS_FLAG_WARNING_SECONDS, RunFlow } from './run-flow';
 import { recordEndlessRun } from './endless-record';
+import { recordSanctuaryRun, upgradeSanctuary, type SanctuaryRegionId } from './sanctuary';
+import { renderSanctuary, renderSanctuaryReward } from './sanctuary-ui';
 import { ATTACKS } from './run-build';
 import { AdaptiveQuality, loadPreferences, savePreferences, normalizeGameSpeed, type QualityMode } from './quality';
 import { GameAudio } from './audio';
@@ -56,6 +58,7 @@ export class Game {
   private challenge?: Challenge;
   private run?: RunFlow;
   private outcome: 'victory' | 'defeat' | null = null;
+  private sanctuaryRunId: string | null = null;
   private trialHornMounted = false;
   private dashAttack: DashStep = { active: false, started: false, fromX: 0, fromZ: 0, dx: 0, dz: 1 };
   private position = new THREE.Vector3();
@@ -214,6 +217,37 @@ export class Game {
     click('restart', () => this.start());
     click('gameover-restart', () => this.start());
     click('gameover-menu', () => this.showMenu());
+    const sanctuaryScreen = document.getElementById('sanctuary-screen')!;
+    const closeSanctuary = () => {
+      if (sanctuaryScreen.hidden) return;
+      sanctuaryScreen.hidden = true;
+      document.getElementById('menu')!.inert = false;
+      document.getElementById('open-sanctuary')!.focus();
+    };
+    click('open-sanctuary', () => {
+      if (this.mode !== 'menu') return;
+      renderSanctuary();
+      document.getElementById('menu')!.inert = true;
+      sanctuaryScreen.hidden = false;
+      document.getElementById('close-sanctuary')!.focus();
+    });
+    click('close-sanctuary', closeSanctuary);
+    sanctuaryScreen.addEventListener('click', event => {
+      const button = event.target instanceof Element
+        ? event.target.closest<HTMLButtonElement>('[data-sanctuary-region]') : null;
+      if (sanctuaryScreen.hidden || this.mode !== 'menu' || !button || button.disabled) return;
+      const result = upgradeSanctuary(button.dataset.sanctuaryRegion as SanctuaryRegionId);
+      renderSanctuary(result.save, result.reason);
+    }, options);
+    sanctuaryScreen.addEventListener('keydown', event => {
+      if (event.key !== 'Tab') return;
+      const buttons = [...sanctuaryScreen.querySelectorAll<HTMLButtonElement>('button:not(:disabled)')];
+      const first = buttons[0], last = buttons[buttons.length - 1];
+      if (!first || !last) return;
+      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+    }, options);
+
     click('upgrade-menu', () => this.showMenu());
     click('shop-menu', () => this.showMenu());
     document.getElementById('shop-items')!.addEventListener('click', event => {
@@ -295,6 +329,7 @@ export class Game {
     window.addEventListener('keydown', (event) => {
       if (event.code !== 'Escape') return;
       if(!document.getElementById('weapon-pair-picker')!.hidden){document.getElementById('weapon-pair-cancel')!.click();return;}
+      if (!sanctuaryScreen.hidden) { closeSanctuary(); return; }
       if (!document.getElementById('legacy-picker')!.hidden) { closeLegacy(); return; }
       // Touch WebKit need not focus a tapped button; Escape can target body.
       if (!document.getElementById('creature-picker')!.hidden) { this.closeCreaturePicker(); return; }
@@ -425,6 +460,7 @@ export class Game {
     this.world.update(0, 0);
     this.combat.refreshWorld(0, 0, this.world.revision);
     this.run = this.combat.usesRunBuild ? new RunFlow(Math.random, endless ? 'endless' : 'campaign') : undefined;
+    this.sanctuaryRunId = this.run ? `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}` : null;
     if (this.run && new URLSearchParams(window.location.search).get('meleeDev') === 'flame-sweep') this.combat.grantUpgrade('flame-sweep-weapon');
     this.combat.automaticSpawning = !this.run;
     this.run?.prepare(this.combat,this.position);
@@ -491,7 +527,7 @@ export class Game {
     document.getElementById('world-loading')!.hidden = true;
     this.combat.runBuild.clearPairFusions();
     this.audio.setWave();
-    this.run = undefined; this.combat.automaticSpawning = true;
+    this.run = undefined; this.sanctuaryRunId = null; this.combat.automaticSpawning = true;
     document.getElementById('shop-screen')!.hidden = true;
     this.world.setSample(new URLSearchParams(window.location.search).get('world') !== 'legacy');
     this.combat.infiniteWorld = false;
@@ -528,6 +564,7 @@ export class Game {
     this.damageOverlay.style.opacity = '0';
     this.trails.forEach((trail) => { trail.remaining = 0; trail.mesh.visible = false; });
     document.getElementById('menu')!.hidden = false;
+    renderSanctuary();
     document.getElementById('hud')!.hidden = true;
     document.getElementById('pause-screen')!.hidden = true;
     document.getElementById('gameover-screen')!.hidden = true;
@@ -789,6 +826,9 @@ export class Game {
       survivalSeconds: this.run.totalElapsed,
     } : undefined;
     const endlessRecordUpdate = endlessResult ? recordEndlessRun(endlessResult) : undefined;
+    const sanctuaryReward = this.run && this.sanctuaryRunId
+      ? recordSanctuaryRun({ id: this.sanctuaryRunId, mode: this.run.mode, completedWaves: this.run.completedWaves })
+      : undefined;
     this.run?.finish(this.combat, outcome === 'victory');
     document.getElementById('shop-screen')!.hidden = true;
     this.combat.clearTransientEffects();
@@ -821,6 +861,8 @@ export class Game {
       : this.run.failure === 'boss-timeout' ? '未能在 90 秒内击败荆冠兽王。调整构筑，再来挑战。'
       : `生命耗尽，止步第 ${this.run.wave} 波。换一种构筑再出发。`;
     renderRunResult(this.run, this.combat);
+    renderSanctuaryReward(sanctuaryReward?.earned);
+    renderSanctuary(sanctuaryReward?.save);
     const recordPanel = document.getElementById('endless-record-result')!;
     if (endlessResult && endlessRecordUpdate) {
       renderEndlessBestResult(endlessResult, endlessRecordUpdate.record, endlessRecordUpdate.newRecords);
