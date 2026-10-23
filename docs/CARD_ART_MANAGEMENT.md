@@ -5,7 +5,7 @@
 - 图片：原图仍放在 `public/assets/ui/upgrade/illustrations/`，服务补给图沿用 `public/assets/ui/shop/health-potion.png`。修改原图后运行 `python scripts/prepare-card-art.py`，更新 `public/assets/ui/card-art/` 与 `src/card-art-manifest.ts`。生成脚本需要已有Pillow和本机Edge；SVG栅格化使用项目现有Playwright浏览器接口，不运行测试。
 - 图片接入：`src/card-art.ts` 负责运行时地址映射及双图组合；`upgradeArt` / `uiArtUrl` / `shopArt` 共用结果，升级卡、商店、构筑缩略图、宝箱奖励都读取同一版本。融合选择单独构造地址时也经过 `cardArtUrl`。
 - 文案：`src/card-copy.ts` 只生成选择卡的简短展示，不改技能/遗物的原始描述、数值和获得条件。复杂机制使用短语表；主要增减值从当前文案读取。远距透镜保留实际射程变化，详细描述仍保留在ARIA和原构筑内容中。
-- 布局：`src/style.css` 末尾“fixed art stage”规则固定图片区域和中心；图片占位与文字长度无关。新增规则应在此处维护，不再为个别卡片追加缩放或位移。
+- 布局：`src/style.css` 末尾“fixed art stage”规则固定图片区域和中心；图片占位与文字长度无关。新增规则应在此处维护，不再为个别卡片追加缩放或位移。强化卡与商店卡的规范化图片统一以中心为原点显示为原来的120%，图片区允许溢出以免裁切；商店效果说明同步下移留出间距。此显示倍率不改变派生图片分辨率。
 
 ## 素材处理规则
 

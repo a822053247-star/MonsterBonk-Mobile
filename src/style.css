@@ -1292,8 +1292,8 @@ h1>em{font-size:12px;line-height:1;letter-spacing:4px;display:inline-block;backg
 
 /* A fixed art stage: copy length cannot resize or move the visible subject. */
 .skill-card .skill-content{top:22%;bottom:28%;left:14%;right:14%;display:block;overflow:visible}
-.skill-card .skill-content .skill-emblem{position:absolute;inset:0 0 auto;width:100%;height:56%;max-width:none;max-height:none;overflow:hidden}
-.skill-card .skill-content .skill-illustration{width:100%;height:100%;max-width:100%;max-height:100%;object-fit:contain;object-position:center;image-rendering:auto;filter:none;transform:none;clip-path:none}
+.skill-card .skill-content .skill-emblem{position:absolute;inset:0 0 auto;width:100%;height:56%;max-width:none;max-height:none;overflow:visible}
+.skill-card .skill-content .skill-illustration{width:100%;height:100%;max-width:100%;max-height:100%;object-fit:contain;object-position:center;image-rendering:auto;filter:none;transform:scale(1.2);transform-origin:center;clip-path:none}
 .skill-card .skill-content .skill-benefit{position:absolute;top:64%;left:0;right:0;min-height:0;display:block;font-size:clamp(11px,calc(var(--card-height) * .036),17px);line-height:1.35;text-wrap:balance;overflow-wrap:normal}
 .skill-card .skill-preview{display:none}
 .skill-card .skill-card-meta{top:74%;left:15%;right:15%}
@@ -1301,9 +1301,9 @@ h1>em{font-size:12px;line-height:1;letter-spacing:4px;display:inline-block;backg
 .skill-card .skill-ranks,.skill-card:not(.has-tradeoff) .skill-ranks{top:91%}
 .shop-item>.shop-item-type{top:20.5%;font-size:clamp(10px,calc(var(--shop-card-height) * .027),14px)}
 .shop-item .shop-item-body{top:23%;bottom:28%;left:14%;right:14%;display:block;overflow:visible}
-.shop-item .shop-illustration{position:absolute;inset:0 0 auto;width:100%;height:57%;min-height:0;max-height:none}
-.shop-item .shop-illustration>img{width:100%;height:100%;max-width:100%;object-fit:contain;object-position:center;image-rendering:auto;transform:none;clip-path:none}
-.shop-item .shop-benefit{position:absolute;top:61%;left:0;right:0;min-height:0;display:block;font-size:clamp(11px,calc(var(--shop-card-height) * .033),17px);line-height:1.35;text-wrap:balance;overflow-wrap:normal}
+.shop-item .shop-illustration{position:absolute;inset:0 0 auto;width:100%;height:57%;min-height:0;max-height:none;overflow:visible}
+.shop-item .shop-illustration>img{width:100%;height:100%;max-width:100%;object-fit:contain;object-position:center;image-rendering:auto;transform:scale(1.2);transform-origin:center;clip-path:none}
+.shop-item .shop-benefit{position:absolute;top:65%;left:0;right:0;min-height:0;display:block;font-size:clamp(11px,calc(var(--shop-card-height) * .033),17px);line-height:1.35;text-wrap:balance;overflow-wrap:normal}
 .shop-item .shop-cost{position:absolute;top:83%;left:0;right:0;font-size:clamp(10px,calc(var(--shop-card-height) * .026),12px);line-height:1.3;text-wrap:balance;overflow-wrap:normal}
 @media(max-height:350px){
  .skill-card .skill-content .skill-benefit,.shop-item .shop-benefit{font-size:10px;line-height:1.25}
