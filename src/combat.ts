@@ -29,6 +29,7 @@ import { HORN, POUNCE, type DashStep, type EnemyIntent, type Ruleset } from './t
 import { CREATURES, type PartySystem, type SpeciesId } from './party';
 import { ENDLESS_SCALING } from './wave-director';
 import { GroundNavigation } from './navigation';
+import { ObstacleIndex, SpatialIndex } from './spatial-index';
 import { BURST_SEED, resolveFusions, DEEP_BUBBLE, CHAIN_BUBBLE, THORN_SCATTER, JUMP_THORN, ELEMENTAL_RULES, type FusionId } from './fusion';
 
 /** Combat owns no DOM/GPU state. Every clock and movement is measured in seconds. */
@@ -257,6 +258,17 @@ export class Combat {
   bursts = 0;
   childShots = 0;
   private navigation: GroundNavigation;
+  private obstacleIndex: ObstacleIndex<Obstacle>;
+  private enemyIndex = new SpatialIndex<Enemy>(enemy => this.enemyRadius(enemy), enemy => enemy.active);
+  private enemySlots = new WeakMap<Enemy, number>();
+  private spatialActive = false;
+  private crowdCandidates: number[] = [];
+  private targetCandidates: number[] = [];
+  private shotCandidates: number[] = [];
+  private hopCandidates: number[] = [];
+  private obstacleCandidates: number[] = [];
+  private obstacleBuffer: Obstacle[] = [];
+  private areaBuffers: number[][] = [];
   private navigationGoal = { x: 0, z: 0 };
   /** Optional P1 context; absent for all preserved legacy modes. */
   party?: PartySystem;
@@ -312,7 +324,9 @@ export class Combat {
 
   constructor(private obstacles: readonly Obstacle[] = [], private boundary = ARENA_HALF_EXTENT, private random: () => number = Math.random, ruleset: Ruleset = 'classic') {
     this.ruleset = ruleset; this.progression = new Progression(random);
-    this.navigation = new GroundNavigation(obstacles, boundary);
+    this.obstacleIndex = new ObstacleIndex(() => this.obstacles);
+    this.navigation = new GroundNavigation(obstacles, boundary, this.obstacleIndex);
+    this.enemies.forEach((enemy, index) => this.enemySlots.set(enemy, index));
   }
 
   refreshWorld(x: number, z: number, revision: number) {
@@ -480,6 +494,7 @@ export class Combat {
       (kind==='fast'?40:kind==='tank'?FORMAL_ROCK_HP:kind==='draft-spore-bomber'?FORMAL_SPORE_HP:ENEMY_TYPES[kind].hp)
       *(ENCOUNTER_RULES.waveHealth[this.encounters.wave-1]??1)*(kind==='draft-crystal-swarm'?Math.min(2.5,this.endlessEnemyHealthMultiplier):this.endlessEnemyHealthMultiplier);
     this.spawned++;
+    if (this.spatialActive) this.enemyIndex.update(this.enemySlots.get(enemy)!);
     return enemy;
   }
 
@@ -534,6 +549,7 @@ export class Combat {
       enemy.hp = enemy.maxHp = boss
         ? ENCOUNTER_RULES.bossHp * this.endlessBossHealthMultiplier
         : ENCOUNTER_RULES.eliteHp * this.endlessEnemyHealthMultiplier;
+      if (this.spatialActive) this.enemyIndex.update(this.enemySlots.get(enemy)!);
     }
     return enemy;
   }
@@ -662,14 +678,45 @@ export class Combat {
     return undefined;
   }
 
+  private enemyBounds(minX: number, minZ: number, maxX: number, maxZ: number, out: number[]) {
+    // External previews can arrange pool positions directly between simulation ticks.
+    if (!this.spatialActive) this.enemyIndex.rebuild(this.enemies);
+    return this.enemyIndex.bounds(minX, minZ, maxX, maxZ, out);
+  }
+
+  private enemiesAlong(ax: number, az: number, bx: number, bz: number, radius: number, out: number[]) {
+    return this.enemyBounds(Math.min(ax, bx) - radius, Math.min(az, bz) - radius,
+      Math.max(ax, bx) + radius, Math.max(az, bz) + radius, out);
+  }
+
+  private obstaclesAlong(ax: number, az: number, bx: number, bz: number, radius: number) {
+    const indices = this.obstacleIndex.bounds(Math.min(ax, bx) - radius, Math.min(az, bz) - radius,
+      Math.max(ax, bx) + radius, Math.max(az, bz) + radius, this.obstacleCandidates);
+    const source = this.obstacleIndex.items;
+    this.obstacleBuffer.length = 0;
+    for (const index of indices) this.obstacleBuffer.push(source[index]);
+    return this.obstacleBuffer;
+  }
+
+  private visitNearbyEnemies(x: number, z: number, radius: number, visit: (enemy: Enemy) => void) {
+    // Damage can trigger another AoE synchronously; each nesting level owns its scratch list.
+    const buffer = this.areaBuffers.pop() ?? [];
+    try {
+      this.enemyBounds(x - radius, z - radius, x + radius, z + radius, buffer);
+      for (const index of buffer) visit(this.enemies[index]);
+    } finally { buffer.length = 0; this.areaBuffers.push(buffer); }
+  }
+
   findTarget(player: Point, range = WEAPON.range * this.stats.rangeMultiplier, includeBodyRadius = false): Enemy | undefined {
     let nearest: Enemy | undefined, best = Infinity;
-    for (const enemy of this.enemies) {
+    const candidates = this.enemyBounds(player.x - range, player.z - range, player.x + range, player.z + range, this.targetCandidates);
+    for (const index of candidates) {
+      const enemy = this.enemies[index];
       if (!enemy.active || enemy.spawnTime > 0 || enemy.hp <= 0) continue;
       const squared = (enemy.x - player.x) ** 2 + (enemy.z - player.z) ** 2;
       if (squared >= best || squared >= (range + (includeBodyRadius ? this.enemyRadius(enemy) : 0)) ** 2) continue;
       // Trunks and rocks are cover; select the nearest enemy with a clear shot.
-      if (this.obstacles.some((obstacle) => segmentHit(player.x, player.z, enemy.x, enemy.z, obstacle.x, obstacle.z, obstacle.radius + WEAPON.radius) !== Infinity)) continue;
+      if (this.covered(player.x, player.z, enemy.x, enemy.z)) continue;
       nearest = enemy;
       best = squared;
     }
@@ -677,6 +724,13 @@ export class Combat {
   }
 
   update(dt: number, player: Point, dash?: DashStep) {
+    this.enemyIndex.rebuild(this.enemies);
+    this.spatialActive = true;
+    try { this.updateTick(dt, player, dash); }
+    finally { this.spatialActive = false; }
+  }
+
+  private updateTick(dt: number, player: Point, dash?: DashStep) {
     this.soundEvents = 0;
     if (this.hp <= 0 || dt <= 0) return;
     // A final kill wins before an unused upgrade. Only the death presentation
@@ -723,6 +777,8 @@ export class Combat {
     for (const reward of this.treasureRewards) if (reward.active) {
       reward.age += dt; reward.active = reward.age < TREASURE_RUNNER.rewardDuration;
     }
+    // Spawns and pre-movement relics may have changed positions since tick entry.
+    this.enemyIndex.rebuild(this.enemies);
     for (const enemy of this.enemies) {
       if (!enemy.active) continue;
       enemy.previousX = enemy.x;
@@ -764,7 +820,9 @@ export class Combat {
         const distance = Math.max(.001, Math.hypot(gx, gz));
         steerX = gx / distance; steerZ = gz / distance;
       }
-      for (const other of this.enemies) {
+      const neighbors = this.enemyBounds(enemy.x - radius, enemy.z - radius, enemy.x + radius, enemy.z + radius, this.crowdCandidates);
+      for (const index of neighbors) {
+        const other = this.enemies[index];
         if (!other.active || other === enemy || other.spawnTime > 0) continue;
         const ox = enemy.x - other.x, oz = enemy.z - other.z;
         const distance = Math.hypot(ox, oz), avoid = radius + this.enemyRadius(other);
@@ -778,7 +836,7 @@ export class Combat {
           steerZ += oz / distance * strength;
         }
       }
-      if (!guided) for (const obstacle of this.obstacles) {
+      if (!guided) for (const obstacle of this.obstaclesAlong(enemy.x, enemy.z, enemy.x, enemy.z, radius + .7)) {
         const ox = enemy.x - obstacle.x, oz = enemy.z - obstacle.z;
         const distance = Math.hypot(ox, oz), avoid = obstacle.radius + radius + 0.7;
         if (distance < avoid && distance > 0.001) {
@@ -860,6 +918,7 @@ export class Combat {
       enemy.knockZ *= decay;
       enemy.facing = this.hasAttackIntents && (enemy.intent === 'windup' || enemy.intent === 'pounce') ? Math.atan2(enemy.aimX, enemy.aimZ) : Math.atan2(dx, dz);
       if (!this.infiniteWorld) clampToRectangularBoundary(enemy, this.boundary, radius);
+      this.enemyIndex.update(this.enemySlots.get(enemy)!);
       const travelled = Math.hypot(enemy.walkX, enemy.walkZ);
       if(this.encounters.enabled && enemy.kind==='normal' && !enemy.rank && enemy.intent==='chase')
         enemy.grassRollDistance=(enemy.grassRollDistance ?? 0)+travelled;
@@ -994,10 +1053,10 @@ export class Combat {
       shot.distance += WEAPON.speed * travelTime;
       if (shot.elemental) { this.elementalHit(shot); continue; }
       let earliest = Infinity, victim: Enemy | undefined;
-      for (const obstacle of this.obstacles) {
-        earliest = Math.min(earliest, segmentHit(shot.previousX, shot.previousZ, shot.x, shot.z, obstacle.x, obstacle.z, obstacle.radius + this.projectileRadius(shot)));
-      }
-      for (const enemy of this.enemies) {
+      earliest = this.hostileWallHit(shot.previousX, shot.previousZ, shot.x, shot.z, this.projectileRadius(shot));
+      const candidates = this.enemiesAlong(shot.previousX, shot.previousZ, shot.x, shot.z, this.projectileRadius(shot), this.shotCandidates);
+      for (const index of candidates) {
+        const enemy = this.enemies[index];
         if (!enemy.active || enemy.spawnTime > 0 || enemy.id === shot.ignoreEnemyId || (shot.hitIds??[]).includes(enemy.id)) continue;
         const t = segmentHit(shot.previousX, shot.previousZ, shot.x, shot.z, enemy.x, enemy.z, this.enemyRadius(enemy) + this.projectileRadius(shot));
         if (t < earliest) { earliest = t; victim = enemy; }
@@ -1125,7 +1184,10 @@ export class Combat {
     this.effect(this.anchorX,this.anchorZ,'hurt');
   }
   hostileWallHit(ax: number, az: number, bx: number, bz: number, radius: number) {
-    return this.obstacles.reduce((t,o)=>Math.min(t,segmentHit(ax,az,bx,bz,o.x,o.z,o.radius+radius)),Infinity);
+    let earliest = Infinity;
+    for (const o of this.obstaclesAlong(ax, az, bx, bz, radius))
+      earliest = Math.min(earliest, segmentHit(ax, az, bx, bz, o.x, o.z, o.radius + radius));
+    return earliest;
   }
   hostilePlayerHit(ax: number, az: number, bx: number, bz: number, radius: number) { return segmentHit(ax,az,bx,bz,0,0,radius); }
 
@@ -1175,13 +1237,13 @@ export class Combat {
     this.bursts++;
     this.effect(x, z, 'burst', original.kind, radius, undefined, undefined, rules.impactVfx);
     let explosionHits=0;
-    for (const enemy of this.enemies) {
-      if (!enemy.active || enemy.spawnTime > 0 || enemy.id === original.id) continue;
+    this.visitNearbyEnemies(x, z, radius, enemy => {
+      if (!enemy.active || enemy.spawnTime > 0 || enemy.id === original.id) return;
       const dx = enemy.x - x, dz = enemy.z - z, distance = Math.hypot(dx, dz);
-      if (distance > radius + this.enemyRadius(enemy)) continue;
+      if (distance > radius + this.enemyRadius(enemy)) return;
       explosionHits++;
       this.damageEnemy(enemy, damage * BURST_SEED.explosionDamage, dx / Math.max(.001, distance), dz / Math.max(.001, distance), 'player', relicSource);
-    }
+    });
     if((parent.generation??0)===0)this.relicBehaviors.gigapack.explosion(x,z,explosionHits,damage,relicSource);
     // Cache parent data before its just-freed slot can be reused by a child.
     for (let i = 0; i < childCount; i++) {
@@ -1197,9 +1259,15 @@ export class Combat {
 
   /** Swept circle contact plus bounded tangent sliding; never project a crowd through cover. */
   private moveEnemy(enemy: Enemy, dx: number, dz: number, radius: number) {
+    this.moveEnemyBody(enemy, dx, dz, radius);
+    const slot = this.enemySlots.get(enemy);
+    if (this.spatialActive && slot !== undefined) this.enemyIndex.update(slot);
+  }
+
+  private moveEnemyBody(enemy: Enemy, dx: number, dz: number, radius: number) {
     for (let pass = 0; pass < 3 && Math.hypot(dx, dz) > 1e-8; pass++) {
       let earliest = Infinity, blocker: Obstacle | undefined;
-      for (const obstacle of this.obstacles) {
+      for (const obstacle of this.obstaclesAlong(enemy.x, enemy.z, enemy.x + dx, enemy.z + dz, radius)) {
         const ox = enemy.x - obstacle.x, oz = enemy.z - obstacle.z;
         // Invalid external fixtures can start inside cover: allow only outward recovery.
         if (ox * ox + oz * oz < (obstacle.radius + radius) ** 2 && ox * dx + oz * dz > 0) continue;
@@ -1228,7 +1296,9 @@ export class Combat {
 
   private steerChild(shot: Projectile, dt: number) {
     let target: Enemy | undefined, nearest = 4;
-    for (const enemy of this.enemies) {
+    const candidates = this.enemyBounds(shot.x - nearest, shot.z - nearest, shot.x + nearest, shot.z + nearest, this.targetCandidates);
+    for (const index of candidates) {
+      const enemy = this.enemies[index];
       if (!enemy.active || enemy.spawnTime > 0 || enemy.id === shot.ignoreEnemyId || shot.hitIds?.includes(enemy.id)) continue;
       const distance = Math.hypot(enemy.x - shot.x, enemy.z - shot.z);
       if (distance < nearest && !this.covered(shot.x, shot.z, enemy.x, enemy.z)) { nearest = distance; target = enemy; }
@@ -1309,13 +1379,20 @@ export class Combat {
   }
 
   private nextHop(shot: Projectile, x: number, z: number) {
-    return this.enemies.filter(e => e.active && e.spawnTime <= 0 && e.hp > 0 && !shot.damageIds?.includes(e.id)
-      && Math.hypot(e.x-x,e.z-z) <= this.chainRange(shot) && !this.covered(x,z,e.x,e.z))
-      .sort((a,b) => Math.hypot(a.x-x,a.z-z)-Math.hypot(b.x-x,b.z-z) || a.id-b.id)[0];
+    const radius = this.chainRange(shot);
+    let target: Enemy | undefined, best = Infinity;
+    for (const index of this.enemyBounds(x - radius, z - radius, x + radius, z + radius, this.hopCandidates)) {
+      const e = this.enemies[index];
+      if (!e.active || e.spawnTime > 0 || e.hp <= 0 || shot.damageIds?.includes(e.id)) continue;
+      const distance = Math.hypot(e.x - x, e.z - z);
+      if (distance > radius || distance > best || distance === best && target && e.id >= target.id || this.covered(x, z, e.x, e.z)) continue;
+      target = e; best = distance;
+    }
+    return target;
   }
 
   covered(x: number, z: number, tx: number, tz: number) {
-    return this.obstacles.some(o => segmentHit(x,z,tx,tz,o.x,o.z,o.radius+WEAPON.radius) !== Infinity);
+    return this.hostileWallHit(x, z, tx, tz, WEAPON.radius) !== Infinity;
   }
 
   private beginHop(shot: Projectile, target: Enemy) {
@@ -1356,10 +1433,17 @@ export class Combat {
     const ids = shot.hitIds ?? (shot.hitIds = []);
     const damaged = shot.damageIds ?? (shot.damageIds = []);
     const chain = !!(shot.attackRules?.pairId&&WEAPON_PAIR_RECIPES[shot.attackRules.pairId].chain&&shot.attackRules.pairChain)||shot.fusionIds?.includes('chain-bubble') || shot.fusionIds?.includes('jump-thorn') || shot.relicSource?.kind === 'bubble-spore';
-    const wall = this.obstacles.reduce((t, o) => Math.min(t, segmentHit(shot.previousX, shot.previousZ, shot.x, shot.z, o.x, o.z, o.radius + this.projectileRadius(shot))), Infinity);
-    const contacts = this.enemies.filter(e => e.active && e.spawnTime <= 0 && !ids.includes(e.id) && (!chain || !damaged.includes(e.id)) && e.id !== shot.ignoreEnemyId && (!shot.hopTargetId || e.id === shot.hopTargetId))
-      .map(enemy => ({ enemy, t: segmentHit(shot.previousX, shot.previousZ, shot.x, shot.z, enemy.x, enemy.z, this.enemyRadius(enemy) + this.projectileRadius(shot)) }))
-      .filter(c => c.t < wall && c.t !== Infinity).sort((a, b) => a.t - b.t || a.enemy.id - b.enemy.id);
+    const radius = this.projectileRadius(shot);
+    const wall = this.hostileWallHit(shot.previousX, shot.previousZ, shot.x, shot.z, radius);
+    const contacts: { enemy: Enemy; t: number }[] = [];
+    for (const index of this.enemiesAlong(shot.previousX, shot.previousZ, shot.x, shot.z, radius, this.shotCandidates)) {
+      const enemy = this.enemies[index];
+      if (!enemy.active || enemy.spawnTime > 0 || ids.includes(enemy.id) || chain && damaged.includes(enemy.id)
+        || enemy.id === shot.ignoreEnemyId || shot.hopTargetId && enemy.id !== shot.hopTargetId) continue;
+      const t = segmentHit(shot.previousX, shot.previousZ, shot.x, shot.z, enemy.x, enemy.z, this.enemyRadius(enemy) + radius);
+      if (t < wall && t !== Infinity) contacts.push({ enemy, t });
+    }
+    contacts.sort((a, b) => a.t - b.t || a.enemy.id - b.enemy.id);
     for (const { enemy, t } of contacts) {
       if (!enemy.active) continue;
       const x = shot.previousX + (shot.x - shot.previousX) * t, z = shot.previousZ + (shot.z - shot.previousZ) * t;
@@ -1379,13 +1463,13 @@ export class Combat {
         if (deep || waterChain) {
           const rule = deep ? DEEP_BUBBLE : CHAIN_BUBBLE;
           this.relicBehaviors.areaHit(x,z,rule.radius*rules.areaMultiplier,this.projectileSource(shot));
-          for (const other of this.enemies) {
+          this.visitNearbyEnemies(x, z, rule.radius * rules.areaMultiplier, other => {
             if (!other.active || other.spawnTime > 0 || other.id === enemy.id || damaged.includes(other.id)
-              || Math.hypot(other.x - x, other.z - z) > rule.radius * rules.areaMultiplier + this.enemyRadius(other) || this.covered(x,z,other.x,other.z)) continue;
+              || Math.hypot(other.x - x, other.z - z) > rule.radius * rules.areaMultiplier + this.enemyRadius(other) || this.covered(x,z,other.x,other.z)) return;
             this.damageEnemy(other, (shot.baseDamage ?? shot.damage) * rule.damage, 0, 0, 'player', this.projectileSource(shot));
             damaged.push(other.id);
             if (other.active) other.slowTime = rules.slowDuration;
-          }
+          });
         }
       }
       if (!shot.attackRules?.pairId && shot.scatter && ((shot.generation ?? 0) === 0 || shot.relicSource?.copied)) {
@@ -1426,11 +1510,11 @@ export class Combat {
       this.effect(enemy.x,enemy.z,recipe.effect,enemy.kind,radius,recipe.fusionVisual,undefined,recipe.visual);
       const splash={...source,kind:'explosion' as const,primary:false};let explosionHits=0;
       this.relicBehaviors.areaHit(enemy.x,enemy.z,radius,source);
-      for(const other of this.enemies){
-        if(!other.active||other.spawnTime>0||other.id===enemy.id||shot.damageIds?.includes(other.id)||Math.hypot(other.x-enemy.x,other.z-enemy.z)>radius+this.enemyRadius(other)||this.covered(enemy.x,enemy.z,other.x,other.z))continue;
+      this.visitNearbyEnemies(enemy.x, enemy.z, radius, other => {
+        if(!other.active||other.spawnTime>0||other.id===enemy.id||shot.damageIds?.includes(other.id)||Math.hypot(other.x-enemy.x,other.z-enemy.z)>radius+this.enemyRadius(other)||this.covered(enemy.x,enemy.z,other.x,other.z))return;
         explosionHits++;shot.damageIds!.push(other.id);this.damageEnemy(other,shot.damage*(recipe.splash||recipe.splitSplash),0,0,'player',splash);
         if(other.active){other.pairSlowUntil=this.elapsed+rules.slowDuration;other.pairSlowFactor=recipe.slow;}
-      }
+      });
       this.relicBehaviors.gigapack.explosion(enemy.x,enemy.z,explosionHits,shot.damage,{...source,kind:'explosion'});
     }
     if(rules.pairSplit&&!source.copied&&!source.suppressRelics&&!shot.scatter){

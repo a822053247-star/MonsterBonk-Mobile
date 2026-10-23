@@ -8,7 +8,7 @@ test('pink weapons, overhead marks, bloom, death links and echo use supplied art
     <!doctype html><html><meta charset="utf-8"><div id="app"></div><script type="module">
     import '/src/style.css';import {createUI} from '/src/ui.ts';import {Game} from '/src/game.ts';import {ATTACKS} from '/src/run-build.ts';
     createUI(document.getElementById('app'));const g=window.game=new Game();
-    window.draw=()=>{g.placeCamera(true);g.party.syncLeader(g.position,0);g.partyView.render(1,g.combat.elapsed);g.monster.root.visible=!g.partyView.hasPixelLeader;g.updateHUD();g.combatView.render(1,g.combat.elapsed,g.position);g.renderer.render(g.scene,g.camera)};
+    window.draw=()=>{document.getElementById("world-loading").hidden=true;g.placeCamera(true);g.party.syncLeader(g.position,0);g.partyView.render(1,g.combat.elapsed);g.monster.root.visible=!g.partyView.hasPixelLeader;g.updateHUD();g.combatView.render(1,g.combat.elapsed,g.position);g.renderer.render(g.scene,g.camera)};
     window.reset=()=>{g.sleep();g.wake=()=>{};const c=g.combat;c.reset();c.automaticSpawning=false;c.obstacles=[];c.invulnerability=10000;
       g.position.set(0,0,0);g.previousPosition.copy(g.position);c.grantUpgrade('dream-dart-weapon');c.grantUpgrade('resonance-seed-weapon');
       for(const a of c.runBuild.attacks)a.cooldown=10000;document.getElementById('welcome').hidden=true;};

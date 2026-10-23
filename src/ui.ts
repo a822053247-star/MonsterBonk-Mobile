@@ -40,7 +40,7 @@ const portrait = `<svg class="portrait" viewBox="0 0 80 80" aria-hidden="true"><
 export function createUI(root: HTMLElement) {
   root.innerHTML = `
     <canvas id="game-canvas" aria-label="幻兽幸存者游戏场景"></canvas>
-    <div id="world-loading" class="world-loading" role="status" aria-live="polite" hidden><strong>正在进入草场…</strong><span>地图准备好后即刻出发</span></div>
+    <div id="world-loading" class="world-loading" role="status" aria-live="polite" hidden><strong>正在准备战斗画面…</strong><span>准备完成后自动继续</span></div>
     <div class="vignette" aria-hidden="true"></div>
     <div id="damage-overlay" class="damage-overlay" aria-hidden="true"></div>
     <section id="menu" class="menu screen" aria-label="主菜单">
@@ -278,7 +278,7 @@ export function renderRunShop(run: RunFlow, combat: Combat) {
     ? `${run.waveLabel}完成 · 魔法商店`
     : `第 ${run.wave} 波完成 · 魔法商店`;
   document.getElementById('shop-coins')!.textContent = `${run.coins} 金币`;
-  document.getElementById('shop-health')!.textContent = `生命 ${Math.ceil(combat.hp)} / ${combat.maxHp}`;
+  document.getElementById('shop-health')!.textContent = `生命 ${Math.floor(combat.hp)} / ${Math.floor(combat.maxHp)}`;
   const items = document.getElementById('shop-items')!;
   const pageKey = `${shop.token.split(':')[0]}:${shop.refreshes}`;
   const resetScroll = items.dataset.page !== pageKey;

@@ -119,6 +119,10 @@ export class EnemyPixelView {
 
   ready(kind: EnemyKind): kind is PixelEnemyKind { return !this.disposed && (kind === 'tank' || !!this.batches.get(kind)?.lease.entry.ready); }
   enableBasics() { if (!this.disposed) for (const batch of this.batches.values()) batch.lease.start(); }
+  get startupSettled() {
+    for (const { lease } of this.batches.values()) if (!lease.entry.ready && !lease.entry.failed) return false;
+    return true;
+  }
   height(kind: PixelEnemyKind) { return ENEMY_PIXEL_HEIGHTS[kind] * this.displayScale; }
   begin() { this.renderSerial++; for (const { mesh } of this.batches.values()) mesh.count = 0; }
   resetDirections() { this.directions.clear(); }

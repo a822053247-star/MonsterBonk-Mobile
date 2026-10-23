@@ -65,7 +65,7 @@ export class FrostView {
       if (!shot.active || shot.attackId !== 'frost-crystal' || shot.vfxPresetId) continue;
       const x = THREE.MathUtils.lerp(shot.previousX, shot.x, alpha), z = THREE.MathUtils.lerp(shot.previousZ, shot.z, alpha);
       const scale=combat.projectileRadius(shot)/.2;
-      this.crystals.putRect(0, x, z, .65*scale, 1.28*scale, .98, Math.atan2(shot.vx, shot.vz) + Math.PI, .3);
+      this.crystals.putRect(0, x, z, .82*scale, 1.5*scale, .98, Math.atan2(shot.vx, shot.vz) + Math.PI, .3);
     }
     for (const enemy of combat.enemies) {
       if (!enemy.active || enemy.spawnTime > 0 || !(enemy.freezeTime! > 0)) continue;

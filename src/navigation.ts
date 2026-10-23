@@ -1,4 +1,5 @@
 import { isInsideRectangularBoundary } from './arena-boundary';
+import { ObstacleIndex } from './spatial-index';
 export interface GroundPoint { x: number; z: number }
 export interface GroundObstacle extends GroundPoint { radius: number }
 
@@ -10,39 +11,53 @@ export class GroundNavigation {
   private readonly blocked: Uint8Array;
   private readonly distance: Int32Array;
   private readonly queue: Int32Array;
-  private obstacleCount = -1;
+  private obstacleVersion = -1;
+  private topologyDirty = true;
+  private readonly connections: Uint8Array;
+  private readonly knownConnections: Uint8Array;
+  private obstacleCandidates: number[] = [];
   private targetCell = -2;
   private centerX = 0;
   private centerZ = 0;
   private readonly clearance = .95;
 
-  constructor(private obstacles: readonly GroundObstacle[], private boundary: number) {
+  constructor(obstacles: readonly GroundObstacle[], private boundary: number,
+    private obstacleIndex = new ObstacleIndex(() => obstacles)) {
     this.width = Math.ceil(boundary * 2) + 1;
     this.blocked = new Uint8Array(this.width ** 2);
     this.distance = new Int32Array(this.width ** 2);
     this.queue = new Int32Array(this.width ** 2);
+    this.connections = new Uint8Array(this.width ** 2);
+    this.knownConnections = new Uint8Array(this.width ** 2);
   }
 
-  invalidate() { this.obstacleCount = -1; this.targetCell = -2; }
+  invalidate() { this.obstacleIndex.invalidate(); this.topologyDirty = true; this.targetCell = -2; }
 
   setCenter(x: number, z: number, force = false) {
     if (!force && Math.hypot(x - this.centerX, z - this.centerZ) < 7) return;
     this.centerX = x; this.centerZ = z;
-    this.invalidate();
+    this.topologyDirty = true; this.targetCell = -2;
   }
 
   private clear(x: number, z: number, radius: number) {
-    return isInsideRectangularBoundary(x - this.centerX, z - this.centerZ, this.boundary, radius)
-      && this.obstacles.every(o => {
-        const r = o.radius + radius;
-        return Math.abs(x - o.x) > r || Math.abs(z - o.z) > r || Math.hypot(x - o.x, z - o.z) >= r;
-      });
+    if (!isInsideRectangularBoundary(x - this.centerX, z - this.centerZ, this.boundary, radius)) return false;
+    const indices = this.obstacleIndex.bounds(x - radius, z - radius, x + radius, z + radius, this.obstacleCandidates);
+    const obstacles = this.obstacleIndex.items;
+    for (const index of indices) {
+      const o = obstacles[index], r = o.radius + radius;
+      if (Math.abs(x - o.x) <= r && Math.abs(z - o.z) <= r && Math.hypot(x - o.x, z - o.z) < r) return false;
+    }
+    return true;
   }
 
   private line(ax: number, az: number, bx: number, bz: number, radius: number) {
     if (!this.clear(ax, az, radius) || !this.clear(bx, bz, radius)) return false;
     const dx = bx - ax, dz = bz - az, length = dx * dx + dz * dz;
-    for (const o of this.obstacles) {
+    const indices = this.obstacleIndex.bounds(Math.min(ax, bx) - radius, Math.min(az, bz) - radius,
+      Math.max(ax, bx) + radius, Math.max(az, bz) + radius, this.obstacleCandidates);
+    const obstacles = this.obstacleIndex.items;
+    for (const index of indices) {
+      const o = obstacles[index];
       const t = length ? Math.max(0, Math.min(1, ((o.x - ax) * dx + (o.z - az) * dz) / length)) : 0;
       if ((ax + dx * t - o.x) ** 2 + (az + dz * t - o.z) ** 2 < (o.radius + radius) ** 2) return false;
     }
@@ -72,9 +87,11 @@ export class GroundNavigation {
   }
 
   private prepare(target: GroundPoint) {
-    if (this.obstacleCount !== this.obstacles.length) {
-      this.obstacleCount = this.obstacles.length;
+    this.obstacleIndex.ensure();
+    if (this.topologyDirty || this.obstacleVersion !== this.obstacleIndex.version) {
+      this.topologyDirty = false; this.obstacleVersion = this.obstacleIndex.version;
       for (let i = 0; i < this.blocked.length; i++) this.blocked[i] = +!this.clear(this.x(i), this.z(i), this.clearance);
+      this.connections.fill(0); this.knownConnections.fill(0);
       this.targetCell = -2;
     }
     const goal = this.cell(target, false);
@@ -93,8 +110,17 @@ export class GroundNavigation {
         const next = z * this.width + x;
         if (this.blocked[next] || this.distance[next] >= 0) continue;
         if (dx && dz && (this.blocked[cz * this.width + x] || this.blocked[z * this.width + cx])) continue;
-        // Grid endpoints alone do not exclude a small trunk between them.
-        if (!this.line(this.x(index), this.z(index), this.x(next), this.z(next), this.clearance)) continue;
+        // Cache map-dependent edge clearance across player target-cell changes.
+        const direction = (dz + 1) * 3 + dx + 1;
+        const ordinal = direction > 4 ? direction - 1 : direction, bit = 1 << ordinal;
+        if (!(this.knownConnections[index] & bit)) {
+          const reverse = 1 << (7 - ordinal);
+          this.knownConnections[index] |= bit; this.knownConnections[next] |= reverse;
+          if (this.line(this.x(index), this.z(index), this.x(next), this.z(next), this.clearance)) {
+            this.connections[index] |= bit; this.connections[next] |= reverse;
+          }
+        }
+        if (!(this.connections[index] & bit)) continue;
         this.distance[next] = this.distance[index] + 1;
         this.queue[write++] = next;
       }

@@ -24,8 +24,8 @@ test('chain waits for charge, visits three unique targets and decays each hop', 
   c.thunder.update(.11); expect(c.thunder.telemetry.hits).toBe(0);
   c.thunder.update(.01); expect(a.hp).toBe(9978); expect(b.hp).toBe(10000);
   expect(c.soundEvents & SKILL_SOUNDS.lightning).toBeGreaterThan(0);
-  c.thunder.update(.09); expect(b.hp).toBeCloseTo(10000 - 22 * .82);
-  c.thunder.update(.09); expect(d.hp).toBeCloseTo(10000 - 22 * .82 ** 2);
+  c.thunder.update(.09); expect(b.hp).toBeCloseTo(10000 - 22 * thunderStats(1).decay);
+  c.thunder.update(.09); expect(d.hp).toBeCloseTo(10000 - 22 * thunderStats(1).decay ** 2);
   c.thunder.update(1); expect(a.hp).toBe(9978); expect(extra.hp).toBe(10000);
   expect(c.thunder.telemetry.hits).toBe(3); expect(c.thunder.inspect().active).toHaveLength(0);
 });
@@ -41,7 +41,7 @@ test('echo rune becomes available for intrinsic lightning chains and applies its
   expect(c.grantUpgrade('echo-rune')).toBe(true);
   const a = target(c, 3), b = target(c, 7);
   c.thunder.cast(snapshot(c), a); c.thunder.update(.25);
-  expect(a.hp).toBe(9978); expect(b.hp).toBeCloseTo(10000 - 22 * .82 * .7);
+  expect(a.hp).toBe(9978); expect(b.hp).toBeCloseTo(10000 - 22 * thunderStats(1).decay * snapshot(c).rules.chainDecay);
 });
 
 test('max level resolves six targets identically with coarse or fine time steps', () => {

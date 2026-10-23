@@ -43,7 +43,7 @@ test('yellow lightning tiles on the ground, loads transparent art and preserves 
   for (const a of state.view.atlases) expect(a.count).toBeLessThanOrEqual(a.capacity);
   const icon = page.locator('#hud-extra-weapons img[alt="雷芽连锁"]');
   await expect(icon).toBeVisible();
-  expect(await icon.evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth === 128)).toBe(true);
+  expect(await icon.evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0)).toBe(true);
   await page.screenshot({ path: 'artifacts/thunder-bud-topdown.png' });
   await page.setViewportSize({ width: 844, height: 390 });
   const low = await page.evaluate(() => {

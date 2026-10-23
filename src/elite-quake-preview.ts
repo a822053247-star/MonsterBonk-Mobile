@@ -112,7 +112,7 @@ function draw() {
     const warning = drill.zones.filter(zone => zone.active && !zone.impacted && zone.age >= 0).length;
     element('#phase').textContent = !drill.alive ? '演练结束' : paused ? '移动躲避地震' : warning ? `${warning} 处地震正在蓄力` : drill.zones.some(zone => zone.active) ? '落地冲击 · 保持移动' : '准备下一轮';
     element('.stage-note small').textContent = 'WASD / 方向键移动，触屏拖动左下摇杆';
-    element('#drill-hp').textContent = String(Math.round(combat.hp)); element<HTMLProgressElement>('#drill-health').value = combat.hp;
+    element('#drill-hp').textContent = String(Math.floor(combat.hp)); element<HTMLProgressElement>('#drill-health').value = combat.hp;
     element('#drill-dodged').textContent = String(drill.dodged); element('#drill-death').hidden = drill.alive;
     element('#drill-hit').style.opacity = String(Math.min(.65, combat.hurtFlash * 2));
     element<HTMLButtonElement>('#drill-trigger').disabled = !ready || !drill.canTrigger;

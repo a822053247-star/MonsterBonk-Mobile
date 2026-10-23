@@ -1,11 +1,12 @@
 import { chromium } from '@playwright/test';
 import { mkdir } from 'node:fs/promises';
 
-const groups = [
+const updated = process.argv.includes('--updated');
+const groups = updated ? [['thunder-bud-weapon', 'shatter-ring', 'glacier-trail']] : [
   ['thorn-wheel-weapon', 'tidal-blade-weapon', 'thunder-bud-weapon'],
   ['frost-crystal-weapon', 'shatter-ring', 'glacier-trail'],
 ];
-const output = 'artifacts/weapon-cards';
+const output = updated ? 'artifacts/weapon-cards-updated' : 'artifacts/weapon-cards';
 await mkdir(output, { recursive: true });
 const browser = await chromium.launch();
 try {

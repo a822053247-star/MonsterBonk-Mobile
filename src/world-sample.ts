@@ -1,9 +1,10 @@
 import * as THREE from 'three';
 import type { Obstacle } from './world';
 import { fixedWorldLayout, SAMPLE_PATHS, ROAD_WIDTH, sampleObstacles, type WorldLayout } from './world-layout';
+import { TERRAIN_PIXELS_PER_UNIT } from './infinite-terrain';
 
 const SIZE = 128;
-export const PIXELS_PER_UNIT = 16;
+export const PIXELS_PER_UNIT = TERRAIN_PIXELS_PER_UNIT;
 
 function loadImage(path: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {

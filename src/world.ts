@@ -4,6 +4,7 @@ import { fixedWorldLayout } from './world-layout';
 import { generateWorld } from './world-generator';
 import { ARENA_HALF_EXTENT } from './arena-boundary';
 import { createInfiniteWorld } from './infinite-world';
+import type { SpawnViewport } from './spawn-layout';
 
 export const WORLD_RADIUS = 33;
 
@@ -90,14 +91,14 @@ export interface World {
   readonly revision: number;
   setSample(enabled: boolean, newMap?: boolean): void;
   setInfinite(enabled: boolean, newMap?: boolean): void;
-  update(x: number, z: number): void;
+  update(x: number, z: number, view?: SpawnViewport): void;
   inspect(): { layout: string; status: string; obstacles: number; seed: string | null; chunks?: number;
     generation: { version: number; attempt: number; fallback: boolean; valid: boolean; walkable: number; reachable: number } | null };
   dispose(): void;
 }
 
 /** Default to the pixel meadow; legacy modes and explicit fallback retain their own scenery. */
-export function createWorld(): World {
+export function createWorld(prepareTexture: (texture: THREE.Texture) => void = () => {}): World {
   const legacy = createLegacyWorld();
   const query = new URLSearchParams(window.location.search);
   const fixed = query.get('world') === 'fixed';
@@ -106,7 +107,14 @@ export function createWorld(): World {
   const freshSeed = () => crypto.getRandomValues(new Uint32Array(1))[0].toString(36) + '-' + sequence++;
   let generated = fixed ? null : generateWorld(pinnedSeed ?? freshSeed());
   const sample = createSampleWorld(generated?.layout ?? fixedWorldLayout());
-  const infinite = createInfiniteWorld(pinnedSeed ?? freshSeed());
+  const infinite = createInfiniteWorld(pinnedSeed ?? freshSeed(), () => {
+    if (!disposed && requestedInfinite) apply();
+  }, error => {
+    if (disposed) return;
+    infiniteFailed = true; infinite.setEnabled(false);
+    console.warn('Infinite terrain unavailable; using original map.', error);
+    apply();
+  }, prepareTexture);
   const group = new THREE.Group();
   const boundary = createArenaBoundary();
   group.add(legacy.group, sample.group, infinite.group, boundary);
@@ -115,9 +123,9 @@ export function createWorld(): World {
   let requested = query.get('world') !== 'legacy', requestedInfinite = false;
   let ready = false, infiniteReady = false, failed = false, infiniteFailed = false, disposed = false;
   let hasRun = false, infiniteRun = false, revision = 0;
-  const loading = () => requestedInfinite ? !infiniteReady && !infiniteFailed : requested && !ready && !failed;
+  const loading = () => requestedInfinite ? (!infiniteReady || !infinite.playable) && !infiniteFailed : requested && !ready && !failed;
   const apply = () => {
-    const activeInfinite = requestedInfinite && infiniteReady;
+    const activeInfinite = requestedInfinite && infiniteReady && infinite.chunkCount > 0 && !infiniteFailed;
     const activeSample = requested && ready && !activeInfinite;
     legacy.group.visible = !activeSample && !activeInfinite && !loading();
     sample.group.visible = activeSample;
@@ -133,7 +141,12 @@ export function createWorld(): World {
     console.warn('Pixel world unavailable; using original map.', error);
     apply();
   });
-  void infinite.ready.then(() => { if (!disposed) { infiniteReady = true; apply(); } }).catch(error => {
+  void infinite.ready.then(() => {
+    if (disposed) return;
+    infiniteReady = true;
+    // The selected viewport is already queued; do not reset it while art finishes.
+    if (requestedInfinite) apply();
+  }).catch(error => {
     if (disposed) return;
     infiniteFailed = true;
     console.warn('Infinite meadow unavailable; using original map.', error);
@@ -154,24 +167,24 @@ export function createWorld(): World {
         }
         hasRun = true;
       }
-      requested = enabled; requestedInfinite = false; apply();
+      requested = enabled; requestedInfinite = false; infinite.setEnabled(false); apply();
     },
     setInfinite(enabled, newMap = false) {
       if (disposed) return;
+      requestedInfinite = enabled;
+      infinite.setEnabled(enabled && !infiniteFailed);
       if (enabled && newMap && infiniteRun && !pinnedSeed) infinite.setSeed(freshSeed());
       if (enabled) { infiniteRun = true; infinite.update(0, 0); }
-      requestedInfinite = enabled;
       if (enabled) requested = false;
       apply();
     },
-    update(x, z) {
-      if (infinite.group.visible && infinite.update(x, z)) {
-        obstacles.splice(0, obstacles.length, ...infinite.obstacles);
-        revision++;
+    update(x, z, view) {
+      if (requestedInfinite && !infiniteFailed) {
+        if (infinite.update(x, z, view)) apply();
       } else if (sample.group.visible) sample.update(x, z);
     },
     inspect: () => ({ layout: infinite.group.visible ? 'infinite-pixel-meadow' : sample.group.visible ? generated ? 'random-pixel-meadow' : 'fixed-pixel-meadow' : 'legacy',
-      status: requestedInfinite ? infiniteFailed ? 'fallback' : infiniteReady ? 'ready' : 'loading' : failed ? 'fallback' : ready ? 'ready' : 'loading',
+      status: requestedInfinite ? infiniteFailed ? 'fallback' : infiniteReady && infinite.playable ? 'ready' : 'loading' : failed ? 'fallback' : ready ? 'ready' : 'loading',
       obstacles: obstacles.length, chunks: infinite.group.visible ? infinite.chunkCount : 0,
       seed: infinite.group.visible ? infinite.seed : sample.group.visible ? generated?.seed ?? null : null,
       generation: sample.group.visible && generated ? { version: generated.version, attempt: generated.attempt, fallback: generated.fallback,

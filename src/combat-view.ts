@@ -164,6 +164,15 @@ export class CombatView {
 
   updateView(camera: THREE.Camera, viewportHeight: number, frustumHeight: number) { this.dreamView.setView(camera); this.gigapack.setView(camera); this.grassBlobs.setView(camera); this.specialEnemies.setView(camera,viewportHeight,frustumHeight); this.flameSweep?.setView(camera); this.shockwaveView.setView(camera); this.encounters.setView(camera); this.pixelEnemies?.setView(camera, viewportHeight, frustumHeight); this.firePixels?.setView(camera); this.fusionPixels?.setView(camera); this.feedback?.setView(camera); this.reactions?.setView(camera); }
 
+  get startupSettled() {
+    if (this.pixelsEnabled && !this.pixelEnemies?.startupSettled) return false;
+    if (this.combat.fusionEnabled) {
+      if (!this.firePixels || !this.firePixels.loaded && !this.firePixels.failed) return false;
+      if (!this.fusionPixels || !this.fusionPixels.loaded && !this.fusionPixels.failed) return false;
+    }
+    return true;
+  }
+
   setFusion(enabled: boolean, _elemental = false) {
     if(enabled)this.grassBlobs.enable();
     if (enabled && !this.flameSweep) { this.flameSweep = new FlameSweepView(); this.group.add(this.flameSweep.group, this.flameSweep.areaGroup); }
@@ -269,22 +278,25 @@ export class CombatView {
       const color = pair?(pair==='steam-comet'?'#b9edff':pair==='blazing-thorn'?'#ffae43':'#6de3af'):preset?.color ?? (attack ? ATTACKS[attack].color : '#a594f2');
       const bubble = attack === 'bubble', leaf = attack === 'leaf';
       const child = (shot.generation??0)>0, physicalScale=this.combat.projectileRadius(shot)/.2;
-      const scale = this.combat.usesRunBuild ? physicalScale : (child ? BURST_SEED.childSize : 1) * (preset?.scale ?? 1);
+      // Keep basic shots readable beside the pixel leader, while retaining level/child scaling.
+      const bodyScale = !shot.vfxPresetId && !pair ? (attack === 'spark' ? 1.5 : bubble ? 1.1 : leaf ? 1.25 : 1) : 1;
+      const displayScale = physicalScale * bodyScale;
+      const scale = this.combat.usesRunBuild ? displayScale : (child ? BURST_SEED.childSize : 1) * (preset?.scale ?? 1) * bodyScale;
       const clip = shot.vfxPresetId || pair ? undefined : elementalClip(shot.fusionIds?.[0] ?? (child && leaf ? 'thorn-scatter' : undefined));
       if (clip && this.fusionPixels?.loaded && (!preset || this.detail > 2 || preset.low.animated)) {
         const frame = clipFrame(clip.flight, shot.age ?? 0, clip.flightFPS, true)!;
         const arc = shot.hopTargetId ? Math.sin(Math.PI * Math.min(1, (shot.hopElapsed ?? 0) / (shot.hopDuration || .12))) * .55 : 0;
-        this.fusionPixels.put(clip.row, frame, x, 1.15 + arc, z, COMBAT_CLARITY.projectileSize * (this.combat.usesRunBuild?physicalScale:(child?COMBAT_CLARITY.childSize/COMBAT_CLARITY.projectileSize:1)*(preset?.scale??1)), shot.vx, shot.vz, false, clip.row === 2 ? (shot.age ?? 0) * 8 : 0);
+        this.fusionPixels.put(clip.row, frame, x, 1.15 + arc, z, COMBAT_CLARITY.projectileSize * (this.combat.usesRunBuild?displayScale:(child?COMBAT_CLARITY.childSize/COMBAT_CLARITY.projectileSize:1)*(preset?.scale??1)*bodyScale), shot.vx, shot.vz, false, clip.row === 2 ? (shot.age ?? 0) * 8 : 0);
       }
       else if (!pair && preset?.animation && (this.detail > 2 || preset.low.animated)
         && (preset.animation.atlas === 'fire' ? this.firePixels : this.fusionPixels)?.loaded) {
         const a = preset.animation, batch = a.atlas === 'fire' ? this.firePixels! : this.fusionPixels!;
         batch.put(child ? a.childRow ?? a.row : a.row, clipFrame(a.frames, shot.age ?? 0, a.fps, true)!, x, 1.15, z,
-          COMBAT_CLARITY.projectileSize * (this.combat.usesRunBuild?physicalScale:(child?COMBAT_CLARITY.childSize/COMBAT_CLARITY.projectileSize:1)*preset.scale), shot.vx, shot.vz, false, 0, preset.color);
+          COMBAT_CLARITY.projectileSize * (this.combat.usesRunBuild?displayScale:(child?COMBAT_CLARITY.childSize/COMBAT_CLARITY.projectileSize:1)*preset.scale*bodyScale), shot.vx, shot.vz, false, 0, preset.color);
       }
-      else if (!pair && !preset && this.combat.fusionEnabled && !bubble && !leaf && this.firePixels?.loaded) this.firePixels.put(child ? 1 : 0, Math.floor((shot.age ?? 0) * 12) % 4, x, 1.15, z, COMBAT_CLARITY.projectileSize*(this.combat.usesRunBuild?physicalScale:(child?COMBAT_CLARITY.childSize/COMBAT_CLARITY.projectileSize:1)), shot.vx, shot.vz);
+      else if (!pair && !preset && this.combat.fusionEnabled && !bubble && !leaf && this.firePixels?.loaded) this.firePixels.put(child ? 1 : 0, Math.floor((shot.age ?? 0) * 12) % 4, x, 1.15, z, COMBAT_CLARITY.projectileSize*(this.combat.usesRunBuild?displayScale:(child?COMBAT_CLARITY.childSize/COMBAT_CLARITY.projectileSize:1)*bodyScale), shot.vx, shot.vz);
       else {
-        this.put(this.bolts, x, 1.15, z, (bubble ? 0.34 : 0.22) * scale, (leaf ? 0.09 : bubble ? 0.34 : 0.22) * scale, (bubble ? 0.34 : leaf ? 0.65 : 0.48) * scale, 0, angle, 0, color);
+        this.put(this.bolts, x, 1.15, z, (bubble ? 0.34 : 0.22) * scale, (leaf ? 0.16 : bubble ? 0.34 : 0.22) * scale, (bubble ? 0.34 : leaf ? 0.65 : 0.48) * scale, 0, angle, 0, color);
         this.put(this.boltCores, x + Math.sin(angle) * 0.12, 1.15, z + Math.cos(angle) * 0.12, 0.12 * scale, 0.12 * scale, 0.3 * scale, 0, angle);
       }
       if (preset && this.detail <= 2 && !preset.low.trail) continue;

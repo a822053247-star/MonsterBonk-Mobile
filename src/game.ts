@@ -45,6 +45,8 @@ export class Game {
   private pixelPartyEnabled = new URLSearchParams(window.location.search).get('partyVisual') !== 'legacy';
   private partyView = new PartyView(this.party, this.pixelPartyEnabled);
   private partyPrototype = false;
+  private startupPending = false;
+  private worldEntered = false;
   private selectedSpecies: SpeciesId = 'yanrong';
   private prototypeVariant: 'sample' | 'fusion' | 'legacy-party' | 'infinite' = 'sample';
   private world: World;
@@ -109,7 +111,9 @@ export class Game {
     const sun = new THREE.DirectionalLight('#fff0d0', 2.05);
     sun.position.set(-10, 18, 12);
     this.scene.add(sun);
-    this.world = createWorld();
+    this.world = createWorld(texture => {
+      if (!this.contextLost && !this.disposed) this.renderer.initTexture(texture);
+    });
     this.scene.add(this.world.group, this.monster.root, this.partyView.group);
     this.monster.root.visible = false;
     this.combat = new Combat(this.world.obstacles, ARENA_HALF_EXTENT);
@@ -384,10 +388,32 @@ export class Game {
     document.getElementById('choose-creature')!.setAttribute('aria-label', `选择出战幻兽，当前${definition.name}`);
   }
 
+  private get sceneLoading() {
+    if (this.world.loading) return true;
+    if (!this.startupPending) return false;
+    const portrait = document.getElementById('creature-portrait') as HTMLImageElement;
+    const portraitSettled = portrait.dataset.species === this.party.leader.species
+      && (portrait.complete && portrait.naturalWidth > 0 || portrait.dataset.loadState === 'failed');
+    if (!this.partyView.startupSettled || !this.combatView.startupSettled || !portraitSettled) return true;
+    this.startupPending = false;
+    return false;
+  }
+
+  private showSceneLoading() {
+    const overlay = document.getElementById('world-loading')!;
+    if (overlay.hidden || overlay.classList.contains('streaming') !== this.worldEntered) {
+      overlay.classList.toggle('streaming', this.worldEntered);
+      overlay.querySelector('strong')!.textContent = this.worldEntered ? '正在准备前方地图…' : '正在准备战斗画面…';
+    }
+    overlay.hidden = false;
+  }
+
   private start(ruleset: Ruleset = this.runRuleset, partyPrototype = this.partyPrototype, newMap = false, variant = this.prototypeVariant) {
     if (this.portrait || this.contextLost) return;
     this.runRuleset = ruleset;
     this.partyPrototype = partyPrototype;
+    this.startupPending = partyPrototype;
+    this.worldEntered = false;
     this.prototypeVariant = partyPrototype ? variant : 'sample';
     this.applyGraphics();
     // Infinite world and Endless survival are paired here; the formal fusion challenge remains finite.
@@ -445,8 +471,9 @@ export class Game {
     this.monster.body.visible = true;
     this.trails.forEach((trail) => { trail.remaining = 0; trail.mesh.visible = false; });
     this.mode = 'playing';
-    this.input.setEnabled(!this.world.loading);
-    document.getElementById('world-loading')!.hidden = !this.world.loading;
+    this.input.setEnabled(!this.sceneLoading);
+    if (this.sceneLoading) this.showSceneLoading(); else document.getElementById('world-loading')!.hidden = true;
+    this.audio.setActive(!this.sceneLoading);
     document.getElementById('menu')!.hidden = true;
     document.getElementById('hud')!.hidden = false;
     document.getElementById('pause-screen')!.hidden = true;
@@ -458,6 +485,7 @@ export class Game {
     this.welcome.querySelector('p')!.textContent = endless ? '六波循环生存 · 第五波旗帜大波与商店 · 第六波 Boss 循环' : this.combat.fusionEnabled && species !== 'yanrong' ? `${CREATURES[species].name}出战 · 摇杆移动 · 自动攻击 · 升级三选一` : this.combat.fusionEnabled ? '六波自动战斗 · 升级形成融合 · 前四波连续迎战，第五波后才可购物' : partyPrototype && variant === 'legacy-party' ? '三兽兼容模式 · 主控移动，伙伴跟随并自动攻击' : partyPrototype ? '摇杆操控焰绒 · 自动攻击 · 沿泥路绕过林地与水岸' : this.challenge ? '击败三波即可通关 · 冲锋命中 6 次、打断 2 次各加一星' : this.combat.isTrial ? '冲刺命中可击退和打断 · 留意黄色扑击预警线' : '移动躲避敌人，焰绒会自动施法 · 靠近拾取经验';
     this.accumulator = 0;
     this.placeCamera(true);
+    this.world.update(this.position.x, this.position.z, this.cameraFootprint());
     this.updateHUD();
     this.wake();
   }
@@ -488,6 +516,8 @@ export class Game {
   }
 
   private showMenu() {
+    this.startupPending = false;
+    this.worldEntered = false;
     document.getElementById('world-loading')!.hidden = true;
     this.combat.runBuild.clearPairFusions();
     this.audio.setWave();
@@ -555,7 +585,7 @@ export class Game {
   }
 
   private step(dt: number) {
-    if (this.mode !== 'playing' || this.world.loading) return;
+    if (this.mode !== 'playing' || this.sceneLoading) return;
     if (this.run?.phase === 'intermission') {
       this.run.updateRest(dt, this.combat);
       this.syncRunPhase();
@@ -610,7 +640,8 @@ export class Game {
     this.position.x += dx;
     this.position.z += dz;
     // Refresh streamed chunks before resolving collisions or enemy navigation.
-    this.world.update(this.position.x, this.position.z);
+    this.world.update(this.position.x, this.position.z, this.cameraFootprint());
+    if (this.sceneLoading) { this.accumulator = 0; return; }
     this.combat.refreshWorld(this.position.x, this.position.z, this.world.revision);
     // Circle collisions allow sliding around trunks and rocks.
     for (const obstacle of this.world.obstacles) {
@@ -878,8 +909,9 @@ export class Game {
     fallbackPortrait.style.display = species === 'yanrong' ? '' : 'none';
     if (portrait.dataset.species !== species) {
       portrait.classList.remove('art-loaded');
-      portrait.onload = () => { portrait.classList.add('art-loaded'); fallbackPortrait.style.display = 'none'; };
-      portrait.onerror = () => { portrait.classList.remove('art-loaded'); portrait.hidden = true; fallbackPortrait.style.display = species === 'yanrong' ? '' : 'none'; };
+      portrait.dataset.loadState = 'pending';
+      portrait.onload = () => { portrait.dataset.loadState = 'ready'; portrait.classList.add('art-loaded'); fallbackPortrait.style.display = 'none'; };
+      portrait.onerror = () => { portrait.dataset.loadState = 'failed'; portrait.classList.remove('art-loaded'); portrait.hidden = true; fallbackPortrait.style.display = species === 'yanrong' ? '' : 'none'; };
       portrait.src = `${import.meta.env.BASE_URL}assets/pixel/${PIXEL_CREATURE_ASSETS[species]}`;
       portrait.dataset.species = species;
     }
@@ -974,15 +1006,16 @@ export class Game {
     } else this.welcome.classList.toggle('faded', this.elapsed > 5 || this.distance > 8);
     this.boundaryHint.hidden = this.combat.infiniteWorld || Math.max(Math.abs(this.position.x), Math.abs(this.position.z)) < ARENA_HALF_EXTENT - PLAYER_COLLISION_RADIUS - 0.5;
     const hp = this.combat.hp, maxHp = this.combat.maxHp;
-    this.healthValue.textContent = `${hp} / ${maxHp}`;
+    const displayHp = Math.floor(hp), displayMaxHp = Math.floor(maxHp);
+    this.healthValue.textContent = `${displayHp} / ${displayMaxHp}`;
     this.healthFill.style.width = `${hp / maxHp * 100}%`;
-    this.healthBar.setAttribute('aria-valuemax', String(maxHp));
-    this.healthBar.setAttribute('aria-valuenow', String(hp));
+    this.healthBar.setAttribute('aria-valuemax', String(displayMaxHp));
+    this.healthBar.setAttribute('aria-valuenow', String(displayHp));
     // A persistent, non-verbal danger cue complements (and never replaces) hit flashes.
     const critical = maxHp > 0 && hp > 0 && hp / maxHp < 0.5;
     this.healthBar.classList.toggle('low-health', critical);
     document.getElementById('hud')!.classList.toggle('critical-health', critical);
-    this.healthBar.setAttribute('aria-valuetext', `${hp} / ${maxHp}${critical ? '，生命值不足一半' : ''}`);
+    this.healthBar.setAttribute('aria-valuetext', `${displayHp} / ${displayMaxHp}${critical ? '，生命值不足一半' : ''}`);
     this.killValue.textContent = String(this.combat.kills);
     this.xpValue.textContent = String(this.combat.xp);
     const progression = this.combat.progression, maxed = !Number.isFinite(progression.threshold);
@@ -1036,7 +1069,8 @@ export class Game {
     const rawDt = this.lastTime ? (time - this.lastTime) / 1000 : 0;
     const dt = rawDt ? Math.min(rawDt, STEP * 5) : STEP;
     this.lastTime = time;
-    if (this.mode === 'playing' && this.world.loading) {
+    if (this.mode === 'playing' && this.sceneLoading) {
+      this.showSceneLoading();
       this.input.setEnabled(false);
       this.audio.setActive(false);
       this.accumulator = 0;
@@ -1062,6 +1096,14 @@ export class Game {
       }
     }
     const draw = !this.renderTime || time - this.renderTime >= 1000 / this.quality.targetFps - 1 || (this.mode !== 'playing' && this.mode !== 'menu');
+    if (draw) this.world.update(this.position.x, this.position.z, this.cameraFootprint());
+    // A move or collision correction can request a new streaming neighborhood.
+    // Keep the last complete frame on screen until its scenery/collisions are ready.
+    if (this.mode === 'playing' && this.sceneLoading) {
+      this.showSceneLoading();
+      this.input.setEnabled(false); this.audio.setActive(false); this.accumulator = 0;
+      this.frameId = window.requestAnimationFrame(this.frame); return;
+    }
     if (draw) {
       const renderDt = this.renderTime ? Math.min((time - this.renderTime) / 1000, STEP * 5) : dt;
       this.renderTime = time;
@@ -1076,9 +1118,9 @@ export class Game {
       }
     this.monster.animate(renderDt * speed, Math.min(1, this.velocity.length() / 4.6), this.dashRemaining > 0, this.visualTime, THREE.MathUtils.lerp(this.previousJump, this.jumpHeight, this.accumulator / STEP), this.combat.hurtFlash / 0.25);
       this.placeCamera(false, renderDt * speed);
-      this.world.update(this.position.x, this.position.z);
       this.monster.root.visible = this.mode !== 'menu' && (!this.partyPrototype || !this.partyView.hasPixelLeader);
       this.renderer.render(this.scene, this.camera);
+      if (this.mode === 'playing') this.worldEntered = true;
       if (enteringWorld) document.getElementById('world-loading')!.hidden = true;
     }
     if (this.mode === 'menu' || this.mode === 'playing') this.frameId = window.requestAnimationFrame(this.frame);

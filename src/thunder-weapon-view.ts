@@ -19,7 +19,7 @@ export class ThunderWeaponView {
   render(combat: ThunderWeapon, detail: number) {
     this.clear();
     for (const cast of combat.casts) if (cast.active) {
-      this.seed.put(Math.floor(cast.age * 10) % 4, cast.x, cast.z, .95 * THUNDER_VISUAL_SCALE, cast.source?.copied ? .55 : .94, 0, .24);
+      this.seed.put(Math.floor(cast.age * 10) % 4, cast.x, cast.z, .76 * THUNDER_VISUAL_SCALE, cast.source?.copied ? .55 : .94, 0, .24);
     }
     for (const link of combat.links) {
       if (!link.active) continue;
@@ -31,13 +31,13 @@ export class ThunderWeaponView {
         const t = (i + .5) / segments;
         // Tiny overlap joins the original left/right endpoints without stretching a long bolt.
         this.bolts.putRect((link.variant + i) % 4, link.x + dx * t, link.z + dz * t,
-          length / segments + .025, .85 * 1.3, .9 * fade, angle, .21);
+          length / segments + .025, .62, .9 * fade, angle, .21);
       }
     }
     for (const impact of combat.impacts) if (impact.active) {
       const fade = Math.min(1, (.34 - impact.age) / .12);
-      this.sparks.put(Math.min(5, Math.floor(impact.age / .34 * 6)), impact.x, impact.z, 1.1 * THUNDER_VISUAL_SCALE, fade, 0, .26);
-      if (detail > 2) this.arcs.put(Math.min(3, Math.floor(impact.age / .34 * 4)), impact.x, impact.z, 1.15 * THUNDER_VISUAL_SCALE, .75 * fade, 0, .23);
+      this.sparks.put(Math.min(5, Math.floor(impact.age / .34 * 6)), impact.x, impact.z, .95 * THUNDER_VISUAL_SCALE, fade, 0, .26);
+      if (detail > 2) this.arcs.put(Math.min(3, Math.floor(impact.age / .34 * 4)), impact.x, impact.z, .95 * THUNDER_VISUAL_SCALE, .75 * fade, 0, .23);
     }
     for (const atlas of this.atlases) atlas.finish();
   }

@@ -4,12 +4,12 @@ import { isDreamWeapon } from './dream-combat';
 import { WaterAtlas } from './water-aoe-view';
 import { instanceOpacity } from './visuals/instance-opacity';
 
-const OPACITY = { projectile: .78, mark: .8, flower: .42, petal: .55, star: .7, link: .6 } as const;
+const OPACITY = { projectile: .96, mark: 1, flower: .86, petal: .85, star: .95, link: .85 } as const;
 
 /** Per-frame UV windows align the supplied uneven raw frames without rewriting any PNG. */
 class DreamAtlas extends WaterAtlas {
   private rects: THREE.InstancedBufferAttribute;
-  constructor(name: string, capacity: number, private windows: readonly (readonly number[])[], private sheet: readonly number[]) {
+  constructor(name: string, capacity: number, private windows: readonly (readonly number[])[], private sheet: readonly number[], clearCenter = false) {
     super(name, 1, 1, 'dream', capacity, false);
     this.mesh.material.color.setScalar(1); this.mesh.material.alphaTest = .14;
     this.rects = new THREE.InstancedBufferAttribute(new Float32Array(capacity * 4), 4);
@@ -25,9 +25,10 @@ class DreamAtlas extends WaterAtlas {
       shader.fragmentShader = shader.fragmentShader.replace('#include <alphatest_fragment>', `
         float dreamEdge = min(min(waterLocalUv.x, 1.0-waterLocalUv.x), min(waterLocalUv.y, 1.0-waterLocalUv.y));
         diffuseColor.a *= smoothstep(0.0, 0.075, dreamEdge);
+        ${clearCenter ? 'diffuseColor.a *= mix(0.68, 1.0, smoothstep(0.10, 0.30, length(waterLocalUv - vec2(0.5))));' : ''}
         #include <alphatest_fragment>`);
     };
-    this.mesh.material.customProgramCacheKey = () => 'dream-aligned-rect-v1';
+    this.mesh.material.customProgramCacheKey = () => `dream-aligned-rect-center-${clearCenter}`;
   }
   putRect(frame: number, x: number, z: number, width: number, depth: number, alpha: number, rotation = 0, height = .08) {
     const index = this.mesh.count;
@@ -46,7 +47,7 @@ export class DreamView {
   readonly marks = new DreamAtlas('mark', 512, [[200,120,850,1020]], [1254,1254]);
   readonly flowers = new DreamAtlas('echo', 64,
     [[15,20,400,420],[420,20,400,420],[825,5,435,435],[1260,0,514,443],
-      [0,443,465,444],[470,443,440,444],[925,443,420,444],[1350,443,424,444]], [1774,887]);
+      [0,443,465,444],[470,443,440,444],[925,443,420,444],[1350,443,424,444]], [1774,887], true);
   private atlases = [this.darts, this.seeds, this.marks, this.flowers];
   private orientation = new THREE.Quaternion();
   private ground = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1,0,0), -Math.PI/2);
@@ -59,7 +60,7 @@ export class DreamView {
   private lines = this.batch(new THREE.PlaneGeometry(1,1), 128, '#ff9bda');
   constructor() {
     this.group.name = 'DreamFlowerEffects';
-    for (const atlas of this.atlases) { atlas.mesh.material.color.setScalar(1); atlas.mesh.material.alphaTest = .14; this.group.add(atlas.mesh); }
+    for (const atlas of this.atlases) { atlas.mesh.material.color.setScalar(1.2); atlas.mesh.material.alphaTest = .14; this.group.add(atlas.mesh); }
     this.flowers.mesh.material.alphaTest = .055;
     this.marks.mesh.setColorAt(0, this.color.set('#ffffff'));
     this.group.add(this.petals.mesh, this.stars.mesh, this.lines.mesh);
@@ -97,8 +98,8 @@ export class DreamView {
       if (!shot.active || !isDreamWeapon(shot.attackId) || shot.vfxPresetId) continue;
       const x=THREE.MathUtils.lerp(shot.previousX,shot.x,alpha),z=THREE.MathUtils.lerp(shot.previousZ,shot.z,alpha),angle=-Math.atan2(shot.vz,shot.vx);
       const scale=combat.projectileRadius(shot)/.2;
-      if (shot.attackId==='dream-dart') this.darts.putRect(Math.floor((shot.age??0)*10)%4,x,z,1.3*scale,.95*scale,OPACITY.projectile,angle,.32);
-      else this.seeds.putRect(0,x,z,1.3*scale,.86*scale,OPACITY.projectile,angle,.3);
+      if (shot.attackId==='dream-dart') this.darts.putRect(Math.floor((shot.age??0)*10)%4,x,z,1.65*scale,1.10*scale,OPACITY.projectile,angle,.32);
+      else this.seeds.putRect(0,x,z,1.8*scale,1.0*scale,OPACITY.projectile,angle,.3);
     }
     for (const enemy of combat.enemies) {
       if (!enemy.active || enemy.spawnTime>0) continue;
@@ -106,7 +107,7 @@ export class DreamView {
       const head=enemy.rank==='boss'?4.8:(enemy.kind==='tank'?2.3:enemy.kind==='fast'?1.45:1.7)*(enemy.rank==='elite'?1.35:1)+.35;
       const stacks=enemy.dreamStacks??0, resonance=(enemy.resonanceTime??0)>0;
       if (stacks>0 && (enemy.dreamTime??0)>0) {
-        this.sprite(this.marks,x,head,z,.44+stacks*.065,.54+stacks*.08,'#ffffff');
+        this.sprite(this.marks,x,head,z,.34+stacks*.045,.43+stacks*.055,'#ffffff');
         for(let i=0;i<stacks;i++) this.particle(this.stars,x+(i-(stacks-1)/2)*.18,head-.4,z,.09,.09,1,0,true);
       }
       if(resonance) this.sprite(this.marks,x+(stacks ? .48 : 0),head+.02,z,.32,.4,'#d4a6ff');
@@ -119,7 +120,7 @@ export class DreamView {
         this.particle(this.lines,(event.x+event.tx)/2,.35,(event.z+event.tz)/2,length,.055,(1-t)*OPACITY.link,-Math.atan2(dz,dx));
       } else if(event.kind==='bloom'||event.kind==='pulse') {
         const frame=Math.min(7,Math.floor(t*8)),scale=event.kind==='pulse'?1:.88;
-        this.flowers.put(frame,event.x,event.z,event.radius*2.25*scale,Math.min(1,(1-t)*3)*OPACITY.flower,0,.18);
+        this.flowers.put(frame,event.x,event.z,event.radius*2.05*scale,Math.min(1,(1-t)*3)*OPACITY.flower,0,.18);
       }
       const count=detail<=2?3:event.kind==='impact'?4:8;
       for(let i=0;i<count;i++) {

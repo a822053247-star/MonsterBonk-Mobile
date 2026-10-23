@@ -45,6 +45,13 @@ export class PartyView {
   }
 
   get hasPixelLeader() { return !!this.pixels[0]?.ready; }
+  get startupSettled() {
+    if (!this.usePixels) return true;
+    for (let i = 0; i < this.party.members.length; i++) {
+      if (!this.pixels[i]?.startupSettled) return false;
+    }
+    return true;
+  }
 
   setAnimatedLeader(enabled: boolean) {
     this.animatedLeader = enabled;

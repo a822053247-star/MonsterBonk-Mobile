@@ -175,6 +175,11 @@ export class PixelSpriteRenderer {
   }
 
   get ready() { return !this.disposed && (this.animations.get(this.selectedAsset as AnimationAsset)?.entry ?? this.lease.entry).ready; }
+  get startupSettled() {
+    if (!this.lease.entry.ready && !this.lease.entry.failed) return false;
+    if (this.animated) for (const { entry } of this.animations.values()) if (!entry.ready && !entry.failed) return false;
+    return true;
+  }
 
   setAnimationEnabled(enabled: boolean) {
     if (this.disposed) return;

@@ -3,7 +3,7 @@ import { Combat, type Enemy } from '../src/combat';
 import { PartySystem } from '../src/party';
 import { ATTACKS } from '../src/run-build';
 import type { BaseAttackId } from '../src/fusion';
-import { DREAM_RULES } from '../src/dream-combat';
+import { DREAM_RULES, dreamEchoStats } from '../src/dream-combat';
 import { matchesTarget } from '../src/content/relic-effects';
 
 function fixture() {
@@ -61,7 +61,7 @@ test('echo chooses marked targets, grows with two dream layers, extends resonanc
   emit(c,e,'dream-dart');emit(c,e,'dream-dart');emit(c,e,'resonance-seed');
   const before=e.resonanceTime!,hp=near.hp;c.dream.update(.01,1,1);
   expect(c.dream.telemetry.pulses).toBe(1);expect(e.resonanceTime).toBeCloseTo(before+1);
-  expect(e.dreamStacks).toBe(2);expect(near.hp).toBe(hp-16);expect(far.hp).toBe(1000);
+  expect(e.dreamStacks).toBe(2);expect(near.hp).toBe(hp-dreamEchoStats(1).damage);expect(far.hp).toBe(1000);
   expect(c.dream.events.find(e=>e.active&&e.kind==='pulse')!.radius).toBeCloseTo(3.1);
 });
 
@@ -71,7 +71,7 @@ test('a pulse killing resonance targets can transfer once, and rank damage is re
   // Keep both ranked probes inside the pulse footprint.
   elite.x=e.x;elite.z=e.z-1;boss.x=e.x+.8;boss.z=e.z-1;
   c.dream.update(.01,1,1);expect(e.active).toBe(false);expect(c.dream.telemetry.transfers).toBe(1);
-  expect(elite.hp).toBeCloseTo(1000-16*.7);expect(boss.hp).toBeCloseTo(1000-16*.4);
+  expect(elite.hp).toBeCloseTo(1000-dreamEchoStats(1).damage*.7);expect(boss.hp).toBeCloseTo(1000-dreamEchoStats(1).damage*.55);
 });
 
 test('upgrade slots, gating, pause, reuse, bounded visuals and restart retain no stale marks',()=>{

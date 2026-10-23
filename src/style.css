@@ -12,6 +12,8 @@ button:active:not(:disabled){transform:translateY(2px)}
 .world-loading{position:absolute;inset:0;z-index:8;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:#173c32;color:#deef9e}
 .world-loading strong{font-size:20px;letter-spacing:2px}
 .world-loading span{font-size:13px;color:#d2dfce}
+.world-loading.streaming{inset:auto;top:calc(112px + var(--safe-top));left:50%;transform:translateX(-50%);width:max-content;max-width:85vw;padding:9px 14px;border:1px solid #9fb66c;border-radius:10px;background:#173c32e8;pointer-events:none}
+.world-loading.streaming strong{font-size:13px;letter-spacing:1px}.world-loading.streaming span{display:none}
 .icon{width:24px;height:24px;flex-shrink:0;vertical-align:middle}
 #game-canvas{display:block;width:100%;height:100%;position:absolute;inset:0;outline:0}
 #game-canvas.pixel-party{image-rendering:pixelated}
