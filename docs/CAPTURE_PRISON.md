@@ -33,3 +33,5 @@
 - `tests/prison-integration.spec.ts`：桌面/手机的真实图片、入住权限、三工种、运输、委托、建筑、关闭恢复与页面边界。
 
 扩大回归的`run-flow.spec.ts`与`wave-director.spec.ts`存在6项数值断言失败。在临时副本去掉本次Combat捕捉保护变更后，同样6项失败、其余15项通过；基线输出见`artifacts/capture-baseline-regression.txt`。不把这些既有波次/商店数值问题纳入捕捉任务修改。
+
+WebKit扩展的`run-flow-ui.spec.ts`已走完六波、Boss胜利、重开及死亡结算，但最后等待现界面已不存在的`#start-legacy-party`而超时；该旧入口在任务开始前的界面即已移除，本次没有恢复。捕捉与囚坊的专用WebKit流程单独通过。
