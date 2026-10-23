@@ -14,6 +14,7 @@ import { ICE_SKILL_IDS, ICE_SKILL_NAMES, iceSkillStats } from './ice-skills';
 import { dreamEchoStats } from './dream-combat';
 import { WATER_EVOLUTION_IDS, WATER_EVOLUTIONS, consumedByEvolution, isWaterEvolution } from './water-evolution';
 import { shopArt } from './shop-art';
+import { sanctuaryMarkup, renderSanctuary } from './sanctuary-ui';
 import { formatEndlessRecordTime, readEndlessRecord, type EndlessRecord, type EndlessRunResult } from './endless-record';
 
 const icons = {
@@ -52,12 +53,14 @@ export function createUI(root: HTMLElement) {
         <p class="menu-description">一只焰绒，从火花到爆裂火种。<br/>自动迎战，升级组合你的魔法。</p>
         <div class="main-modes" aria-label="选择挑战玩法"><button id="start-fusion" class="mode-card campaign-mode">${icon('battle')}<span><strong>闯关挑战</strong></span>${icon('arrow')}</button><button id="start-infinite" class="mode-card infinite-mode">${icon('spark')}<span><strong>无尽挑战</strong></span>${icon('arrow')}</button></div>
         <div id="endless-best-menu" class="endless-best-menu" aria-label="无尽个人最佳">无尽个人最佳 · 首次挑战后记录</div>
+        <button id="open-sanctuary" type="button" class="sanctuary-entry" aria-haspopup="dialog">✦ 幻兽栖地 <span id="sanctuary-menu-count">3 光屑</span></button>
         <div class="menu-actions menu-utilities"><button id="choose-creature" class="secondary creature-select-entry" aria-label="选择出战幻兽">选择幻兽</button><button id="help" class="secondary" aria-label="操作指南">${icon('help')}<span>操作指南</span></button><button id="menu-settings" class="secondary settings-entry" aria-label="画质与声音设置">${icon('settings')}</button></div>
         
       </div>
       <footer class="menu-footer" aria-label="旧版模式入口"><button id="open-legacy" class="trial-entry practice-entry" aria-haspopup="dialog">旧版模式</button></footer>
     </section>
     <section id="legacy-picker" class="modal-screen" role="dialog" aria-modal="true" aria-labelledby="legacy-title" hidden><div class="modal legacy-card"><button id="close-legacy" class="icon-button close-button" aria-label="关闭旧版玩法">${icon('close')}</button><h2 id="legacy-title">旧版模式</h2><div class="legacy-options"><button id="start" class="secondary">${icon('leaf')} 单兽冒险</button><button id="start-trial" class="secondary">${icon('dash')} 犄角试炼</button><button id="start-challenge" class="secondary">${icon('battle')} 三波闯关</button></div></div></section>
+    ${sanctuaryMarkup()}
     <section id="creature-picker" class="modal-screen" role="dialog" aria-modal="true" aria-labelledby="creature-picker-title" hidden>
       <div class="creature-picker-card"><header><div><small>每局一只 · 自动攻击</small><h2 id="creature-picker-title">选择出战幻兽</h2></div><button id="close-creature-picker" class="icon-button" aria-label="关闭幻兽选择">${icon('close')}</button></header>
         <div class="creature-options" role="group" aria-label="可选幻兽">
@@ -90,7 +93,7 @@ export function createUI(root: HTMLElement) {
     <section id="gameover-screen" class="modal-screen" role="dialog" aria-modal="true" aria-labelledby="result-heading" aria-label="本局结束" data-outcome="defeat" hidden>
       <div class="modal result-card">
         <header class="result-header"><span class="result-insignia" aria-hidden="true"><span class="result-art-fallback">${icon('leaf')}</span><img id="result-victory-art" data-upgrade-art="result-victory" src="${uiArtUrl('result/victory-crown.png')}" alt="" draggable="false" hidden/><img id="result-defeat-art" data-upgrade-art="result-defeat" src="${uiArtUrl('result/defeat-badge.png')}" alt="" draggable="false"/></span><div><span id="result-eyebrow" class="eyebrow">冒险战报</span><h2 id="result-heading">本局结束</h2><p id="result-message"></p></div></header>
-        <div class="result-report" style="--result-panel-url:url('${uiArtUrl('result/battle-report-panel.png')}')"><img class="result-panel-art" data-upgrade-art="result-panel" src="${uiArtUrl('result/battle-report-panel.png')}" alt="" draggable="false"/><div class="result-body"><div class="result-overview"><div class="result-stats"><div><strong id="result-time">00:00</strong><span>生存时间</span></div><div><strong id="result-kills">0</strong><span>击败怪物</span></div><div><strong id="result-xp">0</strong><span>获得经验</span></div></div><div id="result-challenge" class="result-challenge" hidden></div><p id="result-run"></p><section id="endless-record-result" class="endless-record-result" hidden aria-live="polite"><strong id="endless-record-title"></strong><p id="endless-record-current"></p><p id="endless-record-best"></p></section></div>
+        <div class="result-report" style="--result-panel-url:url('${uiArtUrl('result/battle-report-panel.png')}')"><img class="result-panel-art" data-upgrade-art="result-panel" src="${uiArtUrl('result/battle-report-panel.png')}" alt="" draggable="false"/><div class="result-body"><div class="result-overview"><div class="result-stats"><div><strong id="result-time">00:00</strong><span>生存时间</span></div><div><strong id="result-kills">0</strong><span>击败怪物</span></div><div><strong id="result-xp">0</strong><span>获得经验</span></div></div><div id="result-challenge" class="result-challenge" hidden></div><p id="result-run"></p><p id="sanctuary-result" class="sanctuary-earned" hidden></p><section id="endless-record-result" class="endless-record-result" hidden aria-live="polite"><strong id="endless-record-title"></strong><p id="endless-record-current"></p><p id="endless-record-best"></p></section></div>
           <section id="result-build" class="build-summary" aria-label="最终构筑" tabindex="0"><h3>最终构筑</h3><div id="result-weapons" class="build-weapon-list"></div><div id="result-skills" class="build-detail"></div><div id="result-fusions" class="build-detail"></div><div id="result-relics" class="build-detail"></div></section></div></div>
         <footer class="result-actions"><button id="gameover-restart" class="primary">再次挑战 ${icon('arrow')}</button><button id="gameover-menu" class="text-button">返回菜单</button></footer>
       </div>
@@ -122,6 +125,7 @@ export function createUI(root: HTMLElement) {
   bindFireIcons(root);
   bindUpgradeArt(root);
   renderEndlessBestMenu();
+  renderSanctuary();
 }
 
 export function renderEndlessBestMenu() {
