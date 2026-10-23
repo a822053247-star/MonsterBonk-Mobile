@@ -174,6 +174,8 @@ function buildSkillCopy(skill: SkillDefinition): SkillDefinition {
   return skill;
 }
 const RUN_SKILLS = [...BUILD_SKILLS.map(buildSkillCopy), ...RARE_SKILLS, ...PAIR_SKILLS, ...WATER_EVOLUTION_CARDS];
+/** Visual roulette catalogue only; awarding still goes through canGrant. */
+export const TREASURE_ROLL_SKILLS = RUN_SKILLS.filter(skill => skill.id !== 'weapon-pair-fusion');
 const ALL_SKILLS = RUN_SKILLS;
 export const EXPERIENCE = { initial: 8, increment: 4 } as const;
 export const MAX_LEVEL = 1 + SKILLS.reduce((total, skill) => total + skill.maxRank, 0);

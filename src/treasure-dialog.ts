@@ -4,6 +4,7 @@ import type { Combat, CombatEffect } from './combat';
 import type { TreasureReward } from './special-enemies';
 import { createTreasureCanvas } from './treasure-canvas';
 import { upgradeArt } from './upgrade-art';
+import { TREASURE_ROLL_SKILLS } from './progression';
 
 /** Screen-space reward presentation. Simulation stays frozen until explicit continuation. */
 export class TreasureDialog {
@@ -28,7 +29,7 @@ export class TreasureDialog {
     this.deaths=this.deaths.filter(death=>death.active);
     if(!this.presentingDeath&&this.current){this.root.hidden=false;this.lastTime=0;this.frame=requestAnimationFrame(this.tick);}
   }
-  constructor(private combat: Combat, private audio?: GameAudio, private canAnimate: () => boolean = () => true) {
+  constructor(private combat: Combat, private audio?: GameAudio, private canAnimate: () => boolean = () => true, private allowPortrait = false) {
     this.root.className = 'treasure-dialog'; this.root.hidden = true;
     this.root.setAttribute('role','dialog');this.root.setAttribute('aria-modal','true');this.root.setAttribute('aria-labelledby','treasure-title');
     const panel=document.createElement('section');panel.className='treasure-dialog-panel';
@@ -58,7 +59,11 @@ export class TreasureDialog {
         this.root.classList.toggle('is-grand',event.items.length>=3);
         this.heading.textContent=event.source==='first-boss'?'首战告捷 · 金光宝箱':'发现宝藏！';
         const urls=event.items.map(i=>i.skill?upgradeArt({id:i.skill},this.combat.baseAttack,this.combat.runBuild.attacks.map(a=>a.attackId)).illustrations[0]:undefined);
-        this.draw=createTreasureCanvas(this.canvas,event.items.map(i=>i.title),urls,true,(cue,index)=>this.audio?.playTreasure(cue,event.items.length,index));this.draw(0);
+        const rollingItems=TREASURE_ROLL_SKILLS.flatMap(skill=>{
+          const art=upgradeArt(skill,this.combat.baseAttack,this.combat.runBuild.attacks.map(a=>a.attackId));
+          return art.hideIcon||!art.illustrations[0]?[]:[{title:skill.title,artUrl:art.illustrations[0]}];
+        });
+        this.draw=createTreasureCanvas(this.canvas,event.items.map(i=>i.title),urls,true,(cue,index)=>this.audio?.playTreasure(cue,event.items.length,index),rollingItems);this.draw(0);
         this.resizeCanvas();this.draw(0);
         this.deaths=event.source==='first-boss'?[]:this.combat.areaDeaths.filter(d=>d.active&&d.enemyKind==='draft-treasure-runner'&&Math.hypot(d.x-event.x,d.z-event.z)<.1);
         this.arriving=true;this.arrivalAge=0;this.lastTime=0;this.root.classList.add('is-arriving');this.root.style.setProperty('--treasure-entry','0');this.button.disabled=true;this.button.textContent='宝藏正在显现…';
@@ -75,7 +80,7 @@ export class TreasureDialog {
   private tick=(time:number)=>{
     this.frame=0;if(!this.current)return;
     const dt=this.lastTime?Math.min(.25,(time-this.lastTime)/1000):0;this.lastTime=time;
-    const animate=!document.hidden&&innerWidth>=innerHeight&&this.canAnimate();
+    const animate=!document.hidden&&(this.allowPortrait||innerWidth>=innerHeight)&&this.canAnimate();
     if(this.arriving){
       if(animate)this.arrivalAge+=dt;
       const progress=Math.min(1,this.arrivalAge/treasurePresentation(this.current.items.length).transition);

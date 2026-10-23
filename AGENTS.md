@@ -44,3 +44,5 @@
 
 
 战斗捕捉/幻兽囚坊：`src/enemy-capture.ts`、`src/capture-hud.ts`、`src/capture-collection.ts`、`src/prison-view.ts`、`src/prison-scene.ts`；完整接入、规则和验证见 [CAPTURE_PRISON.md](docs/CAPTURE_PRISON.md)。可捕捉刷出概率与用户历史见 `src/capture-spawns.ts` / `src/capture-rules.ts`。正式闯关/无尽中抽中资格的个体40%血量转可捕捉并免伤（`Combat.isCaptureReady` / `src/capture-rules.ts`），可捕捉敌人不伤害角色，封印符无限，靠近E与点击封印；小游戏合格/优秀判定、不合格重试与加成见 `src/enemy-capture.ts`，界面见 `src/capture-hud.ts`；最终成功或失败均离场，成功永久收藏接局外劳作，囚坊同种入住数量受实际捕获数量限制；旧模式不启用。
+
+宝箱特效独立预览：treasure-preview.html / src/treasure-preview.ts，复用正式 TreasureDialog，支持1–5件切换及重播。

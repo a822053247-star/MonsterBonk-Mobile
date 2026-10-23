@@ -255,3 +255,7 @@
 宝箱演出调整（2026-10-24）：携宝兽死亡使用 `Combat.areaDeaths` 保留1.2秒淡出，`TreasureDialog.presentingDeath` / `advanceDeath` 与 `Game.frame` 配合，在冻结战斗时仅推进对应死亡特效并重绘场景，结束后再开始弹窗淡入；`SpecialEnemyView` 在死亡阶段隐藏奖励浮字。首通Boss宝箱不追加携宝死亡等待。1–5件均扩大面板和滚动图标，采用连续滚动后减速停靠；3–5件使用更宽亮红/金/紫光柱。透明Canvas横向越过边框，外层光晕允许溢出，按钮保留在最上层。验证：`tests/treasure-dialog-sequence.spec.ts` 覆盖死亡先后、战斗冻结、重开清理、桌面/手机横屏五档滚动和显式继续；既有宝箱/音效用例继续回归。
 
 卡片图标与文案统一：新增/替换卡图后按 [CARD_ART_MANAGEMENT.md](CARD_ART_MANAGEMENT.md) 生成透明主体规范化WebP；`card-art.ts` 统一实际加载地址，`card-copy.ts` 生成短文案，图片大小不随说明长度变化。原数值与详细规则仍来自原内容定义。
+
+宝箱专用预览：访问 /treasure-preview.html，入口 src/treasure-preview.ts，复用 TreasureDialog 和实际奖励图标，默认自动播放五件，顶部切换1–5件及重播。使用独立临时 Combat，不写入存档；仅预览允许竖屏播放，正式游戏保留横屏门禁。
+
+宝箱随机滚动图鉴：Progression 的 TREASURE_ROLL_SKILLS 提供全部内容卡片身份，TreasureDialog 排除隐藏/无图项后传给 createTreasureCanvas；每箱从完整图鉴随机取最多28张滚动图，轨道共享图片，每条轨道末项锁定真实奖励。动画使用独立视觉随机，不调用 Combat.random、不重新授奖。实际掉落继续由 Combat.grantTreasure 逐件校验资格，不能因滚动画面绕过三槽、满级、前置或模式限制。验证 tests/treasure-roulette.spec.ts。

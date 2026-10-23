@@ -1,6 +1,6 @@
 import { treasurePresentation, type TreasureCue } from './treasure-presentation';
 // Adapted from the user-supplied astral-relics-reference-rebuild Canvas effect.
-export function createTreasureCanvas(canvas: HTMLCanvasElement, titles: string[], artUrls: (string | undefined)[] = [], modal = false, onCue: (cue: TreasureCue, index?: number) => void = () => {}) {
+export function createTreasureCanvas(canvas: HTMLCanvasElement, titles: string[], artUrls: (string | undefined)[] = [], modal = false, onCue: (cue: TreasureCue, index?: number) => void = () => {}, rollingItems: readonly {title:string;artUrl?:string}[] = []) {
 type Tier = 'COMMON' | 'RARE' | 'EPIC' | 'LEGENDARY';
 type IconKind = 'sword' | 'cross' | 'orb' | 'staff' | 'prism' | 'crown' | 'flame' | 'axe' | 'book' | 'shield';
 type Reward = { image?: HTMLImageElement; name: string; tier: Tier; icon: IconKind; color: string; bright: string; dark: string };
@@ -15,6 +15,12 @@ const laneColors = settings.count >= 3 ? ['#ff3158', '#ffca46', '#c967ff', '#ff2
 const CELL = 70;
 
 const rewards: Reward[] = titles.map((name, i) => ({ name, image: artUrls[i] ? Object.assign(new Image(), { src: artUrls[i] }) : undefined, tier: 'COMMON', icon: 'prism', color: laneColors[i], bright: '#fff4a0', dark: '#40117e' }));
+const imageCache=new Map<string,HTMLImageElement>();
+function shuffled<T>(items:readonly T[]):T[]{
+  const copy=[...items];
+  for(let i=copy.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[copy[i],copy[j]]=[copy[j],copy[i]];}
+  return copy;
+}
 
 
 function tierLabel(tier: Tier): string {
@@ -87,9 +93,17 @@ function burst(x: number, y: number, count: number, kind: ParticleKind, colors =
 function begin() {
   if (phase !== 'idle' && phase !== 'result') return;
   const times = stopTimes(selectedCount);
+  // Sample the full catalogue, but decode at most 28 roulette images per chest.
+  const deck:Reward[]=shuffled(rollingItems).slice(0,28).map(item=>{
+    let image=item.artUrl?imageCache.get(item.artUrl):undefined;
+    if(item.artUrl&&!image){image=Object.assign(new Image(),{src:item.artUrl});imageCache.set(item.artUrl,image);}
+    return {...rewards[0],name:item.title,image};
+  });
   reels = Array.from({ length: selectedCount }, (_, i) => {
     const result = rewards[i];
-    const strip = Array.from({ length: 30 + i * 3 }, () => pick(rewards));
+    const laneDeck=shuffled(deck.length?deck:rewards);
+    const length=modal?18+i*2:30+i*3;
+    const strip = Array.from({ length }, (_,j) => ({...laneDeck[j%laneDeck.length],color:result.color}));
     strip.push(result);
     return { result, strip, stoppedAt: times[i], stopped: false, pop: 0, spinOffset: 0, lastTick: -1 };
   });
@@ -576,13 +590,13 @@ function drawModal() {
         const progress=clamp(phaseTime/(reel?.stoppedAt??settings.roll));
         // Constant readable motion followed by a distinct braking phase.
         const travel=progress<.65?progress/.825:1-(1-progress)**2/(.7*.825);
-        const steps=18+i*2;
+        const steps=reel.strip.length-1;
         const offset=travel*steps*cell;
         const base=Math.floor(offset/cell);
         for(let j=base-3;j<=base+3;j++){
           const y=top+j*cell-offset;
-          const index=((j+i)%rewards.length+rewards.length)%rewards.length;
-          const reward=rewards[index];
+          const index=((j%steps)+steps)%steps;
+          const reward=reel.strip[index];
           ctx.globalAlpha=clamp(1-Math.abs(y-top)/(h*.38),.18,1);
           // Same art, centerline and scale on both sides of the final stop.
           drawMedallion(beamX(x,y),y,j===steps?rewards[i]:reward,scale);
@@ -662,5 +676,5 @@ function drawAllWithDelta(dt:number){
 let lastAge = -1;
 if (!modal) begin();
 const draw = (age: number) => { if (lastAge === age) return; const dt = lastAge < 0 ? 0 : Math.max(0, age - lastAge); lastAge = age; let remaining = dt; while (remaining > 0) { const step = Math.min(remaining, 1/60); update(step); remaining -= step; } drawAllWithDelta(dt); };
-return Object.assign(draw, { redraw: () => drawAllWithDelta(0), open: () => { begin(); lastAge = -1; }, glow: () => phase === 'opening' ? .55 + .45 * Math.sin(clamp(phaseTime / settings.opening) * Math.PI) : phase === 'burst' ? .25 + .75 * (1 - smooth(phaseTime / settings.finale)) : phase === 'rolling' ? .38 : phase === 'result' ? .12 : phase === 'intro' ? .15 * smooth(phaseTime / .45) : 0, inspect: () => ({ phase, count:selectedCount, stopped:reels.filter(r=>r.stopped).length, settings }), done: () => phase === 'result' });
+return Object.assign(draw, { redraw: () => drawAllWithDelta(0), open: () => { begin(); lastAge = -1; }, glow: () => phase === 'opening' ? .55 + .45 * Math.sin(clamp(phaseTime / settings.opening) * Math.PI) : phase === 'burst' ? .25 + .75 * (1 - smooth(phaseTime / settings.finale)) : phase === 'rolling' ? .38 : phase === 'result' ? .12 : phase === 'intro' ? .15 * smooth(phaseTime / .45) : 0, inspect: () => ({ phase, count:selectedCount, stopped:reels.filter(r=>r.stopped).length, rollingPoolSize:rollingItems.length, rollingTitles:[...new Set(reels.flatMap(r=>r.strip.slice(0,-1).map(item=>item.name)))], results:reels.map(r=>r.result.name), settings }), done: () => phase === 'result' });
 }
