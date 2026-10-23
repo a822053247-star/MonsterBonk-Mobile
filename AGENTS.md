@@ -28,6 +28,7 @@
 | 特效 | `src/visuals/vfx-presets.ts`、`src/visuals/vfx-resolver.ts` | 对应 `*-view.ts`、`src/quality.ts` |
 | Boss 技能预览 | `src/boss-skills-preview.ts`、`boss-skills-preview.html` | 复用 `src/enemy-challenge.ts`、`src/combat-view.ts`；动画素材预览另见 `src/crownthorn-preview.ts` |
 | 精英地震/躲避预览 | `src/elite-quake-view.ts`、`src/enemy-challenge.ts` | 演练专用调度在 `src/quake-drill.ts`；入口 `src/elite-quake-preview.ts`，说明见 `docs/ELITE-QUAKE.md` |
+| 局外栖地 | `src/sanctuary.ts`、`src/sanctuary-ui.ts`、`src/sanctuary.css` | `src/ui.ts` 菜单、`src/game.ts` 结算；详细规则见接入指南「局外栖地」 |
 | 界面/流程 | `src/ui.ts`、`src/game.ts`、`src/run-flow.ts` 的相关调用 | `src/style.css`、`src/shop.ts`、`src/upgrade-art.ts` |
 
 ## 阅读与验证
