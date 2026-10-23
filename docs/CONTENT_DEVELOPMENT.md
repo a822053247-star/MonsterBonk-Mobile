@@ -50,6 +50,22 @@ Boss 闯关/无尽共用 `CAMPAIGN_BOSS` 的弹幕、冲锋与攻击循环；无
 
 同机制内容参考 `src/content/relics/` 中的定义，在 `src/content/relic-registry.ts` 注册。字段与处理器范围见 `src/content/content-types.ts`；详细工厂流程见 [遗物内容工厂](relic-content-factory-v1.md)。新行为需扩展对应战斗处理器，配置校验通过不代表行为已完成。
 
+## 局外栖地
+
+局外栖地已作为纯 DOM/CSS 页面实现，与战斗模拟及 GPU 对象池隔离。主要接入点：
+
+| 接入内容 | 当前入口 | 约束 |
+|---|---|---|
+| 数据与存档 | `src/sanctuary.ts`：`readSanctuary`、`upgradeSanctuary`、`recordSanctuaryRun` | `monsterbonk:sanctuary:v1` 独立于局内金币、战斗数值和无尽纪录；版本校验、异常回退与单局 ID 去重 |
+| 栖地界面 | `src/sanctuary-ui.ts`、`src/sanctuary.css` | `sanctuaryMarkup` 创建三个区域；`renderSanctuary` 显示等级和花费；横屏低高度可滚动；无需另开 WebGL |
+| 主菜单入口 | `src/ui.ts`、`src/game.ts::bindEvents` | `#open-sanctuary` / `#close-sanctuary` 仅在主菜单可操作，Escape 关闭，键盘焦点不泄漏 |
+| 正式局结算 | `src/game.ts::start / endRun` | 每次开始生成唯一单局 ID；仅正式闯关与无尽挑战按已完成波次结算；旧编队、试炼不发奖 |
+| 结算提示 | `src/ui.ts`、`src/sanctuary-ui.ts::renderSanctuaryReward` | 未获得时隐藏；奖励仅改变局外光屑，绝不改 `RunBuild`、武器槽、伤害、六波流程 |
+
+当前初始赠送 3 光屑；三个区域各有 3 阶、花费依次为 3/5/7。首次超过该模式历史最高已完成波次，每新增一波额外获得 2 光屑（单局最多按 6 波计算）；完成至少两波时每两波提供 1 光屑基础回报（最多 3）。零完成波次不给奖励。跨模式最佳波次分别保存，单局 ID 最多缓存 32 条用于防重复；浏览器拒绝持久化时不显示虚假的获得或建设成功。该资源纯装饰，不等同于本局金币或真实货币。
+
+验证：`npx playwright test tests/sanctuary.spec.ts --project=chromium`，横屏 UI 以及 WebKit 需加跑 `--project=webkit`；代码改动还须 `npm run build`。新增研究所、图鉴、跨设备云存档尚未实现。
+
 ## 按改动选择验证
 
 以下为已有测试入口，按本次涉及的行为选择并补充有效用例；文件名不表示其已覆盖未来新增内容。Playwright 默认运行 Chromium 和 WebKit，首次定向排查可使用下列 Chromium 命令；共享逻辑和兼容性改动扩大到相关双浏览器测试。
