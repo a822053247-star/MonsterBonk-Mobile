@@ -109,7 +109,7 @@ ctx.imageSmoothingEnabled = false;
 const WIDTH = canvas.width;
 const HEIGHT = canvas.height;
 const ATTACK_INTERVAL = 1;
-const START_X = 226;
+const START_X = 252;
 const START_Y = 326;
 const PIXELS_PER_UNIT = 58;
 const MAX_HP = 100;
@@ -121,12 +121,12 @@ const specs: Record<Level, LevelSpec> = {
   5: { range: 8.2, pierce: 4, width: 27, damage: 24 * 1.56, burst: 0.4, detail: "刺尖命中时爆出根刺，追加主攻击伤害40%的小范围爆发。" },
 };
 const enemyStarts = [
-  { x: 306, y: 290 },
-  { x: 394, y: 344 },
-  { x: 482, y: 292 },
-  { x: 570, y: 342 },
-  { x: 658, y: 294 },
-  { x: 746, y: 340 },
+  { x: 320, y: 306 },
+  { x: 415, y: 318 },
+  { x: 510, y: 304 },
+  { x: 605, y: 320 },
+  { x: 700, y: 307 },
+  { x: 795, y: 319 },
 ];
 let level: Level = 1;
 let elapsed = 0;
@@ -435,7 +435,10 @@ function drawEnemy(enemy: PreviewEnemy, time: number): void {
 
 function drawBranch(time: number, attackAge: number): void {
   const spec = currentSpec();
-  const fullLength = spec.range * PIXELS_PER_UNIT;
+  const maxTip = START_X + spec.range * PIXELS_PER_UNIT;
+  const plannedTargets = enemies.filter(enemy => enemy.hp > 0 && enemy.x >= START_X + 12 && enemy.x <= maxTip + 5).sort((a, b) => a.x - b.x).slice(0, spec.pierce);
+  const plannedTip = plannedTargets.length ? plannedTargets[plannedTargets.length - 1].x : maxTip;
+  const fullLength = plannedTip - START_X;
   let progress = 0;
   if (attackAge < 0.12) progress = Math.min(1, attackAge / 0.12);
   else if (attackAge < 0.18) progress = 1;
@@ -546,7 +549,7 @@ function resolveAttack(): void {
 
   if (spec.burst > 0) {
     for (const enemy of enemies) {
-      if (enemy.hp <= 0 || Math.abs(enemy.x - impactX) > 64) continue;
+      if (enemy.hp <= 0 || Math.hypot(enemy.x - impactX, enemy.y - START_Y) > 104) continue;
       enemy.hp = Math.max(0, enemy.hp - spec.damage * spec.burst);
       enemy.lastHitAt = elapsed;
       enemy.lastDamage = spec.damage * spec.burst;
