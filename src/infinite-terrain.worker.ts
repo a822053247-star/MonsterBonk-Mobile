@@ -15,7 +15,7 @@ scope.onmessage = ({ data }) => {
     if (!context) throw new Error('Offscreen 2D canvas unavailable');
     // WebGL ignores UNPACK_FLIP_Y for ImageBitmap. Bake its orientation explicitly.
     context.translate(0, size); context.scale(1, -1);
-    const steps = terrainSteps(data.seed, data.cx, data.cz, context);
+    const steps = terrainSteps(data.seed, data.cx, data.cz, context, data.region);
     let result = steps.next();
     while (!result.done) result = steps.next();
     bitmap = canvas.transferToImageBitmap();

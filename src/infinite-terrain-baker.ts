@@ -1,6 +1,7 @@
 import { CHUNK_SIZE, TERRAIN_PIXELS_PER_UNIT, terrainSteps, type InfiniteChunkLayout } from './infinite-terrain';
+import type { EndlessRegionId } from './endless-regions';
 
-export interface TerrainRequest { id: number; seed: string; cx: number; cz: number }
+export interface TerrainRequest { id: number; seed: string; cx: number; cz: number; region?: EndlessRegionId }
 export type TerrainReply = { id: number; layout: InfiniteChunkLayout; image: ImageBitmap } | { id: number; error: string };
 export interface PreparedTerrain { layout: InfiniteChunkLayout; image: ImageBitmap | HTMLCanvasElement }
 type Job = TerrainRequest & { resolve: (result: PreparedTerrain) => void; reject: (error: unknown) => void };
@@ -20,10 +21,10 @@ export class TerrainBaker {
   private watchdog = 0;
   private canvas?: HTMLCanvasElement;
 
-  bake(seed: string, cx: number, cz: number): Promise<PreparedTerrain> {
+  bake(seed: string, cx: number, cz: number, region: EndlessRegionId = 'meadow'): Promise<PreparedTerrain> {
     if (this.job) throw new Error('Terrain baker already busy');
     return new Promise((resolve, reject) => {
-      const job = this.job = { id: ++this.sequence, seed, cx, cz, resolve, reject };
+      const job = this.job = { id: ++this.sequence, seed, cx, cz, region, resolve, reject };
       if (this.worker === undefined) {
         try {
           this.worker = typeof Worker !== 'undefined' && typeof OffscreenCanvas !== 'undefined'
@@ -43,7 +44,7 @@ export class TerrainBaker {
       }
       if (this.worker) {
         try {
-          this.worker.postMessage({ id: job.id, seed, cx, cz } satisfies TerrainRequest);
+          this.worker.postMessage({ id: job.id, seed, cx, cz, region } satisfies TerrainRequest);
           this.watchdog = window.setTimeout(() => this.fallbackFromWorker(), 15000);
         } catch { this.fallbackFromWorker(); }
       } else this.fallback(job);
@@ -64,7 +65,7 @@ export class TerrainBaker {
       canvas.width = canvas.height = CHUNK_SIZE * TERRAIN_PIXELS_PER_UNIT;
       const context = canvas.getContext('2d');
       if (!context) throw new Error('Terrain 2D canvas unavailable');
-      const steps = terrainSteps(job.seed, job.cx, job.cz, context);
+      const steps = terrainSteps(job.seed, job.cx, job.cz, context, job.region);
       const schedule = () => {
         this.frame = requestAnimationFrame(() => {
           this.frame = 0;

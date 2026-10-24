@@ -1,8 +1,9 @@
 import { synthesizeTreasureCue, type TreasureCue } from './treasure-presentation';
+import { AUDIO_SAMPLES, prepareAudioSample, type AudioSampleId } from './audio-samples';
 import { SKILL_SOUNDS, SKILL_SOUND_PRIORITY, SOUND_RULES, synthesizeSound, isCombinationImpact, type Sound } from './sound-design';
 type MusicTrack = 'original' | 'grassland' | 'boss';
 const MUSIC_FILES = { grassland: 'bgm-grassland.ogg', boss: 'BossBattle.ogg' } as const;
-/** Wave music and synthesized effects share the existing volume/lifecycle controls. */
+/** Recorded and synthesized feedback share the same mixer and lifecycle controls. */
 export class GameAudio {
   private context?: AudioContext;
   private musicGain?: GainNode;
@@ -17,6 +18,12 @@ export class GameAudio {
   private failedTracks = new Set<MusicTrack>();
   private requests = new AbortController();
   private buffers = new Map<Sound, AudioBuffer>();
+  private sampleBuffers=new Map<AudioSampleId,AudioBuffer>();
+  private sampleLoads=new Map<AudioSampleId,Promise<AudioBuffer|undefined>>();
+  private failedSamples=new Set<AudioSampleId>();
+  private playedSamples=new Map<AudioSampleId,number>();
+  private treasureOpenEndsAt=0;
+  private treasureRewardNextAt=0;
   private voices = new Set<AudioBufferSourceNode>();
   private voiceKinds = new Map<AudioBufferSourceNode, Sound>();
   private harvestKills = 0;
@@ -53,9 +60,31 @@ export class GameAudio {
       }
       if (this.running && (this.music || this.sound)) void this.context.resume().catch(() => {});
       this.updateGain();
+      if(this.sound)for(const id of Object.keys(AUDIO_SAMPLES) as AudioSampleId[])void this.loadSample(id,this.context);
       void this.syncMusic();
     } catch { this.unavailable = true; if (this.context) void this.context.close().catch(() => {}); this.context = undefined; }
   }
+  private loadSample(id:AudioSampleId,context:AudioContext){
+    const cached=this.sampleBuffers.get(id);if(cached)return Promise.resolve(cached);
+    const pending=this.sampleLoads.get(id);if(pending)return pending;
+    if(this.failedSamples.has(id)||this.disposed)return Promise.resolve(undefined);
+    const load=(async()=>{
+      try{
+        const response=await fetch(`${import.meta.env.BASE_URL}assets/audio/boolean/${AUDIO_SAMPLES[id].file}`,{signal:this.requests.signal});
+        if(!response.ok)throw new Error(`SFX request failed: ${response.status}`);
+        const decoded=await context.decodeAudioData(await response.arrayBuffer());
+        if(this.disposed||context!==this.context)return;
+        const buffer=prepareAudioSample(context,decoded,AUDIO_SAMPLES[id].peak);
+        this.sampleBuffers.set(id,buffer);return buffer;
+      }catch{if(!this.disposed)this.failedSamples.add(id);}
+      finally{this.sampleLoads.delete(id);}
+    })();
+    this.sampleLoads.set(id,load);return load;
+  }
+  private soundSample(kind:Sound):AudioSampleId|undefined{
+    return kind==='capture-start'||kind==='capture-success'||kind==='death'?kind:undefined;
+  }
+  private countSample(id:AudioSampleId){this.playedSamples.set(id,(this.playedSamples.get(id)??0)+1);}
   private createLoop() {
     const ctx = this.context!, rate = ctx.sampleRate, beat = 0.4, length = beat * 32;
     const buffer = ctx.createBuffer(1, Math.ceil(rate * length), rate), data = buffer.getChannelData(0);
@@ -130,6 +159,7 @@ export class GameAudio {
     if (active && (this.music || this.sound) && this.context) void this.context.resume().catch(() => {});
     if (active) void this.syncMusic();
     if (!active || !this.sound) {
+      this.stopTreasure();
       for (const voice of this.voices) voice.stop();
       this.voices.clear(); this.voiceKinds.clear();
       this.harvestKills = this.harvestTier = this.harvestUntil = this.harvestNextPulse = 0;
@@ -177,6 +207,11 @@ export class GameAudio {
     const important = kind.startsWith('capture-') || isCombinationImpact(kind) || kind === 'nova' || kind === 'harvest' || kind === 'harvest-big' || kind === 'harvest-epic';
     const limit = background ? 4 : important || kind === 'hurt' || kind === 'level' ? 8 : 6;
     if (!ctx || ctx.state !== 'running' || (!this.running && kind !== 'death') || !this.sound) return false;
+    if(kind==='capture-success'||kind==='capture-failure'){
+      for(const [voice,sound] of this.voiceKinds)if(sound==='capture-start'){
+        voice.stop();voice.disconnect();this.voices.delete(voice);this.voiceKinds.delete(voice);
+      }
+    }
     if (background && ctx.currentTime < this.quietUntil) return false;
     if (ctx.currentTime - (this.lastSound.get(kind) ?? -Infinity) < SOUND_RULES[kind].interval) return false;
     if (this.voices.size >= limit) {
@@ -185,7 +220,9 @@ export class GameAudio {
       expendable[0].stop(); expendable[0].disconnect(); this.voices.delete(expendable[0]); this.voiceKinds.delete(expendable[0]);
     }
     this.lastSound.set(kind, ctx.currentTime);
-    let buffer = this.buffers.get(kind);
+    const sample=this.soundSample(kind);
+    const recorded=sample?this.sampleBuffers.get(sample):undefined;
+    let buffer = recorded??this.buffers.get(kind);
     if (!buffer) {
       const samples = synthesizeSound(kind, ctx.sampleRate);
       buffer = ctx.createBuffer(1, samples.length, ctx.sampleRate);
@@ -197,6 +234,7 @@ export class GameAudio {
     const count = this.playedSounds.get(kind) ?? 0;
     if (kind === 'cast' || kind === 'hit') source.playbackRate.value = [.97, 1.02, 1, .99][count % 4];
     this.playedSounds.set(kind, count + 1);
+    if(recorded&&sample)this.countSample(sample);
     this.voices.add(source); this.voiceKinds.set(source, kind);
     source.onended = () => { this.voices.delete(source); this.voiceKinds.delete(source); source.disconnect(); if(kind==='death'&&!this.running&&revision===this.playbackRevision)void ctx.suspend().catch(()=>{}); }; source.start(); this.played++;
     if (kind === 'nova' || kind === 'collapse-impact' || kind === 'tide-finish' || kind === 'harvest-big' || kind === 'harvest-epic') {
@@ -209,7 +247,7 @@ export class GameAudio {
     }
     return true;
   }
-  stopTreasure(){for(const voice of this.treasureVoices){voice.stop();voice.disconnect();this.voices.delete(voice);}this.treasureVoices.clear();}
+  stopTreasure(){for(const voice of this.treasureVoices){voice.stop();voice.disconnect();this.voices.delete(voice);}this.treasureVoices.clear();this.treasureOpenEndsAt=this.treasureRewardNextAt=0;}
   /** Let the terminal cue finish after battle/music stop; later lifecycle changes cancel it. */
   playDeath() {
     this.setActive(false);
@@ -220,17 +258,43 @@ export class GameAudio {
       this.lastSound.delete('death');this.play('death');
     }).catch(()=>{});
   }
-  playTreasure(cue: TreasureCue, count: number, index = 0) {
+  private startTreasureVoice(buffer:AudioBuffer,when:number,sample?:AudioSampleId){
+    const ctx=this.context!;
+    if(this.voices.size>=8){
+      const expendable=[...this.voiceKinds].find(([,kind])=>kind==='cast'||kind==='hit'||kind==='collect'||kind==='harvest');
+      if(!expendable)return false;
+      expendable[0].stop();expendable[0].disconnect();this.voices.delete(expendable[0]);this.voiceKinds.delete(expendable[0]);
+    }
+    const source=ctx.createBufferSource();source.buffer=buffer;source.connect(this.effectsGain!);
+    this.voices.add(source);this.treasureVoices.add(source);
+    source.onended=()=>{this.voices.delete(source);this.treasureVoices.delete(source);source.disconnect();};
+    source.start(when);this.treasurePlayed++;if(sample)this.countSample(sample);return true;
+  }
+  playTreasure(cue:TreasureCue,count:number,index=0,reward:{coinBonus?:boolean;item?:'coin'|'gem'}={}){
     const ctx=this.context;
-    if(!ctx||ctx.state!=='running'||!this.running||!this.sound||this.voices.size>=8)return false;
+    if(!ctx||ctx.state!=='running'||!this.running||!this.sound)return false;
+    // Opening and the pause afterwards stay clear of rolling ticks.
+    if(cue==='tick'&&(ctx.currentTime<this.treasureOpenEndsAt+.18||this.voices.size>=4))return false;
+    const sample:AudioSampleId|undefined=cue==='open'?'treasure-open':cue==='reveal'?reward.item==='coin'?'treasure-coin':'treasure-gem':undefined;
+    const recorded=sample?this.sampleBuffers.get(sample):undefined;
     const key=`${cue}:${count}:${cue==='reveal'?index:0}`;
-    let buffer=this.treasureBuffers.get(key);
+    let buffer=recorded??this.treasureBuffers.get(key);
     if(!buffer){const samples=synthesizeTreasureCue(cue,count,index,ctx.sampleRate);buffer=ctx.createBuffer(1,samples.length,ctx.sampleRate);buffer.copyToChannel(samples,0);this.treasureBuffers.set(key,buffer);}
-    const source=ctx.createBufferSource();source.buffer=buffer;source.connect(this.effectsGain!);this.voices.add(source);this.treasureVoices.add(source);
-    source.onended=()=>{this.voices.delete(source);this.treasureVoices.delete(source);source.disconnect();};source.start();this.treasurePlayed++;return true;
+    const when=cue==='reveal'?Math.max(ctx.currentTime,this.treasureOpenEndsAt+.18,this.treasureRewardNextAt):ctx.currentTime;
+    if(!this.startTreasureVoice(buffer,when,recorded?sample:undefined))return false;
+    if(cue==='open'){
+      this.treasureOpenEndsAt=when+buffer.duration;this.treasureRewardNextAt=this.treasureOpenEndsAt+.18;
+      if(reward.coinBonus){
+        const coin=this.sampleBuffers.get('treasure-coin');
+        // AudioContext scheduling is cancelled with all other treasure voices on pause/reset.
+        if(coin&&this.startTreasureVoice(coin,this.treasureRewardNextAt,'treasure-coin'))this.treasureRewardNextAt+=Math.min(.4,coin.duration)+.12;
+      }
+    }else if(cue==='reveal')this.treasureRewardNextAt=when+.24;
+    return true;
   }
   inspect() { return { treasurePlayed:this.treasurePlayed, music: this.music, sound: this.sound, active: this.running, state: this.unavailable ? 'unavailable' : this.context?.state ?? 'locked', supported: !!(window.AudioContext || (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext), voices: this.voices.size, played: this.played,
     track: this.track, playingTrack: this.playingTrack ?? null, looping: this.loop?.loop ?? false, musicStarts: this.musicStarts,
+    loadedSamples:[...this.sampleBuffers.keys()],failedSamples:[...this.failedSamples],playedSamples:Object.fromEntries(this.playedSamples),
     loadedTracks: [...this.musicBuffers.keys()], failedTracks: [...this.failedTracks], playedSounds: Object.fromEntries(this.playedSounds) }; }
-  dispose() { this.disposed = true; this.stopTreasure();this.requests.abort(); this.setActive(false); this.loop?.stop(); this.loop?.disconnect(); this.buffers.clear();this.treasureBuffers.clear(); this.musicBuffers.clear(); this.originalLoop = undefined; if (this.context) void this.context.close().catch(() => {}); }
+  dispose() { this.disposed = true; this.stopTreasure();this.requests.abort(); this.setActive(false); this.loop?.stop(); this.loop?.disconnect(); this.buffers.clear();this.treasureBuffers.clear(); this.musicBuffers.clear();this.sampleBuffers.clear();this.sampleLoads.clear(); this.originalLoop = undefined; if (this.context) void this.context.close().catch(() => {}); }
 }

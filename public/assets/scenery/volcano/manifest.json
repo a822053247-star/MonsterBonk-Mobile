@@ -1,0 +1,744 @@
+{
+  "pngRgbaMismatches": 0,
+  "padding": 4,
+  "assets": [
+    {
+      "anchor": [
+        129,
+        276
+      ],
+      "id": "01",
+      "file": "volcano-01.png",
+      "sourceBounds": [
+        15,
+        27,
+        271,
+        310
+      ],
+      "name": "炎晶簇",
+      "anchorNormalized": [
+        0.48863636363636365,
+        0.9484536082474226
+      ],
+      "pixelCount": 44131,
+      "rect": [
+        469,
+        0,
+        733,
+        291
+      ],
+      "size": [
+        264,
+        291
+      ],
+      "height": 3.6644444444444444,
+      "radius": 1.05,
+      "bright": true
+    },
+    {
+      "anchor": [
+        160,
+        267
+      ],
+      "id": "02",
+      "file": "volcano-02.png",
+      "sourceBounds": [
+        268,
+        35,
+        573,
+        310
+      ],
+      "name": "熔缝巨岩",
+      "anchorNormalized": [
+        0.5111821086261981,
+        0.9434628975265018
+      ],
+      "pixelCount": 48596,
+      "rect": [
+        1257,
+        0,
+        1570,
+        283
+      ],
+      "size": [
+        313,
+        283
+      ],
+      "height": 3.475438596491228,
+      "radius": 1.15,
+      "bright": false
+    },
+    {
+      "anchor": [
+        150,
+        222
+      ],
+      "id": "03",
+      "file": "volcano-03.png",
+      "sourceBounds": [
+        590,
+        79,
+        885,
+        324
+      ],
+      "name": "熔流圆岩",
+      "anchorNormalized": [
+        0.49504950495049505,
+        0.8774703557312253
+      ],
+      "pixelCount": 45472,
+      "rect": [
+        871,
+        307,
+        1174,
+        560
+      ],
+      "size": [
+        303,
+        253
+      ],
+      "height": 2.8881278538812785,
+      "radius": 1.1,
+      "bright": false
+    },
+    {
+      "anchor": [
+        175,
+        216
+      ],
+      "id": "04",
+      "file": "volcano-04.png",
+      "sourceBounds": [
+        876,
+        81,
+        1216,
+        310
+      ],
+      "name": "裂熔石台",
+      "anchorNormalized": [
+        0.5028735632183908,
+        0.9113924050632911
+      ],
+      "pixelCount": 48582,
+      "rect": [
+        0,
+        571,
+        348,
+        808
+      ],
+      "size": [
+        348,
+        237
+      ],
+      "height": 1.4242788461538463,
+      "radius": 1.2,
+      "bright": true
+    },
+    {
+      "anchor": [
+        125,
+        246
+      ],
+      "id": "05",
+      "file": "volcano-05.png",
+      "sourceBounds": [
+        1200,
+        70,
+        1448,
+        326
+      ],
+      "name": "黑曜晶簇",
+      "anchorNormalized": [
+        0.48828125,
+        0.9318181818181818
+      ],
+      "pixelCount": 37244,
+      "rect": [
+        0,
+        307,
+        256,
+        571
+      ],
+      "size": [
+        256,
+        264
+      ],
+      "height": 3.424267782426778,
+      "radius": 0.95,
+      "bright": false
+    },
+    {
+      "anchor": [
+        129,
+        270
+      ],
+      "id": "06",
+      "file": "volcano-06.png",
+      "sourceBounds": [
+        15,
+        318,
+        262,
+        601
+      ],
+      "name": "熔炉残柱",
+      "anchorNormalized": [
+        0.5058823529411764,
+        0.9278350515463918
+      ],
+      "pixelCount": 44851,
+      "rect": [
+        733,
+        0,
+        988,
+        291
+      ],
+      "size": [
+        255,
+        291
+      ],
+      "height": 3.33206106870229,
+      "radius": 0.85,
+      "bright": false
+    },
+    {
+      "anchor": [
+        153,
+        239
+      ],
+      "id": "07",
+      "file": "volcano-07.png",
+      "sourceBounds": [
+        272,
+        351,
+        577,
+        602
+      ],
+      "name": "覆灰熔岩",
+      "anchorNormalized": [
+        0.48881789137380194,
+        0.9227799227799228
+      ],
+      "pixelCount": 45647,
+      "rect": [
+        558,
+        307,
+        871,
+        566
+      ],
+      "size": [
+        313,
+        259
+      ],
+      "height": 2.8366666666666664,
+      "radius": 1.1,
+      "bright": false
+    },
+    {
+      "anchor": [
+        142,
+        233
+      ],
+      "id": "08",
+      "file": "volcano-08.png",
+      "sourceBounds": [
+        590,
+        349,
+        867,
+        586
+      ],
+      "name": "熔裂方岩",
+      "anchorNormalized": [
+        0.4982456140350877,
+        0.9510204081632653
+      ],
+      "pixelCount": 38064,
+      "rect": [
+        1682,
+        307,
+        1967,
+        552
+      ],
+      "size": [
+        285,
+        245
+      ],
+      "height": 2.6683168316831685,
+      "radius": 1.05,
+      "bright": false
+    },
+    {
+      "anchor": [
+        132,
+        271
+      ],
+      "id": "09",
+      "file": "volcano-09.png",
+      "sourceBounds": [
+        883,
+        322,
+        1144,
+        602
+      ],
+      "name": "熔纹立石",
+      "anchorNormalized": [
+        0.49070631970260226,
+        0.9409722222222222
+      ],
+      "pixelCount": 44749,
+      "rect": [
+        988,
+        0,
+        1257,
+        288
+      ],
+      "size": [
+        269,
+        288
+      ],
+      "height": 3.6,
+      "radius": 0.95,
+      "bright": false
+    },
+    {
+      "anchor": [
+        154,
+        219
+      ],
+      "id": "10",
+      "file": "volcano-10.png",
+      "sourceBounds": [
+        1139,
+        370,
+        1433,
+        624
+      ],
+      "name": "熔岩池",
+      "anchorNormalized": [
+        0.5099337748344371,
+        0.8358778625954199
+      ],
+      "pixelCount": 46879,
+      "rect": [
+        256,
+        307,
+        558,
+        569
+      ],
+      "size": [
+        302,
+        262
+      ],
+      "height": 2.0153846153846153,
+      "radius": 1.3,
+      "bright": true
+    },
+    {
+      "anchor": [
+        125,
+        246
+      ],
+      "id": "11",
+      "file": "volcano-11.png",
+      "sourceBounds": [
+        16,
+        606,
+        264,
+        862
+      ],
+      "name": "炎晶岩群",
+      "anchorNormalized": [
+        0.48828125,
+        0.9318181818181818
+      ],
+      "pixelCount": 40960,
+      "rect": [
+        1570,
+        0,
+        1826,
+        264
+      ],
+      "size": [
+        256,
+        264
+      ],
+      "height": 3.3138075313807533,
+      "radius": 1.1,
+      "bright": true
+    },
+    {
+      "anchor": [
+        133,
+        262
+      ],
+      "id": "12",
+      "file": "volcano-12.png",
+      "sourceBounds": [
+        258,
+        598,
+        515,
+        883
+      ],
+      "name": "双残柱",
+      "anchorNormalized": [
+        0.5018867924528302,
+        0.89419795221843
+      ],
+      "pixelCount": 41657,
+      "rect": [
+        204,
+        0,
+        469,
+        293
+      ],
+      "size": [
+        265,
+        293
+      ],
+      "height": 3.6625,
+      "radius": 1.1,
+      "bright": false
+    },
+    {
+      "anchor": [
+        102,
+        282
+      ],
+      "id": "13",
+      "file": "volcano-13.png",
+      "sourceBounds": [
+        512,
+        580,
+        708,
+        879
+      ],
+      "name": "火焰石座",
+      "anchorNormalized": [
+        0.5,
+        0.9185667752442996
+      ],
+      "pixelCount": 34713,
+      "rect": [
+        0,
+        0,
+        204,
+        307
+      ],
+      "size": [
+        204,
+        307
+      ],
+      "height": 3.7383763837638373,
+      "radius": 0.85,
+      "bright": true
+    },
+    {
+      "anchor": [
+        130,
+        237
+      ],
+      "id": "14",
+      "file": "volcano-14.png",
+      "sourceBounds": [
+        719,
+        619,
+        973,
+        861
+      ],
+      "name": "熔裂石堆",
+      "anchorNormalized": [
+        0.4961832061068702,
+        0.948
+      ],
+      "pixelCount": 38672,
+      "rect": [
+        1174,
+        307,
+        1436,
+        557
+      ],
+      "size": [
+        262,
+        250
+      ],
+      "height": 2.843601895734597,
+      "radius": 1.1,
+      "bright": false
+    },
+    {
+      "anchor": [
+        124,
+        225
+      ],
+      "id": "15",
+      "file": "volcano-15.png",
+      "sourceBounds": [
+        966,
+        637,
+        1204,
+        875
+      ],
+      "name": "黑曜刺簇",
+      "anchorNormalized": [
+        0.5040650406504065,
+        0.9146341463414634
+      ],
+      "pixelCount": 33680,
+      "rect": [
+        1436,
+        307,
+        1682,
+        553
+      ],
+      "size": [
+        246,
+        246
+      ],
+      "height": 2.6529411764705886,
+      "radius": 0.95,
+      "bright": false
+    },
+    {
+      "anchor": [
+        133,
+        195
+      ],
+      "id": "16",
+      "file": "volcano-16.png",
+      "sourceBounds": [
+        1190,
+        662,
+        1435,
+        860
+      ],
+      "name": "熔壳圆岩",
+      "anchorNormalized": [
+        0.525691699604743,
+        0.9466019417475728
+      ],
+      "pixelCount": 34811,
+      "rect": [
+        899,
+        571,
+        1152,
+        777
+      ],
+      "size": [
+        253,
+        206
+      ],
+      "height": 2.4936842105263155,
+      "radius": 1.1,
+      "bright": false
+    },
+    {
+      "anchor": [
+        139,
+        204
+      ],
+      "id": "17",
+      "file": "volcano-17.png",
+      "sourceBounds": [
+        0,
+        861,
+        258,
+        1070
+      ],
+      "name": "小火山",
+      "anchorNormalized": [
+        0.5225563909774437,
+        0.9400921658986175
+      ],
+      "pixelCount": 31743,
+      "rect": [
+        348,
+        571,
+        614,
+        788
+      ],
+      "size": [
+        266,
+        217
+      ],
+      "height": 2.741052631578947,
+      "radius": 1.15,
+      "bright": true
+    },
+    {
+      "anchor": [
+        133,
+        160
+      ],
+      "id": "18",
+      "file": "volcano-18.png",
+      "sourceBounds": [
+        272,
+        903,
+        532,
+        1086
+      ],
+      "name": "熔裂地台",
+      "anchorNormalized": [
+        0.4962686567164179,
+        0.837696335078534
+      ],
+      "pixelCount": 31665,
+      "rect": [
+        0,
+        808,
+        268,
+        999
+      ],
+      "size": [
+        268,
+        191
+      ],
+      "height": 1.5304487179487178,
+      "radius": 1.1,
+      "bright": true
+    },
+    {
+      "anchor": [
+        143,
+        185
+      ],
+      "id": "19",
+      "file": "volcano-19.png",
+      "sourceBounds": [
+        527,
+        878,
+        804,
+        1086
+      ],
+      "name": "兽骨岩堆",
+      "anchorNormalized": [
+        0.5017543859649123,
+        0.8564814814814815
+      ],
+      "pixelCount": 31327,
+      "rect": [
+        614,
+        571,
+        899,
+        787
+      ],
+      "size": [
+        285,
+        216
+      ],
+      "height": 2.3142857142857145,
+      "radius": 1.1,
+      "bright": false
+    },
+    {
+      "anchor": [
+        114,
+        189
+      ],
+      "id": "20",
+      "file": "volcano-20.png",
+      "sourceBounds": [
+        798,
+        875,
+        1015,
+        1071
+      ],
+      "name": "焦黑枯木",
+      "anchorNormalized": [
+        0.5066666666666667,
+        0.9264705882352942
+      ],
+      "pixelCount": 27264,
+      "rect": [
+        1152,
+        571,
+        1377,
+        775
+      ],
+      "size": [
+        225,
+        204
+      ],
+      "height": 3.1043478260869564,
+      "radius": 0.85,
+      "bright": false
+    },
+    {
+      "anchor": [
+        106,
+        177
+      ],
+      "id": "21",
+      "file": "volcano-21.png",
+      "sourceBounds": [
+        1014,
+        887,
+        1213,
+        1072
+      ],
+      "name": "尖峰熔岩",
+      "anchorNormalized": [
+        0.5120772946859904,
+        0.917098445595855
+      ],
+      "pixelCount": 23575,
+      "rect": [
+        1601,
+        571,
+        1808,
+        764
+      ],
+      "size": [
+        207,
+        193
+      ],
+      "height": 2.7890173410404624,
+      "radius": 1,
+      "bright": false
+    },
+    {
+      "anchor": [
+        116,
+        183
+      ],
+      "id": "22",
+      "file": "volcano-22.png",
+      "sourceBounds": [
+        1218,
+        882,
+        1434,
+        1070
+      ],
+      "name": "高火山锥",
+      "anchorNormalized": [
+        0.5178571428571429,
+        0.9336734693877551
+      ],
+      "pixelCount": 24382,
+      "rect": [
+        1377,
+        571,
+        1601,
+        767
+      ],
+      "size": [
+        224,
+        196
+      ],
+      "height": 2.9898305084745767,
+      "radius": 1.1,
+      "bright": false
+    }
+  ],
+  "ownedPixels": 838664.0,
+  "atlasSize": [
+    2048,
+    1024
+  ],
+  "sourceSha256": "E9FCED25FC02B3901CC5D096B8E5A5D4F61060C484BF9BF8804D3E31713D92D4",
+  "method": "Alpha128 body seeds; nonzero-alpha multi-source ownership; detached components assigned whole to nearest body; original BGRA bytes copied",
+  "sourceSize": [
+    1448,
+    1086
+  ],
+  "sourceNonzeroPixels": 838664
+}

@@ -25,6 +25,10 @@ const LEGACY_UPGRADE_ART = {
   shockwave: ['skills/shockwave.png'],
   'screen-nova': ['skills/screen-nova.png'],
   'screen-barrage': ['skills/screen-barrage.png'],
+  'frost-barrage': ['skills/frost-barrage.png'],
+  'leaf-barrage': ['skills/leaf-barrage.png'],
+  'arc-barrage': ['skills/arc-barrage.png'],
+  'rose-barrage': ['skills/rose-barrage.png'],
   'azure-burst': ['skills/azure-burst.png'],
   'star-tide': ['skills/star-tide.png'],
   'still-sea': ['skills/still-sea.png'],
@@ -88,12 +92,12 @@ export function upgradeArt(skill: Pick<SkillDefinition, 'id' | 'category'>, base
       ...(equipped.includes('leaf') ? ['skills/chain-bounce-grass.png'] : []),
     ];
   }
-  const element = definition?.art.palette ?? (skill.id === 'spark-weapon' || skill.id === 'flame-sweep-weapon' ? 'fire' : ['bubble-weapon', 'tidal-blade-weapon', 'azure-burst', 'star-tide', 'still-sea', 'returning-ring', 'abyss-vortex', 'ice-radiance', 'tidal-recall', 'tsunami-sanctuary', 'astral-wheel', 'abyss-crown', 'deep-collapse', 'frost-prism', 'all-tides'].includes(skill.id) ? 'water' : skill.id === 'leaf-weapon' || skill.id === 'thorn-wheel-weapon' || (skill.id === 'spore-trail' || skill.id === 'undertow-pyre') ? 'grass' : undefined);
+  const element = definition?.art.palette ?? (skill.id === 'spark-weapon' || skill.id === 'flame-sweep-weapon' ? 'fire' : ['bubble-weapon', 'tidal-blade-weapon', 'azure-burst', 'star-tide', 'still-sea', 'returning-ring', 'abyss-vortex', 'ice-radiance', 'tidal-recall', 'tsunami-sanctuary', 'astral-wheel', 'abyss-crown', 'deep-collapse', 'frost-prism', 'all-tides'].includes(skill.id) ? 'water' : skill.id === 'leaf-weapon' || skill.id === 'leaf-barrage' || skill.id === 'thorn-wheel-weapon' || (skill.id === 'spore-trail' || skill.id === 'undertow-pyre') ? 'grass' : undefined);
   const category = skill.category ?? 'normal';
   // All offers share the same parchment geometry and content safe areas.
   // Category/element are conveyed through dynamic labels, gems and ink colors.
   const frame = 'common';
-  return { hideIcon:!!definition?.art.hidden, illustrations: cardArtImages(definition ? definition.art.hidden?[]:[relicIcon(definition.art, import.meta.env.BASE_URL)] : illustrations.map(path => uiArtUrl(`upgrade/illustrations/${path}`))), element: ['dream-dart-weapon', 'resonance-seed-weapon', 'sakura-echo'].includes(skill.id) ? 'pink' : ['frost-crystal-weapon', 'shatter-ring', 'glacier-trail'].includes(skill.id) ? 'ice' : skill.id === 'thunder-bud-weapon' ? 'electric' : element, category,
+  return { hideIcon:!!definition?.art.hidden, illustrations: cardArtImages(definition ? definition.art.hidden?[]:[relicIcon(definition.art, import.meta.env.BASE_URL)] : illustrations.map(path => uiArtUrl(`upgrade/illustrations/${path}`))), element: ['dream-dart-weapon', 'resonance-seed-weapon', 'sakura-echo', 'rose-barrage'].includes(skill.id) ? 'pink' : ['frost-crystal-weapon', 'shatter-ring', 'glacier-trail', 'frost-barrage'].includes(skill.id) ? 'ice' : skill.id === 'thunder-bud-weapon' ? 'electric' : element, category,
     frame: uiArtUrl(`upgrade/card-frames/${frame}.png`),
     gem: uiArtUrl(`upgrade/gem-${category === 'relic' ? 'rare' : category === 'evolution' ? 'legendary' : 'common'}.png`),
   };

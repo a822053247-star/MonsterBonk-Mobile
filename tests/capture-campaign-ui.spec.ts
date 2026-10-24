@@ -19,9 +19,10 @@ for(const phone of [false,true])test(`campaign capture keeps battle alive, freez
  });
  await expect(page.locator('.capture-marker:visible')).toHaveText('按E 捕捉');
  await expect(page.locator('.capture-status')).toHaveCount(0);
- await expect(page.locator('.capture-start')).toHaveText('[E] 捕捉赤团');
+ await expect(page.locator('.capture-start')).toHaveCount(0);
  await page.screenshot({path:`artifacts/capture-ready-${phone?'phone':'desktop'}.png`});
- await page.keyboard.press('e');
+ if(phone)await page.getByRole('button',{name:'赤团，按 E 或点击捕捉'}).click();
+ else await page.keyboard.press('e');
  expect(await page.evaluate(()=>(window as any).target.captureLocked)).toBe(true);
  await page.evaluate(()=>{const g=(window as any).game;g.pause('capture pause');for(let i=0;i<30;i++)g.step(1/60);});
  expect(await page.evaluate(()=>(window as any).game.capture.pending.time)).toBe(0);
@@ -29,7 +30,7 @@ for(const phone of [false,true])test(`campaign capture keeps battle alive, freez
  await expect(page.getByRole('button',{name:'点击完成封印'})).toBeVisible();
  await page.screenshot({path:'artifacts/capture-seal-campaign.png'});
  await page.getByRole('button',{name:'点击完成封印'}).click({timeout:5000});
- await page.evaluate(()=>{const g=(window as any).game;for(let i=0;i<55;i++)g.step(1/60);(window as any).draw();});
+ await page.evaluate(()=>{const g=(window as any).game;for(let i=0;i<65;i++)g.step(1/60);(window as any).draw();});
  expect(await page.evaluate(()=>(window as any).game.collection.data.counts.normal)).toBe(1);
  expect(await page.evaluate(()=>(window as any).game.run.wave)).toBe(1);
  await page.evaluate(()=>(window as any).game.endRun('defeat'));

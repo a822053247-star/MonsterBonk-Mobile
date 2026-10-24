@@ -10,6 +10,7 @@ import { bladeStats, isBlade } from './blade-weapons';
 import { thunderStats } from './thunder-weapon';
 import { frostStats } from './frost-combat';
 import { dreamEchoStats, seedPierces } from './dream-combat';
+import { COLORED_BARRAGE_IDS, COLORED_BARRAGES, isColoredBarrage, coloredBarrageStats, coloredBarrageDescription } from './colored-barrage';
 import { ICE_SKILL_IDS, ICE_SKILL_NAMES, iceSkillStats, type IceSkill } from './ice-skills';
 import { WATER_AOE_IDS, WATER_NAMES, waterStats, type WaterSkill } from './water-aoe';
 import { POSITION_IDS, POSITION_NAMES, positionStats, type PositionSkill } from './position-aoe';
@@ -104,6 +105,8 @@ const BUILD_SKILLS: readonly SkillDefinition[] = [...SKILLS, ...WATER_AOE_CARDS,
   { ...BUBBLE_WEAPON, id: 'thorn-wheel-weapon', title: '获得环刃荆轮', benefit: '双荆轮绕身切割 · 3级增加第三枚', description: '两枚荆轮沿轨道切割，每次命中伤害14；同一敌人每0.55秒最多受一次主荆轮伤害。3级三枚、4级轻推普通怪、5级周期扩圈。轨道中心留空隙，不提供护盾；不穿障碍。攻速加快公转，分枝、分裂、连锁不复制荆轮。精英承受70%、首领55%伤害。', icon: 'orbit', color: '#b6db65' },
   { ...BUBBLE_WEAPON, id: 'tidal-blade-weapon', title: '获得回旋潮刃', benefit: '宽刃穿透敌群 · 往返各命中一次', description: '自动朝附近敌人掷出水刃，伤害28、射程8、间隔2秒。飞至远端后追随角色返回；同一敌人去程和回程各命中一次并减速。升级扩大刃面、增加射程并缩短间隔；障碍阻挡伤害，不阻止回收。分枝、分裂、连锁不复制水刃。精英承受75%、首领60%伤害。', icon: 'wave', color: '#72dfff' },
   { id: 'screen-barrage', title: '星雨弹幕', benefit: '每5.5秒释放12道弹幕 · 环形/扇形/交叉轮换', description: '升级至18/24道，分2/3轮发射。每道最多命中3个目标，穿透伤害保留80%；同次施法对每个目标只直接命中一次。弹幕穿越障碍，精英受到70%、首领受到40%伤害。', maxRank: 3, icon: 'battle', color: '#ffcd87', effect: { type: 'spell', levels: [{}, {}, {}] } },
+  ...COLORED_BARRAGE_IDS.map((id):SkillDefinition=>({id,title:COLORED_BARRAGES[id].title,benefit:COLORED_BARRAGES[id].benefit,
+    description:coloredBarrageDescription(id),maxRank:3,icon:'battle',color:COLORED_BARRAGES[id].color,effect:{type:'spell',levels:[{},{},{}]}})),
   { id: 'screen-nova', title: '星陨爆发', benefit: '每12秒轰击当前全屏 · 伤害90', description: '短暂预警后，对爆发瞬间镜头内的敌人造成一次伤害，穿越障碍。精英受到70%、首领受到40%伤害。每级伤害增加25%，可触发有限元素击杀协同。', maxRank: 3, icon: 'wave', color: '#ffcb70', effect: { type: 'spell', levels: [{}, {}, {}] } },
   { ...BUBBLE_WEAPON, id: 'flame-sweep-weapon', title: '获得火焰横扫', benefit: '扇形火浪 · 升级扩大覆盖', description: '向附近敌人展开一片火焰：伤害 34、半径 2.8、180°、间隔 0.76 秒。升级逐步扩大火浪，5 级覆盖一整圈；每次只有一次横扫。对精英和首领造成 70% 伤害；不穿障碍，分枝、分裂和连锁不复制攻击。', icon: 'battle', color: '#ff8c35' },
   { ...FUSION_SKILLS[FUSION_SKILLS.length - 1], benefit: '火花爆炸分裂 / 飞叶弹散射', description: '所有已装备火花弹自动形成爆裂火种，飞叶弹形成荆棘散射；派生最多一代，可与连锁共存。' },
@@ -208,6 +211,10 @@ export function calculateStats(ranks: SkillRanks, formal = false): Readonly<Skil
 
 export function upgradePreview(skill: SkillDefinition, ranks: SkillRanks, formal = false) {
   if (ranks[skill.id] >= skill.maxRank) return;
+  if(isColoredBarrage(skill.id)){
+    const rank=ranks[skill.id],next=coloredBarrageStats(skill.id,rank+1);
+    return `${rank?rank+'级':'未习得'} → ${rank+1}级 · ${next.count}枚 · 每枚${next.damage}伤害 · ${next.interval}秒/次`;
+  }
   const before = calculateStats(ranks, formal), after = calculateStats({ ...ranks, [skill.id]: ranks[skill.id] + 1 }, formal);
   if (skill.effect.type === 'add') {
     const stat = skill.effect.stat;
@@ -267,6 +274,7 @@ export class Progression {
   private currentOffers: SkillId[] = [];
   private fusionSkills = false;
   private purchasedRanks = 0;
+  private exchangeGrowthBudget = 0;
   /** Explicit RunFlow mode; does not affect campaign or historical growth. */
   endless = false;
   private rollsWithoutCore = 0;
@@ -302,7 +310,7 @@ export class Progression {
       if (definition && !meetsRequirements(definition.requirements, this.build!.relicContext)) return false;
       const weapon = WEAPON_CARDS[skill.id];
       if (skill.id === 'sakura-echo') return this.build!.hasOrigin('dream-dart') || this.build!.hasOrigin('resonance-seed');
-      if (weapon && !this.build!.has(weapon) && this.build!.attacks.length >= 3) return false;
+      if (weapon && !this.build!.has(weapon) && this.build!.attacks.length >= this.build!.weaponLimit) return false;
       if (skill.category === 'evolution') return this.build!.hasOrigin('spark') && this.ranks['split-on-hit'] > 0 && !this.build!.evolution;
       if (skill.id === 'overload-core') return this.build!.hasOrigin('flame-sweep') || (this.build!.hasOrigin('spark') && this.ranks['split-on-hit'] > 0) || (this.build!.hasOrigin('bubble') && this.ranks.area > 0);
       if (skill.id === 'hunter-eye' || skill.id === 'shattered-core') return (this.ranks['split-on-hit'] > 0 && (this.build!.hasOrigin('spark') || this.build!.hasOrigin('leaf'))) || this.build!.relics.includes('draft-thorn-testament');
@@ -356,8 +364,8 @@ export class Progression {
       return { ...skill, title: title + '强化', benefit: `该武器基础伤害 +${Math.round(WEAPON_DAMAGE_PER_LEVEL[weapon] * 100)}%`, description: `每级基础伤害 +${Math.round(WEAPON_DAMAGE_PER_LEVEL[weapon] * 100)}%；最高 5 级。火花每级爆炸半径 +6%；水泡每级减速时长 +0.1 秒；飞叶弹 3 级额外穿透一名敌人。` };
     });
   }
-  get maxLevel() { return 1 + this.pool.reduce((total, skill) => total + skill.maxRank, 0) - this.purchasedRanks - (this.build && this.fusionSkills ? 2 + (this.build.attacks.length > 1 && !this.ranks['specialist-badge'] ? 1 : 0)
-    + (this.build.attacks.length >= 3 ? this.pool.filter(s => WEAPON_CARDS[s.id] && !this.build!.hasOrigin(WEAPON_CARDS[s.id]!)).reduce((sum,s) => sum+s.maxRank,0) : 0) : 0); }
+  get maxLevel() { return 1 + this.exchangeGrowthBudget + this.pool.reduce((total, skill) => total + skill.maxRank, 0) - this.purchasedRanks - (this.build && this.fusionSkills ? 2 + (this.build.attacks.length > 1 && !this.ranks['specialist-badge'] ? 1 : 0)
+    + (this.build.attacks.length >= this.build.weaponLimit ? this.pool.filter(s => WEAPON_CARDS[s.id] && !this.build!.hasOrigin(WEAPON_CARDS[s.id]!)).reduce((sum,s) => sum+s.maxRank,0) : 0) : 0); }
   get awaitingChoice() { return this.pendingChoices > 0; }
   get offers(): readonly SkillId[] { return this.currentOffers; }
   get threshold() { return this.level >= this.maxLevel ? Infinity : this.build && this.fusionSkills ? buildExperienceThreshold(this.level, this.endless) : EXPERIENCE.initial + Math.max(0, this.level - 1) * EXPERIENCE.increment; }
@@ -397,6 +405,38 @@ export class Progression {
   }
   canGrant(id: SkillId) {
     return !!this.build && !this.awaitingChoice && this.skills.some(skill => skill.id === id && this.ranks[id] < skill.maxRank);
+  }
+
+  previewWeaponExchange(from: BaseAttackId, to: BaseAttackId) {
+    if (!this.fusionSkills || !this.endless || this.awaitingChoice || !this.build) return undefined;
+    const copy = this.build.previewExchange(from, to);
+    if (!copy) return undefined;
+    const old = this.build.attacks.find(a => a.attackId === from)!;
+    const level = Math.min(3, old.level);
+    const probe = new Progression();
+    probe.fusionSkills = this.fusionSkills; probe.endless = this.endless;
+    Object.assign(probe.ranks, this.ranks, {[`${from}-weapon`]: 0, [`${to}-weapon`]: level});
+    probe.build = copy;
+    const eligibleBefore = new Set(this.skills.map(s => s.id));
+    const eligibleAfter = new Set(probe.skills.map(s => s.id));
+    const warnings = this.build.relics.filter(id => eligibleBefore.has(id) && !eligibleAfter.has(id))
+      .map(id => `${RELICS[id].title}：失去当前触发前置，遗物保留`);
+    if (this.build.evolution && from === 'spark') warnings.push('火种进化保留，但换回火花弹前无法使用该来源效果');
+    if (from === 'bubble' && (this.ranks.area || this.ranks.chain)) warnings.push('水泡的范围/连锁融合暂不可用，支持技能保留');
+    if ((from === 'spark' || from === 'leaf') && this.ranks['split-on-hit']) warnings.push('原武器的分裂融合暂不可用，支持技能保留');
+    return { from, to, oldLevel: old.level, level, slot: old.slot, warnings };
+  }
+
+  exchangeWeapon(from: BaseAttackId, to: BaseAttackId) {
+    const preview = this.previewWeaponExchange(from, to);
+    if (!preview || !this.build!.exchange(from, to)) return false;
+    this.ranks[`${from}-weapon` as SkillId] = 0;
+    this.ranks[`${to}-weapon` as SkillId] = preview.level;
+    // Lost levels can be earned again; this does not refund coins or XP.
+    this.exchangeGrowthBudget += preview.oldLevel - preview.level;
+    this.currentStats = calculateStats(this.ranks, true);
+    this.currentOffers = [];
+    return true;
   }
 
   grant(id: SkillId) {
@@ -486,6 +526,7 @@ export class Progression {
     if (this.build) this.build.skillRanks = this.ranks;
     this.level = 1;
     this.purchasedRanks = 0;
+    this.exchangeGrowthBudget = 0;
     this.rollsWithoutCore = 0;
     this.offerRolls=0;this.earlySupportOffered=false;
     this.experience = this.totalExperience = this.pendingChoices = 0;

@@ -2,6 +2,7 @@ import { factoryRelic } from './content/relic-registry';
 import type { Combat } from './combat';
 import { WEAPON_CARDS, type SkillDefinition, type SkillId } from './progression';
 import { endlessShopPrice,VITAL_CONTRACT } from './balance';
+import type { BaseAttackId } from './fusion';
 
 export interface ShopItem {
   kind: 'reward' | 'heal' | 'contract' | 'empty'; skill?: SkillId; illustration?:'rest-supply'|'vital-contract';
@@ -20,6 +21,22 @@ export class RunShop {
   refreshSpent = 0;
   private supplyBought=false;
   private contractBought=false;
+  private exchanged = false;
+  get exchangeUsed() { return this.exchanged; }
+  get exchangePrice() { return this.price(25); }
+  get canExchange() {
+    return this.endlessCycleIndex !== undefined && !this.exchanged && this.combat.hp > 0
+      && !this.combat.progression.awaitingChoice && this.combat.runBuild.attacks.some(a => !a.pairId);
+  }
+  exchange(from: BaseAttackId, to: BaseAttackId, token: string, coins: number) {
+    if (token !== this.token || !this.canExchange || !Number.isSafeInteger(coins) || coins < this.exchangePrice) return undefined;
+    if (!this.combat.exchangeWeapon(from, to)) return undefined;
+    this.exchanged = true; this.revision++; this.purchases++; this.spent += this.exchangePrice;
+    const purchased = this.offers.map(s => s.sold ? s : undefined);
+    this.roll(new Set(purchased.flatMap(s => s?.skill ? [s.skill] : [])));
+    purchased.forEach((s, i) => { if (s) this.offers[i] = s; });
+    return coins - this.exchangePrice;
+  }
   get treasureRefreshes() { return this.freeRefreshes; }
   get items(): readonly ShopItem[] { return this.offers; }
   get token() { return `${this.session}:${this.revision}`; }

@@ -96,7 +96,7 @@ export class EnemyCapture {
     p.enemy.active=false;
     if (success) this.caught[kind]=(this.caught[kind]??0)+1;
     this.cancel();
-    this.message=`${ENEMY_TYPES[kind].name} · ${success?'捕捉成功，已送入囚坊':'捕捉失败，目标已消失'}`;
+    this.message=`${ENEMY_TYPES[kind].name} · ${success?'已捕捉到幻兽囚坊':'捕捉失败，目标已消失'}`;
     if (success) this.onCaught(kind);
   }
 }

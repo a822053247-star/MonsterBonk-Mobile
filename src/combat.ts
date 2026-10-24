@@ -9,6 +9,7 @@ import { PositionAoe } from './position-aoe';
 import { BladeWeapons, bladeStats, isBlade, type BladeSpec } from './blade-weapons';
 import { ThunderWeapon, thunderStats } from './thunder-weapon';
 import { FrostCombat } from './frost-combat';
+import { ColoredBarrages } from './colored-barrage';
 import { IceSkills } from './ice-skills';
 import { DreamCombat, isDreamWeapon } from './dream-combat';
 import { WaterEvolution, WATER_EVOLUTION_IDS, WATER_EVOLUTIONS, consumedByEvolution, isWaterEvolution } from './water-evolution';
@@ -181,6 +182,21 @@ export class Combat {
       if (explosion) this.soundEvents |= SKILL_SOUNDS.nova;
       if (kills >= 8) this.areaFeedback = { serial: this.areaFeedback.serial + 1, kills, time: this.elapsed };
     },
+  });
+  readonly coloredBarrages=new ColoredBarrages({
+    nextCastId:()=>++this.nextRelicCast,enemies:()=>this.enemies,
+    origin:()=>({x:this.anchorX,z:this.anchorZ}),
+    aim:()=>{const target=this.findTarget({x:this.anchorX,z:this.anchorZ});return target?Math.atan2(target.x-this.anchorX,target.z-this.anchorZ):0;},
+    eligible:enemy=>enemy.active&&enemy.hp>0&&enemy.spawnTime<=0&&!enemy.captureLocked&&!this.isCaptureReady(enemy),
+    intersection:(ax,az,bx,bz,enemy,radius)=>segmentHit(ax,az,bx,bz,enemy.x,enemy.z,this.enemyRadius(enemy)+radius),
+    source:(damage,castId)=>{
+      const source=this.newRelicSource(this.baseAttack,this.runBuild.rules(this.baseAttack),damage);
+      // These independent salvos do not inherit the equipped weapon's reactions or copies.
+      source.castId=castId;source.primary=false;source.kind='explosion';source.suppressRelics=true;
+      source.areaBudget={nodes:0,hits:new Map()};return source;
+    },
+    damage:(enemy,damage,source)=>this.damageEnemy(enemy,damage,0,0,'player',source),
+    chill:(enemy,seconds)=>{enemy.chillTime=Math.max(enemy.chillTime??0,seconds);},
   });
   readonly waterAoe = new WaterAoe({
     enemies: () => this.enemies,
@@ -421,8 +437,18 @@ export class Combat {
   chooseUpgrade(id: SkillId) { return this.applyUpgrade(id, true); }
   grantUpgrade(id: SkillId) { return this.usesRunBuild && this.applyUpgrade(id, false); }
 
+  exchangeWeapon(from: BaseAttackId, to: BaseAttackId) {
+    if (!this.usesRunBuild || this.hp <= 0 || !this.progression.exchangeWeapon(from, to)) return false;
+    // Existing attacks finish with their snapshots; no future salvo may use the removed weapon.
+    if (this.salvo?.attackId === from) this.salvo = undefined;
+    if (this.previousWeapon?.attackId === from) this.previousWeapon = undefined;
+    this.nextWeapon = 0;
+    this.hp = Math.min(this.hp, this.maxHp);
+    return true;
+  }
+
   /** Grant sequentially, rechecking prerequisites after each applied reward. */
-  grantTreasure(count: number, point: Point, firstBoss = false) {
+  grantTreasure(count: number, point: Point, firstBoss = false, bias?: import('./endless-regions').RegionRewardBias) {
     const items: TreasureReward['items'] = [];
     const used = new Set<SkillId>();
     for (let i = 0; i < count; i++) {
@@ -430,6 +456,10 @@ export class Combat {
         && !(this.progression.ranks['specialist-badge'] && WEAPON_CARDS[s.id] && !this.runBuild.has(WEAPON_CARDS[s.id]!))
         && (factoryRelic(s.id)?.rewards.shop ?? true) && this.progression.canGrant(s.id));
       let candidates = legal.filter(s => !used.has(s.id));
+      if(!firstBoss&&i===0&&bias){
+        const preferred=candidates.filter(s=>bias==='weapon'?!!WEAPON_CARDS[s.id]:['damage','haste','vitality','movement','range','multishot','orbit','shockwave'].includes(s.id));
+        if(preferred.length)candidates=preferred;
+      }
       if (firstBoss && !candidates.length) candidates = legal;
       if (firstBoss && i === 0) {
         const relevant = candidates.filter(s => (WEAPON_CARDS[s.id] && this.runBuild.has(WEAPON_CARDS[s.id]!))
@@ -505,6 +535,7 @@ export class Combat {
     this.waterEvolution.reset();
     this.waterAoe.reset();
     this.areaAttacks.reset();
+    this.coloredBarrages.reset();
     this.areaFeedback = { serial: 0, kills: 0, time: 0 };
     this.attackViewport = undefined;
     this.soundEvents = 0;
@@ -1210,6 +1241,8 @@ export class Combat {
     this.updateSkills(dt, player);
     if (!this.encounters.dying) this.areaAttacks.update(dt, this.usesRunBuild ? this.progression.ranks['screen-nova'] : 0,
       this.stats.damageMultiplier, this.usesRunBuild ? this.progression.ranks['screen-barrage'] : 0);
+    if(!this.encounters.dying)this.coloredBarrages.update(dt,this.usesRunBuild?this.progression.ranks:{},this.stats.damageMultiplier,
+      this.areaAttacks.barrages.some(c=>c.active&&c.age<.3));
     if (!this.encounters.dying) {
       const ranks: Partial<Record<SkillId, number>> = this.usesRunBuild ? this.progression.ranks : {};
       const baseRanks: Partial<Record<SkillId, number>> = { ...ranks };
@@ -1303,6 +1336,7 @@ export class Combat {
       this.waterEvolution.clear();
       this.waterAoe.clear();
       this.areaAttacks.clear();
+      this.coloredBarrages.clear();
       for (const death of this.areaDeaths) death.active = false;
       this.relicBehaviors.gigapack.clearTransient();
       this.salvo=undefined;
@@ -1465,6 +1499,7 @@ export class Combat {
     this.waterEvolution.clear();
     this.waterAoe.clear();
     this.areaAttacks.clear();
+    this.coloredBarrages.clear();
     this.areaFeedback.kills = 0;
     for (const effect of this.areaDeaths) effect.active = false;
     this.relicBehaviors.reset(preserveRunRelics);
@@ -2179,7 +2214,7 @@ export class Combat {
       build: { enabled: this.usesRunBuild, species: this.runBuild.species, relics: [...this.runBuild.relics], evolution: this.runBuild.evolution ?? null, attacks: this.runBuild.attacks.map(attack => ({ ...attack })) },
       melee: { ...this.melee, hitIds: Array.from(this.melee.hitIds).filter(Boolean) },
       firing: { weapon: this.salvo?.attackId ?? null, remaining: this.salvo ? this.salvo.total - this.salvo.index : 0, gap: this.launchClock },
-      dream: this.dream.inspect(), iceSkills: this.iceSkills.inspect(), frost: this.frost.inspect(), thunder: this.thunder.inspect(), blades: this.blades.inspect(), waterEvolution: this.waterEvolution.inspect(), positionAoe: this.positionAoe.inspect(), waterAoe: this.waterAoe.inspect(), areaAttacks: this.areaAttacks.inspect(), areaFeedback: { ...this.areaFeedback },
+      dream: this.dream.inspect(), iceSkills: this.iceSkills.inspect(), frost: this.frost.inspect(), thunder: this.thunder.inspect(), blades: this.blades.inspect(), waterEvolution: this.waterEvolution.inspect(), positionAoe: this.positionAoe.inspect(), waterAoe: this.waterAoe.inspect(), areaAttacks: this.areaAttacks.inspect(), coloredBarrages:this.coloredBarrages.inspect(), areaFeedback: { ...this.areaFeedback },
       hp: this.hp, kills: this.kills, goldEarned: this.goldEarned, xp: this.xp, shotsFired: this.shotsFired, hits: this.hits,
       fusion: { enabled: this.fusionEnabled, active: this.fusion?.id ?? null, recipes: this.fusions.map(f => f.id), bursts: this.bursts, childShots: this.childShots, children: this.projectiles.filter(shot => shot.active && shot.generation === 1).length },
       spawned: this.spawned, collected: this.collected, invulnerability: this.invulnerability,

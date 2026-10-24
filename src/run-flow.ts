@@ -4,6 +4,7 @@ import type { Combat, EnemyKind } from './combat';
 import { EndlessRoster, type EndlessEnemyType } from './endless-roster';
 import { EndlessEncounterDeck, APPROACH_NAMES, endlessEntryHeading, type EndlessApproach } from './endless-encounters';
 import { RunShop } from './shop';
+import { isEndlessRegion, type EndlessRegionId } from './endless-regions';
 import { CRYSTAL_SWARM, SPORE_BOMBER, TREASURE_RUNNER, firstBossTreasureCount } from './special-enemies';
 import { populationBudget, SPAWN_LAYOUT, FORMAL_SPAWN_CAPS } from './spawn-layout';
 import { WAVE_DIRECTOR, ENDLESS_WAVE_DIRECTOR, ENDLESS_WAVE_SECONDS, directorStage, releaseLeadIn, ENDLESS_MODIFIERS, ENDLESS_SCALING, type EndlessModifierId, type DirectorStage, type DirectorEscort } from './wave-director';
@@ -24,7 +25,10 @@ export const RUN_WAVES: readonly { seconds: number; reward: number; cap: number 
 
 /** Six-wave finite challenge or repeating six-wave Endless survival loop. */
 export class RunFlow {
-  phase: 'fighting' | 'intermission' | 'shop' | 'won' | 'lost' = 'fighting';
+  phase: 'region-choice' | 'fighting' | 'intermission' | 'shop' | 'won' | 'lost' = 'fighting';
+  region: EndlessRegionId = 'meadow';
+  get regionChoiceToken() { return `${this.wave}:${this.bossesDefeated}:${this.phase}`; }
+  private regionHistory: {wave:number;from:EndlessRegionId;to:EndlessRegionId}[]=[];
   intermissionRemaining = 0;
   waveIndex = 0;
   waveElapsed = 0;
@@ -206,6 +210,7 @@ export class RunFlow {
     if (this.phase !== 'fighting') return;
     this.prepareRoster(combat);
     combat.progression.endless = this.endless;
+    combat.runBuild.configureWeaponSlots(this.endless, this.wave);
     combat.endlessCycleIndex = this.endless ? this.cycleIndex : 0;
     if (combat.encounters.wave !== this.waveInCycle) combat.encounters.beginWave(this.waveInCycle, this.waveInCycle <= SHOP_AFTER_WAVE, !this.endless);
     combat.encounters.releaseWindow=directorStage(this.waveInCycle,this.waveElapsed,this.endless,this.cycleIndex).beat==='release';
@@ -421,7 +426,19 @@ export class RunFlow {
     if (this.isShopWave) {
       this.prepareShop(combat!);
       this.phase = 'shop';
-    } else if (combat) this.advanceWave(combat);
+    } else if (combat) {
+      if(this.endless&&this.isBossWave)this.phase='region-choice';
+      else this.advanceWave(combat);
+    }
+  }
+
+  chooseRegion(id: string, token: string, combat: Combat) {
+    if (!this.endless || this.phase!=='region-choice' || !this.isBossWave || !this.bossDefeated
+      || token!==this.regionChoiceToken || !isEndlessRegion(id) || combat.hp<=0 || combat.progression.awaitingChoice
+      || this.firstBossChest?.active) return false;
+    this.regionHistory.push({wave:this.wave,from:this.region,to:id});
+    if(this.regionHistory.length>12)this.regionHistory.shift();
+    this.region=id;this.advanceWave(combat);return true;
   }
 
   buy(index: number, token: string) {
@@ -450,7 +467,10 @@ export class RunFlow {
     this.bossOvertime = false; this.bossOvertimeElapsed = 0;
     if (this.cycle !== previousCycle) this.rollCycleModifiers();
     this.shop = undefined; this.phase = 'fighting'; this.intermissionRemaining = 0;
-    if (combat) this.prepareRoster(combat);
+    if (combat) {
+      combat.runBuild.configureWeaponSlots(this.endless, this.wave);
+      this.prepareRoster(combat);
+    }
   }
 
   nextWave(token: string, combat: Combat) {
@@ -472,11 +492,13 @@ export class RunFlow {
   inspect() {
     const stage = directorStage(this.waveInCycle, this.waveElapsed, this.endless, this.cycleIndex);
     return { mode: this.mode, endless: this.endless, phase: this.phase, wave: this.wave, waves: RUN_WAVES.length,
+      region:this.region,regionHistory:this.regionHistory.map(r=>({...r})),
       cycle: this.cycle, cycleIndex: this.cycleIndex, waveInCycle: this.waveInCycle, waveLabel: this.waveLabel,
       isShopWave: this.isShopWave, isBossWave: this.isBossWave, bossOvertime: this.bossOvertime,
       bossOvertimeElapsed: this.bossOvertimeElapsed, bossesDefeated: this.bossesDefeated,
       firstBossChestGranted: this.firstBossChestGranted, firstBossChestActive: this.firstBossChest?.active ?? false,
       economy: {shops:this.shopHistory.map(s=>({...s})),currentPurchases:this.shop?.purchases ?? 0,
+        currentExchangeUsed:this.shop?.exchangeUsed ?? false,currentExchangePrice:this.shop?.exchangePrice ?? null,
         currentItemSpent:this.shop?.spent ?? 0,currentRefreshSpent:this.shop?.refreshSpent ?? 0,
         currentEnteringCoins:this.shop ? this.shopEnteringCoins : null,currentIntervalIncome:this.shop ? this.shopIncome : null},
       cycleTreasureCaught: this.cycleTreasureCaught, modifiers: this.activeModifiers,

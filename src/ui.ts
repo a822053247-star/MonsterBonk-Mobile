@@ -1,6 +1,11 @@
 import {WEAPON_PAIR_RECIPES,pairSources,pairLevel,pairIcon} from './weapon-pair-fusion';
 import { RELICS, EVOLUTIONS } from './relics';
 import { MAX_GAME_SPEED } from './quality';
+import { ITEM_TEST_OPTIONS } from './item-test-mode';
+import './item-test.css';
+import { NEW_FEATURE_TESTS, NEW_FEATURE_PHASES } from './new-feature-test';
+import './new-feature-test.css';
+import { ENDLESS_REGION_IDS, ENDLESS_REGIONS, isEndlessRegion } from './endless-regions';
 import type { RunFlow } from './run-flow';
 import type { Combat } from './combat';
 import { ATTACKS, type RunBuild } from './run-build';
@@ -28,6 +33,8 @@ const icons = {
   expand: '<path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5"/>',
   heart: '<path d="M20 5c-3-3-7-1-8 1-1-2-5-4-8-1-5 5 2 10 8 15 6-5 13-10 8-15Z"/>',
   spark: '<path d="m12 2 3 7 7 3-7 3-3 7-3-7-7-3 7-3 3-7Z"/>',
+  snow: '<path d="M12 2v20M3.3 7l17.4 10M3.3 17 20.7 7M8 4l4 4 4-4M8 20l4-4 4 4M3 11l5-1-1-5M21 13l-5 1 1 5M3 13l5 1-1 5M21 11l-5-1 1-5"/>',
+  volcano: '<path d="M3 21 9 8l3 3 3-3 6 13H3Zm6-13 3-3 3 3M12 2V1M7 5 5 3m12 2 2-2M11 14l-2 4m4-3 2 4"/>',
   orbit: '<circle cx="12" cy="12" r="3"/><ellipse cx="12" cy="12" rx="10" ry="6" transform="rotate(-35 12 12)"/><circle cx="19" cy="6" r="2" fill="currentColor"/>',
   wave: '<path d="M3 17a9 9 0 0 1 18 0M7 17a5 5 0 0 1 10 0M11 17a1 1 0 0 1 2 0M5 21h14"/>',
   battle: '<path d="m5 3 5 5-2 3-5-5 2-3Zm14 0 2 3-5 5-2-3 5-5ZM4 20 19 5M20 20 5 5M3 16l5 5m8 0 5-5"/>',
@@ -41,6 +48,8 @@ export const icon = (name: keyof typeof icons, className = '') => `<svg class="i
 const portrait = `<svg class="portrait" viewBox="0 0 80 80" aria-hidden="true"><path d="M17 38 12 15l20 13M49 27 65 14l-4 26" fill="#fff0c8"/><path d="m22 23-2-7 9 11m27-2 5-10-1 13" fill="#f4af9f"/><ellipse cx="40" cy="48" rx="28" ry="25" fill="#f58b32"/><ellipse cx="29" cy="45" rx="3.4" ry="5" fill="#223e3c"/><ellipse cx="51" cy="45" rx="3.4" ry="5" fill="#223e3c"/><ellipse cx="22" cy="53" rx="5" ry="2.5" fill="#f4af9f"/><ellipse cx="59" cy="53" rx="5" ry="2.5" fill="#f4af9f"/><path d="M36 56q4 5 8 0" fill="none" stroke="#223e3c" stroke-width="2.5" stroke-linecap="round"/><path d="M40 18l7 10-7 10-7-10Z" fill="#fff7a9"/></svg>`;
 
 export function createUI(root: HTMLElement) {
+  const requestedRegion=new URLSearchParams(window.location.search).get('region')??'';
+  const startingRegion=isEndlessRegion(requestedRegion)?requestedRegion:'meadow';
   root.innerHTML = `
     <canvas id="game-canvas" aria-label="幻兽幸存者游戏场景"></canvas>
     <div id="world-loading" class="world-loading" role="status" aria-live="polite" hidden><strong>正在准备战斗画面…</strong><span>准备完成后自动继续</span></div>
@@ -54,13 +63,25 @@ export function createUI(root: HTMLElement) {
         <h1>幻兽<br/><span>幸存者</span></h1>
         <p class="menu-description">一只焰绒，从火花到爆裂火种。<br/>自动迎战，升级组合你的魔法。</p>
         <div class="main-modes" aria-label="挑战与幻兽囚坊"><button id="start-fusion" class="mode-card campaign-mode">${icon('battle')}<span><strong>闯关挑战</strong></span>${icon('arrow')}</button><button id="start-infinite" class="mode-card infinite-mode">${icon('spark')}<span><strong>无尽挑战</strong></span>${icon('arrow')}</button><button id="open-prison" class="mode-card prison-mode">${icon('cage')}<span><strong>幻兽囚坊</strong></span>${icon('arrow')}</button></div>
+        <label class="endless-start-region" for="endless-start-region"><span>无尽起始地区</span><select id="endless-start-region">${ENDLESS_REGION_IDS.map(id=>`<option value="${id}"${id===startingRegion?' selected':''}>${ENDLESS_REGIONS[id].title}</option>`).join('')}</select></label>
         <div id="endless-best-menu" class="endless-best-menu" aria-label="无尽个人最佳">无尽个人最佳 · 首次挑战后记录</div>
         <div class="menu-actions menu-utilities"><button id="choose-creature" class="secondary creature-select-entry" aria-label="选择出战幻兽">选择幻兽</button><button id="help" class="secondary" aria-label="操作指南">${icon('help')}<span>操作指南</span></button><button id="menu-settings" class="secondary settings-entry" aria-label="画质与声音设置">${icon('settings')}</button></div>
         
       </div>
-      <footer class="menu-footer" aria-label="测试与旧版模式入口"><button id="start-capture-test" class="trial-entry practice-entry">捕捉测试</button><button id="start-enemy-test" class="trial-entry practice-entry">敌人测试</button><button id="open-legacy" class="trial-entry practice-entry" aria-haspopup="dialog">旧版模式</button></footer>
+      <footer class="menu-footer" aria-label="测试与旧版模式入口"><button id="open-new-feature-test" class="trial-entry practice-entry" aria-haspopup="dialog">新功能测试</button><button id="open-item-test" class="trial-entry practice-entry" aria-haspopup="dialog">道具测试</button><button id="start-capture-test" class="trial-entry practice-entry">捕捉测试</button><button id="start-enemy-test" class="trial-entry practice-entry">敌人测试</button><button id="open-legacy" class="trial-entry practice-entry" aria-haspopup="dialog">旧版模式</button></footer>
     </section>
     <section id="legacy-picker" class="modal-screen" role="dialog" aria-modal="true" aria-labelledby="legacy-title" hidden><div class="modal legacy-card"><button id="close-legacy" class="icon-button close-button" aria-label="关闭旧版玩法">${icon('close')}</button><h2 id="legacy-title">旧版模式</h2><div class="legacy-options"><button id="start" class="secondary">${icon('leaf')} 单兽冒险</button><button id="start-trial" class="secondary">${icon('dash')} 犄角试炼</button><button id="start-challenge" class="secondary">${icon('battle')} 三波闯关</button></div></div></section>
+    <section id="new-feature-test-picker" class="modal-screen" role="dialog" aria-modal="true" aria-labelledby="new-feature-test-heading" hidden>
+      <div class="feature-test-panel"><header><div><h2 id="new-feature-test-heading">新功能测试</h2><p>直接进入指定场景 · 资源按各场景预设 · 不计入无尽纪录与永久捕捉</p></div><button id="close-new-feature-test" class="icon-button" aria-label="关闭新功能测试">${icon('close')}</button></header>
+        <div class="feature-test-content"><h3>已接入 · 等待体验反馈</h3><div class="feature-test-options">${NEW_FEATURE_TESTS.map(test=>`<button type="button" class="feature-test-option" data-feature-test="${test.id}"><strong>${test.title}</strong><span>${test.detail}</span><small>进入场景 →</small></button>`).join('')}</div><h3>后续计划 · 尚未开放</h3><ol class="feature-test-planned">${NEW_FEATURE_PHASES.map(phase=>`<li>${phase}</li>`).join('')}</ol><p>每项完成后会在这里开放对应场景。测试中的“重开”恢复预设，“更换项目”返回本列表。</p></div>
+      </div>
+    </section>
+    <section id="item-test-picker" class="modal-screen" role="dialog" aria-modal="true" aria-labelledby="item-test-heading" hidden>
+      <div class="item-test-panel"><header><div><h2 id="item-test-heading">道具测试</h2><p>选择一种弹幕 · 仅释放所选技能，靶怪自动补充</p></div><button id="close-item-test" class="icon-button" aria-label="关闭道具测试选择">${icon('close')}</button></header>
+        <div class="item-test-options" role="group" aria-label="选择测试技能">${ITEM_TEST_OPTIONS.map(option=>`<button type="button" class="item-test-option" data-test-skill="${option.id}" aria-pressed="${option.id==='screen-barrage'}" style="--test-color:${option.color}"><img src="${upgradeArt({id:option.id},'spark').illustrations[0]}" alt="" draggable="false"/><strong>${option.title}</strong><span>${option.detail}</span></button>`).join('')}</div>
+        <footer><label for="item-test-level">技能等级 <select id="item-test-level" aria-label="测试技能等级"><option value="1">1 级</option><option value="2">2 级</option><option value="3">3 级</option></select></label><button id="start-item-test" class="primary">开始测试 ${icon('arrow')}</button></footer>
+      </div>
+    </section>
     <section id="creature-picker" class="modal-screen" role="dialog" aria-modal="true" aria-labelledby="creature-picker-title" hidden>
       <div class="creature-picker-card"><header><div><small>每局一只 · 自动攻击</small><h2 id="creature-picker-title">选择出战幻兽</h2></div><button id="close-creature-picker" class="icon-button" aria-label="关闭幻兽选择">${icon('close')}</button></header>
         <div class="creature-options" role="group" aria-label="可选幻兽">
@@ -76,11 +97,14 @@ export function createUI(root: HTMLElement) {
       <div id="low-health-effect" class="low-health-effect" aria-hidden="true"></div>
       <div class="hud-top">
         <div class="health-block"><div class="health-panel"><img class="health-frame-art" data-upgrade-art="health-frame" src="${uiArtUrl('hud/creature-health-panel.png')}" alt="" draggable="false"/>${portrait}<img id="creature-portrait" class="portrait" data-upgrade-art="portrait" alt="" hidden style="object-fit:contain;image-rendering:pixelated"/><div class="health-copy"><div class="health-values"><strong id="health-value">100 / 100</strong></div><div class="health-track" role="progressbar" aria-label="生命值 HP" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100"><div id="health-fill"></div></div></div></div><div class="combat-stats"><div>${icon('battle')}<span>击败</span><strong id="kill-value">0</strong></div><div>${icon('spark')}<span>经验</span><strong id="xp-value">0</strong></div></div><div class="hud-bottom-row"><div class="hud-gold" aria-label="当前金币"><img src="${uiArtUrl('common/coin.png')}" alt="" draggable="false"/><strong id="hud-coins">0</strong></div><div class="xp-row"><div id="xp-track" class="xp-track" role="progressbar" aria-label="升级经验" aria-valuemin="0" aria-valuemax="8" aria-valuenow="0"><div id="xp-fill"></div></div><span id="level-value">Lv.1</span></div></div></div>
-        <div class="run-status"><small id="run-wave" hidden></small><strong id="timer">00:00</strong><small id="run-gold" hidden></small></div>
+        <div class="run-status"><small id="run-wave" hidden></small><strong id="timer">00:00</strong><small id="run-gold" hidden></small><small id="region-status" hidden></small></div>
         <div class="hud-actions"><button id="game-speed" class="icon-button speed-button" aria-label="游戏速度：1倍，点击切换" title="切换游戏倍速">1×</button><button id="settings" class="icon-button" aria-label="画质与声音设置">${icon('settings')}</button><button id="fullscreen" class="icon-button" aria-label="切换全屏">${icon('expand')}</button><button id="pause" class="icon-button" aria-label="暂停游戏">${icon('pause')}</button></div>
       </div>
       <div id="encounter-status" class="encounter-status" hidden><div><strong id="encounter-name"></strong><span id="encounter-health"></span></div><div id="encounter-track" class="encounter-track" role="progressbar" aria-label="遭遇敌人生命值" aria-valuemin="0"><i id="encounter-fill"></i></div><small id="encounter-hint"></small><small id="encounter-wave"></small></div>
       <div id="welcome" class="welcome"><h2>小小魔法，准备就绪。</h2><p>移动躲避敌人，焰绒会自动施法 · 靠近拾取经验</p></div>
+      <div id="item-test-controls" class="item-test-controls" hidden><label for="item-test-live-level">技能等级 <select id="item-test-live-level" aria-label="场内测试技能等级"><option value="1">1 级</option><option value="2">2 级</option><option value="3">3 级</option></select></label><button id="switch-item-test" type="button">更换道具</button></div>
+      <div id="exploration-controls" class="exploration-controls" hidden><strong id="exploration-name"></strong><span id="exploration-detail"></span><div><button id="exploration-interact" type="button">开启 · E</button><button id="exploration-abandon" type="button">放弃</button></div></div>
+      <div id="new-feature-test-controls" class="feature-test-controls" hidden><span id="new-feature-test-status" role="status"></span><div><button id="feature-test-add-weapon" type="button">添加武器</button><button id="feature-test-exchange" type="button" hidden>打开置换</button><button id="feature-test-event-finish" type="button" hidden>完成挑战</button><button id="feature-test-event-boundary" type="button" hidden>跨波</button><button id="feature-test-region-seed" type="button" hidden>切换随机地形</button><button id="feature-test-region-combat" type="button" hidden>开始实战</button><button id="feature-test-region-chest" type="button" hidden>放置封印宝箱</button><button id="feature-test-restart" type="button">重开</button><button id="feature-test-switch" type="button">更换项目</button></div></div>
       <div id="party-status" class="party-status" hidden><strong>草场战斗样板</strong><span>焰绒 · 单兽自动攻击</span></div>
       <div id="trial-status" class="trial-status" hidden><strong id="trial-title">冲锋犄角 · 开局已装备</strong><span id="trial-progress" aria-live="polite"></span><small id="trial-hint">黄线蓄力时侧移躲开；冲刺命中可打断，青环期间可反击</small></div><span id="map-seed" hidden></span>
       <div class="movement-control"><div id="joystick" class="joystick" role="group" aria-label="虚拟摇杆：按住并拖动以移动"><span class="joystick-cross horizontal"></span><span class="joystick-cross vertical"></span><span class="joystick-knob"><span></span></span></div><span class="control-caption">移动</span></div>
@@ -98,10 +122,13 @@ export function createUI(root: HTMLElement) {
         <footer class="result-actions"><button id="gameover-restart" class="primary">再次挑战 ${icon('arrow')}</button><button id="gameover-menu" class="text-button">返回菜单</button></footer>
       </div>
     </section>
+    <section id="region-choice-screen" class="modal-screen" role="dialog" aria-modal="true" aria-labelledby="region-choice-heading" hidden>
+      <div class="feature-test-panel forest-panel region-choice-panel"><header><div><h2 id="region-choice-heading">选择下一站</h2><p id="region-choice-summary"></p></div></header><div id="region-choice-options" class="region-choice-options"></div><p class="forest-footnote">生命 · 构筑 · 金币保留</p><footer class="exchange-actions"><button id="region-choice-restart" class="secondary" hidden>重开</button><button id="region-choice-tests" class="secondary" hidden>测试目录</button><button id="region-choice-menu" class="secondary">返回菜单</button></footer></div>
+    </section>
     <section id="shop-screen" class="shop-screen" role="dialog" aria-modal="true" aria-labelledby="shop-heading" hidden>
       <div class="shop-panel"><header class="shop-header"><div><small>休整 · 已暂停</small><h2 id="shop-heading">森林魔法商店</h2></div><div><span class="shop-wallet"><img data-upgrade-art="coin" src="${uiArtUrl('common/coin.png')}" alt="" draggable="false"/><strong id="shop-coins"></strong></span><small id="shop-health"></small></div></header>
       <p id="shop-message" class="shop-message" role="status"></p><div class="shop-display"><img class="shop-panel-art" data-upgrade-art="shop-panel" src="${uiArtUrl('shop/shop-panel.png')}" alt="" draggable="false"/><div id="shop-items" class="shop-items"></div></div>
-      <footer class="shop-actions"><button id="shop-refresh" class="secondary"></button><button id="shop-menu" class="text-button">返回主菜单</button><button id="shop-next" class="primary"></button></footer></div>
+      <footer class="shop-actions"><button id="shop-refresh" class="secondary"></button><button id="shop-exchange" class="secondary" hidden>武器置换</button><button id="shop-feature-restart" class="secondary" hidden>重开测试</button><button id="shop-feature-switch" class="secondary" hidden>更换测试项目</button><button id="shop-menu" class="text-button">返回主菜单</button><button id="shop-next" class="primary"></button></footer></div>
     </section>
     <section id="upgrade-screen" class="upgrade-screen" role="dialog" aria-modal="true" aria-labelledby="upgrade-heading" hidden>
       <div id="upgrade-panel" class="upgrade-panel" tabindex="-1">
@@ -116,7 +143,7 @@ export function createUI(root: HTMLElement) {
       <div class="settings-card"><header><div><h2 id="settings-heading">设置</h2></div><button id="close-settings" class="icon-button" aria-label="关闭设置">${icon('close')}</button></header>
       <div class="settings-grid"><div class="graphics-setting"><label for="quality">画面品质</label><select id="quality"><option value="auto">自动 · 优先流畅</option><option value="battery">省电 · 30 帧目标</option><option value="high">清晰 · 60 帧目标</option></select><p id="quality-description">根据运行负载动态调整清晰度。</p><small>帧率为目标，实际表现取决于设备。</small><label for="game-speed-setting" class="speed-label">游戏速度</label><select id="game-speed-setting">${Array.from({length:MAX_GAME_SPEED},(_,i)=>`<option value="${i+1}">${i+1} 倍${i===0?' · 正常速度':''}</option>`).join('')}</select><p>移动、战斗与波次同步加速，音乐保持原速。</p></div>
       <div class="audio-settings"><label class="setting-toggle"><span>背景音乐<small>原创风铃小调</small></span><input id="music-toggle" type="checkbox" role="switch" aria-label="背景音乐" checked/><i></i></label><label class="setting-toggle"><span>游戏音效<small>魔法、拾取与受击</small></span><input id="sound-toggle" type="checkbox" role="switch" aria-label="游戏音效" checked/><i></i></label><small id="audio-status" class="audio-status">点击开始冒险后启用声音</small></div></div>
-      <footer><span>设置自动保存 · 战斗中打开会暂停<br/><small>Super Pixel Effects Gigapack — Will Tice / unTied Games</small></span><button id="save-settings" class="primary">完成 ${icon('arrow')}</button></footer></div>
+      <footer><span>设置自动保存 · 关闭后返回原界面<br/><small>Super Pixel Effects Gigapack — Will Tice / unTied Games</small></span><button id="save-settings" class="primary">完成 ${icon('arrow')}</button></footer></div>
     </section>
     <section id="rotate-screen" class="rotate-screen" aria-label="请横屏游玩"><div class="rotate-icon">${icon('rotate')}</div><h2>请横屏游玩</h2><p>关闭方向锁定，横屏游玩。</p><span class="rotate-brand">幻兽幸存者</span></section>
     <section id="error-screen" class="error-screen" hidden><h2>草原暂时没有打开</h2><p id="error-message"></p><button id="retry" class="primary">重新加载</button></section>
@@ -210,7 +237,7 @@ function buildTokens(values: readonly string[]) {
   return `<ul class="build-tokens">${values.map(value => `<li>${buildText(value)}</li>`).join('')}</ul>`;
 }
 function buildWeaponRows(build: RunBuild) {
-  return build.attacks.map(attack => {
+  return `<p class="build-weapon-capacity">武器槽 ${build.attacks.length} / ${build.weaponLimit}</p>` + build.attacks.map(attack => {
     const art = upgradeArt({id:`${attack.pairId??attack.attackId}-weapon` as SkillId}, attack.attackId);
     const growth = attack.attackId === 'flame-sweep' ? flameSweepStats(attack.level) : undefined;
     return `<div class="build-weapon" data-element="${art.element}"><span class="build-weapon-art" aria-hidden="true">${icon(art.element === 'water' ? 'wave' : art.element === 'grass' ? 'leaf' : 'spark')}<img data-upgrade-art="build-weapon" src="${art.illustrations[0]}" alt="" draggable="false"/></span><div class="build-weapon-copy"><span class="build-weapon-role">${attack.slot ? '副武器'+attack.slot : '主武器'}</span><strong>${buildText(build.title(attack))} ${attack.level}级</strong>${attack.sources?`<small>来源：${attack.sources.map(id=>ATTACKS[id].title).join(" + ")}</small>`:""}${growth ? `<small>${growth.radius} 范围 / ${growth.degrees}° 火浪</small>` : ''}</div><span class="build-weapon-ranks" aria-label="最高5级，当前${attack.level}级">${Array.from({length:5},(_,i)=>`<i${i<attack.level?' class="filled"':''}></i>`).join('')}</span></div>`;
@@ -229,7 +256,7 @@ export function renderBuildSummary(build: RunBuild | undefined, fusions: readonl
   const echoRank = build.skillRanks['sakura-echo'] ?? 0;
   const water = WATER_AOE_IDS.filter(id => (build.skillRanks[id] ?? 0) > 0 && !consumedByEvolution(id, build.skillRanks));
   const waterEvolutions = WATER_EVOLUTION_IDS.filter(id => (build.skillRanks[id] ?? 0) > 0);
-  const key = JSON.stringify([build.attacks.map(a => [a.attackId, a.level]), build.relics, evolution, echoRank, fusions.map(f => f.title), resonances, [...water, ...position, ...ice, ...waterEvolutions].map(id => [id, build.skillRanks[id]])]);
+  const key = JSON.stringify([build.weaponLimit, build.attacks.map(a => [a.attackId, a.level]), build.relics, evolution, echoRank, fusions.map(f => f.title), resonances, [...water, ...position, ...ice, ...waterEvolutions].map(id => [id, build.skillRanks[id]])]);
   if (panel.dataset.snapshot === key) return;
   panel.dataset.snapshot = key;
   document.getElementById('build-weapons')!.innerHTML = buildWeaponRows(build) + water.map(id => {
@@ -264,6 +291,16 @@ export function renderBuildSummary(build: RunBuild | undefined, fusions: readonl
     return `${r.title}（${r.requirement}${locked ? ' · 材料已用于其他进化' : ''}）`;
   }).join('；');
   bindUpgradeArt(panel);
+}
+
+export function renderRegionChoice(run: RunFlow, preview: boolean) {
+  document.getElementById('region-choice-summary')!.textContent=`前往第 ${run.wave+1} 波`;
+  document.getElementById('region-choice-options')!.innerHTML=ENDLESS_REGION_IDS.map(id=>{
+    const r=ENDLESS_REGIONS[id];
+    return `<button type="button" class="region-choice-card" data-region="${id}" data-region-token="${run.regionChoiceToken}" style="--region-color:${r.palette.accent}" aria-label="${r.title}，${r.subtitle}，${r.rewardCopy}"><span class="region-choice-emblem">${icon(id==='meadow'?'leaf':id==='snowfield'?'snow':id==='volcano'?'volcano':'spark')}</span><strong>${r.title}${id===run.region?'<em class="region-current">当前</em>':''}</strong><small>${r.subtitle}</small><span class="region-reward" title="${r.rewardCopy}">宝箱偏向 · ${r.rewardBias==='growth'?'通用强化':'武器'}</span><b>前往 ${icon('arrow')}</b></button>`;
+  }).join('');
+  document.getElementById('region-choice-restart')!.hidden=!preview;
+  document.getElementById('region-choice-tests')!.hidden=!preview;
 }
 
 export function renderRunShop(run: RunFlow, combat: Combat) {
@@ -302,6 +339,10 @@ export function renderRunShop(run: RunFlow, combat: Combat) {
   refresh.innerHTML = `<img data-upgrade-art="refresh" src="${uiArtUrl('shop/refresh-rune.png')}" alt="" draggable="false"/><span>${shop.treasureRefreshes ? '携宝兽奖励 · 免费刷新 1 次' : `刷新商品 · ${shop.refreshCost} 金币`}</span>`;
   refresh.dataset.shopToken = shop.token; refresh.disabled = run.coins < shop.refreshCost || !shop.canRefresh;
   const next = document.getElementById('shop-next') as HTMLButtonElement;
+  const exchange = document.getElementById('shop-exchange') as HTMLButtonElement;
+  exchange.hidden = !run.endless;
+  exchange.textContent = shop.exchangeUsed ? '本店已置换' : `武器置换 · ${shop.exchangePrice}金币`;
+  exchange.disabled = !shop.canExchange || run.coins < shop.exchangePrice;
   next.textContent = `进入第 ${run.wave + 1} 波`;
   next.dataset.shopToken = shop.token;
   bindUpgradeArt(document.getElementById('shop-screen')!);

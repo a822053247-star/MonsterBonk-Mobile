@@ -44,6 +44,9 @@ export class PartyView {
     this.group.visible = false;
   }
 
+  get leaderBody(){return this.hasPixelLeader?this.pixels[0]?.group:undefined;}
+  get deathBody(){return this.leaderBody;}
+  get deathDecorations(){return [this.leaderShadow,this.leaderRing];}
   get hasPixelLeader() { return !!this.pixels[0]?.ready; }
   /** Warm the selected creature while the menu is visible; start reuses it. */
   preloadLeader(species: SpeciesId, animated: boolean) {

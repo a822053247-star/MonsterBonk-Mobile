@@ -1,0 +1,365 @@
+{
+  "method": "One real cast, stationary high-health targets; gold averaged over its three patterns; global damage=1; retreat player moves at 4 units/s; not a full-run balance verdict",
+  "results": [
+    {
+      "scene": "crowd",
+      "rank": 1,
+      "id": "screen-barrage",
+      "damage": 407.73,
+      "damagePerSecond": 74.13,
+      "targets": 22.3,
+      "hits": 22.3
+    },
+    {
+      "scene": "crowd",
+      "rank": 1,
+      "id": "frost-barrage",
+      "damage": 80,
+      "damagePerSecond": 13.79,
+      "targets": 5,
+      "hits": 5
+    },
+    {
+      "scene": "crowd",
+      "rank": 1,
+      "id": "leaf-barrage",
+      "damage": 312,
+      "damagePerSecond": 50.32,
+      "targets": 12,
+      "hits": 24
+    },
+    {
+      "scene": "crowd",
+      "rank": 1,
+      "id": "arc-barrage",
+      "damage": 322,
+      "damagePerSecond": 48.79,
+      "targets": 14,
+      "hits": 14
+    },
+    {
+      "scene": "crowd",
+      "rank": 1,
+      "id": "rose-barrage",
+      "damage": 84,
+      "damagePerSecond": 15,
+      "targets": 3,
+      "hits": 3
+    },
+    {
+      "scene": "crowd",
+      "rank": 3,
+      "id": "screen-barrage",
+      "damage": 483.71,
+      "damagePerSecond": 87.95,
+      "targets": 26,
+      "hits": 26
+    },
+    {
+      "scene": "crowd",
+      "rank": 3,
+      "id": "frost-barrage",
+      "damage": 192,
+      "damagePerSecond": 33.1,
+      "targets": 8,
+      "hits": 8
+    },
+    {
+      "scene": "crowd",
+      "rank": 3,
+      "id": "leaf-barrage",
+      "damage": 468,
+      "damagePerSecond": 75.48,
+      "targets": 12,
+      "hits": 24
+    },
+    {
+      "scene": "crowd",
+      "rank": 3,
+      "id": "arc-barrage",
+      "damage": 552,
+      "damagePerSecond": 83.64,
+      "targets": 16,
+      "hits": 16
+    },
+    {
+      "scene": "crowd",
+      "rank": 3,
+      "id": "rose-barrage",
+      "damage": 210,
+      "damagePerSecond": 37.5,
+      "targets": 5,
+      "hits": 5
+    },
+    {
+      "scene": "front",
+      "rank": 1,
+      "id": "screen-barrage",
+      "damage": 275.15,
+      "damagePerSecond": 50.03,
+      "targets": 15,
+      "hits": 15
+    },
+    {
+      "scene": "front",
+      "rank": 1,
+      "id": "frost-barrage",
+      "damage": 208,
+      "damagePerSecond": 35.86,
+      "targets": 13,
+      "hits": 13
+    },
+    {
+      "scene": "front",
+      "rank": 1,
+      "id": "leaf-barrage",
+      "damage": 78,
+      "damagePerSecond": 12.58,
+      "targets": 5,
+      "hits": 6
+    },
+    {
+      "scene": "front",
+      "rank": 1,
+      "id": "arc-barrage",
+      "damage": 161,
+      "damagePerSecond": 24.39,
+      "targets": 7,
+      "hits": 7
+    },
+    {
+      "scene": "front",
+      "rank": 1,
+      "id": "rose-barrage",
+      "damage": 84,
+      "damagePerSecond": 15,
+      "targets": 3,
+      "hits": 3
+    },
+    {
+      "scene": "front",
+      "rank": 3,
+      "id": "screen-barrage",
+      "damage": 384.27,
+      "damagePerSecond": 69.87,
+      "targets": 20.7,
+      "hits": 20.7
+    },
+    {
+      "scene": "front",
+      "rank": 3,
+      "id": "frost-barrage",
+      "damage": 480,
+      "damagePerSecond": 82.76,
+      "targets": 20,
+      "hits": 20
+    },
+    {
+      "scene": "front",
+      "rank": 3,
+      "id": "leaf-barrage",
+      "damage": 273,
+      "damagePerSecond": 44.03,
+      "targets": 10,
+      "hits": 14
+    },
+    {
+      "scene": "front",
+      "rank": 3,
+      "id": "arc-barrage",
+      "damage": 310.5,
+      "damagePerSecond": 47.05,
+      "targets": 9,
+      "hits": 9
+    },
+    {
+      "scene": "front",
+      "rank": 3,
+      "id": "rose-barrage",
+      "damage": 210,
+      "damagePerSecond": 37.5,
+      "targets": 5,
+      "hits": 5
+    },
+    {
+      "scene": "boss",
+      "rank": 1,
+      "id": "screen-barrage",
+      "damage": 8.8,
+      "damagePerSecond": 1.6,
+      "targets": 1,
+      "hits": 1
+    },
+    {
+      "scene": "boss",
+      "rank": 1,
+      "id": "frost-barrage",
+      "damage": 6.4,
+      "damagePerSecond": 1.1,
+      "targets": 1,
+      "hits": 1
+    },
+    {
+      "scene": "boss",
+      "rank": 1,
+      "id": "leaf-barrage",
+      "damage": 10.4,
+      "damagePerSecond": 1.68,
+      "targets": 1,
+      "hits": 2
+    },
+    {
+      "scene": "boss",
+      "rank": 1,
+      "id": "arc-barrage",
+      "damage": 0,
+      "damagePerSecond": 0,
+      "targets": 0,
+      "hits": 0
+    },
+    {
+      "scene": "boss",
+      "rank": 1,
+      "id": "rose-barrage",
+      "damage": 11.2,
+      "damagePerSecond": 2,
+      "targets": 1,
+      "hits": 1
+    },
+    {
+      "scene": "boss",
+      "rank": 3,
+      "id": "screen-barrage",
+      "damage": 8.8,
+      "damagePerSecond": 1.6,
+      "targets": 1,
+      "hits": 1
+    },
+    {
+      "scene": "boss",
+      "rank": 3,
+      "id": "frost-barrage",
+      "damage": 9.6,
+      "damagePerSecond": 1.66,
+      "targets": 1,
+      "hits": 1
+    },
+    {
+      "scene": "boss",
+      "rank": 3,
+      "id": "leaf-barrage",
+      "damage": 15.6,
+      "damagePerSecond": 2.52,
+      "targets": 1,
+      "hits": 2
+    },
+    {
+      "scene": "boss",
+      "rank": 3,
+      "id": "arc-barrage",
+      "damage": 0,
+      "damagePerSecond": 0,
+      "targets": 0,
+      "hits": 0
+    },
+    {
+      "scene": "boss",
+      "rank": 3,
+      "id": "rose-barrage",
+      "damage": 16.8,
+      "damagePerSecond": 3,
+      "targets": 1,
+      "hits": 1
+    },
+    {
+      "scene": "retreat",
+      "rank": 1,
+      "id": "screen-barrage",
+      "damage": 284.53,
+      "damagePerSecond": 51.73,
+      "targets": 14,
+      "hits": 14
+    },
+    {
+      "scene": "retreat",
+      "rank": 1,
+      "id": "frost-barrage",
+      "damage": 64,
+      "damagePerSecond": 11.03,
+      "targets": 4,
+      "hits": 4
+    },
+    {
+      "scene": "retreat",
+      "rank": 1,
+      "id": "leaf-barrage",
+      "damage": 208,
+      "damagePerSecond": 33.55,
+      "targets": 11,
+      "hits": 16
+    },
+    {
+      "scene": "retreat",
+      "rank": 1,
+      "id": "arc-barrage",
+      "damage": 230,
+      "damagePerSecond": 34.85,
+      "targets": 10,
+      "hits": 10
+    },
+    {
+      "scene": "retreat",
+      "rank": 1,
+      "id": "rose-barrage",
+      "damage": 84,
+      "damagePerSecond": 15,
+      "targets": 3,
+      "hits": 3
+    },
+    {
+      "scene": "retreat",
+      "rank": 3,
+      "id": "screen-barrage",
+      "damage": 281.6,
+      "damagePerSecond": 51.2,
+      "targets": 14,
+      "hits": 14
+    },
+    {
+      "scene": "retreat",
+      "rank": 3,
+      "id": "frost-barrage",
+      "damage": 120,
+      "damagePerSecond": 20.69,
+      "targets": 5,
+      "hits": 5
+    },
+    {
+      "scene": "retreat",
+      "rank": 3,
+      "id": "leaf-barrage",
+      "damage": 390,
+      "damagePerSecond": 62.9,
+      "targets": 13,
+      "hits": 20
+    },
+    {
+      "scene": "retreat",
+      "rank": 3,
+      "id": "arc-barrage",
+      "damage": 345,
+      "damagePerSecond": 52.27,
+      "targets": 10,
+      "hits": 10
+    },
+    {
+      "scene": "retreat",
+      "rank": 3,
+      "id": "rose-barrage",
+      "damage": 210,
+      "damagePerSecond": 37.5,
+      "targets": 5,
+      "hits": 5
+    }
+  ]
+}

@@ -4,13 +4,18 @@ import type { Obstacle } from './world';
 import type { SpawnViewport } from './spawn-layout';
 import { CHUNK_SIZE, chunkCoordinates, type InfiniteChunkLayout } from './infinite-terrain';
 import { TerrainBaker, releaseTerrainImage, type PreparedTerrain } from './infinite-terrain-baker';
+import { ENDLESS_REGIONS, type EndlessRegionId } from './endless-regions';
+import { RUINS_ATLAS_SIZE, RUINS_PROPS } from './ruins-props';
+import { SNOWFIELD_ATLAS_SIZE, SNOWFIELD_PROPS } from './snowfield-props';
+import { VOLCANO_ATLAS_SIZE, VOLCANO_PROPS, volcanoFootprints } from './volcano-props';
 export { CHUNK_SIZE, chunkCoordinates, generateInfiniteChunk, sampleInfiniteTerrain, sampleInfiniteSurface } from './infinite-terrain';
 export type { MeadowProp, InfiniteChunkLayout } from './infinite-terrain';
 const HALF = CHUNK_SIZE / 2;
 const ACTIVE_RADIUS = 1;
 
 type Chunk = { group: THREE.Group; groundTexture: THREE.Texture; material: THREE.MeshBasicMaterial;
-  instances: THREE.InstancedMesh[]; layout: InfiniteChunkLayout };
+  instances: THREE.InstancedMesh[]; layout: InfiniteChunkLayout;
+  occluders: { type:number; index:number; x:number; z:number; width:number; height:number; faded:boolean }[] };
 
 /** Tiny native pixel sprites complement the challenge-map tree and rock atlas. */
 function meadowDetail(kind: 'flower' | 'grass') {
@@ -37,12 +42,51 @@ function meadowDetail(kind: 'flower' | 'grass') {
   return { texture: pixelTexture(canvas), aspect: 1 };
 }
 
+/** Code-native pixel art shares one texture across all ruin chunks. */
+function ruinPillarArt() {
+  const canvas=document.createElement('canvas');canvas.width=32;canvas.height=48;
+  const ctx=canvas.getContext('2d')!;
+  const rect=(color:string,x:number,y:number,w:number,h:number)=>{ctx.fillStyle=color;ctx.fillRect(x,y,w,h);};
+  rect('#344d52',6,41,21,5);rect('#839c98',5,39,22,4);
+  rect('#577271',10,19,13,21);rect('#a6bbb0',10,19,4,20);rect('#73918b',14,19,6,20);
+  rect('#415e61',20,20,3,20);rect('#abc6bd',8,17,17,4);
+  rect('#4a6870',11,29,9,2);rect('#4a6870',12,35,3,4);
+  rect('#438f9a',11,7,11,10);rect('#77d1d3',13,3,7,15);rect('#b6f1e4',14,1,4,14);
+  rect('#77d1d3',11,9,11,5);rect('#d6fff0',14,4,2,6);
+  return {texture:pixelTexture(canvas),aspect:32/48};
+}
+
+/** Resource-failure placeholder only; production uses the user's unmodified pixels. */
+function volcanoFallbackArt() {
+  const canvas=document.createElement('canvas');canvas.width=32;canvas.height=40;
+  const ctx=canvas.getContext('2d')!;
+  ctx.fillStyle='#302c32';ctx.fillRect(3,23,26,14);ctx.fillRect(7,10,19,23);
+  ctx.fillStyle='#645654';ctx.fillRect(8,9,15,7);ctx.fillRect(4,25,9,8);
+  ctx.fillStyle='#bb4825';ctx.fillRect(18,16,2,16);ctx.fillRect(13,29,7,2);
+  ctx.fillStyle='#f59b3a';ctx.fillRect(18,21,1,8);
+  return {texture:pixelTexture(canvas),aspect:32/40};
+}
+
 /** Nine GPU slots; CPU terrain is queued separately from frame rendering. */
 export function createInfiniteWorld(initialSeed: string, onChange = () => {}, onError: (error: unknown) => void = () => {},
   prepareTexture: (texture: THREE.Texture) => void = () => {}) {
   const group = new THREE.Group();
   group.name = '无尽草场'; group.visible = false;
   const obstacles: Obstacle[] = [];
+  let eventClearing:{x:number;z:number;radius:number}|null=null;
+  const outsideClearing=(x:number,z:number,padding=0)=>!eventClearing||Math.hypot(x-eventClearing.x,z-eventClearing.z)>eventClearing.radius+padding;
+  const refreshObstacles=()=>{
+    const visible=Array.from(chunks.values()).flatMap(chunk=>{
+      if(chunk.layout.region!=='volcano')return chunk.layout.obstacles.filter(o=>outsideClearing(o.x,o.z,2));
+      // A paired pillar is one visible prop: clear or restore BOTH feet with its root.
+      return (chunk.layout.volcanoProps??[]).flatMap(prop=>{
+        const x=prop.x+chunk.group.position.x,z=prop.z+chunk.group.position.z;
+        if(!outsideClearing(x,z,2))return [];
+        return volcanoFootprints(prop.variant,prop.scale).map(foot=>({x:x+foot.x,z:z+foot.z,radius:foot.radius}));
+      });
+    });
+    obstacles.splice(0,obstacles.length,...visible);
+  };
   const chunks = new Map<string, Chunk>(), recycled: Chunk[] = [];
   const prepared = new Map<string, PreparedTerrain>();
   const baker = new TerrainBaker();
@@ -53,7 +97,11 @@ export function createInfiniteWorld(initialSeed: string, onChange = () => {}, on
   let art: { texture: THREE.Texture; aspect: number }[] = [];
   let spriteMaterials: THREE.MeshBasicMaterial[] = [];
   let artReady = false, enabled = false;
+  let ruinsAtlas = false;
+  let snowAtlas = false;
+  let volcanoAtlas = false;
   let seed = initialSeed, disposed = false, centerX = 0, centerZ = 0;
+  let region: EndlessRegionId = 'meadow';
   let lastX = NaN, lastZ = NaN, directionX = 0, directionZ = 0, plan = '';
   let epoch = 0, frame = 0, inFlight: string | undefined;
   type Coordinate = { cx: number; cz: number };
@@ -81,24 +129,54 @@ export function createInfiniteWorld(initialSeed: string, onChange = () => {}, on
     chunk.group.position.set(cx * CHUNK_SIZE - HALF, 0, cz * CHUNK_SIZE - HALF);
     const layout = chunk.layout;
     const lists = [0, 1, 2].map(variant => layout.trees.filter(p => p.variant === variant));
-    lists.push(layout.rocks, layout.flowers, layout.grass, layout.cacti);
-    const heights = [4.2, 4.2, 4.6, .7, 1.05, .9, 2.5];
+    lists.push(layout.rocks, layout.flowers, layout.grass, layout.cacti, layout.pillars ?? [], layout.snowProps ?? [], layout.volcanoProps ?? []);
+    const heights = [4.2, 4.2, 4.6, .7, 1.05, .9, 2.5, 2.8, 2.6, 2.6];
+    chunk.occluders.length=0;
     for (let type = 0; type < lists.length; type++) {
-      const mesh = chunk.instances[type]; mesh.count = lists[type].length;
-      lists[type].forEach((prop, index) => {
-        const height = heights[type] * prop.scale;
-        dummy.position.set(prop.x, .025, prop.z); dummy.rotation.set(-Math.PI / 4, 0, 0);
-        dummy.scale.set(height * art[type].aspect, height, 1); dummy.updateMatrix();
+      const props=lists[type].filter(p=>outsideClearing(p.x+chunk.group.position.x,p.z+chunk.group.position.z,2));
+      const mesh = chunk.instances[type]; mesh.count = props.length;
+      props.forEach((prop, index) => {
+        const volcanoDefinition=type===9&&volcanoAtlas?VOLCANO_PROPS[prop.variant]:undefined;
+        const definition=type===7?RUINS_PROPS[prop.variant]:type===8?SNOWFIELD_PROPS[prop.variant]:volcanoDefinition;
+        const hasAtlas=type===7?ruinsAtlas:type===8?snowAtlas:volcanoAtlas;
+        const atlasSize=type===7?RUINS_ATLAS_SIZE:type===8?SNOWFIELD_ATLAS_SIZE:VOLCANO_ATLAS_SIZE;
+        const height = (definition&&hasAtlas?definition.height:heights[type]) * prop.scale;
+        let aspect=art[type].aspect;
+        if(type>=7){
+          const uv=mesh.geometry.getAttribute('ruinUvRect') as THREE.InstancedBufferAttribute;
+          const alpha=mesh.geometry.getAttribute('ruinOpacity') as THREE.InstancedBufferAttribute;
+          if(definition&&hasAtlas){
+            const [left,top,right,bottom]=definition.rect;
+            aspect=(right-left)/(bottom-top);
+            uv.setXYZW(index,left/atlasSize.width,1-bottom/atlasSize.height,
+              right/atlasSize.width,1-top/atlasSize.height);
+          }else uv.setXYZW(index,0,0,1,1);
+          alpha.setX(index,1);
+          chunk.occluders.push({type,index,x:prop.x+chunk.group.position.x,z:prop.z+chunk.group.position.z,
+            width:height*aspect,height,faded:false});
+        }
+        const anchor=volcanoDefinition?.anchor??[.5,1];
+        const footOffset=(1-anchor[1])*height*Math.SQRT1_2;
+        dummy.position.set(prop.x-(anchor[0]-.5)*height*aspect, .025-footOffset, prop.z+footOffset);
+        dummy.rotation.set(-Math.PI / 4, 0, 0);
+        dummy.scale.set(height * aspect, height, 1); dummy.updateMatrix();
         mesh.setMatrixAt(index, dummy.matrix);
       });
       mesh.instanceMatrix.needsUpdate = true; mesh.computeBoundingSphere();
+      if(type>=7){
+        mesh.geometry.getAttribute('ruinUvRect').needsUpdate=true;
+        mesh.geometry.getAttribute('ruinOpacity').needsUpdate=true;
+      }
     }
     return chunk;
   };
-  const configureTexture = (texture: THREE.Texture, image: PreparedTerrain['image']) => {
+  const configureTexture = (texture: THREE.Texture, image: PreparedTerrain['image'], terrainRegion:EndlessRegionId) => {
     texture.image = image; texture.flipY = !('close' in image);
     texture.colorSpace = THREE.SRGBColorSpace;
-    texture.magFilter = texture.minFilter = THREE.NearestFilter;
+    const smooth=terrainRegion==='ruins'||terrainRegion==='volcano';
+    texture.magFilter = smooth?THREE.LinearFilter:THREE.NearestFilter;
+    texture.minFilter = smooth?THREE.LinearFilter:THREE.NearestFilter;
+    texture.anisotropy=smooth?4:1;
     texture.generateMipmaps = false; texture.needsUpdate = true;
   };
   const install = (result: PreparedTerrain) => {
@@ -112,25 +190,30 @@ export function createInfiniteWorld(initialSeed: string, onChange = () => {}, on
     let chunk = recycled.pop();
     if (chunk) {
       releaseTerrainImage(chunk.groundTexture.image as PreparedTerrain['image']);
-      chunk.layout = result.layout; configureTexture(chunk.groundTexture, result.image);
+      chunk.layout = result.layout; configureTexture(chunk.groundTexture, result.image,result.layout.region??'meadow');
     } else {
       const tile = new THREE.Group(), groundTexture = new THREE.Texture();
-      configureTexture(groundTexture, result.image);
+      configureTexture(groundTexture, result.image,result.layout.region??'meadow');
       const material = new THREE.MeshBasicMaterial({ map: groundTexture, toneMapped: false, fog: false });
       const ground = new THREE.Mesh(groundGeometry, material);
-      ground.name = '像素草地与沙地'; ground.rotation.x = -Math.PI / 2;
+      ground.name = '像素分块地面'; ground.rotation.x = -Math.PI / 2;
       ground.position.set(HALF, 0, HALF); tile.add(ground);
       const instances = spriteMaterials.map((mat, type) => {
-        const mesh = new THREE.InstancedMesh(spriteGeometry, mat, type < 4 ? 64 : 256);
-        mesh.name = ['像素树-阔叶', '像素树-圆冠', '像素树-松树', '小石头', '小花', '小草', '仙人掌'][type];
+        const geometry=type>=7?spriteGeometry.clone():spriteGeometry;
+        if(type>=7){
+          geometry.setAttribute('ruinUvRect',new THREE.InstancedBufferAttribute(new Float32Array(64*4),4));
+          geometry.setAttribute('ruinOpacity',new THREE.InstancedBufferAttribute(new Float32Array(64),1).setUsage(THREE.DynamicDrawUsage));
+        }
+        const mesh = new THREE.InstancedMesh(geometry, mat, type < 4 || type >= 7 ? 64 : 256);
+        mesh.name = ['像素树-阔叶', '像素树-圆冠', '像素树-松树', '小石头', '小花', '小草', '仙人掌', '遗迹随机布景', '雪原实体布景', '火山实体布景'][type];
         mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage); tile.add(mesh); return mesh;
       });
-      chunk = { group: tile, groundTexture, material, layout: result.layout, instances };
+      chunk = { group: tile, groundTexture, material, layout: result.layout, instances, occluders:[] };
     }
     place(chunk); chunks.set(keyOf(result.layout.cx, result.layout.cz), chunk); group.add(chunk.group);
     // Upload one terrain texture now instead of deferring all nine to the first draw.
     prepareTexture(chunk.groundTexture);
-    obstacles.splice(0, obstacles.length, ...Array.from(chunks.values()).flatMap(c => c.layout.obstacles));
+    refreshObstacles();
     onChange();
   };
   const nearest = (entries: Map<string, Coordinate>, available: (key: string) => boolean) =>
@@ -158,7 +241,7 @@ export function createInfiniteWorld(initialSeed: string, onChange = () => {}, on
       if (next) {
         const [key, { cx, cz }] = next, version = epoch;
         inFlight = key;
-        void baker.bake(seed, cx, cz).then(result => {
+        void baker.bake(seed, cx, cz, region).then(result => {
           if (disposed || version !== epoch || !enabled) { releaseTerrainImage(result.image); return; }
           inFlight = undefined;
           if (isWanted(key)) prepared.set(key, result); else releaseTerrainImage(result.image);
@@ -179,6 +262,16 @@ export function createInfiniteWorld(initialSeed: string, onChange = () => {}, on
   };
   const update = (x: number, z: number, view?: SpawnViewport) => {
     if (disposed || !enabled) return false;
+    // Camera looks from +Z at 45 degrees. Fade foreground silhouettes before
+    // the streaming-plan early return, including movement within one chunk.
+    for(const chunk of chunks.values()){
+      chunk.occluders.forEach(prop=>{
+        const alpha=chunk.instances[prop.type].geometry.getAttribute('ruinOpacity');
+        const dz=prop.z-z;
+        const faded=Math.abs(x-prop.x)<prop.width/2+.65&&dz>-.65&&dz<prop.height*Math.SQRT2+.9;
+        if(faded!==prop.faded){prop.faded=faded;alpha.setX(prop.index,faded?.22:1);alpha.needsUpdate=true;}
+      });
+    }
     const current = chunkCoordinates(x, z);
     if (Number.isFinite(lastX) && Math.hypot(x - lastX, z - lastZ) > .001) {
       directionX = Math.sign(x - lastX); directionZ = Math.sign(z - lastZ);
@@ -207,23 +300,76 @@ export function createInfiniteWorld(initialSeed: string, onChange = () => {}, on
     schedule(); return neighborhoodChanged || !playable();
   };
   // Scenery resources may load eagerly, but terrain jobs require explicit enablement.
-  const ready = new Promise<HTMLImageElement>((resolve, reject) => {
+  const ruinImage = new Promise<HTMLImageElement|null>(resolve=>{
+    new THREE.ImageLoader().load(import.meta.env.BASE_URL+'assets/scenery/ruins-props-atlas.png',resolve,undefined,()=>resolve(null));
+  });
+  const snowImage = new Promise<HTMLImageElement|null>(resolve=>{
+    new THREE.ImageLoader().load(import.meta.env.BASE_URL+'assets/scenery/snowfield-props-atlas.png',resolve,undefined,()=>resolve(null));
+  });
+  const volcanoImage = new Promise<HTMLImageElement|null>(resolve=>{
+    new THREE.ImageLoader().load(import.meta.env.BASE_URL+'assets/scenery/volcano/volcano-atlas.png',resolve,undefined,()=>resolve(null));
+  });
+  const ready = Promise.all([new Promise<HTMLImageElement>((resolve, reject) => {
     new THREE.ImageLoader().load(import.meta.env.BASE_URL + 'assets/world/Tileset/Decorations/trees.png', resolve, undefined, reject);
-  }).then(image => {
+  }),ruinImage,snowImage,volcanoImage]).then(([image,ruins,snow,volcano]) => {
     if (disposed) return;
     art = [[0, 0], [32, 32], [32, 64], [64, 0]].map(([x, y]) => crop(image, x, y, 32));
     art.push(meadowDetail('flower'), meadowDetail('grass')); art.push(crop(image, 32, 0, 32));
+    ruinsAtlas=!!ruins;
+    if(ruins){
+      const texture=new THREE.Texture(ruins);
+      texture.colorSpace=THREE.SRGBColorSpace;
+      texture.magFilter=texture.minFilter=THREE.NearestFilter;
+      texture.generateMipmaps=false;texture.needsUpdate=true;
+      art.push({texture,aspect:1});
+    }else art.push(ruinPillarArt());
+    snowAtlas=!!snow;
+    if(snow){
+      const texture=new THREE.Texture(snow);
+      texture.colorSpace=THREE.SRGBColorSpace;
+      texture.magFilter=texture.minFilter=THREE.NearestFilter;
+      texture.generateMipmaps=false;texture.needsUpdate=true;
+      art.push({texture,aspect:1});
+    }else art.push(ruinPillarArt());
+    volcanoAtlas=!!volcano;
+    if(volcano){
+      const texture=new THREE.Texture(volcano);
+      texture.colorSpace=THREE.SRGBColorSpace;
+      texture.magFilter=texture.minFilter=THREE.NearestFilter;
+      texture.generateMipmaps=false;texture.needsUpdate=true;
+      art.push({texture,aspect:1});
+    }else art.push(volcanoFallbackArt());
     spriteMaterials = art.map(a => new THREE.MeshBasicMaterial({
       map: a.texture, transparent: true, alphaTest: .1, toneMapped: false, fog: false,
     }));
+    for(const ruinMaterial of spriteMaterials.slice(7)) {
+    ruinMaterial.depthWrite=false;
+    // One atlas and draw call per chunk, with independent UVs and fade values.
+    ruinMaterial.onBeforeCompile=shader=>{
+      shader.vertexShader='attribute vec4 ruinUvRect;\nattribute float ruinOpacity;\nvarying float vRuinOpacity;\n'+shader.vertexShader;
+      shader.vertexShader=shader.vertexShader.replace('#include <uv_vertex>',
+        '#include <uv_vertex>\nvMapUv=mix(ruinUvRect.xy,ruinUvRect.zw,vMapUv);\nvRuinOpacity=ruinOpacity;');
+      shader.fragmentShader='varying float vRuinOpacity;\n'+shader.fragmentShader;
+      shader.fragmentShader=shader.fragmentShader.replace('#include <alphatest_fragment>',
+        '#include <alphatest_fragment>\ndiffuseColor.a *= vRuinOpacity;');
+    };
+    }
     artReady = true; schedule();
   });
   return {
     group, obstacles, ready,
     get seed() { return seed; },
+    get region() { return region; },
+    get sceneryFallback() { return artReady&&region==='volcano'&&!volcanoAtlas; },
     get chunkCount() { return chunks.size; },
     get complete() { return complete(); },
     get playable() { return playable(); },
+    setEventClearing(area:{x:number;z:number;radius:number}|null){
+      if(disposed||(!area&&!eventClearing))return;
+      eventClearing=area?{...area}:null;
+      for(const chunk of chunks.values())place(chunk);
+      refreshObstacles();onChange();
+    },
     setEnabled(next: boolean) {
       if (disposed || enabled === next) return;
       enabled = next;
@@ -233,12 +379,18 @@ export function createInfiniteWorld(initialSeed: string, onChange = () => {}, on
       if (disposed || seed === nextSeed) return;
       cancel(); seed = nextSeed; release();
     },
+    setRegion(next: EndlessRegionId, nextSeed = seed) {
+      if (disposed || region === next && seed === nextSeed) return;
+      cancel();region=next;seed=nextSeed;release();
+      group.name=next==='meadow'?'无尽草场':ENDLESS_REGIONS[next].title;
+      onChange();
+    },
     update,
     dispose() {
       if (disposed) return;
       disposed = true; cancel(); release();
       for (const chunk of recycled) {
-        chunk.instances.forEach(mesh => mesh.dispose());
+        chunk.instances.forEach((mesh,type) => {mesh.dispose();if(type>=7)mesh.geometry.dispose();});
         releaseTerrainImage(chunk.groundTexture.image as PreparedTerrain['image']);
         chunk.groundTexture.dispose(); chunk.material.dispose(); chunk.group.clear();
       }

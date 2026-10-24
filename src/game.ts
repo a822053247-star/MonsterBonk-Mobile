@@ -5,9 +5,24 @@ import { PrisonView } from './prison-view';
 import { EnemyCapture } from './enemy-capture';
 import { StarSealCaptureSystem, type StarSealSession } from './visuals/star-seal-capture';
 import { EnemyTestMode } from './enemy-test-mode';
+import { ItemTestMode, ITEM_TEST_ALTAR, ITEM_TEST_OPTIONS, isItemTestSkill, itemTestRank, type ItemTestSkill } from './item-test-mode';
+import { newFeatureTest, prepareNewFeatureTest, addFeatureTestWeapon, type NewFeatureTestId } from './new-feature-test';
+import { EndlessExploration, EXPLORATION_RULES, type ExplorationKind } from './endless-exploration';
+import { ExplorationView } from './exploration-view';
+import { WeaponExchangeDialog } from './weapon-exchange-dialog';
+import type { BaseAttackId } from './fusion';
+import { endlessShopPrice } from './balance';
+import { ENDLESS_REGIONS, isEndlessRegion } from './endless-regions';
+import { migrateRegionObjects, type RegionMigrationReport } from './region-migration';
+import { ItemTestAltarView } from './item-test-altar-view';
+import { AltarTrial } from './altar-trial';
+import { EndlessAltarEvent } from './endless-altar';
+import { DeathTransition } from './death-transition';
+import { AltarCharacterLayer } from './altar-character-layer';
 import { TreasureDialog } from './treasure-dialog';
 import {type WeaponPairId} from './weapon-pair-fusion';
 import {renderWeaponPairPicker} from './ui';
+import { renderRegionChoice } from './ui';
 import * as THREE from 'three';
 import { Input } from './input';
 import { Monster } from './monster';
@@ -29,7 +44,7 @@ import { PartySystem, CREATURES, type SpeciesId } from './party';
 import { PIXEL_CREATURE_ASSETS } from './pixel-sprite';
 import { PartyView } from './party-view';
 
-type Mode = 'menu' | 'playing' | 'paused' | 'gameover' | 'upgrading' | 'settings' | 'shop' | 'prison';
+type Mode = 'region-choice' | 'exchanging' | 'dying' | 'menu' | 'playing' | 'paused' | 'gameover' | 'upgrading' | 'settings' | 'shop' | 'prison';
 const STEP = 1 / 60;
 const DASH_COOLDOWN = 3;
 
@@ -37,7 +52,7 @@ export class Game {
   private preferences = loadPreferences();
   private quality = new AdaptiveQuality(this.preferences.quality);
   private audio = new GameAudio(this.preferences.music, this.preferences.sound);
-  private settingsFromMenu = false;
+  private settingsReturnMode: 'menu' | 'playing' | 'paused' = 'menu';
   private renderTime = 0;
   private jumpHeight = 0;
   private previousJump = 0;
@@ -57,16 +72,82 @@ export class Game {
   private startupFallback = false;
   private worldEntered = false;
   private selectedSpecies: SpeciesId = 'yanrong';
-  private prototypeVariant: 'sample' | 'fusion' | 'legacy-party' | 'infinite' | 'enemy-test' | 'capture-test' = 'sample';
+  private prototypeVariant: 'sample' | 'fusion' | 'legacy-party' | 'infinite' | 'enemy-test' | 'capture-test' | 'item-test' = 'sample';
   private world: World;
   private combat: Combat;
   private combatView: CombatView;
   private input: Input;
   private mode: Mode = 'menu';
+  private deathTransition=new DeathTransition();
+  private altarCharacterLayer=new AltarCharacterLayer();
   private runRuleset: Ruleset = 'classic';
   private challenge?: Challenge;
   private run?: RunFlow;
   private enemyTest?: EnemyTestMode;
+  private itemTest?: ItemTestMode;
+  private featureTestId?: NewFeatureTestId;
+  private exploration = new EndlessExploration();
+  private explorationView = new ExplorationView();
+  private explorationClearing = false;
+  private exchangeDialog?: WeaponExchangeDialog;
+  private exchangeReturn?: 'playing' | 'shop';
+  private featureExchangeUsed = false;
+  private fixedRegionSeed = true;
+  private randomRegionSeed = '';
+  private regionPractice = false;
+  private regionMigrationPending = false;
+  private regionMigration?: RegionMigrationReport;
+  private itemTestAltar?:ItemTestAltarView;
+  private altarTrial?:AltarTrial;
+  private endlessAltar=new EndlessAltarEvent();
+  private altarReturn?:{x:number;z:number};
+  private ensureAltar(){
+    if(!this.itemTestAltar){this.itemTestAltar=new ItemTestAltarView();this.scene.add(this.itemTestAltar.group);}
+    if(!this.altarTrial){this.altarTrial=new AltarTrial(()=>this.beginAltarTrial(),()=>this.audio.play('level'));this.scene.add(this.altarTrial.group);}
+  }
+  private syncEndlessAltar(){
+    if(!this.run?.endless||this.altarTrial?.active||!this.world.infiniteActive)return;
+    if(this.run.phase==='fighting'&&this.combat.progression.awaitingChoice)return;
+    const change=this.endlessAltar.update(this.run,this.position,this.combat.enemies);
+    if(change==='remove'){
+      this.itemTestAltar?.setEnabled(false);this.altarTrial?.reset();this.world.setEventClearing?.(null);
+    }else if(change==='spawn'){
+      this.ensureAltar();this.altarTrial!.reset();Object.assign(this.altarTrial!.origin,this.endlessAltar.position);
+      if(!this.altarTrial!.offer(this.combat)){this.endlessAltar.consume();return;}
+      const {x,z}=this.endlessAltar.position;
+      this.world.setEventClearing?.({x,z:z+1,radius:7});
+      this.itemTestAltar!.setPosition(x,z);this.itemTestAltar!.setEnabled(true);
+    }
+  }
+  private beginAltarTrial(){
+    const endless=!!this.run?.endless&&this.endlessAltar.present&&this.run.phase==='fighting'&&this.run.remaining>0;
+    if(this.mode!=='playing'||(!this.itemTest&&!endless)||!this.altarTrial||this.altarTrial.active||this.capture?.pending||this.combat.progression.awaitingChoice)return;
+    if(this.treasureDialog.sync())return;
+    const from={x:this.position.x,z:this.position.z};
+    if(this.altarTrial.start(this.combat,this.position,this.cameraFootprint(),endless)){
+      this.itemTestAltar?.fadeOut();
+      this.altarReturn=endless?from:undefined;this.combatView.group.visible=!endless;
+      this.previousPosition.copy(this.position);this.velocity.set(0,0);this.dashRemaining=0;this.input.reset();this.placeCamera(true);
+      this.altarTrial.fitViewport(this.cameraFootprint());
+    }
+  }
+  private finishEndlessAltar(){
+    this.endlessAltar.consume();this.itemTestAltar?.setEnabled(false);this.world.setEventClearing?.(null);
+    if(this.altarReturn){
+      this.position.x=this.altarReturn.x;this.position.z=this.altarReturn.z;this.altarReturn=undefined;
+      // Restoring scenery may put a trunk on the old platform; resolve it before combat resumes.
+      for(let pass=0;pass<4;pass++)for(const o of this.world.obstacles){
+        const dx=this.position.x-o.x,dz=this.position.z-o.z,d=Math.hypot(dx,dz),r=o.radius+PLAYER_COLLISION_RADIUS+.05;
+        if(d<r){this.position.x=o.x+(d>.001?dx/d:1)*r;this.position.z=o.z+(d>.001?dz/d:0)*r;}
+      }
+      this.previousPosition.copy(this.position);this.monster.root.position.copy(this.position);this.party.syncLeader(this.position,this.facing);
+    }
+    this.velocity.set(0,0);this.input.reset();this.combatView.group.visible=true;
+    if(this.combat.hp>0)this.combat.invulnerability=Math.max(this.combat.invulnerability,1.1);
+    this.placeCamera(true);
+  }
+  private itemTestSkill:ItemTestSkill='screen-barrage';
+  private itemTestLevel=1;
   private capture?: EnemyCapture;
   private captureVfx?: StarSealCaptureSystem;
   private captureSession?: StarSealSession;
@@ -143,6 +224,7 @@ export class Game {
     this.combatView = new CombatView(this.combat);
     this.combatView.preloadStartup();
     this.scene.add(this.combatView.group);
+    this.scene.add(this.explorationView.group);
     const trailGeometry = new THREE.RingGeometry(0.4, 0.5, 12);
     for (let i = 0; i < 7; i++) {
       const mesh = new THREE.Mesh(trailGeometry, new THREE.MeshBasicMaterial({ color: '#e5f2b2', transparent: true, opacity: 0, depthWrite: false, side: THREE.DoubleSide }));
@@ -192,6 +274,104 @@ export class Game {
     click('open-prison', () => this.openPrison());
     click('start-capture-test', () => this.start('classic', true, true, 'capture-test'));
     click('start-enemy-test', () => this.start('classic', true, true, 'enemy-test'));
+    click('open-new-feature-test', () => this.openNewFeatureTestPicker());
+    click('close-new-feature-test', () => this.closeNewFeatureTestPicker());
+    document.getElementById('new-feature-test-picker')!.addEventListener('click', event => {
+      const button = event.target instanceof Element ? event.target.closest<HTMLButtonElement>('[data-feature-test]') : null;
+      const scenario = newFeatureTest(button?.dataset.featureTest ?? '');
+      if (this.mode === 'menu' && scenario) this.start('classic', true, true, 'infinite', scenario.id);
+    }, options);
+    document.getElementById('new-feature-test-picker')!.addEventListener('keydown', event => {
+      if (event.key !== 'Tab') return;
+      const buttons = Array.from(document.querySelectorAll<HTMLButtonElement>('#new-feature-test-picker button'));
+      if (event.shiftKey && document.activeElement === buttons[0]) { event.preventDefault(); buttons[buttons.length - 1]!.focus(); }
+      else if (!event.shiftKey && document.activeElement === buttons[buttons.length - 1]) { event.preventDefault(); buttons[0].focus(); }
+    }, options);
+    click('feature-test-add-weapon', () => {
+      if (!this.featureTestId || this.mode !== 'playing' || this.sceneLoading || this.altarTrial?.active || this.treasureDialog.sync()) return;
+      if (addFeatureTestWeapon(this.combat)) this.audio.play('level');
+      this.updateHUD();
+    });
+    click('feature-test-restart', () => { if (this.featureTestId && this.mode === 'playing') this.start(); });
+    click('feature-test-switch', () => {
+      if (!this.featureTestId || this.mode !== 'playing') return;
+      this.showMenu(); this.openNewFeatureTestPicker();
+    });
+    click('exploration-interact', () => this.tryExploration());
+    click('exploration-abandon', () => { if (this.mode === 'playing') { this.exploration.abandon(); this.syncExplorationView(); this.updateHUD(); } });
+    click('shop-exchange', () => this.openWeaponExchange('shop'));
+    click('shop-feature-switch', () => { if (this.featureTestId && this.mode === 'shop') { this.showMenu(); this.openNewFeatureTestPicker(); } });
+    click('shop-feature-restart', () => { if (this.featureTestId && this.mode === 'shop') this.start(); });
+    click('feature-test-exchange', () => this.openWeaponExchange('preview'));
+    click('feature-test-event-finish', () => {
+      if (this.featureTestId !== 'event-lifecycle' || this.mode !== 'playing' || this.exploration.event?.state !== 'active') return;
+      this.exploration.event.elapsed = EXPLORATION_RULES.duration;
+    });
+    click('feature-test-event-boundary', () => {
+      if (this.featureTestId !== 'event-lifecycle' || this.mode !== 'playing' || !this.run || this.combat.progression.awaitingChoice || this.treasureDialog.active) return;
+      this.run.waveElapsed = this.run.definition.seconds;
+    });
+    click('feature-test-region-seed',()=>{
+      if(this.mode!=='playing'||!this.featureTestId?.startsWith('region-')||this.treasureDialog.active)return;
+      this.fixedRegionSeed=!this.fixedRegionSeed;
+      if(!this.fixedRegionSeed)this.randomRegionSeed=crypto.randomUUID();
+      this.start();
+    });
+    click('feature-test-region-combat',()=>{
+      if(this.mode!=='playing'||!this.featureTestId?.startsWith('region-')||this.featureTestId==='region-choice')return;
+      const region=this.run?.region??'meadow';
+      const next:NewFeatureTestId=this.regionPractice?`region-${region}-combat`:`region-${region}`;
+      this.start('classic',true,false,'infinite',next);
+    });
+    click('feature-test-region-chest',()=>{
+      if(this.mode!=='playing'||!this.featureTestId?.startsWith('region-')||this.featureTestId==='region-choice'
+        ||this.regionPractice||!this.run||this.sceneLoading||this.combat.progression.awaitingChoice||this.treasureDialog.active)return;
+      if(this.exploration.offer('sealed-chest',this.run,{x:this.position.x+3.5,z:this.position.z})){
+        this.syncExplorationView();this.updateHUD();
+      }
+    });
+    click('region-choice-menu',()=>this.showMenu());
+    click('region-choice-restart',()=>{if(this.featureTestId&&this.mode==='region-choice')this.start();});
+    click('region-choice-tests',()=>{if(this.featureTestId&&this.mode==='region-choice'){this.showMenu();this.openNewFeatureTestPicker();}});
+    document.getElementById('region-choice-options')!.addEventListener('click',event=>{
+      const button=event.target instanceof Element?event.target.closest<HTMLButtonElement>('[data-region]'):null;
+      if(this.mode!=='region-choice'||!button||document.hidden||this.portrait||this.contextLost)return;
+      this.chooseNextRegion(button.dataset.region!,button.dataset.regionToken!);
+    },options);
+    document.getElementById('region-choice-screen')!.addEventListener('keydown',event=>{
+      event.stopPropagation();
+      if(event.key==='Escape'){event.preventDefault();document.getElementById('region-choice-menu')!.focus();return;}
+      if(event.key!=='Tab')return;
+      const buttons=Array.from(document.querySelectorAll<HTMLButtonElement>('#region-choice-screen button:not([hidden])'));
+      if(event.shiftKey&&document.activeElement===buttons[0]){event.preventDefault();buttons[buttons.length-1]?.focus();}
+      else if(!event.shiftKey&&document.activeElement===buttons[buttons.length-1]){event.preventDefault();buttons[0]?.focus();}
+    },options);
+    click('open-item-test',()=>this.openItemTestPicker());
+    click('close-item-test',()=>this.closeItemTestPicker());
+    click('start-item-test',()=>{
+      if(this.mode!=='menu'||this.portrait||this.contextLost)return;
+      this.start('classic',true,false,'item-test');
+    });
+    click('switch-item-test',()=>{
+      if(this.mode!=='playing'||!this.itemTest)return;
+      this.showMenu();this.openItemTestPicker();
+    });
+    document.getElementById('item-test-picker')!.addEventListener('click',event=>{
+      const button=event.target instanceof Element?event.target.closest<HTMLButtonElement>('[data-test-skill]'):null;
+      if(this.mode!=='menu'||!button||!isItemTestSkill(button.dataset.testSkill??''))return;
+      this.itemTestSkill=button.dataset.testSkill as ItemTestSkill;this.syncItemTestSelection();
+    },options);
+    for(const id of ['item-test-level','item-test-live-level'])document.getElementById(id)!.addEventListener('change',()=>{
+      this.itemTestLevel=itemTestRank(Number((document.getElementById(id) as HTMLSelectElement).value));
+      this.syncItemTestSelection();
+      if(id==='item-test-live-level'&&this.mode==='playing'&&this.itemTest)this.start('classic',true,false,'item-test');
+    },options);
+    document.getElementById('item-test-picker')!.addEventListener('keydown',event=>{
+      if(event.key!=='Tab')return;
+      const controls=Array.from(document.querySelectorAll<HTMLElement>('#item-test-picker button,#item-test-picker select'));
+      if(event.shiftKey&&document.activeElement===controls[0]){event.preventDefault();controls[controls.length-1]!.focus();}
+      else if(!event.shiftKey&&document.activeElement===controls[controls.length-1]){event.preventDefault();controls[0].focus();}
+    },options);
     click('choose-creature', () => {
       document.getElementById('menu')!.inert = true;
       for (const image of document.querySelectorAll<HTMLImageElement>('[data-creature-src]')) if (!image.src) image.src = image.dataset.creatureSrc!;
@@ -320,8 +500,8 @@ export class Game {
         this.wake();
       }
     }, options);
-    window.addEventListener('focus', () => { if (this.mode === 'shop') this.wake(); if(this.mode==='prison')this.audio.setActive(true); }, options);
-    window.addEventListener('blur', () => { if (this.mode === 'shop') this.sleep(); this.audio.setActive(false); this.cardDown = this.armedCard = null; this.pause('窗口失去焦点，游戏已暂停。'); }, options);
+    window.addEventListener('focus', () => { if (this.mode === 'shop'||this.mode==='upgrading'||this.mode==='dying') this.wake(); if(this.mode==='prison')this.audio.setActive(true); }, options);
+    window.addEventListener('blur', () => { if (this.mode === 'shop'||this.mode==='dying') this.sleep(); this.audio.setActive(false); this.cardDown = this.armedCard = null; this.pause('窗口失去焦点，游戏已暂停。'); }, options);
     window.addEventListener('pagehide', () => { this.pause('游戏已暂停，准备好后继续。'); this.sleep(); }, options);
     window.addEventListener('pageshow', () => this.wake(), options);
     window.addEventListener('keydown', (event) => {
@@ -329,10 +509,14 @@ export class Game {
       if (event.code === 'KeyE') {
         const target = event.target as HTMLElement | null;
         if (event.repeat || event.isComposing || event.ctrlKey || event.metaKey || event.altKey || target?.closest('input,textarea,select,[contenteditable]')) return;
+        if (this.mode === 'playing' && this.tryExploration()) { event.preventDefault(); return; }
+        if(this.mode==='playing'&&(this.itemTest||(this.endlessAltar.present&&this.altarTrial?.canActivate(this.position)))){event.preventDefault();this.beginAltarTrial();return;}
         if (this.mode === 'playing' && this.capture) { event.preventDefault(); this.tryCapture(); }
         return;
       }
       if (event.code !== 'Escape') return;
+      if (!document.getElementById('new-feature-test-picker')!.hidden) { this.closeNewFeatureTestPicker(); return; }
+      if(!document.getElementById('item-test-picker')!.hidden){this.closeItemTestPicker();return;}
       if(!document.getElementById('weapon-pair-picker')!.hidden){document.getElementById('weapon-pair-cancel')!.click();return;}
       if (!document.getElementById('legacy-picker')!.hidden) { closeLegacy(); return; }
       // Touch WebKit need not focus a tapped button; Escape can target body.
@@ -388,10 +572,10 @@ export class Game {
   }
 
   private openSettings() {
-    if (!['menu', 'paused', 'playing'].includes(this.mode)) return;
+    if (this.mode !== 'menu' && this.mode !== 'paused' && this.mode !== 'playing') return;
     this.syncSettings();
-    this.settingsFromMenu = this.mode === 'menu';
-    this.pause('设置已保存，准备好后继续冒险。');
+    this.settingsReturnMode = this.mode;
+    this.pause('冒险已暂停，准备好后继续出发。');
     this.mode = 'settings'; this.input.setEnabled(false); this.sleep();
     document.getElementById('pause-screen')!.hidden = true;
     document.getElementById('settings-screen')!.hidden = false;
@@ -404,15 +588,31 @@ export class Game {
     document.getElementById('settings-screen')!.hidden = true;
     document.getElementById('hud')!.inert = false; document.getElementById('menu')!.inert = false;
     (document.activeElement as HTMLElement | null)?.blur();
-    this.mode = this.settingsFromMenu ? 'menu' : 'paused';
-    if (this.mode === 'paused') document.getElementById('pause-screen')!.hidden = false;
-    else this.wake();
+    this.mode = this.settingsReturnMode === 'menu' ? 'menu' : 'paused';
+    if (this.mode === 'paused') {
+      document.getElementById('pause-screen')!.hidden = false;
+      if (this.settingsReturnMode === 'playing') this.resume();
+    } else this.wake();
   }
 
   private closeCreaturePicker() {
     document.getElementById('creature-picker')!.hidden = true;
     document.getElementById('menu')!.inert = false;
     document.getElementById('choose-creature')!.focus();
+  }
+  private syncItemTestSelection(){
+    for(const button of document.querySelectorAll<HTMLButtonElement>('[data-test-skill]'))button.setAttribute('aria-pressed',String(button.dataset.testSkill===this.itemTestSkill));
+    for(const id of ['item-test-level','item-test-live-level'])(document.getElementById(id) as HTMLSelectElement).value=String(this.itemTestLevel);
+  }
+  private openItemTestPicker(){
+    if(this.mode!=='menu')return;
+    this.syncItemTestSelection();document.getElementById('menu')!.inert=true;
+    document.getElementById('item-test-picker')!.hidden=false;
+    document.querySelector<HTMLButtonElement>(`[data-test-skill="${this.itemTestSkill}"]`)!.focus();
+  }
+  private closeItemTestPicker(){
+    document.getElementById('item-test-picker')!.hidden=true;document.getElementById('menu')!.inert=false;
+    document.getElementById('open-item-test')!.focus();
   }
 
   private syncCreatureSelection() {
@@ -489,7 +689,7 @@ export class Game {
   }
 
   private tryCapture() {
-    if (this.mode !== 'playing' || !this.capture?.attempt(this.combat,this.position)) return;
+    if (this.mode !== 'playing' || this.altarTrial?.active || !this.capture?.attempt(this.combat,this.position)) return;
     const p = this.capture.pending!;
     this.input.setEnabled(false);this.velocity.set(0,0);
     this.previousPosition.copy(this.position);this.previousJump=this.jumpHeight;
@@ -500,28 +700,170 @@ export class Game {
     this.audio.play('capture-start');
   }
 
-  private start(ruleset: Ruleset = this.runRuleset, partyPrototype = this.partyPrototype, newMap = false, variant = this.prototypeVariant) {
+  private openRegionChoice() {
+    if(!this.run||this.run.phase!=='region-choice'||this.treasureDialog.active)return;
+    this.mode='region-choice';this.input.setEnabled(false);this.input.reset();this.velocity.set(0,0);this.dashRemaining=0;
+    this.previousPosition.copy(this.position);this.accumulator=0;this.audio.setActive(false);this.sleep();
+    document.getElementById('hud')!.inert=true;
+    document.getElementById('new-feature-test-controls')!.hidden=true;
+    document.getElementById('exploration-controls')!.hidden=true;
+    document.getElementById('world-loading')!.hidden=true;
+    renderRegionChoice(this.run,!!this.featureTestId);
+    document.getElementById('region-choice-screen')!.hidden=false;
+    document.querySelector<HTMLButtonElement>('#region-choice-options button')!.focus();
+  }
+
+  private chooseNextRegion(id:string,token:string) {
+    if(!this.run?.chooseRegion(id,token,this.combat))return;
+    this.exploration.reset();this.explorationView.sync();this.explorationClearing=false;
+    this.endlessAltar.reset();this.altarTrial?.reset();this.itemTestAltar?.setEnabled(false);this.world.setEventClearing?.(null);
+    this.world.update(this.position.x,this.position.z,this.cameraFootprint());
+    this.world.setRegion?.(this.run.region);
+    this.world.update(this.position.x,this.position.z,this.cameraFootprint());
+    this.regionMigrationPending=true;
+    this.mode='playing';this.accumulator=0;this.intermissionHudSecond=-1;
+    document.getElementById('region-choice-screen')!.hidden=true;
+    document.getElementById('hud')!.inert=false;
+    this.input.setEnabled(false);this.audio.setWave(this.run.waveInCycle);
+    this.showSceneLoading();this.updateHUD();this.wake();
+  }
+
+  private finishRegionMigration() {
+    this.regionMigration=migrateRegionObjects(this.combat,this.position,this.world.obstacles);
+    this.regionMigrationPending=false;
+    this.previousPosition.copy(this.position);this.monster.root.position.copy(this.position);
+    this.party.syncLeader(this.position,this.facing);this.velocity.set(0,0);this.input.reset();this.placeCamera(true);
+    this.world.update(this.position.x,this.position.z,this.cameraFootprint());
+    this.combat.refreshWorld(this.position.x,this.position.z,this.world.revision);
+    this.updateHUD();
+    if(this.regionMigration.unresolved)this.pause('新地区仍有落脚重叠，已暂停；可重开或返回菜单。');
+  }
+
+  private openNewFeatureTestPicker() {
+    if (this.mode !== 'menu') return;
+    document.getElementById('menu')!.inert = true;
+    document.getElementById('new-feature-test-picker')!.hidden = false;
+    document.getElementById('close-new-feature-test')!.focus();
+  }
+
+  private syncExplorationView() {
+    this.explorationView.sync(this.exploration.event);
+    const clearing = this.exploration.present;
+    if (clearing !== this.explorationClearing) {
+      this.explorationClearing = clearing;
+      const e = this.exploration.event;
+      if (!this.endlessAltar.present && !this.altarTrial?.active) this.world.setEventClearing?.(clearing && e ? {x:e.x,z:e.z,radius:2.5} : null);
+    }
+  }
+
+  private tryExploration() {
+    if (this.mode !== 'playing' || !this.run?.endless || this.sceneLoading || this.altarTrial?.active
+      || this.capture?.pending || this.combat.progression.awaitingChoice || this.treasureDialog.active
+      || this.run.phase !== 'fighting' || this.run.remaining <= 0 || this.exploration.event?.wave !== this.run.wave
+      || !this.exploration.nearby(this.position) || this.exploration.event?.state !== 'available') return false;
+    if (this.exploration.event.kind === 'lost-workshop') this.openWeaponExchange('workshop');
+    else this.exploration.start(this.position);
+    this.updateHUD(); return true;
+  }
+
+  private openWeaponExchange(source: 'shop' | 'workshop' | 'preview') {
+    const run = this.run;
+    if (!run?.endless || this.combat.hp <= 0 || this.combat.progression.awaitingChoice || this.capture?.pending
+      || this.altarTrial?.active || this.treasureDialog.active || this.portrait || this.contextLost) return;
+    if (source === 'shop' ? !this.canShop() || !run.shop?.canExchange
+      : this.mode !== 'playing' || this.sceneLoading || run.phase !== 'fighting') return;
+    if (source === 'preview' && (!this.featureTestId?.startsWith('weapon-exchange') || this.featureExchangeUsed)) return;
+    if (source === 'workshop' && (this.exploration.event?.kind !== 'lost-workshop' || this.exploration.event.wave !== run.wave
+      || run.remaining <= 0 || !this.exploration.start(this.position))) return;
+    const price = source === 'shop' ? run.shop!.exchangePrice : source === 'preview' ? endlessShopPrice(25,run.cycleIndex) : 0;
+    const shopToken = run.shop?.token;
+    this.exchangeReturn = source === 'shop' ? 'shop' : 'playing';
+    this.mode = 'exchanging'; this.input.setEnabled(false); this.input.reset(); this.velocity.set(0,0); this.dashRemaining=0;
+    this.previousPosition.copy(this.position); this.accumulator=0; this.audio.setActive(false); this.sleep();
+    document.getElementById('hud')!.inert=true;
+    document.getElementById('new-feature-test-controls')!.hidden=true;
+    document.getElementById('exploration-controls')!.hidden=true;
+    document.getElementById('shop-screen')!.inert=true;
+    this.exchangeDialog ??= new WeaponExchangeDialog(()=>this.closeWeaponExchange());
+    this.exchangeDialog.show(this.combat,price,run.coins,(from:BaseAttackId,to:BaseAttackId)=>{
+      if(this.mode!=='exchanging'||this.run!==run||this.combat.hp<=0)return false;
+      if(source==='shop'){
+        const balance=run.shop?.exchange(from,to,shopToken!,run.coins);
+        if(balance===undefined)return false;
+        run.coins=balance;
+      }else{
+        if(source==='workshop'&&(this.exploration.event?.state!=='active'||!this.exploration.nearby(this.position)))return false;
+        if(source==='preview'&&this.featureExchangeUsed)return false;
+        if(run.coins<price||!this.combat.exchangeWeapon(from,to))return false;
+        run.coins-=price;
+        if(source==='workshop')this.exploration.completeWorkshop();
+        else this.featureExchangeUsed=true;
+      }
+      this.closeWeaponExchange(true);this.audio.play('level');return true;
+    });
+  }
+
+  private closeWeaponExchange(committed=false) {
+    if (!this.exchangeReturn) return;
+    const mode=this.exchangeReturn;this.exchangeReturn=undefined;this.exchangeDialog?.hide();
+    if(!committed)this.exploration.cancelWorkshop();
+    this.mode=mode;this.accumulator=0;this.input.reset();
+    document.getElementById('shop-screen')!.inert=false;
+    document.getElementById('hud')!.inert=mode==='shop';
+    this.syncExplorationView();this.updateHUD();
+    if(mode==='shop'&&this.run){renderRunShop(this.run,this.combat);document.getElementById(committed?'shop-next':'shop-exchange')!.focus();}
+    else {this.input.setEnabled(!document.hidden&&!this.portrait&&!this.sceneLoading);document.getElementById('pause')!.focus();}
+    this.audio.setActive(!document.hidden);this.wake();
+    if(mode==='playing'&&(document.hidden||this.portrait||this.contextLost))this.pause('游戏已暂停，准备好后继续。');
+  }
+
+  private closeNewFeatureTestPicker() {
+    document.getElementById('new-feature-test-picker')!.hidden = true;
+    document.getElementById('menu')!.inert = false;
+    document.getElementById('open-new-feature-test')!.focus();
+  }
+
+  private start(ruleset: Ruleset = this.runRuleset, partyPrototype = this.partyPrototype, newMap = false, variant = this.prototypeVariant, featureTestId: NewFeatureTestId | undefined = this.featureTestId) {
     if (this.portrait || this.contextLost) return;
     this.capture?.cancel();
     this.runRuleset = ruleset;
+    this.exchangeDialog?.hide();this.exchangeReturn=undefined;this.featureExchangeUsed=false;
+    this.exploration.reset();this.explorationView.sync();this.explorationClearing=false;
+    document.getElementById('exploration-controls')!.hidden=true;
+    document.getElementById('shop-screen')!.inert=false;
     this.partyPrototype = partyPrototype;
     this.startupPending = partyPrototype;
     this.startupStartedAt = performance.now();
     this.startupFallback = false;
     this.worldEntered = false;
     this.prototypeVariant = partyPrototype ? variant : 'sample';
+    this.featureTestId = partyPrototype && variant === 'infinite' ? featureTestId : undefined;
+    this.regionPractice=!!this.featureTestId?.startsWith('region-')&&this.featureTestId!=='region-choice'&&!this.featureTestId.endsWith('-combat');
+    this.regionMigrationPending=false;this.regionMigration=undefined;
+    document.getElementById('region-choice-screen')!.hidden=true;
     this.applyGraphics();
     // Infinite world and Endless survival are paired here; the formal fusion challenge remains finite.
-    this.combat.fusionEnabled = partyPrototype && (variant === 'fusion' || variant === 'infinite' || variant === 'enemy-test' || variant === 'capture-test');
+    this.altarCharacterLayer.reset();this.deathTransition.reset();
+    this.combat.fusionEnabled = partyPrototype && (variant === 'fusion' || variant === 'infinite' || variant === 'enemy-test' || variant === 'capture-test' || variant === 'item-test');
     this.combatView.setFusion(this.combat.fusionEnabled, this.selectedSpecies !== 'yanrong');
     const endless = partyPrototype && variant === 'infinite';
     this.world.setSample(!endless && partyPrototype && new URLSearchParams(window.location.search).get('world') !== 'legacy', newMap);
     this.world.setInfinite(endless, newMap);
+    const requestedRegion=document.querySelector<HTMLSelectElement>('#endless-start-region')?.value
+      ??new URLSearchParams(window.location.search).get('region')??'';
+    const testRegion=this.featureTestId?.replace(/^region-/,'').replace(/-combat$/,'')??'';
+    const initialRegion=this.featureTestId?(isEndlessRegion(testRegion)?testRegion:'meadow')
+      :endless&&isEndlessRegion(requestedRegion)?requestedRegion:'meadow';
+    if(this.featureTestId?.startsWith('region-')&&!this.fixedRegionSeed&&!this.randomRegionSeed)this.randomRegionSeed=crypto.randomUUID();
+    const regionSeed=this.featureTestId?.startsWith('region-')?(this.fixedRegionSeed?'region-showcase-v1':this.randomRegionSeed):undefined;
+    if(endless)this.world.setRegion?.(initialRegion,regionSeed);
     this.combat.infiniteWorld = endless;
     this.combat.useNavigation = partyPrototype && (this.world.sampleActive || endless);
     this.combat.party = partyPrototype ? this.party : undefined;
     const species: SpeciesId = this.combat.fusionEnabled ? this.selectedSpecies : 'yanrong';
     document.getElementById('creature-picker')!.hidden = true;
+    document.getElementById('item-test-picker')!.hidden = true;
+    document.getElementById('new-feature-test-picker')!.hidden = true;
     document.getElementById('menu')!.inert = false;
     this.party.reset(partyPrototype && variant === 'legacy-party' ? ['yanrong', 'bubblesalamander', 'sproutspike'] : [species]);
     this.input.setMovementOnly(partyPrototype && !this.combat.fusionEnabled);
@@ -547,14 +889,19 @@ export class Game {
     this.world.update(0, 0);
     this.combat.refreshWorld(0, 0, this.world.revision);
     this.enemyTest = partyPrototype && (variant === 'enemy-test' || variant === 'capture-test') ? new EnemyTestMode(variant === 'capture-test') : undefined;
+    this.altarTrial?.reset();this.endlessAltar.reset();this.altarReturn=undefined;this.world.setEventClearing?.(null);
+    this.itemTest=partyPrototype&&variant==='item-test'?new ItemTestMode(this.itemTestSkill,this.itemTestLevel):undefined;
+    if(this.itemTest){this.ensureAltar();Object.assign(this.altarTrial!.origin,ITEM_TEST_ALTAR);this.itemTestAltar!.setPosition(ITEM_TEST_ALTAR.x,ITEM_TEST_ALTAR.z);}
+    this.itemTestAltar?.setEnabled(!!this.itemTest,this.itemTestSkill);
     this.captureVfx?.clear(); this.captureSession = undefined;
     this.captureReceipt=crypto.randomUUID();this.captureSerial=0;
-    const captureEnabled=partyPrototype && (variant==='fusion'||variant==='infinite'||variant==='capture-test');
+    const captureEnabled=!this.featureTestId && partyPrototype && (variant==='fusion'||variant==='infinite'||variant==='capture-test');
     this.combat.captureEnabled=captureEnabled;
     this.combat.captureSpawnRoll=kind=>this.captureSpawns.roll(kind);
     this.capture = captureEnabled ? new EnemyCapture(Math.random,kind=>{
       this.collection.add(kind,`${this.captureReceipt}:${++this.captureSerial}`);
       if(!this.collection.saved && this.capture)this.capture.message+=' · 存档失败，请勿关闭页面';
+      this.captureHUD?.showSuccess(kind,this.collection.saved);
     }) : undefined;
     if (!this.captureVfx && this.capture) {
       this.captureVfx = new StarSealCaptureSystem(this.scene, 1);
@@ -563,12 +910,30 @@ export class Game {
     this.captureHUD ??= new CaptureHUD(()=>this.tryCapture(),()=>{
       if(this.mode==='playing')this.capture?.submit();
     });
+    this.captureHUD.clearNotice();
     this.captureHUD.root.hidden=!this.capture;
-    this.run = this.combat.usesRunBuild && !this.enemyTest ? new RunFlow(Math.random, endless ? 'endless' : 'campaign') : undefined;
+    this.run = this.combat.usesRunBuild && !this.enemyTest && !this.itemTest ? new RunFlow(Math.random, endless ? 'endless' : 'campaign') : undefined;
+    if(this.run)this.run.region=initialRegion;
+    this.itemTest?.prepare(this.combat);
+    if(this.itemTest){
+      this.position.set(ITEM_TEST_ALTAR.x,0,ITEM_TEST_ALTAR.z+7);
+      this.previousPosition.copy(this.position);this.monster.root.position.copy(this.position);
+    }
     if (this.enemyTest) this.combat.encounters.beginWave(1);
     if (this.run && new URLSearchParams(window.location.search).get('meleeDev') === 'flame-sweep') this.combat.grantUpgrade('flame-sweep-weapon');
-    this.combat.automaticSpawning = !this.run && !this.enemyTest;
-    this.run?.prepare(this.combat,this.position);
+    this.combat.automaticSpawning = !this.run && !this.enemyTest && !this.itemTest;
+    if (this.featureTestId && this.run) prepareNewFeatureTest(this.featureTestId, this.combat, this.run, this.position);
+    else this.run?.prepare(this.combat,this.position);
+    if (this.featureTestId && this.run) {
+      const id=this.featureTestId;
+      const eventKind: ExplorationKind | undefined = id==='lost-workshop' ? 'lost-workshop'
+        : id==='sealed-chest'||id==='sealed-chest-low-health'||id==='event-lifecycle' ? 'sealed-chest' : undefined;
+      if(eventKind){this.exploration.offer(eventKind,this.run,{x:this.position.x+3.5,z:this.position.z});this.syncExplorationView();}
+      if(id==='shop-exchange'){
+        this.run.phase='intermission';this.run.intermissionRemaining=.01;
+        this.run.updateRest(.01,this.combat);
+      }
+    }
     document.getElementById('shop-screen')!.hidden = true;
     this.party.syncLeader(this.position, this.facing);
     this.party.placeCompanions(this.world.obstacles, ARENA_HALF_EXTENT);
@@ -596,18 +961,28 @@ export class Game {
     document.getElementById('gameover-screen')!.hidden = true;
     (document.activeElement as HTMLElement | null)?.blur();
     this.welcome.classList.remove('faded');
+    this.welcome.hidden=!!this.itemTest;
     this.welcome.querySelector('h2')!.textContent = this.enemyTest ? (this.capture ? '捕捉测试 · 单只沙甲团兽' : '敌人测试 · 循环出场') : endless ? '无尽挑战，向远方出发。' : this.combat.fusionEnabled && species !== 'yanrong' ? `${CREATURES[species].name}，准备出发。` : this.combat.fusionEnabled ? '一簇火花，生长成烈焰。' : partyPrototype ? '草场已就绪，出发吧。' : this.challenge ? '三波迎战，冲出一条路。' : this.combat.isTrial ? '犄角已就绪，冲出一条路。' : '小小魔法，准备就绪。';
     this.welcome.querySelector('p')!.textContent = endless ? '六波循环生存 · 第五波旗帜大波与商店 · 第六波 Boss 循环' : this.combat.fusionEnabled && species !== 'yanrong' ? `${CREATURES[species].name}出战 · 摇杆移动 · 自动攻击 · 升级三选一` : this.combat.fusionEnabled ? '六波自动战斗 · 升级形成融合 · 前四波连续迎战，第五波后才可购物' : partyPrototype && variant === 'legacy-party' ? '三兽兼容模式 · 主控移动，伙伴跟随并自动攻击' : partyPrototype ? '摇杆操控焰绒 · 自动攻击 · 沿泥路绕过林地与水岸' : this.challenge ? '击败三波即可通关 · 冲锋命中 6 次、打断 2 次各加一星' : this.combat.isTrial ? '冲刺命中可击退和打断 · 留意黄色扑击预警线' : '移动躲避敌人，焰绒会自动施法 · 靠近拾取经验';
+    if(this.itemTest){
+      this.welcome.querySelector('h2')!.textContent=`道具测试 · ${ITEM_TEST_OPTIONS.find(o=>o.id===this.itemTest!.skill)!.title}`;
+      this.welcome.querySelector('p')!.textContent='仅释放所选弹幕 · 靶怪无伤害并自动补充 · 可在下方切换等级';
+    }
+    this.syncItemTestSelection();
     this.accumulator = 0;
     this.placeCamera(true);
     this.world.update(this.position.x, this.position.z, this.cameraFootprint());
     this.updateHUD();
     this.wake();
+    if(this.featureTestId==='shop-exchange')this.syncRunPhase();
   }
 
   private pause(reason: string) {
     if (this.mode !== 'playing') return;
-    this.mode = 'paused';
+    this.mode = 'paused';this.altarTrial?.suspend();
+    document.getElementById('item-test-controls')!.hidden=true;
+    document.getElementById('new-feature-test-controls')!.hidden=true;
+    document.getElementById('exploration-controls')!.hidden=true;
     this.treasureDialog.suspend();
     // Loading no longer advances while paused; never let its higher overlay hide Resume.
     document.getElementById('world-loading')!.hidden = true;
@@ -627,6 +1002,7 @@ export class Game {
     if (this.mode !== 'paused' || document.hidden || this.portrait || this.contextLost) return;
     this.audio.setActive(true); this.audio.unlock();
     this.mode = 'playing';
+    document.getElementById('item-test-controls')!.hidden=!this.itemTest||!!this.altarTrial?.active;
     const loading = this.sceneLoading;
     this.input.setEnabled(!loading && !this.capture?.pending);
     if (loading) this.showSceneLoading();
@@ -637,6 +1013,17 @@ export class Game {
   }
 
   private showMenu() {
+    this.fixedRegionSeed=true;this.randomRegionSeed='';this.regionPractice=false;this.regionMigrationPending=false;this.regionMigration=undefined;
+    document.getElementById('region-choice-screen')!.hidden=true;
+    this.exchangeDialog?.hide();this.exchangeReturn=undefined;
+    this.exploration.reset();this.explorationView.sync();this.explorationClearing=false;
+    document.getElementById('exploration-controls')!.hidden=true;
+    document.getElementById('shop-screen')!.inert=false;
+    this.featureTestId = undefined;
+    document.getElementById('new-feature-test-picker')!.hidden = true;
+    document.getElementById('new-feature-test-controls')!.hidden = true;
+    document.getElementById('menu')!.inert = false;
+    this.altarCharacterLayer.reset();this.deathTransition.reset();
     this.collection.flush();this.captureSpawns.flush();
     this.startupPending = false;
     this.startupStartedAt = 0; this.startupFallback = false;
@@ -645,7 +1032,10 @@ export class Game {
     this.combat.runBuild.clearPairFusions();
     this.audio.setWave();
     this.capture?.cancel(); this.captureVfx?.clear(); this.captureSession = undefined; this.capture = undefined; if (this.captureHUD) this.captureHUD.root.hidden = true;
-    this.run = undefined; this.enemyTest = undefined; this.combat.automaticSpawning = true; this.combat.captureEnabled = false;
+    this.run = undefined; this.enemyTest = undefined; this.itemTest=undefined; this.combat.automaticSpawning = true; this.combat.captureEnabled = false;
+    this.itemTestAltar?.setEnabled(false);this.altarTrial?.reset();this.endlessAltar.reset();this.altarReturn=undefined;this.world.setEventClearing?.(null);
+    document.getElementById('item-test-controls')!.hidden=true;
+    document.getElementById('item-test-picker')!.hidden=true;
     document.getElementById('shop-screen')!.hidden = true;
     this.world.setSample(new URLSearchParams(window.location.search).get('world') !== 'legacy');
     this.combat.infiniteWorld = false;
@@ -725,22 +1115,33 @@ export class Game {
 
   private step(dt: number) {
     if (this.mode !== 'playing' || this.sceneLoading) return;
+    this.captureHUD?.step(dt);
+    this.altarTrial?.stepNotice(dt);
+    if(this.itemTest||this.endlessAltar.present)this.itemTestAltar?.step(dt);
     if(this.capture?.pending){
       this.stepCapture(dt);
       if(!this.capture.pending)this.input.setEnabled(true);
       return;
     }
-    if (this.treasureDialog.sync()) return;
+    if (!this.altarTrial?.active&&this.treasureDialog.sync()) return;
+    if(this.run&&!this.altarTrial?.active&&!this.combat.progression.awaitingChoice){
+      this.exploration.step(dt,this.run,this.combat,this.position,this.world.obstacles,!this.featureTestId);
+      this.syncExplorationView();
+      if(this.treasureDialog.sync())return;
+    }
+    if(!this.altarTrial?.active)this.syncEndlessAltar();
     if (this.run?.phase === 'intermission') {
       this.run.updateRest(dt, this.combat);
       this.syncRunPhase();
       return;
     }
     this.combat.useNavigation = this.partyPrototype && (this.world.sampleActive || this.combat.infiniteWorld);
-    if (this.combat.progression.awaitingChoice && !this.combat.encounters.dying) { this.openUpgrade(); return; }
-    if (this.run && this.run.remaining <= 1e-8) { this.run.resolveBoundary(this.combat); if (this.syncRunPhase()) return; }
-    this.run?.prepare(this.combat,this.position);
+    if (!this.altarTrial?.active&&this.combat.progression.awaitingChoice && !this.combat.encounters.dying) { this.openUpgrade(); return; }
+    if (!this.altarTrial?.active&&this.run && this.run.remaining <= 1e-8) { this.run.resolveBoundary(this.combat); if (this.syncRunPhase()) return; }
+    if(!this.altarTrial?.active)this.run?.prepare(this.combat,this.position);
     this.enemyTest?.step(dt,this.combat,this.position);
+    if(this.altarTrial?.active)this.altarTrial.fitViewport(this.cameraFootprint());
+    if(!this.altarTrial?.active)this.itemTest?.beforeStep(dt,this.combat,this.position);
     this.previousPosition.copy(this.position);
     this.previousJump = this.jumpHeight;
     if (this.input.consumeJump() && !this.partyPrototype && this.jumpHeight === 0) { this.jumpVelocity = 6; this.audio.play('jump'); }
@@ -757,7 +1158,7 @@ export class Game {
     this.elapsed += dt;
     this.cooldown = Math.max(0, this.cooldown - dt);
     this.dashRemaining = Math.max(0, this.dashRemaining - dt);
-    if (this.input.consumeDash() && (!this.partyPrototype || this.combat.usesRunBuild) && this.cooldown === 0) {
+    if (this.input.consumeDash() && !this.altarTrial?.active && (!this.partyPrototype || this.combat.usesRunBuild) && this.cooldown === 0) {
       this.dashDirection.set(movement.x, movement.y);
       if (magnitude < 0.05) this.dashDirection.set(Math.sin(this.facing), Math.cos(this.facing));
       this.dashDirection.normalize();
@@ -790,7 +1191,7 @@ export class Game {
     if (this.sceneLoading) { this.accumulator = 0; return; }
     this.combat.refreshWorld(this.position.x, this.position.z, this.world.revision);
     // Circle collisions allow sliding around trunks and rocks.
-    for (const obstacle of this.world.obstacles) {
+    for (const obstacle of this.altarTrial?.active?[]:this.world.obstacles) {
       const x = this.position.x - obstacle.x, z = this.position.z - obstacle.z;
       const radius = obstacle.radius + PLAYER_COLLISION_RADIUS;
       const length = Math.hypot(x, z);
@@ -800,6 +1201,8 @@ export class Game {
       }
     }
     if (!this.combat.infiniteWorld) clampToRectangularBoundary(this.position, ARENA_HALF_EXTENT, PLAYER_COLLISION_RADIUS);
+    if(this.itemTest||this.endlessAltar.present)this.altarTrial?.resolveEntrance(this.position,this.previousPosition);
+    if(this.altarTrial?.active)this.altarTrial.clamp(this.position);
     this.distance += this.position.distanceTo(this.previousPosition);
     if (this.velocity.lengthSq() > 0.05) {
       const target = Math.atan2(this.velocity.x, this.velocity.y);
@@ -824,11 +1227,18 @@ export class Game {
       if (this.prototypeVariant === 'legacy-party') this.party.follow(dt, this.world.obstacles, ARENA_HALF_EXTENT);
     }
     this.combat.attackViewport = this.cameraFootprint();
-    this.combat.update(dt, this.position, this.dashAttack);
-    this.stepCapture(dt);
-    if (this.combat.hp > 0 && this.treasureDialog.sync()) { this.input.reset(); this.input.setEnabled(false); this.accumulator = 0; return; }
+    const altarWasActive=!!this.altarTrial?.active;
+    if(altarWasActive)this.altarTrial!.step(dt,this.combat,this.position,this.previousPosition);
+    else this.combat.update(dt, this.position, this.dashAttack);
+    if(this.itemTest&&this.altarTrial?.completed){
+      this.itemTestAltar?.setEnabled(false);this.itemTest.altarPresent=false;
+    }
+    if(altarWasActive&&this.run?.endless&&this.altarTrial?.completed)this.finishEndlessAltar();
+    this.itemTest?.afterStep(this.combat);
+    if(!altarWasActive)this.stepCapture(dt);
+    if (!altarWasActive&&this.combat.hp > 0 && this.treasureDialog.sync()) { this.input.reset(); this.input.setEnabled(false); this.accumulator = 0; return; }
     if (this.partyPrototype && this.combat.hp > 0) this.partyView.stepAnimation(dt, (this.position.x - this.previousPosition.x) / dt, (this.position.z - this.previousPosition.z) / dt);
-    this.audio.playSkills(this.combat.soundEvents);
+    if(!altarWasActive)this.audio.playSkills(this.combat.soundEvents);
     this.audio.playHarvest(this.combat.kills - kills);
     if (this.combat.hits > hits) this.audio.play('hit');
     if (this.combat.shotsFired > shots) this.audio.play('cast');
@@ -836,7 +1246,7 @@ export class Game {
     if (this.combat.hp < hp) this.audio.play('hurt');
     if (this.combat.hp === 0) this.endRun();
     else {
-      if (this.run) {
+      if (this.run&&!altarWasActive&&!this.regionPractice) {
         this.run.update(dt, this.combat, this.position);
         if (this.syncRunPhase()) return;
       }
@@ -856,6 +1266,7 @@ export class Game {
   private syncRunPhase() {
     this.audio.setWave(this.run?.waveInCycle);
     if (!this.run) return false;
+    if (this.run.phase === 'region-choice') { this.openRegionChoice(); return true; }
     if (this.run.phase === 'won' || this.run.phase === 'lost') { this.endRun(this.run.phase === 'won' ? 'victory' : 'defeat'); return true; }
     if (this.run.phase === 'intermission') {
       // Stay on the battlefield for a real visual rest: no combat/AI advances.
@@ -883,6 +1294,7 @@ export class Game {
       this.updateHUD();
     } else if (this.run.phase === 'fighting' && this.run.waveElapsed === 0) this.updateHUD();
     if (this.run.phase === 'shop') {
+      document.getElementById('world-loading')!.hidden=true;
       this.mode = 'shop'; this.input.setEnabled(false); this.velocity.set(0, 0);
       this.previousPosition.copy(this.position); this.partyView.stopAnimation(); this.sleep();
       this.combatView.clear(); this.renderer.render(this.scene, this.camera);
@@ -893,7 +1305,7 @@ export class Game {
       renderRunShop(this.run, this.combat); this.updateHUD();
       document.getElementById('shop-next')!.focus({ preventScroll: true }); this.wake(); return true;
     }
-    if (this.combat.progression.awaitingChoice && !this.combat.encounters.dying) { this.openUpgrade(); return true; }
+    if (!this.altarTrial?.active&&this.combat.progression.awaitingChoice && !this.combat.encounters.dying) { this.openUpgrade(); return true; }
     return false;
   }
 
@@ -905,7 +1317,7 @@ export class Game {
     this.previousPosition.copy(this.position);
     this.monster.root.position.copy(this.position);
     this.accumulator = 0;
-    this.sleep();
+    this.sleep(true);
     (document.getElementById('hud') as HTMLElement).inert = true;
     document.getElementById('upgrade-screen')!.hidden = false;
     this.renderChoices();
@@ -969,6 +1381,7 @@ export class Game {
     this.combat.infiniteWorld = true;
     this.combat.useNavigation = true;
     this.world.setInfinite(true);
+    this.world.setRegion?.(this.run.region);
     this.position.set(0, 0, 0);
     this.previousPosition.copy(this.position);
     this.velocity.set(0, 0);
@@ -1003,8 +1416,12 @@ export class Game {
   }
 
   private endRun(outcome: 'victory' | 'defeat' = 'defeat') {
-    if(this.mode==='gameover')return;
-    const endlessResult = this.run?.endless ? {
+    if(this.mode==='gameover'||this.mode==='dying')return;
+    document.getElementById('region-choice-screen')!.hidden=true;
+    if(this.exploration.present&&this.exploration.event)this.exploration.event.state=this.combat.hp<=0?'failed':'expired';
+    this.explorationView.sync();document.getElementById('exploration-controls')!.hidden=true;
+    this.altarCharacterLayer.reset();
+    const endlessResult = this.run?.endless && !this.featureTestId ? {
       wave: this.run.wave,
       cycle: this.run.cycle,
       bossesDefeated: this.run.bossesDefeated,
@@ -1018,7 +1435,10 @@ export class Game {
     this.combatView.clear();
     this.partyView.stopAnimation();
     this.hideUpgrade();
-    this.mode = 'gameover';
+    const died=outcome==='defeat'&&this.combat.hp<=0;
+    this.mode = died?'dying':'gameover';this.altarTrial?.suspend();
+    document.getElementById('new-feature-test-controls')!.hidden = true;
+    this.endlessAltar.consume();this.itemTestAltar?.setEnabled(false);this.world.setEventClearing?.(null);
     this.outcome = outcome;
     if(outcome==='defeat'&&this.combat.hp<=0)this.audio.playDeath();
     else this.audio.setActive(false);
@@ -1045,6 +1465,7 @@ export class Game {
       : won ? '荆冠兽王已击败！构筑经受住了六波考验。'
       : this.run.failure === 'boss-timeout' ? '未能在 90 秒内击败荆冠兽王。调整构筑，再来挑战。'
       : `生命耗尽，止步第 ${this.run.wave} 波。换一种构筑再出发。`;
+    if (this.featureTestId) document.getElementById('result-message')!.textContent = '新功能测试结束 · 本次未计入无尽纪录，可再次挑战重置预设。';
     renderRunResult(this.run, this.combat);
     const captured=document.getElementById('result-captures')!;
     captured.hidden=!this.capture;
@@ -1065,11 +1486,20 @@ export class Game {
     }
     document.getElementById('gameover-screen')!.setAttribute('aria-label', won ? '挑战胜利' : '本局结束');
     document.querySelector('.result-card')!.classList.toggle('victorious', won);
-    document.getElementById('gameover-screen')!.hidden = false;
+    const result=document.getElementById('gameover-screen')!;
+    result.classList.toggle('from-death',died);result.hidden=died;
+    if(died){
+      document.getElementById('hud')!.hidden=true;document.getElementById('item-test-controls')!.hidden=true;
+      document.getElementById('area-combo')!.hidden=true;this.damageOverlay.style.opacity='0';
+      this.monster.root.position.copy(this.position);
+      if(this.partyPrototype)this.partyView.render(1,this.visualTime,.8,0);
+      this.deathTransition.begin(this.partyPrototype&&this.partyView.deathBody?this.partyView.deathBody:this.monster.body,
+        this.partyPrototype&&this.partyView.deathBody?this.partyView.deathDecorations:[this.monster.root]);
+    }
   }
 
   private formatTime() {
-    const seconds = this.run?.totalElapsed ?? this.elapsed;
+    const seconds = this.regionPractice ? this.elapsed : this.run?.totalElapsed ?? this.elapsed;
     return `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(Math.floor(seconds % 60)).padStart(2, '0')}`;
   }
 
@@ -1081,22 +1511,77 @@ export class Game {
     if (!combo.hidden) combo.textContent = `${feedback.kills} 连斩！`;
     renderEncounterStatus(this.combat,this.run);
     const wave = document.getElementById('run-wave')!, gold = document.getElementById('run-gold')!;
-    wave.hidden = !this.run && !this.enemyTest;
+    const regionStatus=document.getElementById('region-status')!;
+    regionStatus.hidden=!this.run?.endless;
+    if(this.run?.endless)regionStatus.textContent=`${ENDLESS_REGIONS[this.run.region].title}${this.world.inspect().status==='fallback'?' · 备用地图':''}`;
+    wave.hidden = !this.run && !this.enemyTest && !this.itemTest;
+    document.getElementById('item-test-controls')!.hidden=!this.itemTest||this.mode!=='playing'||!!this.altarTrial?.active;
+    if(this.itemTest)wave.textContent=`测试 · ${ITEM_TEST_OPTIONS.find(o=>o.id===this.itemTest!.skill)!.title}`;
     gold.hidden = true; // Only wave and elapsed time occupy the top center.
     const coins = this.run?.coins ?? this.combat.goldEarned;
     document.getElementById('hud-coins')!.textContent = Math.max(0, coins).toLocaleString('en-US');
     if (this.enemyTest) wave.textContent = this.capture ? '捕捉测试 · 单只沙甲团兽' : '敌人测试';
     if (this.run) { wave.textContent = this.run.waveLabel; gold.textContent = `金币 ${this.run.coins}`; }
+    const featureControls = document.getElementById('new-feature-test-controls')!;
+    featureControls.hidden = !this.featureTestId || this.mode !== 'playing' || this.sceneLoading || !!this.altarTrial?.active;
+    if (this.featureTestId && this.run) {
+      wave.textContent = `新功能测试 · ${this.run.waveLabel}`;
+      const build = this.combat.runBuild;
+      const pending = this.combat.progression.awaitingChoice;
+      const state=this.exploration.event?.state;
+      const stateCopy={available:'等待开启',active:'进行中',completed:'已完成',abandoned:'已放弃',expired:'跨波过期',failed:'失败'};
+      document.getElementById('new-feature-test-status')!.textContent = state ? `事件：${stateCopy[state]} · 武器 ${build.attacks.length}/${build.weaponLimit}` : `武器 ${build.attacks.length}/${build.weaponLimit} · 暂停查看构筑`;
+      const add=document.getElementById('feature-test-add-weapon') as HTMLButtonElement;
+      add.hidden=!this.featureTestId.startsWith('weapon-slots');add.disabled=pending||build.attacks.length>=build.weaponLimit;
+      const exchange=document.getElementById('feature-test-exchange') as HTMLButtonElement;
+      exchange.hidden=!this.featureTestId.startsWith('weapon-exchange');exchange.disabled=pending||this.featureExchangeUsed;
+      const finish=document.getElementById('feature-test-event-finish') as HTMLButtonElement;
+      finish.hidden=this.featureTestId!=='event-lifecycle';finish.disabled=pending||state!=='active';
+      document.getElementById('feature-test-event-boundary')!.hidden=this.featureTestId!=='event-lifecycle';
+      const regionPreview=this.featureTestId.startsWith('region-');
+      document.getElementById('feature-test-region-seed')!.hidden=!regionPreview;
+      document.getElementById('feature-test-region-seed')!.textContent=this.fixedRegionSeed?'切换随机地形':'切换固定地形';
+      const combatButton=document.getElementById('feature-test-region-combat')!;
+      combatButton.hidden=!regionPreview||this.featureTestId==='region-choice';
+      combatButton.textContent=this.regionPractice?'开始实战':'自由观察';
+      const chestButton=document.getElementById('feature-test-region-chest') as HTMLButtonElement;
+      chestButton.hidden=!regionPreview||this.regionPractice||this.featureTestId==='region-choice';
+      chestButton.disabled=pending||!this.exploration.canOffer(this.run);
+      if(regionPreview)document.getElementById('new-feature-test-status')!.textContent=`${ENDLESS_REGIONS[this.run.region].title} · ${this.featureTestId==='region-choice'?'选路预设':this.regionPractice?'自由观察':'实战'} · ${this.fixedRegionSeed?'固定地形':'随机地形'}`;
+    }
+    document.getElementById('shop-feature-switch')!.hidden=!this.featureTestId;
+    document.getElementById('shop-feature-restart')!.hidden=!this.featureTestId;
+    const event=this.exploration.event;
+    const explorationControls=document.getElementById('exploration-controls')!;
+    explorationControls.hidden=!this.exploration.present||this.mode!=='playing'||this.sceneLoading||!!this.altarTrial?.active
+      ||!!this.capture?.pending||this.combat.progression.awaitingChoice||this.treasureDialog.active
+      ||this.run?.phase!=='fighting'||event?.wave!==this.run?.wave
+      ||event?.state==='available'&&!this.exploration.nearby(this.position);
+    if(event&&this.exploration.present){
+      const opening=event.kind==='sealed-chest'&&event.state==='active';
+      explorationControls.classList.toggle('is-countdown',opening);
+      document.getElementById('exploration-name')!.hidden=true;
+      document.getElementById('exploration-detail')!.hidden=!opening;
+      document.getElementById('exploration-abandon')!.hidden=true;
+      document.getElementById('exploration-detail')!.textContent=opening
+        ? `打开宝箱倒计时剩余${Math.max(0,Math.ceil(EXPLORATION_RULES.duration-event.elapsed))}秒`:'';
+      const interact=document.getElementById('exploration-interact') as HTMLButtonElement;
+      interact.hidden=event.state==='active';interact.disabled=!this.exploration.nearby(this.position);
+      interact.textContent=event.kind==='sealed-chest'?'按E 开启':'按E 使用工坊';
+    }
     renderBuildSummary(this.combat.usesRunBuild ? this.combat.runBuild : undefined, this.combat.fusions, this.combat.resonances);
     this.preparePortrait(this.party.leader.species);
     const map = this.world.inspect();
     const replay = document.getElementById('map-replay') as HTMLAnchorElement;
     replay.hidden = !this.partyPrototype || !map.seed;
-    if (map.seed && replay.dataset.seed !== map.seed) {
+    const replayKey=`${map.seed}:${map.region??''}`;
+    if (map.seed && replay.dataset.mapKey !== replayKey) {
       const url = new URL(window.location.href);
       url.searchParams.delete('world'); url.searchParams.set('seed', map.seed);
+      if(map.region)url.searchParams.set('region',map.region);else url.searchParams.delete('region');
       replay.href = url.href; replay.textContent = '复现地图 · 种子 ' + map.seed;
       replay.dataset.seed = map.seed;
+      replay.dataset.mapKey = replayKey;
     }
     const seedCharacters = Array.from(map.seed ?? '');
     document.getElementById('map-seed')!.textContent = map.seed ? (this.combat.infiniteWorld ? '无限种子 ' : '种子 ') + (seedCharacters.length > 18 ? seedCharacters.slice(0, 18).join('') + '…' : map.seed) : '中央草场';
@@ -1120,9 +1605,10 @@ export class Game {
     if (this.timer.textContent !== time) this.timer.textContent = time;
     const ready = 1 - this.cooldown / DASH_COOLDOWN;
     this.dashButton.style.setProperty('--ready', `${ready * 100}%`);
-    this.dashButton.classList.toggle('cooling', this.cooldown > 0);
-    this.dashButton.setAttribute('aria-disabled', String(this.cooldown > 0));
-    this.dashStatus.textContent = this.cooldown > 0 ? `${this.cooldown.toFixed(1)} 秒` : '就绪';
+    const dashForbidden=!!this.altarTrial?.active;
+    this.dashButton.classList.toggle('cooling', this.cooldown > 0||dashForbidden);
+    this.dashButton.setAttribute('aria-disabled', String(this.cooldown > 0||dashForbidden));
+    this.dashStatus.textContent = dashForbidden?'禁止冲刺':this.cooldown > 0 ? `${this.cooldown.toFixed(1)} 秒` : '就绪';
     const flagWarning = !!this.run?.endless && this.run.phase === 'fighting'
       && this.run.waveInCycle === 4 && this.run.remaining > 0
       && this.run.remaining <= ENDLESS_FLAG_WARNING_SECONDS;
@@ -1203,6 +1689,7 @@ export class Game {
       this.lookTarget.set(player.x, 0.6, player.z);
       this.monster.body.rotation.y = this.facing;
     }
+    if(this.altarTrial?.active)this.lookTarget.set(this.altarTrial.origin.x,.6,this.altarTrial.origin.z);
     if (snap) this.cameraAnchor.copy(this.lookTarget);
     else this.cameraAnchor.lerp(this.lookTarget, 1 - Math.exp(-7 * dt));
     this.cameraTarget.set(0, VIEW_25D.distance * Math.sin(VIEW_25D.pitch), VIEW_25D.distance * Math.cos(VIEW_25D.pitch)).add(this.cameraAnchor);
@@ -1228,10 +1715,16 @@ export class Game {
 
   private frame = (time: number) => {
     this.frameId = 0;
-    if (this.disposed || document.hidden || this.portrait || this.contextLost || (this.mode !== 'menu' && this.mode !== 'playing' && this.mode !== 'shop')) return;
+    if (this.disposed || document.hidden || this.portrait || this.contextLost || (this.mode !== 'menu' && this.mode !== 'playing' && this.mode !== 'shop' && this.mode !== 'dying')) return;
     const rawDt = this.lastTime ? (time - this.lastTime) / 1000 : 0;
     const dt = rawDt ? Math.min(rawDt, STEP * 5) : STEP;
     this.lastTime = time;
+    if(this.mode==='dying'){
+      const done=this.deathTransition.step(dt);this.renderer.render(this.scene,this.camera);
+      if(done){this.deathTransition.hide();this.mode='gameover';document.getElementById('gameover-screen')!.hidden=false;document.getElementById('restart')!.focus({preventScroll:true});}
+      else this.frameId=requestAnimationFrame(this.frame);
+      return;
+    }
     if (this.mode === 'playing' && this.sceneLoading) {
       this.showSceneLoading();
       this.input.setEnabled(false);
@@ -1239,6 +1732,11 @@ export class Game {
       this.accumulator = 0;
       this.frameId = window.requestAnimationFrame(this.frame);
       return;
+    }
+    if(this.mode==='playing'&&this.regionMigrationPending){
+      this.finishRegionMigration();
+      if(this.mode!=='playing')return;
+      if(this.sceneLoading){this.showSceneLoading();this.frameId=requestAnimationFrame(this.frame);return;}
     }
     const enteringWorld = this.mode === 'playing' && !document.getElementById('world-loading')!.hidden;
     if (enteringWorld) {
@@ -1269,6 +1767,7 @@ export class Game {
         this.accumulator -= STEP; this.step(STEP);
       }
     }
+    if(this.deathTransition.active){this.frameId=requestAnimationFrame(this.frame);return;}
     const draw = !this.renderTime || time - this.renderTime >= 1000 / this.quality.targetFps - 1 || (this.mode !== 'playing' && this.mode !== 'menu');
     if (draw) this.world.update(this.position.x, this.position.z, this.cameraFootprint());
     // A move or collision correction can request a new streaming neighborhood.
@@ -1287,15 +1786,19 @@ export class Game {
         this.monster.root.position.lerpVectors(this.previousPosition, this.position, alpha);
         if (this.run?.phase !== 'intermission') {
           this.updateHUD();
-          this.combatView.render(alpha, this.visualTime, this.monster.root.position);
+          if(!this.altarTrial?.active)this.combatView.render(alpha, this.visualTime, this.monster.root.position);
         }
-        if (this.partyPrototype) this.partyView.render(alpha, this.visualTime, this.combat.hurtFlash / 0.25, this.combat.invulnerability);
+        if (this.partyPrototype) this.partyView.render(alpha, this.visualTime, this.combat.hurtFlash / 0.25, this.itemTest&&!this.altarTrial?.active?0:this.combat.invulnerability);
         this.monster.body.visible = true;
       }
-    this.captureHUD?.render(this.capture,this.combat,this.position,this.camera,this.mode==='playing');
+    this.captureHUD?.render(this.capture,this.combat,this.position,this.camera,this.mode==='playing'&&!this.altarTrial?.active);
     if(!captureActive)this.monster.animate(renderDt * speed, Math.min(1, this.velocity.length() / 4.6), this.dashRemaining > 0, this.visualTime, THREE.MathUtils.lerp(this.previousJump, this.jumpHeight, this.accumulator / STEP), this.combat.hurtFlash / 0.25);
       this.placeCamera(false, captureActive ? 0 : renderDt * speed);
       this.monster.root.visible = this.mode !== 'menu' && (!this.partyPrototype || !this.partyView.hasPixelLeader);
+      this.altarTrial?.render((!!this.itemTest||this.endlessAltar.present||!!this.altarTrial?.hasNotice)&&this.mode==='playing',this.combat,this.position,alpha,this.camera.quaternion,this.quality.particles);
+      if((this.itemTest||this.endlessAltar.present)&&this.altarTrial)this.itemTestAltar?.setColor(this.altarTrial.color);
+      const onAltar=this.mode==='playing'&&!!this.itemTestAltar?.group.visible&&!!this.altarTrial?.isOnAltar(this.position);
+      this.altarCharacterLayer.apply(onAltar?(this.partyPrototype&&this.partyView.leaderBody?this.partyView.leaderBody:this.monster.body):undefined);
       this.renderer.render(this.scene, this.camera);
       if (this.mode === 'playing') this.worldEntered = true;
       if (enteringWorld) document.getElementById('world-loading')!.hidden = true;
@@ -1304,16 +1807,22 @@ export class Game {
   };
 
   private wake() {
-    if (this.frameId || this.disposed || document.hidden || this.portrait || this.contextLost || (this.mode !== 'menu' && this.mode !== 'playing' && this.mode !== 'shop')) return;
+    if(this.mode==='dying'&&!document.hasFocus())return;
+    if(this.mode==='upgrading'){
+      // Choices freeze rendering/simulation, while the existing music loop keeps its playhead.
+      if(!this.disposed)this.audio.setActive(!document.hidden&&!this.portrait&&!this.contextLost&&document.hasFocus());
+      return;
+    }
+    if (this.frameId || this.disposed || document.hidden || this.portrait || this.contextLost || (this.mode !== 'menu' && this.mode !== 'playing' && this.mode !== 'shop' && this.mode !== 'dying')) return;
     this.lastTime = this.renderTime = 0;
     this.quality.resetSamples();
-    this.audio.setActive(true);
+    if(this.mode!=='dying')this.audio.setActive(true);
     this.accumulator = 0;
     this.frameId = window.requestAnimationFrame(this.frame);
   }
 
-  private sleep() {
-    this.audio.setActive(false);
+  private sleep(keepAudio=false) {
+    if(!keepAudio)this.audio.setActive(false);
     this.quality.resetSamples();
     window.cancelAnimationFrame(this.frameId);
     this.frameId = 0;
@@ -1344,6 +1853,11 @@ export class Game {
       outcome: this.outcome,
       partyPrototype: this.partyPrototype,
       prototypeVariant: this.prototypeVariant,
+      featureTest: this.featureTestId ?? null,
+      exploration: this.exploration.event ? {...this.exploration.event} : null,
+      regionTransition:{pending:this.regionMigrationPending,migration:this.regionMigration??null,practice:this.regionPractice},
+      itemTest:this.itemTest?{skill:this.itemTest.skill,rank:this.itemTest.rank}:null,
+      endlessAltar:this.run?.endless?{present:this.endlessAltar.present,active:!!this.altarTrial?.active,position:{...this.endlessAltar.position}}:null,
       capture:this.capture?{unlimitedSeals:true,caught:this.capture.caught,pending:this.capture.pending?{id:this.capture.pending.id,time:this.capture.pending.time,grade:this.capture.pending.grade,retriesLeft:this.capture.pending.retriesLeft,retrying:this.capture.pending.retrying,success:this.capture.pending.success}:null}:null,
       captureSpawns:this.captureSpawns.inspect(),
       collection:this.collection.data.counts,prison:this.prison?.inspect(),
@@ -1373,6 +1887,9 @@ export class Game {
   }
 
   dispose() {
+    this.explorationView.dispose();
+    this.exchangeDialog?.dispose();
+    this.altarCharacterLayer.reset();this.deathTransition.dispose();
     this.treasureDialog.dispose();
     this.disposed = true;
     this.sleep();
@@ -1383,7 +1900,7 @@ export class Game {
     this.monster.dispose();
     this.partyView.dispose();
     this.capture?.cancel();this.captureVfx?.dispose(); this.captureHUD?.dispose();this.prison?.dispose();this.collection.flush();this.captureSpawns.flush(); this.captureAnchor.removeFromParent();
-    this.combatView.dispose();
+    this.combatView.dispose();this.itemTestAltar?.dispose();this.altarTrial?.dispose();
     this.audio.dispose();
     this.world.dispose();
     const geometries = new Set<THREE.BufferGeometry>();

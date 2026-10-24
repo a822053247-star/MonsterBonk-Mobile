@@ -91,8 +91,10 @@ export interface World {
   readonly revision: number;
   setSample(enabled: boolean, newMap?: boolean): void;
   setInfinite(enabled: boolean, newMap?: boolean): void;
+  setRegion?(region: import('./endless-regions').EndlessRegionId, seed?: string): void;
   update(x: number, z: number, view?: SpawnViewport): void;
-  inspect(): { layout: string; status: string; obstacles: number; seed: string | null; chunks?: number;
+  setEventClearing?(area:{x:number;z:number;radius:number}|null):void;
+  inspect(): { layout: string; status: string; obstacles: number; seed: string | null; chunks?: number; region?: import('./endless-regions').EndlessRegionId;
     generation: { version: number; attempt: number; fallback: boolean; valid: boolean; walkable: number; reachable: number } | null };
   dispose(): void;
 }
@@ -123,6 +125,7 @@ export function createWorld(prepareTexture: (texture: THREE.Texture) => void = (
   let requested = query.get('world') !== 'legacy', requestedInfinite = false;
   let ready = false, infiniteReady = false, failed = false, infiniteFailed = false, disposed = false;
   let hasRun = false, infiniteRun = false, revision = 0;
+  let infiniteX=0,infiniteZ=0,infiniteView:SpawnViewport|undefined;
   const loading = () => requestedInfinite ? (!infiniteReady || !infinite.playable) && !infiniteFailed : requested && !ready && !failed;
   const apply = () => {
     const activeInfinite = requestedInfinite && infiniteReady && infinite.chunkCount > 0 && !infiniteFailed;
@@ -173,18 +176,27 @@ export function createWorld(prepareTexture: (texture: THREE.Texture) => void = (
       if (disposed) return;
       requestedInfinite = enabled;
       infinite.setEnabled(enabled && !infiniteFailed);
-      if (enabled && newMap && infiniteRun && !pinnedSeed) infinite.setSeed(freshSeed());
-      if (enabled) { infiniteRun = true; infinite.update(0, 0); }
+      if (enabled && newMap && infiniteRun) infinite.setSeed(pinnedSeed ?? freshSeed());
+      if (enabled) { infiniteRun = true; infiniteX=infiniteZ=0;infiniteView=undefined;infinite.update(0, 0); }
       if (enabled) requested = false;
       apply();
     },
+    setRegion(region,seed) {
+      if(disposed)return;
+      infinite.setRegion(region,seed);
+      if(requestedInfinite&&!infiniteFailed)infinite.update(infiniteX,infiniteZ,infiniteView);
+      apply();
+    },
+    setEventClearing(area){infinite.setEventClearing(area);},
     update(x, z, view) {
       if (requestedInfinite && !infiniteFailed) {
+        infiniteX=x;infiniteZ=z;infiniteView=view;
         if (infinite.update(x, z, view)) apply();
       } else if (sample.group.visible) sample.update(x, z);
     },
-    inspect: () => ({ layout: infinite.group.visible ? 'infinite-pixel-meadow' : sample.group.visible ? generated ? 'random-pixel-meadow' : 'fixed-pixel-meadow' : 'legacy',
-      status: requestedInfinite ? infiniteFailed ? 'fallback' : infiniteReady && infinite.playable ? 'ready' : 'loading' : failed ? 'fallback' : ready ? 'ready' : 'loading',
+    inspect: () => ({ layout: infinite.group.visible ? `infinite-pixel-${infinite.region}` : sample.group.visible ? generated ? 'random-pixel-meadow' : 'fixed-pixel-meadow' : 'legacy',
+      region:requestedInfinite?infinite.region:undefined,
+      status: requestedInfinite ? infiniteFailed || infinite.sceneryFallback ? 'fallback' : infiniteReady && infinite.playable ? 'ready' : 'loading' : failed ? 'fallback' : ready ? 'ready' : 'loading',
       obstacles: obstacles.length, chunks: infinite.group.visible ? infinite.chunkCount : 0,
       seed: infinite.group.visible ? infinite.seed : sample.group.visible ? generated?.seed ?? null : null,
       generation: sample.group.visible && generated ? { version: generated.version, attempt: generated.attempt, fallback: generated.fallback,

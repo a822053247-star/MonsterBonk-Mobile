@@ -1,0 +1,933 @@
+{
+  "config": {
+    "argv": [
+      "C:\\Program Files\\nodejs\\node.exe",
+      "E:\\study\\game\\MonsterBonk Mobile\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "--config",
+      "C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\monsterbonk-barrage-baseline-Il0KNq\\playwright.config.ts"
+    ],
+    "configFile": "C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\monsterbonk-barrage-baseline-Il0KNq\\playwright.config.ts",
+    "rootDir": "C:/Users/ADMINI~1/AppData/Local/Temp/monsterbonk-barrage-baseline-Il0KNq/tests",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "C:/Users/ADMINI~1/AppData/Local/Temp/monsterbonk-barrage-baseline-Il0KNq/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "C:/Users/ADMINI~1/AppData/Local/Temp/monsterbonk-barrage-baseline-Il0KNq/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "filteredProjects": [
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\monsterbonk-barrage-baseline-Il0KNq\\test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "chromium",
+        "testDir": "C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\monsterbonk-barrage-baseline-Il0KNq\\tests",
+        "snapshotDir": "C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\monsterbonk-barrage-baseline-Il0KNq\\tests",
+        "testIgnore": [],
+        "testMatch": "**/*.@(spec|test).?(c|m)[jt]s?(x)",
+        "timeout": 30000,
+        "use": {},
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": "chromium"
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "json",
+        null
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "default",
+    "updateSourceMethod": "patch",
+    "version": "1.64.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "area-attacks.spec.ts",
+      "file": "area-attacks.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "nova warns, snapshots current rectangular view, applies rank multipliers once",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 18,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-24T02:51:50.806Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "47febf3a98ee365eb551-28d5e7c0dd88ac706116",
+          "file": "area-attacks.spec.ts",
+          "line": 17,
+          "column": 1
+        },
+        {
+          "title": "nova uses detonation view and does not hit enemies spawned into reused slots afterwards",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 5,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-24T02:51:50.864Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "47febf3a98ee365eb551-e8cade7135cd8a0aefe2",
+          "file": "area-attacks.spec.ts",
+          "line": 32,
+          "column": 1
+        },
+        {
+          "title": "visual and XP saturation preserve all kills, gold and experience; casts remain bounded",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 12,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-24T02:51:50.881Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "47febf3a98ee365eb551-902ad996122181ca6e2d",
+          "file": "area-attacks.spec.ts",
+          "line": 41,
+          "column": 1
+        },
+        {
+          "title": "boss lethal blast settles ordinary enemies before victory clears summons",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 32,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-24T02:51:50.903Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "47febf3a98ee365eb551-284ea4362582da3a8818",
+          "file": "area-attacks.spec.ts",
+          "line": 56,
+          "column": 1
+        },
+        {
+          "title": "formal skill unlocks automatically; zero time freezes it and reset clears attacks",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 15,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-24T02:51:50.949Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "47febf3a98ee365eb551-77842e7bbf0e3d0b3dd0",
+          "file": "area-attacks.spec.ts",
+          "line": 66,
+          "column": 1
+        },
+        {
+          "title": "all barrage patterns reserve 12–24 lanes, round timing, independent casts and refuse saturation atomically",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 8,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-24T02:51:50.976Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "47febf3a98ee365eb551-f1b304623731ab9f90f8",
+          "file": "area-attacks.spec.ts",
+          "line": 78,
+          "column": 1
+        },
+        {
+          "title": "barrage uses swept collision, three targets per lane with decay and cast-wide deduplication",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 6,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-24T02:51:50.992Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "47febf3a98ee365eb551-e40c14bffd567e529197",
+          "file": "area-attacks.spec.ts",
+          "line": 95,
+          "column": 1
+        },
+        {
+          "title": "large-cast elemental chains share node and per-target budgets",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 12,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-24T02:51:51.013Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "47febf3a98ee365eb551-de44599957daf828b8a1",
+          "file": "area-attacks.spec.ts",
+          "line": 111,
+          "column": 1
+        },
+        {
+          "title": "all three creatures can acquire and upgrade large attacks without changing their base weapon",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 13,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m127.5\u001b[39m\nReceived: \u001b[31m135\u001b[39m",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m127.5\u001b[39m\nReceived: \u001b[31m135\u001b[39m\n    at C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\monsterbonk-barrage-baseline-Il0KNq\\tests\\area-attacks.spec.ts:138:43",
+                    "location": {
+                      "file": "C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\monsterbonk-barrage-baseline-Il0KNq\\tests\\area-attacks.spec.ts",
+                      "column": 43,
+                      "line": 138
+                    },
+                    "snippet": "  136 |     c.update(1 / 60, { x: 0, z: 0 });\n  137 |     expect(c.areaAttacks.inspect().reservedLanes).toBe(24);\n> 138 |     expect(c.areaAttacks.novas[0].damage).toBe(127.5);\n      |                                           ^\n  139 |     const card = c.progression.skills.find(s => s.id === 'screen-barrage')!;\n  140 |     expect(upgradePreview(card, { ...c.progression.ranks, 'screen-barrage': 0 })).toContain('12');\n  141 |     expect(upgradePreview(card, { ...c.progression.ranks, 'screen-barrage': 1 })).toContain('18');"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\monsterbonk-barrage-baseline-Il0KNq\\tests\\area-attacks.spec.ts",
+                        "column": 43,
+                        "line": 138
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m127.5\u001b[39m\nReceived: \u001b[31m135\u001b[39m\n\n  136 |     c.update(1 / 60, { x: 0, z: 0 });\n  137 |     expect(c.areaAttacks.inspect().reservedLanes).toBe(24);\n> 138 |     expect(c.areaAttacks.novas[0].damage).toBe(127.5);\n      |                                           ^\n  139 |     const card = c.progression.skills.find(s => s.id === 'screen-barrage')!;\n  140 |     expect(upgradePreview(card, { ...c.progression.ranks, 'screen-barrage': 0 })).toContain('12');\n  141 |     expect(upgradePreview(card, { ...c.progression.ranks, 'screen-barrage': 1 })).toContain('18');\n    at C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\monsterbonk-barrage-baseline-Il0KNq\\tests\\area-attacks.spec.ts:138:43"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-24T02:51:51.034Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\monsterbonk-barrage-baseline-Il0KNq\\test-results\\area-attacks-all-three-cre-5efaf--changing-their-base-weapon-chromium\\error-context.md"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\monsterbonk-barrage-baseline-Il0KNq\\tests\\area-attacks.spec.ts",
+                    "column": 43,
+                    "line": 138
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "47febf3a98ee365eb551-71d57043cf5083594fd1",
+          "file": "area-attacks.spec.ts",
+          "line": 127,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "build-depth.spec.ts",
+      "file": "build-depth.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "weapon upgrades use real cards, cap at five and do not duplicate slots",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 50,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-24T02:51:51.953Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "7810a9d9080527d6e65c-8cc21e60e081c0c477aa",
+          "file": "build-depth.spec.ts",
+          "line": 37,
+          "column": 1
+        },
+        {
+          "title": "single-weapon specialization loses its bonus when a side weapon is equipped",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 17,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-24T02:51:52.040Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "7810a9d9080527d6e65c-eb2b422b99ad3a596222",
+          "file": "build-depth.spec.ts",
+          "line": 48,
+          "column": 1
+        },
+        {
+          "title": "overload and berserk expand real splash while slowing fire, and evolution is exclusive",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 11,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeCloseTo\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: \u001b[32m0.48\u001b[39m\nReceived: \u001b[31m0.44800000000000006\u001b[39m\n\nExpected precision:    2\nExpected difference: < \u001b[32m0.005\u001b[39m\nReceived difference:   \u001b[31m0.03199999999999992\u001b[39m",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeCloseTo\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: \u001b[32m0.48\u001b[39m\nReceived: \u001b[31m0.44800000000000006\u001b[39m\n\nExpected precision:    2\nExpected difference: < \u001b[32m0.005\u001b[39m\nReceived difference:   \u001b[31m0.03199999999999992\u001b[39m\n    at C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\monsterbonk-barrage-baseline-Il0KNq\\tests\\build-depth.spec.ts:60:52",
+                    "location": {
+                      "file": "C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\monsterbonk-barrage-baseline-Il0KNq\\tests\\build-depth.spec.ts",
+                      "column": 52,
+                      "line": 60
+                    },
+                    "snippet": "  58 |   const f = fixture(); f.learn('split-on-hit');\n  59 |   const clock = f.c.runBuild.attacks[0]; clock.cooldown = .4;\n> 60 |   f.learn('overload-core'); expect(clock.cooldown).toBeCloseTo(.48);\n     |                                                    ^\n  61 |   f.learn('berserk-route'); expect(clock.cooldown).toBeCloseTo(.6);\n  62 |   expect(f.c.progression.skills.some(s => s.id === 'pursuit-route')).toBe(false);\n  63 |   expect(f.c.runBuild.evolve('pursuit-route')).toBe(false);"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\monsterbonk-barrage-baseline-Il0KNq\\tests\\build-depth.spec.ts",
+                        "column": 52,
+                        "line": 60
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeCloseTo\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: \u001b[32m0.48\u001b[39m\nReceived: \u001b[31m0.44800000000000006\u001b[39m\n\nExpected precision:    2\nExpected difference: < \u001b[32m0.005\u001b[39m\nReceived difference:   \u001b[31m0.03199999999999992\u001b[39m\n\n  58 |   const f = fixture(); f.learn('split-on-hit');\n  59 |   const clock = f.c.runBuild.attacks[0]; clock.cooldown = .4;\n> 60 |   f.learn('overload-core'); expect(clock.cooldown).toBeCloseTo(.48);\n     |                                                    ^\n  61 |   f.learn('berserk-route'); expect(clock.cooldown).toBeCloseTo(.6);\n  62 |   expect(f.c.progression.skills.some(s => s.id === 'pursuit-route')).toBe(false);\n  63 |   expect(f.c.runBuild.evolve('pursuit-route')).toBe(false);\n    at C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\monsterbonk-barrage-baseline-Il0KNq\\tests\\build-depth.spec.ts:60:52"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-24T02:51:52.071Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\monsterbonk-barrage-baseline-Il0KNq\\test-results\\build-depth-overload-and-b-2b329--and-evolution-is-exclusive-chromium\\error-context.md"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\monsterbonk-barrage-baseline-Il0KNq\\tests\\build-depth.spec.ts",
+                    "column": 52,
+                    "line": 60
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "7810a9d9080527d6e65c-56557a3e5cf05528321f",
+          "file": "build-depth.spec.ts",
+          "line": 57,
+          "column": 1
+        },
+        {
+          "title": "hunter and shattered core change child motion/count with real damage costs and bounded generation",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 49,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeCloseTo\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: \u001b[32m3.7800000000000002\u001b[39m\nReceived: \u001b[31m4.8195\u001b[39m\n\nExpected precision:    2\nExpected difference: < \u001b[32m0.005\u001b[39m\nReceived difference:   \u001b[31m1.0394999999999994\u001b[39m",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeCloseTo\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: \u001b[32m3.7800000000000002\u001b[39m\nReceived: \u001b[31m4.8195\u001b[39m\n\nExpected precision:    2\nExpected difference: < \u001b[32m0.005\u001b[39m\nReceived difference:   \u001b[31m1.0394999999999994\u001b[39m\n    at C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\monsterbonk-barrage-baseline-Il0KNq\\tests\\build-depth.spec.ts:76:30",
+                    "location": {
+                      "file": "C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\monsterbonk-barrage-baseline-Il0KNq\\tests\\build-depth.spec.ts",
+                      "column": 30,
+                      "line": 76
+                    },
+                    "snippet": "  74 |   expect(children).toHaveLength(3);\n  75 |   expect(children.every(s => s.homing && !s.burst && !s.scatter)).toBe(true);\n> 76 |   expect(children[0].damage).toBeCloseTo(18 * .35 * .8 * .75);\n     |                              ^\n  77 |   const child = children[1], speed = Math.hypot(child.vx, child.vz), before = child.vz;\n  78 |   f.c.spawn('tank', child.x + 1, child.z + 2, 0); f.c.update(.05, origin);\n  79 |   expect(child.vz).not.toBe(before); expect(Math.hypot(child.vx, child.vz)).toBeCloseTo(speed);"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\monsterbonk-barrage-baseline-Il0KNq\\tests\\build-depth.spec.ts",
+                        "column": 30,
+                        "line": 76
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeCloseTo\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: \u001b[32m3.7800000000000002\u001b[39m\nReceived: \u001b[31m4.8195\u001b[39m\n\nExpected precision:    2\nExpected difference: < \u001b[32m0.005\u001b[39m\nReceived difference:   \u001b[31m1.0394999999999994\u001b[39m\n\n  74 |   expect(children).toHaveLength(3);\n  75 |   expect(children.every(s => s.homing && !s.burst && !s.scatter)).toBe(true);\n> 76 |   expect(children[0].damage).toBeCloseTo(18 * .35 * .8 * .75);\n     |                              ^\n  77 |   const child = children[1], speed = Math.hypot(child.vx, child.vz), before = child.vz;\n  78 |   f.c.spawn('tank', child.x + 1, child.z + 2, 0); f.c.update(.05, origin);\n  79 |   expect(child.vz).not.toBe(before); expect(Math.hypot(child.vx, child.vz)).toBeCloseTo(speed);\n    at C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\monsterbonk-barrage-baseline-Il0KNq\\tests\\build-depth.spec.ts:76:30"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-24T02:51:52.979Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\monsterbonk-barrage-baseline-Il0KNq\\test-results\\build-depth-hunter-and-sha-ab501-osts-and-bounded-generation-chromium\\error-context.md"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\monsterbonk-barrage-baseline-Il0KNq\\tests\\build-depth.spec.ts",
+                    "column": 30,
+                    "line": 76
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "7810a9d9080527d6e65c-70fbf855385e4cd49c60",
+          "file": "build-depth.spec.ts",
+          "line": 70,
+          "column": 1
+        },
+        {
+          "title": "pursuit route creates homing fire children at the cost of explosion radius",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 44,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeCloseTo\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: \u001b[32m1.0125000000000002\u001b[39m\nReceived: \u001b[31m1.1475\u001b[39m\n\nExpected precision:    2\nExpected difference: < \u001b[32m0.005\u001b[39m\nReceived difference:   \u001b[31m0.1349999999999998\u001b[39m",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeCloseTo\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: \u001b[32m1.0125000000000002\u001b[39m\nReceived: \u001b[31m1.1475\u001b[39m\n\nExpected precision:    2\nExpected difference: < \u001b[32m0.005\u001b[39m\nReceived difference:   \u001b[31m0.1349999999999998\u001b[39m\n    at C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\monsterbonk-barrage-baseline-Il0KNq\\tests\\build-depth.spec.ts:87:73",
+                    "location": {
+                      "file": "C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\monsterbonk-barrage-baseline-Il0KNq\\tests\\build-depth.spec.ts",
+                      "column": 73,
+                      "line": 87
+                    },
+                    "snippet": "  85 |   const { shot, target } = f.fire(); f.impact(shot, target);\n  86 |   expect(f.c.projectiles.filter(s => s.active && s.generation === 1).every(s => s.homing)).toBe(true);\n> 87 |   expect(f.c.effects.find(e => e.active && e.kind === 'burst')!.radius).toBeCloseTo(1.35 * .75);\n     |                                                                         ^\n  88 |   expect(f.c.progression.skills.some(s => s.id === 'berserk-route')).toBe(false);\n  89 | });\n  90 |"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\monsterbonk-barrage-baseline-Il0KNq\\tests\\build-depth.spec.ts",
+                        "column": 73,
+                        "line": 87
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeCloseTo\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: \u001b[32m1.0125000000000002\u001b[39m\nReceived: \u001b[31m1.1475\u001b[39m\n\nExpected precision:    2\nExpected difference: < \u001b[32m0.005\u001b[39m\nReceived difference:   \u001b[31m0.1349999999999998\u001b[39m\n\n  85 |   const { shot, target } = f.fire(); f.impact(shot, target);\n  86 |   expect(f.c.projectiles.filter(s => s.active && s.generation === 1).every(s => s.homing)).toBe(true);\n> 87 |   expect(f.c.effects.find(e => e.active && e.kind === 'burst')!.radius).toBeCloseTo(1.35 * .75);\n     |                                                                         ^\n  88 |   expect(f.c.progression.skills.some(s => s.id === 'berserk-route')).toBe(false);\n  89 | });\n  90 |\n    at C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\monsterbonk-barrage-baseline-Il0KNq\\tests\\build-depth.spec.ts:87:73"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-24T02:51:53.944Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\monsterbonk-barrage-baseline-Il0KNq\\test-results\\build-depth-pursuit-route--690d1-he-cost-of-explosion-radius-chromium\\error-context.md"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\monsterbonk-barrage-baseline-Il0KNq\\tests\\build-depth.spec.ts",
+                    "column": 73,
+                    "line": 87
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "7810a9d9080527d6e65c-87004cec6143d1040df2",
+          "file": "build-depth.spec.ts",
+          "line": 83,
+          "column": 1
+        },
+        {
+          "title": "tidal pearl extends water control and reduces direct hits without reducing splash",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 4,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 49,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeCloseTo\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: \u001b[32m87.25\u001b[39m\nReceived: \u001b[31m84.8\u001b[39m\n\nExpected precision:    2\nExpected difference: < \u001b[32m0.005\u001b[39m\nReceived difference:   \u001b[31m2.450000000000003\u001b[39m",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeCloseTo\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: \u001b[32m87.25\u001b[39m\nReceived: \u001b[31m84.8\u001b[39m\n\nExpected precision:    2\nExpected difference: < \u001b[32m0.005\u001b[39m\nReceived difference:   \u001b[31m2.450000000000003\u001b[39m\n    at C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\monsterbonk-barrage-baseline-Il0KNq\\tests\\build-depth.spec.ts:95:21",
+                    "location": {
+                      "file": "C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\monsterbonk-barrage-baseline-Il0KNq\\tests\\build-depth.spec.ts",
+                      "column": 21,
+                      "line": 95
+                    },
+                    "snippet": "  93 |   const { shot, target } = f.fire('bubble'), neighbor = f.c.spawn('tank', 6, 2, 0)!;\n  94 |   f.impact(shot, target);\n> 95 |   expect(target.hp).toBeCloseTo(100 - 15 * .85); expect(target.slowTime).toBeCloseTo(2.4);\n     |                     ^\n  96 |   expect(neighbor.hp).toBeCloseTo(100 - 15 * .45); expect(neighbor.slowTime).toBeCloseTo(2.4);\n  97 | });\n  98 |"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\monsterbonk-barrage-baseline-Il0KNq\\tests\\build-depth.spec.ts",
+                        "column": 21,
+                        "line": 95
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeCloseTo\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: \u001b[32m87.25\u001b[39m\nReceived: \u001b[31m84.8\u001b[39m\n\nExpected precision:    2\nExpected difference: < \u001b[32m0.005\u001b[39m\nReceived difference:   \u001b[31m2.450000000000003\u001b[39m\n\n  93 |   const { shot, target } = f.fire('bubble'), neighbor = f.c.spawn('tank', 6, 2, 0)!;\n  94 |   f.impact(shot, target);\n> 95 |   expect(target.hp).toBeCloseTo(100 - 15 * .85); expect(target.slowTime).toBeCloseTo(2.4);\n     |                     ^\n  96 |   expect(neighbor.hp).toBeCloseTo(100 - 15 * .45); expect(neighbor.slowTime).toBeCloseTo(2.4);\n  97 | });\n  98 |\n    at C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\monsterbonk-barrage-baseline-Il0KNq\\tests\\build-depth.spec.ts:95:21"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-24T02:51:54.909Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\monsterbonk-barrage-baseline-Il0KNq\\test-results\\build-depth-tidal-pearl-ex-336ef-its-without-reducing-splash-chromium\\error-context.md"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\monsterbonk-barrage-baseline-Il0KNq\\tests\\build-depth.spec.ts",
+                    "column": 21,
+                    "line": 95
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "7810a9d9080527d6e65c-7ff6781b4b415b651825",
+          "file": "build-depth.spec.ts",
+          "line": 91,
+          "column": 1
+        },
+        {
+          "title": "echo extends leaf chain reach and increases damage decay at each extra hop",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 5,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 44,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeCloseTo\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: \u001b[32m7.839999999999999\u001b[39m\nReceived: \u001b[31m9.52\u001b[39m\n\nExpected precision:    2\nExpected difference: < \u001b[32m0.005\u001b[39m\nReceived difference:   \u001b[31m1.6800000000000006\u001b[39m",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeCloseTo\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: \u001b[32m7.839999999999999\u001b[39m\nReceived: \u001b[31m9.52\u001b[39m\n\nExpected precision:    2\nExpected difference: < \u001b[32m0.005\u001b[39m\nReceived difference:   \u001b[31m1.6800000000000006\u001b[39m\n    at C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\monsterbonk-barrage-baseline-Il0KNq\\tests\\build-depth.spec.ts:104:23",
+                    "location": {
+                      "file": "C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\monsterbonk-barrage-baseline-Il0KNq\\tests\\build-depth.spec.ts",
+                      "column": 23,
+                      "line": 104
+                    },
+                    "snippet": "  102 |   const second = f.c.spawn('tank', 10.2, 0, 0)!, third = f.c.spawn('tank', 14.4, 0, 0)!;\n  103 |   f.impact(shot, target); expect(shot.hopTargetId).toBe(second.id);\n> 104 |   expect(shot.damage).toBeCloseTo(16 * .7 * .7);\n      |                       ^\n  105 |   for (let i = 0; i < 80 && shot.active; i++) f.c.update(.01, origin);\n  106 |   expect(shot.hitIds).toEqual([target.id, second.id, third.id]);\n  107 |   expect(third.hp).toBeCloseTo(100 - 16 * .7 * .7 ** 2);"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\monsterbonk-barrage-baseline-Il0KNq\\tests\\build-depth.spec.ts",
+                        "column": 23,
+                        "line": 104
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeCloseTo\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: \u001b[32m7.839999999999999\u001b[39m\nReceived: \u001b[31m9.52\u001b[39m\n\nExpected precision:    2\nExpected difference: < \u001b[32m0.005\u001b[39m\nReceived difference:   \u001b[31m1.6800000000000006\u001b[39m\n\n  102 |   const second = f.c.spawn('tank', 10.2, 0, 0)!, third = f.c.spawn('tank', 14.4, 0, 0)!;\n  103 |   f.impact(shot, target); expect(shot.hopTargetId).toBe(second.id);\n> 104 |   expect(shot.damage).toBeCloseTo(16 * .7 * .7);\n      |                       ^\n  105 |   for (let i = 0; i < 80 && shot.active; i++) f.c.update(.01, origin);\n  106 |   expect(shot.hitIds).toEqual([target.id, second.id, third.id]);\n  107 |   expect(third.hp).toBeCloseTo(100 - 16 * .7 * .7 ** 2);\n    at C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\monsterbonk-barrage-baseline-Il0KNq\\tests\\build-depth.spec.ts:104:23"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-24T02:51:55.859Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\monsterbonk-barrage-baseline-Il0KNq\\test-results\\build-depth-echo-extends-l-43e93-age-decay-at-each-extra-hop-chromium\\error-context.md"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\monsterbonk-barrage-baseline-Il0KNq\\tests\\build-depth.spec.ts",
+                    "column": 23,
+                    "line": 104
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "7810a9d9080527d6e65c-9be314fd5dc300f01621",
+          "file": "build-depth.spec.ts",
+          "line": 99,
+          "column": 1
+        },
+        {
+          "title": "reset clears levels/relics/evolution; legacy card pools never receive build rewards",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 6,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 34,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-24T02:51:56.774Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "7810a9d9080527d6e65c-7b3b325b53d4291012b2",
+          "file": "build-depth.spec.ts",
+          "line": 110,
+          "column": 1
+        },
+        {
+          "title": "large experience queues keep rare offers bounded and finish without an empty upgrade trap",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 6,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 302,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeLessThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: < \u001b[32m100\u001b[39m\nReceived:   \u001b[31m101\u001b[39m",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeLessThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: < \u001b[32m100\u001b[39m\nReceived:   \u001b[31m101\u001b[39m\n    at C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\monsterbonk-barrage-baseline-Il0KNq\\tests\\build-depth.spec.ts:135:19",
+                    "location": {
+                      "file": "C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\monsterbonk-barrage-baseline-Il0KNq\\tests\\build-depth.spec.ts",
+                      "column": 19,
+                      "line": 135
+                    },
+                    "snippet": "  133 |   }\n  134 |   expect(rareOffers).toBeGreaterThan(0);\n> 135 |   expect(choices).toBeLessThan(100); expect(c.progression.awaitingChoice).toBe(false);\n      |                   ^\n  136 |   expect(c.runBuild.attacks.every(a => a.level === 5)).toBe(true);\n  137 | });\n  138 |"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\monsterbonk-barrage-baseline-Il0KNq\\tests\\build-depth.spec.ts",
+                        "column": 19,
+                        "line": 135
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeLessThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: < \u001b[32m100\u001b[39m\nReceived:   \u001b[31m101\u001b[39m\n\n  133 |   }\n  134 |   expect(rareOffers).toBeGreaterThan(0);\n> 135 |   expect(choices).toBeLessThan(100); expect(c.progression.awaitingChoice).toBe(false);\n      |                   ^\n  136 |   expect(c.runBuild.attacks.every(a => a.level === 5)).toBe(true);\n  137 | });\n  138 |\n    at C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\monsterbonk-barrage-baseline-Il0KNq\\tests\\build-depth.spec.ts:135:19"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-24T02:51:56.844Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\monsterbonk-barrage-baseline-Il0KNq\\test-results\\build-depth-large-experien-ffa3b-thout-an-empty-upgrade-trap-chromium\\error-context.md"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\monsterbonk-barrage-baseline-Il0KNq\\tests\\build-depth.spec.ts",
+                    "column": 19,
+                    "line": 135
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "7810a9d9080527d6e65c-3c7fce30f81c3955f7b8",
+          "file": "build-depth.spec.ts",
+          "line": 120,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-24T02:51:48.412Z",
+    "duration": 8813.801000000001,
+    "expected": 11,
+    "skipped": 0,
+    "unexpected": 7,
+    "flaky": 0
+  }
+}

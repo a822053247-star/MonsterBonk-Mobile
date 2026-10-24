@@ -16,6 +16,8 @@ test.beforeEach(async ({page})=>{
 });
 
 test('HUD cycles to 10x and settings expose all ten speeds and persist',async({page})=>{
+  await page.locator('#menu-settings').click();await page.locator('#save-settings').click();
+  expect(await page.evaluate(()=>(window as any).game.inspect().mode)).toBe('menu');
   await page.locator('#start-fusion').click();
   for(const value of [2,3,5,10,1]){
     await page.locator('#game-speed').click();await expect(page.locator('#game-speed')).toHaveText(`${value}×`);
@@ -23,7 +25,18 @@ test('HUD cycles to 10x and settings expose all ten speeds and persist',async({p
   await page.locator('#settings').click();
   expect(await page.locator('#game-speed-setting option').count()).toBe(10);
   await page.locator('#game-speed-setting').selectOption('7');
-  await page.locator('#close-settings').click();await page.locator('#resume').click();
+  await page.locator('#save-settings').click();
+  await expect(page.locator('#settings-screen')).toBeHidden();
+  await expect(page.locator('#pause-screen')).toBeHidden();
+  expect(await page.evaluate(()=>(window as any).game.inspect().mode)).toBe('playing');
+  await page.locator('#settings').click();await page.locator('#close-settings').click();
+  expect(await page.evaluate(()=>(window as any).game.inspect().mode)).toBe('playing');
+  await page.locator('#settings').click();await page.keyboard.press('Escape');
+  expect(await page.evaluate(()=>(window as any).game.inspect().mode)).toBe('playing');
+  await page.locator('#pause').click();await page.locator('#pause-settings').click();
+  await page.locator('#save-settings').click();await expect(page.locator('#pause-screen')).toBeVisible();
+  expect(await page.evaluate(()=>(window as any).game.inspect().mode)).toBe('paused');
+  await page.locator('#resume').click();
   await expect(page.locator('#game-speed')).toHaveText('7×');
   await page.reload();await page.waitForFunction(()=>!!(window as any).game);
   await page.locator('#start-fusion').click();await expect(page.locator('#game-speed')).toHaveText('7×');

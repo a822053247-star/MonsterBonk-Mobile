@@ -63,7 +63,7 @@ export class TreasureDialog {
           const art=upgradeArt(skill,this.combat.baseAttack,this.combat.runBuild.attacks.map(a=>a.attackId));
           return art.hideIcon||!art.illustrations[0]?[]:[{title:skill.title,artUrl:art.illustrations[0]}];
         });
-        this.draw=createTreasureCanvas(this.canvas,event.items.map(i=>i.title),urls,true,(cue,index)=>this.audio?.playTreasure(cue,event.items.length,index),rollingItems);this.draw(0);
+        this.draw=createTreasureCanvas(this.canvas,event.items.map(i=>i.title),urls,true,(cue,index)=>this.audio?.playTreasure(cue,event.items.length,index,{coinBonus:event.coins>0,item:event.items[index??0]?.skill?'gem':'coin'}),rollingItems);this.draw(0);
         this.resizeCanvas();this.draw(0);
         this.deaths=event.source==='first-boss'?[]:this.combat.areaDeaths.filter(d=>d.active&&d.enemyKind==='draft-treasure-runner'&&Math.hypot(d.x-event.x,d.z-event.z)<.1);
         this.arriving=true;this.arrivalAge=0;this.lastTime=0;this.root.classList.add('is-arriving');this.root.style.setProperty('--treasure-entry','0');this.button.disabled=true;this.button.textContent='宝藏正在显现…';

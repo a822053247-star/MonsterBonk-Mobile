@@ -17,6 +17,7 @@ import { FirePixelView } from './fire-pixel-view';
 import { ParticleFeedbackView } from './particle-feedback';
 import { ShockwaveView, NovaView } from './shockwave-view';
 import { BarrageView } from './barrage-view';
+import { ColoredBarrageView } from './colored-barrage-view';
 import { WaterAoeView } from './water-aoe-view';
 import { PositionAoeView } from './position-aoe-view';
 import { BladeWeaponsView } from './blade-weapons-view';
@@ -32,6 +33,7 @@ import { BURST_SEED } from './fusion';
 import { FUSION_ASSET_ROOT, elementalClip, clipFrame } from './fusion-pixels';
 import { VfxResolver, visualProgress } from './visuals/vfx-resolver';
 import { instanceOpacity } from './visuals/instance-opacity';
+import { CAPTURE_READY_SCALE, captureShimmer } from './capture-visuals';
 
 /** All enemies and effects use shared instanced batches: no per-kill GPU allocations. */
 export class CombatView {
@@ -42,6 +44,8 @@ export class CombatView {
   private grassBlobs = new GrassBlobView();
   private dummy = new THREE.Object3D();
   private color = new THREE.Color();
+  private captureColor=new THREE.Color('#fff0b3');
+  private reducedMotion=window.matchMedia('(prefers-reduced-motion: reduce)');
   private enemyPose = { bob: 0, lean: 0, squash: 0 };
   private enemyMovement = { id: 0, dx: 0, dz: 0 };
   private batches: THREE.InstancedMesh[] = [];
@@ -68,6 +72,7 @@ export class CombatView {
   private shockwaveView = new ShockwaveView();
   private novaView = new NovaView();
   private barrageView = new BarrageView();
+  private coloredBarrageView = new ColoredBarrageView();
   private waterAoeView = new WaterAoeView();
   private positionAoeView = new PositionAoeView(this.waterAoeView.tide, this.waterAoeView.field);
   private bladeWeaponsView = new BladeWeaponsView();
@@ -94,6 +99,7 @@ export class CombatView {
   constructor(private combat: Combat) {
     this.group.add(this.novaView.group);
     this.group.add(this.barrageView.group);
+    this.group.add(this.coloredBarrageView.group);
     this.group.add(this.waterAoeView.group);
     this.group.add(this.positionAoeView.group);
     this.group.add(this.bladeWeaponsView.group);
@@ -219,6 +225,7 @@ export class CombatView {
     if (this.combat.hp > 0) this.waterEvolutionView.render(this.combat.waterEvolution, this.detail); else this.waterEvolutionView.clear();
     this.novaView.render(this.combat.hp > 0 ? this.combat.areaAttacks.novas : [], this.detail);
     this.barrageView.render(this.combat.hp > 0 ? this.combat.areaAttacks.lanes : [], alpha, this.detail);
+    this.coloredBarrageView.render(this.combat.hp>0?this.combat.coloredBarrages.shots:[],alpha,this.detail,this.combat.hp>0?this.combat.coloredBarrages.impacts:[]);
     this.gigapack.render(this.combat,this.combat.effects);
     this.grassBlobs.render(this.combat);
     this.flameSweep?.render(this.combat,player);
@@ -236,7 +243,10 @@ export class CombatView {
       const bossProfile = enemy.rank === 'boss' ? this.combat.encounters.bossProfile : undefined;
       const bossDying = !!bossProfile && enemy === this.combat.encounters.boss && this.combat.encounters.bossState === 'dying';
       if (!enemy.active && !bossDying) continue;
-      const type = ENEMY_TYPES[enemy.kind], size = this.combat.enemyRadius(enemy)*(enemy.captureScale??1);
+      const captureReady=this.combat.isCaptureReady(enemy);
+      const captureScale=(enemy.captureScale??1)*(captureReady?CAPTURE_READY_SCALE:1);
+      const shimmer=captureReady?captureShimmer(time,enemy.id,this.reducedMotion.matches):0;
+      const type = ENEMY_TYPES[enemy.kind], size = this.combat.enemyRadius(enemy)*captureScale;
       const x = THREE.MathUtils.lerp(enemy.previousX, enemy.x, alpha), z = THREE.MathUtils.lerp(enemy.previousZ, enemy.z, alpha);
       if (enemy.spawnTime > 0) {
         const pulse = 0.9 + Math.sin(time * 10) * 0.1;
@@ -261,7 +271,8 @@ export class CombatView {
       motion.lean += sporeRecoil * enemy.aimX * .16; motion.squash -= sporeRecoil * .08;
       const bob = motion.bob;
       const y = size * tall + bob;
-      const color = frozen ? '#a4dcff' : enemy.flash > 0 ? '#fff5d6' : this.combat.hasAttackIntents && enemy.intent === 'windup' ? '#ffba5c' : this.combat.hasAttackIntents && enemy.intent === 'recover' ? '#a3ccb5' : type.color;
+      let color = frozen ? '#a4dcff' : enemy.flash > 0 ? '#fff5d6' : this.combat.hasAttackIntents && enemy.intent === 'windup' ? '#ffba5c' : this.combat.hasAttackIntents && enemy.intent === 'recover' ? '#a3ccb5' : type.color;
+      if(captureReady && !frozen)color='#'+this.color.set(color).lerp(this.captureColor,shimmer).getHexString();
       const pixel = (this.pixelsEnabled || enemy.kind === 'tank' || !!bossProfile) && this.pixelEnemies?.ready(enemy.kind);
       if (pixel) {
         const tint = frozen ? '#a4dcff' : enemy.rank === 'elite' ? '#ffd997' : this.combat.hasAttackIntents && enemy.intent === 'windup' ? '#ffba5c' : this.combat.hasAttackIntents && enemy.intent === 'recover' ? '#a3ccb5' : '#ffffff';
@@ -278,8 +289,18 @@ export class CombatView {
           this.enemyMovement.dx = frozen ? 0 : locked ? enemy.aimX : Math.sin(enemy.facing);
           this.enemyMovement.dz = frozen ? 0 : locked ? enemy.aimZ : Math.cos(enemy.facing);
         }
-        this.pixelEnemies!.put(enemy.kind, x-enemy.aimX*sporeRecoil*.14, z-enemy.aimZ*sporeRecoil*.14, bob, this.combat.usesRunBuild ? Math.min(1, enemy.flash / .16) * .3 : enemy.flash > 0, tint, motion.lean, motion.squash, (bossProfile?.scale ?? (enemy.rank==='elite'?1.35:1))*(enemy.captureScale??1), bossDying ? Math.max(0,1-this.combat.encounters.bossTime) : 1, this.enemyMovement, bossProfile?.kind==='molten-fruit' && this.combat.encounters.bossState==='dash' ? this.combat.encounters.bossTime*this.combat.encounters.dashSpeed/size : enemy.kind==='molten-fruit' && enemy.intent==='pounce' && !frozen ? (enemy.grassRollDistance??0)/size * (enemy.aimX<0?1:-1) : this.combat.encounters.enabled && enemy.kind==='normal' && !enemy.rank && !frozen ? grassBlobRoll(enemy,grassMotionScale) : 0, frozen);
+        const hurt=this.combat.usesRunBuild ? Math.min(1, enemy.flash / .16) * .3 : enemy.flash>0?1:0;
+        this.pixelEnemies!.put(enemy.kind, x-enemy.aimX*sporeRecoil*.14, z-enemy.aimZ*sporeRecoil*.14, bob, Math.max(hurt,frozen?0:shimmer), tint, motion.lean, motion.squash, (bossProfile?.scale ?? (enemy.rank==='elite'?1.35:1))*captureScale, bossDying ? Math.max(0,1-this.combat.encounters.bossTime) : 1, this.enemyMovement, bossProfile?.kind==='molten-fruit' && this.combat.encounters.bossState==='dash' ? this.combat.encounters.bossTime*this.combat.encounters.dashSpeed/size : enemy.kind==='molten-fruit' && enemy.intent==='pounce' && !frozen ? (enemy.grassRollDistance??0)/size * (enemy.aimX<0?1:-1) : this.combat.encounters.enabled && enemy.kind==='normal' && !enemy.rank && !frozen ? grassBlobRoll(enemy,grassMotionScale) : 0, frozen);
       } else if (enemy.kind !== 'tank') this.put(this.body, x, y, z, size, size * tall, size, 0, enemy.facing, 0, color);
+      if(captureReady) {
+        const height=(this.pixelEnemies?.height(enemy.kind)??ENEMY_PIXEL_HEIGHTS[enemy.kind])*captureScale;
+        const sparkleTime=this.reducedMotion.matches?0:time;
+        for(let i=0;i<3;i++) {
+          const phase=sparkleTime*1.4+enemy.id+i*Math.PI*2/3;
+          const glint=(.055+shimmer*.1)*(enemy.captureScale??1);
+          this.put(this.sparks,x+Math.cos(phase)*(size+.22),height*(.35+i*.22)+bob*.35,z+Math.sin(phase)*size*.4,glint,glint*2,glint,0,phase,Math.PI/4,'#ffe5a0');
+        }
+      }
       if(enemy.kind==='scarlet-flower') this.put(this.flowerRings,x,.065,z,size+.25,size+.25,1,-Math.PI/2);
       else if(enemy.kind==='thunder-bell') this.put(this.thunderRings,x,.065,z,size+.25,size+.25,1,-Math.PI/2);
       else this.put(this.shadows, x, 0.04, z, size * 1.1, size * 0.8, 1, -Math.PI / 2);
@@ -293,7 +314,7 @@ export class CombatView {
       if (enemy.hp < maxHp) {
         const fraction = enemy.hp / maxHp, width = size * 2;
         let bx = x, by = y + size * tall + 0.35, bz = z;
-        if (pixel) { const head = this.pixelEnemies!.head(enemy.kind, x, z, bob, bossProfile?.scale ?? 1); bx = head.x; by = head.y; bz = head.z; }
+        if (pixel) { const head = this.pixelEnemies!.head(enemy.kind, x, z, bob, (bossProfile?.scale ?? (enemy.rank==='elite'?1.35:1))*captureScale); bx = head.x; by = head.y; bz = head.z; }
         this.put(this.healthBack, bx, by, bz, width, 0.075, 1, -0.55);
         this.put(this.healthFill, bx - width * (1 - fraction) / 2, by + 0.005, bz + 0.01, width * fraction, 0.052, 1, -0.55);
       }
@@ -478,9 +499,9 @@ export class CombatView {
     this.trailAlpha.needsUpdate = true;
   }
 
-  clear() { this.dreamView.clear(); this.frostView.clear(); this.thunderWeaponView.clear(); this.bladeWeaponsView.clear(); this.waterEvolutionView.clear(); this.positionAoeView.clear(); this.waterAoeView.clear(); this.barrageView.clear(); this.novaView.clear(); this.gigapack.clear(); this.reactions?.clear(); this.grassBlobs.clear(); this.specialEnemies.clear(); this.flameSweep?.clear(); this.shockwaveView.clear(); this.encounters.clear(); for (const mesh of this.batches) mesh.count = 0; this.pixelEnemies?.begin(); this.pixelEnemies?.resetDirections(); this.firePixels?.begin(); this.fusionPixels?.begin(); this.feedback?.begin(); }
+  clear() { this.dreamView.clear(); this.frostView.clear(); this.thunderWeaponView.clear(); this.bladeWeaponsView.clear(); this.waterEvolutionView.clear(); this.positionAoeView.clear(); this.waterAoeView.clear(); this.barrageView.clear(); this.coloredBarrageView.clear(); this.novaView.clear(); this.gigapack.clear(); this.reactions?.clear(); this.grassBlobs.clear(); this.specialEnemies.clear(); this.flameSweep?.clear(); this.shockwaveView.clear(); this.encounters.clear(); for (const mesh of this.batches) mesh.count = 0; this.pixelEnemies?.begin(); this.pixelEnemies?.resetDirections(); this.firePixels?.begin(); this.fusionPixels?.begin(); this.feedback?.begin(); }
   inspectElemental() { return this.fusionPixels?.inspect(); }
   inspectFusion() { return this.firePixels?.inspect(); }
-  inspect() { return { dream: this.dreamView.inspect(), frost: this.frostView.inspect(), thunder: this.thunderWeaponView.inspect(), blades: this.bladeWeaponsView.inspect(), waterEvolution: this.waterEvolutionView.inspect(), positionAoe: this.positionAoeView.inspect(), waterAoe: this.waterAoeView.inspect(), barrage: this.barrageView.inspect(), nova: this.novaView.inspect(), gigapack:this.gigapack.inspect(), reactions:this.reactions?.inspect(), grass:this.grassBlobs.inspect(), enabled: this.pixelsEnabled, ...this.pixelEnemies?.inspect(), specialEnemies:this.specialEnemies.inspect(), melee:this.flameSweep?.inspect(), encounters:this.encounters.inspect(), feedback:this.feedback?.inspect() }; }
-  dispose() { this.dreamView.dispose(); this.frostView.dispose(); this.thunderWeaponView.dispose(); this.bladeWeaponsView.dispose(); this.positionAoeView.dispose(); this.waterAoeView.dispose(); this.barrageView.dispose(); this.novaView.dispose(); this.gigapack.dispose(); this.reactions?.dispose(); this.reactions = undefined; this.grassBlobs.dispose(); this.specialEnemies.dispose(); this.flameSweep?.dispose(); this.flameSweep = undefined; this.shockwaveView.dispose(); this.encounters.dispose(); this.pixelEnemies?.dispose(); this.pixelEnemies = undefined; this.firePixels?.dispose(); this.firePixels = undefined; this.fusionPixels?.dispose(); this.fusionPixels = undefined; this.feedback?.dispose(); this.feedback = undefined; }
+  inspect() { return { dream: this.dreamView.inspect(), frost: this.frostView.inspect(), thunder: this.thunderWeaponView.inspect(), blades: this.bladeWeaponsView.inspect(), waterEvolution: this.waterEvolutionView.inspect(), positionAoe: this.positionAoeView.inspect(), waterAoe: this.waterAoeView.inspect(), barrage: this.barrageView.inspect(), coloredBarrages:this.coloredBarrageView.inspect(), nova: this.novaView.inspect(), gigapack:this.gigapack.inspect(), reactions:this.reactions?.inspect(), grass:this.grassBlobs.inspect(), enabled: this.pixelsEnabled, ...this.pixelEnemies?.inspect(), specialEnemies:this.specialEnemies.inspect(), melee:this.flameSweep?.inspect(), encounters:this.encounters.inspect(), feedback:this.feedback?.inspect() }; }
+  dispose() { this.dreamView.dispose(); this.frostView.dispose(); this.thunderWeaponView.dispose(); this.bladeWeaponsView.dispose(); this.positionAoeView.dispose(); this.waterAoeView.dispose(); this.barrageView.dispose(); this.coloredBarrageView.dispose(); this.novaView.dispose(); this.gigapack.dispose(); this.reactions?.dispose(); this.reactions = undefined; this.grassBlobs.dispose(); this.specialEnemies.dispose(); this.flameSweep?.dispose(); this.flameSweep = undefined; this.shockwaveView.dispose(); this.encounters.dispose(); this.pixelEnemies?.dispose(); this.pixelEnemies = undefined; this.firePixels?.dispose(); this.firePixels = undefined; this.fusionPixels?.dispose(); this.fusionPixels = undefined; this.feedback?.dispose(); this.feedback = undefined; }
 }

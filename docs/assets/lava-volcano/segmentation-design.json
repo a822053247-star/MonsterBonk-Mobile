@@ -1,0 +1,632 @@
+{
+  "status": "DESIGN_ONLY_NOT_RUNTIME_CONFIG",
+  "source": "lava-volcano-reference.png",
+  "sourceSize": [
+    1448,
+    1086
+  ],
+  "coordinateConvention": "left/top inclusive, right/bottom exclusive; original pixel coordinates",
+  "bodyBoundsMethod": "8-connected alpha>=128 dominant components; measured, 22 bodies",
+  "preserveAlpha": "Final extraction must preserve source alpha>0 belonging to this object; never threshold source alpha to 128",
+  "reviewWindowWarning": "Four-pixel expansion is only a visual review window, NOT a final crop. Neighboring halos can overlap. Final per-object ownership masks and padded alpha bounds are pending.",
+  "footAnchorStatus": "Proposed manually, not pixel-measured ground contact",
+  "runtimeStatus": "Not registered; no final sprite PNG exports in design phase",
+  "assets": [
+    {
+      "id": "01",
+      "name": "炎晶簇",
+      "bodyBounds": [
+        20,
+        32,
+        260,
+        302
+      ],
+      "bodySize": [
+        240,
+        270
+      ],
+      "reviewWindow": [
+        16,
+        28,
+        264,
+        306
+      ],
+      "proposedFootAnchor": [
+        140,
+        299
+      ],
+      "proposedWorldHeight": 3.4,
+      "proposedCollisionRadius": 1.05,
+      "solid": true,
+      "brightLandmark": true
+    },
+    {
+      "id": "02",
+      "name": "熔缝巨岩",
+      "bodyBounds": [
+        281,
+        73,
+        566,
+        301
+      ],
+      "bodySize": [
+        285,
+        228
+      ],
+      "reviewWindow": [
+        277,
+        69,
+        570,
+        305
+      ],
+      "proposedFootAnchor": [
+        424,
+        298
+      ],
+      "proposedWorldHeight": 2.8,
+      "proposedCollisionRadius": 1.15,
+      "solid": true,
+      "brightLandmark": false
+    },
+    {
+      "id": "03",
+      "name": "熔流圆岩",
+      "bodyBounds": [
+        593,
+        81,
+        879,
+        300
+      ],
+      "bodySize": [
+        286,
+        219
+      ],
+      "reviewWindow": [
+        589,
+        77,
+        883,
+        304
+      ],
+      "proposedFootAnchor": [
+        736,
+        297
+      ],
+      "proposedWorldHeight": 2.5,
+      "proposedCollisionRadius": 1.1,
+      "solid": true,
+      "brightLandmark": false
+    },
+    {
+      "id": "04",
+      "name": "裂熔石台",
+      "bodyBounds": [
+        893,
+        88,
+        1201,
+        296
+      ],
+      "bodySize": [
+        308,
+        208
+      ],
+      "reviewWindow": [
+        889,
+        84,
+        1205,
+        300
+      ],
+      "proposedFootAnchor": [
+        1047,
+        293
+      ],
+      "proposedWorldHeight": 1.25,
+      "proposedCollisionRadius": 1.2,
+      "solid": true,
+      "brightLandmark": true
+    },
+    {
+      "id": "05",
+      "name": "黑曜晶簇",
+      "bodyBounds": [
+        1205,
+        76,
+        1436,
+        315
+      ],
+      "bodySize": [
+        231,
+        239
+      ],
+      "reviewWindow": [
+        1201,
+        72,
+        1440,
+        319
+      ],
+      "proposedFootAnchor": [
+        1321,
+        312
+      ],
+      "proposedWorldHeight": 3.1,
+      "proposedCollisionRadius": 0.95,
+      "solid": true,
+      "brightLandmark": false
+    },
+    {
+      "id": "06",
+      "name": "熔炉残柱",
+      "bodyBounds": [
+        24,
+        325,
+        255,
+        587
+      ],
+      "bodySize": [
+        231,
+        262
+      ],
+      "reviewWindow": [
+        20,
+        321,
+        259,
+        591
+      ],
+      "proposedFootAnchor": [
+        140,
+        584
+      ],
+      "proposedWorldHeight": 3,
+      "proposedCollisionRadius": 0.85,
+      "solid": true,
+      "brightLandmark": false
+    },
+    {
+      "id": "07",
+      "name": "覆灰熔岩",
+      "bodyBounds": [
+        279,
+        379,
+        563,
+        589
+      ],
+      "bodySize": [
+        284,
+        210
+      ],
+      "reviewWindow": [
+        275,
+        375,
+        567,
+        593
+      ],
+      "proposedFootAnchor": [
+        421,
+        586
+      ],
+      "proposedWorldHeight": 2.3,
+      "proposedCollisionRadius": 1.1,
+      "solid": true,
+      "brightLandmark": false
+    },
+    {
+      "id": "08",
+      "name": "熔裂方岩",
+      "bodyBounds": [
+        597,
+        379,
+        858,
+        581
+      ],
+      "bodySize": [
+        261,
+        202
+      ],
+      "reviewWindow": [
+        593,
+        375,
+        862,
+        585
+      ],
+      "proposedFootAnchor": [
+        728,
+        578
+      ],
+      "proposedWorldHeight": 2.2,
+      "proposedCollisionRadius": 1.05,
+      "solid": true,
+      "brightLandmark": false
+    },
+    {
+      "id": "09",
+      "name": "熔纹立石",
+      "bodyBounds": [
+        889,
+        328,
+        1132,
+        592
+      ],
+      "bodySize": [
+        243,
+        264
+      ],
+      "reviewWindow": [
+        885,
+        324,
+        1136,
+        596
+      ],
+      "proposedFootAnchor": [
+        1011,
+        589
+      ],
+      "proposedWorldHeight": 3.3,
+      "proposedCollisionRadius": 0.95,
+      "solid": true,
+      "brightLandmark": false
+    },
+    {
+      "id": "10",
+      "name": "熔岩池",
+      "bodyBounds": [
+        1148,
+        393,
+        1430,
+        588
+      ],
+      "bodySize": [
+        282,
+        195
+      ],
+      "reviewWindow": [
+        1144,
+        389,
+        1434,
+        592
+      ],
+      "proposedFootAnchor": [
+        1289,
+        585
+      ],
+      "proposedWorldHeight": 1.5,
+      "proposedCollisionRadius": 1.3,
+      "solid": true,
+      "brightLandmark": true
+    },
+    {
+      "id": "11",
+      "name": "炎晶岩群",
+      "bodyBounds": [
+        19,
+        612,
+        254,
+        851
+      ],
+      "bodySize": [
+        235,
+        239
+      ],
+      "reviewWindow": [
+        15,
+        608,
+        258,
+        855
+      ],
+      "proposedFootAnchor": [
+        137,
+        848
+      ],
+      "proposedWorldHeight": 3,
+      "proposedCollisionRadius": 1.1,
+      "solid": true,
+      "brightLandmark": false
+    },
+    {
+      "id": "12",
+      "name": "双残柱",
+      "bodyBounds": [
+        269,
+        611,
+        505,
+        859
+      ],
+      "bodySize": [
+        236,
+        248
+      ],
+      "reviewWindow": [
+        265,
+        607,
+        509,
+        863
+      ],
+      "proposedFootAnchor": [
+        387,
+        856
+      ],
+      "proposedWorldHeight": 3.1,
+      "proposedCollisionRadius": 1.1,
+      "solid": true,
+      "brightLandmark": false
+    },
+    {
+      "id": "13",
+      "name": "火焰石座",
+      "bodyBounds": [
+        517,
+        590,
+        703,
+        861
+      ],
+      "bodySize": [
+        186,
+        271
+      ],
+      "reviewWindow": [
+        513,
+        586,
+        707,
+        865
+      ],
+      "proposedFootAnchor": [
+        610,
+        858
+      ],
+      "proposedWorldHeight": 3.3,
+      "proposedCollisionRadius": 0.85,
+      "solid": true,
+      "brightLandmark": true
+    },
+    {
+      "id": "14",
+      "name": "熔裂石堆",
+      "bodyBounds": [
+        728,
+        644,
+        962,
+        855
+      ],
+      "bodySize": [
+        234,
+        211
+      ],
+      "reviewWindow": [
+        724,
+        640,
+        966,
+        859
+      ],
+      "proposedFootAnchor": [
+        845,
+        852
+      ],
+      "proposedWorldHeight": 2.4,
+      "proposedCollisionRadius": 1.1,
+      "solid": true,
+      "brightLandmark": false
+    },
+    {
+      "id": "15",
+      "name": "黑曜刺簇",
+      "bodyBounds": [
+        978,
+        657,
+        1194,
+        861
+      ],
+      "bodySize": [
+        216,
+        204
+      ],
+      "reviewWindow": [
+        974,
+        653,
+        1198,
+        865
+      ],
+      "proposedFootAnchor": [
+        1086,
+        858
+      ],
+      "proposedWorldHeight": 2.2,
+      "proposedCollisionRadius": 0.95,
+      "solid": true,
+      "brightLandmark": false
+    },
+    {
+      "id": "16",
+      "name": "熔壳圆岩",
+      "bodyBounds": [
+        1205,
+        666,
+        1433,
+        856
+      ],
+      "bodySize": [
+        228,
+        190
+      ],
+      "reviewWindow": [
+        1201,
+        662,
+        1437,
+        860
+      ],
+      "proposedFootAnchor": [
+        1319,
+        853
+      ],
+      "proposedWorldHeight": 2.3,
+      "proposedCollisionRadius": 1.1,
+      "solid": true,
+      "brightLandmark": false
+    },
+    {
+      "id": "17",
+      "name": "小火山",
+      "bodyBounds": [
+        15,
+        874,
+        255,
+        1064
+      ],
+      "bodySize": [
+        240,
+        190
+      ],
+      "reviewWindow": [
+        11,
+        870,
+        259,
+        1068
+      ],
+      "proposedFootAnchor": [
+        135,
+        1061
+      ],
+      "proposedWorldHeight": 2.4,
+      "proposedCollisionRadius": 1.15,
+      "solid": true,
+      "brightLandmark": true
+    },
+    {
+      "id": "18",
+      "name": "熔裂地台",
+      "bodyBounds": [
+        279,
+        906,
+        522,
+        1062
+      ],
+      "bodySize": [
+        243,
+        156
+      ],
+      "reviewWindow": [
+        275,
+        902,
+        526,
+        1066
+      ],
+      "proposedFootAnchor": [
+        401,
+        1059
+      ],
+      "proposedWorldHeight": 1.25,
+      "proposedCollisionRadius": 1.1,
+      "solid": true,
+      "brightLandmark": true
+    },
+    {
+      "id": "19",
+      "name": "兽骨岩堆",
+      "bodyBounds": [
+        540,
+        894,
+        791,
+        1062
+      ],
+      "bodySize": [
+        251,
+        168
+      ],
+      "reviewWindow": [
+        536,
+        890,
+        795,
+        1066
+      ],
+      "proposedFootAnchor": [
+        666,
+        1059
+      ],
+      "proposedWorldHeight": 1.8,
+      "proposedCollisionRadius": 1.1,
+      "solid": true,
+      "brightLandmark": false
+    },
+    {
+      "id": "20",
+      "name": "焦黑枯木",
+      "bodyBounds": [
+        809,
+        879,
+        1006,
+        1063
+      ],
+      "bodySize": [
+        197,
+        184
+      ],
+      "reviewWindow": [
+        805,
+        875,
+        1010,
+        1067
+      ],
+      "proposedFootAnchor": [
+        908,
+        1060
+      ],
+      "proposedWorldHeight": 2.8,
+      "proposedCollisionRadius": 0.85,
+      "solid": true,
+      "brightLandmark": false
+    },
+    {
+      "id": "21",
+      "name": "尖峰熔岩",
+      "bodyBounds": [
+        1023,
+        890,
+        1208,
+        1063
+      ],
+      "bodySize": [
+        185,
+        173
+      ],
+      "reviewWindow": [
+        1019,
+        886,
+        1212,
+        1067
+      ],
+      "proposedFootAnchor": [
+        1116,
+        1060
+      ],
+      "proposedWorldHeight": 2.5,
+      "proposedCollisionRadius": 1,
+      "solid": true,
+      "brightLandmark": false
+    },
+    {
+      "id": "22",
+      "name": "高火山锥",
+      "bodyBounds": [
+        1227,
+        887,
+        1432,
+        1064
+      ],
+      "bodySize": [
+        205,
+        177
+      ],
+      "reviewWindow": [
+        1223,
+        883,
+        1436,
+        1068
+      ],
+      "proposedFootAnchor": [
+        1330,
+        1061
+      ],
+      "proposedWorldHeight": 2.7,
+      "proposedCollisionRadius": 1.1,
+      "solid": true,
+      "brightLandmark": false
+    }
+  ]
+}

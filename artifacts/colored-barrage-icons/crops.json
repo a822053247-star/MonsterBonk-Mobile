@@ -1,0 +1,90 @@
+[
+  {
+    "id": "frost-barrage",
+    "atlasCrop": [
+      37,
+      125,
+      522,
+      574
+    ],
+    "source": "public/assets/ui/upgrade/illustrations/skills/frost-barrage.png",
+    "output": "public/assets/ui/card-art/upgrade/illustrations/skills/frost-barrage.webp",
+    "core": [
+      25.0,
+      31.0,
+      437.0,
+      425.0
+    ],
+    "coreSize": [
+      195.95,
+      187.39
+    ],
+    "scale": 0.4756
+  },
+  {
+    "id": "leaf-barrage",
+    "atlasCrop": [
+      592,
+      136,
+      1035,
+      569
+    ],
+    "source": "public/assets/ui/upgrade/illustrations/skills/leaf-barrage.png",
+    "output": "public/assets/ui/card-art/upgrade/illustrations/skills/leaf-barrage.webp",
+    "core": [
+      22.0,
+      36.0,
+      406.0,
+      409.0
+    ],
+    "coreSize": [
+      197.15,
+      191.5
+    ],
+    "scale": 0.5134
+  },
+  {
+    "id": "arc-barrage",
+    "atlasCrop": [
+      1132,
+      115,
+      1595,
+      581
+    ],
+    "source": "public/assets/ui/upgrade/illustrations/skills/arc-barrage.png",
+    "output": "public/assets/ui/card-art/upgrade/illustrations/skills/arc-barrage.webp",
+    "core": [
+      25.0,
+      31.0,
+      436.0,
+      433.0
+    ],
+    "coreSize": [
+      215.92,
+      211.19
+    ],
+    "scale": 0.52535
+  },
+  {
+    "id": "rose-barrage",
+    "atlasCrop": [
+      1659,
+      153,
+      2104,
+      585
+    ],
+    "source": "public/assets/ui/upgrade/illustrations/skills/rose-barrage.png",
+    "output": "public/assets/ui/card-art/upgrade/illustrations/skills/rose-barrage.webp",
+    "core": [
+      27.0,
+      28.0,
+      409.0,
+      405.0
+    ],
+    "coreSize": [
+      224.0,
+      221.07
+    ],
+    "scale": 0.58639
+  }
+]

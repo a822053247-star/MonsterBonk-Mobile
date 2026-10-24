@@ -19,7 +19,7 @@ test.beforeEach(async ({ page }) => {
   await expect(page.locator('#start')).toBeVisible();
 });
 
-test('audio waits for a gesture; settings persist and gameplay remains paused on closing', async ({ page }) => {
+test('audio waits for a gesture; settings persist and gameplay resumes on closing', async ({ page }) => {
   const supported = (await state(page)).audio.supported;
   expect((await state(page)).audio.state).toBe('locked');
   await page.locator('#start').tap();
@@ -39,9 +39,8 @@ test('audio waits for a gesture; settings persist and gameplay remains paused on
   await page.locator('#quality').selectOption('battery');
   expect((await state(page)).graphics).toMatchObject({ mode: 'battery', targetFps: 30, particles: 2 });
   await page.locator('#save-settings').tap();
-  await expect(page.locator('#pause-screen')).toBeVisible();
-  expect((await state(page)).mode).toBe('paused');
-  await page.locator('#resume').tap();
+  await expect(page.locator('#pause-screen')).toBeHidden();
+  expect((await state(page)).mode).toBe('playing');
   await page.waitForTimeout(150);
   expect((await state(page)).audio).toMatchObject({ music: false, sound: false, state: supported ? 'suspended' : 'unavailable', voices: 0 });
   await page.reload();
@@ -147,6 +146,5 @@ test('missing Web Audio fails gracefully and never blocks combat or settings', a
   await expect(page.locator('#audio-status')).toContainText('当前浏览器未提供音频');
   await page.getByRole('switch', { name: '背景音乐', exact: true }).uncheck();
   await page.locator('#save-settings').tap();
-  await page.locator('#resume').tap();
   expect((await state(page)).mode).toBe('playing'); expect(errors).toEqual([]);
 });

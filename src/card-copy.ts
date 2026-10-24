@@ -1,6 +1,10 @@
 /** Selection copy only. Full numeric rules stay in descriptions, ARIA and the build panel. */
 interface CardCopyInput {id?:string;benefit:string;tradeoff?:string}
 const RELIC_COPY:Record<string,readonly [string,string]>={
+ 'frost-barrage':['冰蓝扇射减速敌群','可配合水系冻结'],
+ 'leaf-barrage':['翠绿回叶往返扫敌','回程加速追随角色'],
+ 'arc-barrage':['紫色双弧先展后收','向锁定位置收束'],
+ 'rose-barrage':['玫粉追星优先补刀','目标离场可重新锁定'],
  'draft-boiling-core':['水火连击触发蒸爆','消耗湿润，有触发间隔'],
  'hunter-eye':['派生弹轻微追踪','派生伤害降低'],
  'shattered-core':['分裂时多发一枚子弹','派生伤害降低'],

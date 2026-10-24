@@ -13,7 +13,7 @@ import {weaponCapabilities,inheritWeaponCapabilities,assertFusionPreservesRelics
 
 export const MAX_WEAPON_LEVEL = 5;
 
-/** Weapon identity is independent of its caster. Three distinct weapons share a bounded combat pool. */
+/** Weapon identity is independent of its caster. Weapons share a bounded combat pool. */
 export const ATTACKS = {
   spark: { kind: 'projectile', title: '火花弹', damage: 18, interval: .44, range: 10.5, color: '#ff9849' },
   bubble: { kind: 'projectile', title: '水泡弹', damage: 16, interval: .58, range: 10.5, color: '#55c9ed' },
@@ -57,6 +57,11 @@ export class RunBuild {
   }
   skillRanks: RelicContext['ranks'] = {};
   private equipped: EquippedAttack[] = [];
+  private slotLimit = 3;
+  get weaponLimit() { return this.slotLimit; }
+  configureWeaponSlots(endless: boolean, wave: number) {
+    this.slotLimit = endless ? (wave >= 13 ? 8 : wave >= 7 ? 6 : 4) : 3;
+  }
   private ownedRelics: RelicId[] = [];
   private chosenEvolution?: EvolutionId;
   get relics(): readonly RelicId[] { return this.ownedRelics; }
@@ -65,6 +70,7 @@ export class RunBuild {
   get attacks(): readonly EquippedAttack[] { return this.equipped; }
 
   reset(species: SpeciesId) {
+    this.slotLimit = 3;
     this.inheritedCapabilities.clear();
     this.species = species;
     this.ownedRelics = [];
@@ -144,9 +150,36 @@ export class RunBuild {
 
   has(attackId: BaseAttackId) { return this.equipped.some(attack => attack.attackId === attackId); }
 
+  canExchange(from: BaseAttackId, to: BaseAttackId) {
+    return !!this.equipped.find(a => a.attackId === from && !a.pairId)
+      && Object.prototype.hasOwnProperty.call(ATTACKS, to) && !this.hasOrigin(to);
+  }
+
+  exchange(from: BaseAttackId, to: BaseAttackId) {
+    if (!this.canExchange(from, to)) return false;
+    const index = this.equipped.findIndex(a => a.attackId === from);
+    const old = this.equipped[index];
+    this.equipped[index] = { attackId: to, slot: old.slot, level: Math.min(3, old.level),
+      cooldown: Math.max(.5, old.cooldown), cooldownTotal: Math.max(.5, old.cooldownTotal), shotsFired: 0 };
+    this.inheritedCapabilities.delete(from);
+    return true;
+  }
+
+  previewExchange(from: BaseAttackId, to: BaseAttackId) {
+    if (!this.canExchange(from, to)) return undefined;
+    const copy = new RunBuild();
+    copy.equipped = this.equipped.map(a => ({...a}));
+    copy.slotLimit = this.slotLimit; copy.species = this.species;
+    copy.ownedRelics = [...this.ownedRelics]; copy.chosenEvolution = this.chosenEvolution;
+    copy.inheritedCapabilities = new Map(this.inheritedCapabilities);
+    copy.skillRanks = {...this.skillRanks};
+    copy.exchange(from, to);
+    return copy;
+  }
+
   acquire(attackId: BaseAttackId) {
-    if (this.has(attackId) || this.consumed(attackId) || this.equipped.length >= 3) return false;
-    const slot = [0,1,2].find(slot=>!this.equipped.some(a=>a.slot===slot))!;
+    if (this.has(attackId) || this.consumed(attackId) || this.equipped.length >= this.weaponLimit) return false;
+    const slot = Array.from({length:this.weaponLimit},(_,i)=>i).find(slot=>!this.equipped.some(a=>a.slot===slot))!;
     this.equipped.push({ attackId, slot, level: 1, cooldown: slot * .31, cooldownTotal: slot * .31, shotsFired: 0 });
     return true;
   }
