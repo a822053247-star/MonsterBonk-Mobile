@@ -135,7 +135,6 @@ let frameId = 0;
 let lastShotCycle = -1;
 let impactAt = -10;
 let impactX = START_X + 7.2 * PIXELS_PER_UNIT;
-let lastHitCount = 0;
 let enemies: PreviewEnemy[] = createEnemies();
 
 function createEnemies(): PreviewEnemy[] {
@@ -175,7 +174,6 @@ function resetPreview(): void {
   lastShotCycle = -1;
   impactAt = -10;
   impactX = START_X + currentSpec().range * PIXELS_PER_UNIT;
-  lastHitCount = 0;
   enemies = createEnemies();
   updateLevelUi();
 }
@@ -545,7 +543,6 @@ function resolveAttack(): void {
 
   impactX = targets.length ? targets[targets.length - 1].x : tipX;
   impactAt = elapsed;
-  lastHitCount = targets.length;
 
   if (spec.burst > 0) {
     for (const enemy of enemies) {
