@@ -30,6 +30,13 @@ self.addEventListener('fetch', event => {
   const key = navigation ? new URL('index.html', ROOT).href : url.href;
   if (!allowed.has(key)) return;
   event.respondWith((async () => {
+    // Prefer the current release HTML online; hashed assets remain cache-first/offline-safe.
+    if (navigation || key === new URL('index.html', ROOT).href) {
+      try {
+        const response = await fetch(request, { cache: 'no-cache' });
+        if (response.ok) return response;
+      } catch { /* Fall back to the installed release when offline. */ }
+    }
     const cached = await (await caches.open(CACHE)).match(key);
     return cached ?? fetch(request);
   })());

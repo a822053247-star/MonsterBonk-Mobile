@@ -20,7 +20,7 @@ export function registerPhoneApp() {
   navigator.serviceWorker.addEventListener('message', event => {
     if (!ready && event.data?.type === 'offline-progress') status.textContent = `离线资源 ${event.data.percent}% · 完成前请保持联网`;
   });
-  void navigator.serviceWorker.register(`${import.meta.env.BASE_URL}sw.js`).then(async registration => {
+  void navigator.serviceWorker.register(`${import.meta.env.BASE_URL}sw.js`, { updateViaCache: 'none' }).then(async registration => {
     if (registration.active) completed();
     const worker = registration.installing ?? registration.waiting;
     if (worker) worker.addEventListener('statechange', () => {

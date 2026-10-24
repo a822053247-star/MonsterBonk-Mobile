@@ -251,7 +251,7 @@ export class Game {
     for (const id of ['close-settings', 'save-settings']) click(id, () => this.closeSettings());
     click('game-speed', () => {
       if (this.mode !== 'playing') return;
-      const steps = [1, 2, 3, 5, 10];
+      const steps = [1, 2];
       this.preferences.gameSpeed = steps.find(speed => speed > this.preferences.gameSpeed) ?? 1;
       this.saveSettings();
       document.getElementById('game-speed')!.blur();

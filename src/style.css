@@ -1328,3 +1328,5 @@ h1>em{font-size:12px;line-height:1;letter-spacing:4px;display:inline-block;backg
 #gameover-screen.from-death:not([hidden]) .result-card{animation:death-result-arrive .35s ease-out both}
 @keyframes death-result-arrive{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 @media(prefers-reduced-motion:reduce){#gameover-screen.from-death:not([hidden]) .result-card{animation:none}}
+
+.menu-footer[hidden]{display:none}

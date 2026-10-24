@@ -1,5 +1,5 @@
 export type QualityMode = 'auto' | 'battery' | 'high';
-export const MAX_GAME_SPEED = 10;
+export const MAX_GAME_SPEED = 2;
 export function normalizeGameSpeed(value: unknown) {
   return typeof value === 'number' && Number.isFinite(value) ? Math.min(MAX_GAME_SPEED, Math.max(1, Math.round(value))) : 1;
 }

@@ -1,10 +1,10 @@
 import { test, expect } from '@playwright/test';
 import { normalizeGameSpeed } from '../src/quality';
 
-test('speed defaults safely and cannot exceed ten', () => {
+test('speed defaults safely and cannot exceed two', () => {
   for(const value of [undefined,null,'10',NaN,Infinity])expect(normalizeGameSpeed(value)).toBe(1);
-  expect(normalizeGameSpeed(100)).toBe(10);expect(normalizeGameSpeed(-1)).toBe(1);
-  expect(normalizeGameSpeed(7)).toBe(7);
+  expect(normalizeGameSpeed(100)).toBe(2);expect(normalizeGameSpeed(-1)).toBe(1);
+  expect(normalizeGameSpeed(7)).toBe(2);
 });
 
 test.beforeEach(async ({page})=>{
@@ -15,16 +15,16 @@ test.beforeEach(async ({page})=>{
   await page.goto('/speed-harness?world=fixed');await page.waitForFunction(()=>!!(window as any).game);
 });
 
-test('HUD cycles to 10x and settings expose all ten speeds and persist',async({page})=>{
+test('HUD cycles to 2x and settings expose only two speeds and persist',async({page})=>{
   await page.locator('#menu-settings').click();await page.locator('#save-settings').click();
   expect(await page.evaluate(()=>(window as any).game.inspect().mode)).toBe('menu');
   await page.locator('#start-fusion').click();
-  for(const value of [2,3,5,10,1]){
+  for(const value of [2,1]){
     await page.locator('#game-speed').click();await expect(page.locator('#game-speed')).toHaveText(`${value}×`);
   }
   await page.locator('#settings').click();
-  expect(await page.locator('#game-speed-setting option').count()).toBe(10);
-  await page.locator('#game-speed-setting').selectOption('7');
+  expect(await page.locator('#game-speed-setting option').count()).toBe(2);
+  await page.locator('#game-speed-setting').selectOption('2');
   await page.locator('#save-settings').click();
   await expect(page.locator('#settings-screen')).toBeHidden();
   await expect(page.locator('#pause-screen')).toBeHidden();
@@ -37,16 +37,16 @@ test('HUD cycles to 10x and settings expose all ten speeds and persist',async({p
   await page.locator('#save-settings').click();await expect(page.locator('#pause-screen')).toBeVisible();
   expect(await page.evaluate(()=>(window as any).game.inspect().mode)).toBe('paused');
   await page.locator('#resume').click();
-  await expect(page.locator('#game-speed')).toHaveText('7×');
+  await expect(page.locator('#game-speed')).toHaveText('2×');
   await page.reload();await page.waitForFunction(()=>!!(window as any).game);
-  await page.locator('#start-fusion').click();await expect(page.locator('#game-speed')).toHaveText('7×');
+  await page.locator('#start-fusion').click();await expect(page.locator('#game-speed')).toHaveText('2×');
   await page.setViewportSize({width:568,height:320});
   const boxes=await page.locator('.hud-actions button').evaluateAll(elements=>elements.filter(e=>!(e as HTMLElement).hidden).map(e=>{const b=e.getBoundingClientRect();return{x:b.x,right:b.right,bottom:b.bottom};}));
   for(const b of boxes){expect(b.x).toBeGreaterThanOrEqual(0);expect(b.right).toBeLessThanOrEqual(568);expect(b.bottom).toBeLessThanOrEqual(320);}
   for(let i=1;i<boxes.length;i++)expect(boxes[i].x).toBeGreaterThanOrEqual(boxes[i-1].right);
 });
 
-test('10x advances the real fixed-step frame loop tenfold without enlarging collision steps',async({page})=>{
+test('2x advances the real fixed-step frame loop twofold without enlarging collision steps',async({page})=>{
   await page.locator('#start-fusion').click();await page.evaluate(()=>(window as any).game.sleep());
   await page.keyboard.down('KeyD');
   const result=await page.evaluate(()=>{
@@ -58,7 +58,7 @@ test('10x advances the real fixed-step frame loop tenfold without enlarging coll
       for(let i=1;i<=frames;i++){g.frame(1000+i*1000/60);cancelAnimationFrame(g.frameId);g.frameId=0;}
       return{elapsed:g.elapsed,waveElapsed:g.run.waveElapsed,x:g.position.x,z:g.position.z};
     };
-    const normal=run(1,60),fast=run(10,6);
+    const normal=run(1,60),fast=run(2,30);
     let ticks=0,maxStep=0;const original=g.step.bind(g);
     g.step=(dt:number)=>{ticks++;maxStep=Math.max(maxStep,dt);original(dt);};
     g.frame(g.lastTime+1000);g.sleep();
@@ -71,10 +71,10 @@ test('10x advances the real fixed-step frame loop tenfold without enlarging coll
   expect(result.ticks).toBeLessThanOrEqual(50);expect(result.maxStep).toBe(1/60);
 });
 
-test('10x continues survival waves but upgrades still freeze and shop time stays real',async({page})=>{
+test('2x continues survival waves but upgrades still freeze and shop time stays real',async({page})=>{
   await page.locator('#start-fusion').click();
   const result=await page.evaluate(()=>{
-    const g=(window as any).game;g.sleep();g.preferences.gameSpeed=10;
+    const g=(window as any).game;g.sleep();g.preferences.gameSpeed=2;
     const frames=(count:number)=>{
       g.lastTime=g.renderTime=1000;g.accumulator=0;
       for(let i=1;i<=count;i++){g.frame(1000+i*1000/60);cancelAnimationFrame(g.frameId);g.frameId=0;}

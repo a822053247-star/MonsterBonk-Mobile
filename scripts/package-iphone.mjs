@@ -7,6 +7,9 @@ import { spawnSync } from 'node:child_process';
 function runtime(path) {
   if (!path.startsWith('assets/')) return ['index.html','favicon.svg','manifest.webmanifest','install.html','THIRD_PARTY_LICENSES.txt'].includes(path);
   if (!path.slice(7).includes('/')) return /\.(js|css)$/.test(path);
+  if (path.startsWith('assets/audio/')) return /\.(mp3|ogg|txt|md)$/.test(path);
+  if (path.startsWith('assets/scenery/volcano/')) return path.endsWith('/volcano-atlas.png');
+  if (path.startsWith('assets/scenery/')) return /\.png$/.test(path) && !path.includes('reference');
   if (path.startsWith('assets/kenney_particle-pack/')) return /\/PNG \(Transparent\)\/(smoke_08|magic_02|circle_03|spark_01)\.png$/.test(path);
   if (path.startsWith('assets/music/')) return /\/(bgm-grassland|BossBattle)\.ogg$/.test(path);
   if (path.startsWith('assets/pixel/')) {
@@ -17,7 +20,7 @@ function runtime(path) {
       || /^assets\/pixel\/boss\/Crownthorn\/runtime\/[^/]+\.png$/.test(path)
       || /^assets\/pixel\/skills\/(yanrong|fusions)\/[^/]+\.normalized\.png$/.test(path);
   }
-  return /\.(png|glb|svg)$/.test(path) && !path.startsWith('assets/ui/raw/');
+  return /\.(png|webp|glb|svg)$/.test(path) && !path.startsWith('assets/ui/raw/');
 }
 async function walk(root, prefix = '') {
   const result = [];
@@ -43,6 +46,7 @@ const worker = (await readFile('scripts/iphone-sw.js','utf8')).replace('__VERSIO
   .replace('__FILES__',JSON.stringify(files.map(path=>path.split('/').map(encodeURIComponent).join('/'))));
 await writeFile(join(site,'sw.js'),worker);
 await writeFile(join(site,'.nojekyll'),'');
+await writeFile(join(site,'version.json'),JSON.stringify({version,sourceCommit:spawnSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).stdout.trim()}));
 await writeFile(join(folder,'安装说明.txt'), '请将 site 文件夹完整部署到 HTTPS 静态网站。\n苹果手机用 Safari 打开网址，等待“离线资源已就绪”，分享 → 添加到主屏幕。\n这是主屏幕网页 App，不是 IPA；不能直接在“文件”中点击 ZIP 安装。\n安装后首次启动仍应保持联网，确认离线就绪后再断网。\n');
 await writeFile('releases/latest.json',JSON.stringify({folder,site,version,files:files.length,bytes},null,2));
 const zip = folder + '.zip';

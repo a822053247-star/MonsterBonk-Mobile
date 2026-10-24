@@ -7,6 +7,7 @@
     "dev": "vite --host 0.0.0.0",
     "build": "tsc --noEmit && vite build",
     "package:iphone": "npm run build && node scripts/package-iphone.mjs",
+    "publish:pages": "npm run build && node scripts/package-iphone.mjs --no-zip && node scripts/publish-pages.mjs",
     "preview": "vite preview --host 0.0.0.0",
     "test": "playwright test",
     "content:check": "node scripts/run-content-check.mjs",
