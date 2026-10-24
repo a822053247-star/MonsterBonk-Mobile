@@ -491,7 +491,6 @@ function drawBranch(time: number, attackAge: number): void {
   ctx.fill();
   ctx.restore();
 
-  if (level === 5) drawRootBurst(time, attackAge);
 }
 
 function drawRootBurst(time: number, attackAge: number): void {
