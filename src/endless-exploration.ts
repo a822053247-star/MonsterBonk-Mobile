@@ -39,7 +39,8 @@ export class EndlessExploration {
   cancelWorkshop() { if (this.event?.kind === 'lost-workshop' && this.event.state === 'active') this.event.state = 'available'; }
   abandon() { if (this.present) this.event!.state = 'abandoned'; }
 
-  step(dt: number, run: RunFlow, combat: Combat, player: {x:number;z:number}, obstacles: readonly Obstacle[], allowOffer = true) {
+  step(dt: number, run: RunFlow, combat: Combat, player: {x:number;z:number}, obstacles: readonly Obstacle[], allowOffer = true,
+    view?:{x:number;z:number;halfWidth:number;halfDepth:number}) {
     const event = this.event;
     if (this.present && event) {
       if (combat.hp <= 0) { event.state = 'failed'; return; }
@@ -74,7 +75,12 @@ export class EndlessExploration {
     const wave = kind === 'sealed-chest' ? 2 : 4;
     if (run.waveInCycle !== wave || run.waveElapsed < 8 || run.waveElapsed > 18) return;
     const offsets = [[5,0],[-5,0],[0,5],[0,-5],[4,4],[-4,-4]];
-    const point = offsets.map(([x,z])=>({x:player.x+x,z:player.z+z})).find(p=>
+    const area=view??{...player,halfWidth:18,halfDepth:12};
+    // The chest and its 2.5m scenery clearing must start beyond the visible field.
+    const candidates=kind==='sealed-chest'?[{x:player.x,z:area.z-area.halfDepth-6},
+      {x:area.x-area.halfWidth-6,z:player.z},{x:area.x+area.halfWidth+6,z:player.z},
+      {x:player.x,z:area.z+area.halfDepth+6}]:offsets.map(([x,z])=>({x:player.x+x,z:player.z+z}));
+    const point = candidates.find(p=>
       obstacles.every(o=>Math.hypot(o.x-p.x,o.z-p.z)>o.radius+2)
       && combat.enemies.every(e=>!e.active||Math.hypot(e.x-p.x,e.z-p.z)>3));
     if (point) this.offer(kind,run,point);

@@ -10,6 +10,7 @@ import { newFeatureTest, prepareNewFeatureTest, addFeatureTestWeapon, type NewFe
 import { EndlessExploration, EXPLORATION_RULES, type ExplorationKind } from './endless-exploration';
 import { ExplorationView } from './exploration-view';
 import { AltarGuide } from './altar-guide';
+import { WorldEventGuide } from './world-event-guide';
 import { preloadEligibleUpgradeImages,inspectUpgradeImages } from './upgrade-art';
 import { WeaponExchangeDialog } from './weapon-exchange-dialog';
 import type { BaseAttackId } from './fusion';
@@ -109,6 +110,7 @@ export class Game {
   private altarTrial?:AltarTrial;
   private endlessAltar=new EndlessAltarEvent();
   private altarGuide=new AltarGuide();
+  private chestGuide=new WorldEventGuide({title:'封印宝箱',nearText:'靠近开启',theme:'chest-guide'});
   private altarReturn?:{x:number;z:number};
   private ensureAltar(){
     if(!this.itemTestAltar){this.itemTestAltar=new ItemTestAltarView();this.scene.add(this.itemTestAltar.group);}
@@ -991,6 +993,7 @@ export class Game {
 
   private pause(reason: string) {
     this.altarGuide.hide();
+    this.chestGuide.hide();
     if (this.mode !== 'playing') return;
     this.mode = 'paused';this.altarTrial?.suspend();
     document.getElementById('item-test-controls')!.hidden=true;
@@ -1138,7 +1141,7 @@ export class Game {
     }
     if (!this.altarTrial?.active&&this.treasureDialog.sync()) return;
     if(this.run&&!this.altarTrial?.active&&!this.combat.progression.awaitingChoice){
-      this.exploration.step(dt,this.run,this.combat,this.position,this.world.obstacles,!this.featureTestId);
+      this.exploration.step(dt,this.run,this.combat,this.position,this.world.obstacles,!this.featureTestId,this.cameraFootprint());
       this.syncExplorationView();
       if(this.treasureDialog.sync())return;
     }
@@ -1324,6 +1327,7 @@ export class Game {
 
   private openUpgrade() {
     this.altarGuide.hide();
+    this.chestGuide.hide();
     this.mode = 'upgrading';
     this.input.setEnabled(false);
     this.velocity.set(0, 0);
@@ -1581,6 +1585,10 @@ export class Game {
       document.getElementById('exploration-abandon')!.hidden=true;
       document.getElementById('exploration-detail')!.textContent=opening
         ? `打开宝箱仅剩 ${Math.max(0,Math.ceil(EXPLORATION_RULES.duration-event.elapsed))} 秒`:'';
+      const nearEdge=opening&&Math.hypot(this.position.x-event.x,this.position.z-event.z)>=EXPLORATION_RULES.leaveRadius-1.5;
+      explorationControls.classList.toggle('is-near-boundary',nearEdge);
+      const rule=document.getElementById('exploration-rule')!;rule.hidden=!opening;
+      rule.textContent=nearEdge?'即将出圈！请回到宝箱附近':'请留在蓝色圈内，出圈将中断开启';
       const interact=document.getElementById('exploration-interact') as HTMLButtonElement;
       interact.hidden=event.state==='active';interact.disabled=!this.exploration.nearby(this.position);
       interact.textContent=event.kind==='sealed-chest'?'按E 开启':'按E 使用工坊';
@@ -1731,6 +1739,11 @@ export class Game {
 
   private frame = (time: number) => {
     this.frameId = 0;
+    const chest=this.exploration.event;
+    this.chestGuide.render(this.mode==='playing'&&chest?.kind==='sealed-chest'&&chest.state==='available'
+      &&chest.wave===this.run?.wave&&this.run.phase==='fighting'&&!this.sceneLoading&&!this.exploration.nearby(this.position)
+      &&!this.altarTrial?.active&&!this.capture?.pending&&!this.combat.progression.awaitingChoice&&!this.treasureDialog.active,
+      chest??this.position,this.position,this.camera);
     this.altarGuide.render(this.mode==='playing'&&this.endlessAltar.present&&!this.altarTrial?.active
       &&!this.sceneLoading&&!this.capture?.pending&&!this.combat.progression.awaitingChoice&&!this.treasureDialog.active,
       this.endlessAltar.position,this.position,this.camera);
@@ -1921,7 +1934,7 @@ export class Game {
     this.monster.dispose();
     this.partyView.dispose();
     this.capture?.cancel();this.captureVfx?.dispose(); this.captureHUD?.dispose();this.prison?.dispose();this.collection.flush();this.captureSpawns.flush(); this.captureAnchor.removeFromParent();
-    this.combatView.dispose();this.itemTestAltar?.dispose();this.altarTrial?.dispose();this.altarGuide.dispose();
+    this.combatView.dispose();this.itemTestAltar?.dispose();this.altarTrial?.dispose();this.altarGuide.dispose();this.chestGuide.dispose();
     this.audio.dispose();
     this.world.dispose();
     const geometries = new Set<THREE.BufferGeometry>();
