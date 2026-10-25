@@ -9,6 +9,7 @@ import { ItemTestMode, ITEM_TEST_ALTAR, ITEM_TEST_OPTIONS, isItemTestSkill, item
 import { newFeatureTest, prepareNewFeatureTest, addFeatureTestWeapon, type NewFeatureTestId } from './new-feature-test';
 import { EndlessExploration, EXPLORATION_RULES, type ExplorationKind } from './endless-exploration';
 import { ExplorationView } from './exploration-view';
+import { AltarGuide } from './altar-guide';
 import { WeaponExchangeDialog } from './weapon-exchange-dialog';
 import type { BaseAttackId } from './fusion';
 import { endlessShopPrice } from './balance';
@@ -100,6 +101,7 @@ export class Game {
   private itemTestAltar?:ItemTestAltarView;
   private altarTrial?:AltarTrial;
   private endlessAltar=new EndlessAltarEvent();
+  private altarGuide=new AltarGuide();
   private altarReturn?:{x:number;z:number};
   private ensureAltar(){
     if(!this.itemTestAltar){this.itemTestAltar=new ItemTestAltarView();this.scene.add(this.itemTestAltar.group);}
@@ -108,7 +110,7 @@ export class Game {
   private syncEndlessAltar(){
     if(!this.run?.endless||this.altarTrial?.active||!this.world.infiniteActive)return;
     if(this.run.phase==='fighting'&&this.combat.progression.awaitingChoice)return;
-    const change=this.endlessAltar.update(this.run,this.position,this.combat.enemies);
+    const change=this.endlessAltar.update(this.run,this.position,this.combat.enemies,this.cameraFootprint());
     if(change==='remove'){
       this.itemTestAltar?.setEnabled(false);this.altarTrial?.reset();this.world.setEventClearing?.(null);
     }else if(change==='spawn'){
@@ -125,6 +127,7 @@ export class Game {
     if(this.treasureDialog.sync())return;
     const from={x:this.position.x,z:this.position.z};
     if(this.altarTrial.start(this.combat,this.position,this.cameraFootprint(),endless)){
+      this.altarGuide.hide();
       this.itemTestAltar?.fadeOut();
       this.altarReturn=endless?from:undefined;this.combatView.group.visible=!endless;
       this.previousPosition.copy(this.position);this.velocity.set(0,0);this.dashRemaining=0;this.input.reset();this.placeCamera(true);
@@ -978,6 +981,7 @@ export class Game {
   }
 
   private pause(reason: string) {
+    this.altarGuide.hide();
     if (this.mode !== 'playing') return;
     this.mode = 'paused';this.altarTrial?.suspend();
     document.getElementById('item-test-controls')!.hidden=true;
@@ -1310,6 +1314,7 @@ export class Game {
   }
 
   private openUpgrade() {
+    this.altarGuide.hide();
     this.mode = 'upgrading';
     this.input.setEnabled(false);
     this.velocity.set(0, 0);
@@ -1564,7 +1569,7 @@ export class Game {
       document.getElementById('exploration-detail')!.hidden=!opening;
       document.getElementById('exploration-abandon')!.hidden=true;
       document.getElementById('exploration-detail')!.textContent=opening
-        ? `打开宝箱倒计时剩余${Math.max(0,Math.ceil(EXPLORATION_RULES.duration-event.elapsed))}秒`:'';
+        ? `打开宝箱仅剩 ${Math.max(0,Math.ceil(EXPLORATION_RULES.duration-event.elapsed))} 秒`:'';
       const interact=document.getElementById('exploration-interact') as HTMLButtonElement;
       interact.hidden=event.state==='active';interact.disabled=!this.exploration.nearby(this.position);
       interact.textContent=event.kind==='sealed-chest'?'按E 开启':'按E 使用工坊';
@@ -1715,6 +1720,9 @@ export class Game {
 
   private frame = (time: number) => {
     this.frameId = 0;
+    this.altarGuide.render(this.mode==='playing'&&this.endlessAltar.present&&!this.altarTrial?.active
+      &&!this.sceneLoading&&!this.capture?.pending&&!this.combat.progression.awaitingChoice&&!this.treasureDialog.active,
+      this.endlessAltar.position,this.position,this.camera);
     if (this.disposed || document.hidden || this.portrait || this.contextLost || (this.mode !== 'menu' && this.mode !== 'playing' && this.mode !== 'shop' && this.mode !== 'dying')) return;
     const rawDt = this.lastTime ? (time - this.lastTime) / 1000 : 0;
     const dt = rawDt ? Math.min(rawDt, STEP * 5) : STEP;
@@ -1900,7 +1908,7 @@ export class Game {
     this.monster.dispose();
     this.partyView.dispose();
     this.capture?.cancel();this.captureVfx?.dispose(); this.captureHUD?.dispose();this.prison?.dispose();this.collection.flush();this.captureSpawns.flush(); this.captureAnchor.removeFromParent();
-    this.combatView.dispose();this.itemTestAltar?.dispose();this.altarTrial?.dispose();
+    this.combatView.dispose();this.itemTestAltar?.dispose();this.altarTrial?.dispose();this.altarGuide.dispose();
     this.audio.dispose();
     this.world.dispose();
     const geometries = new Set<THREE.BufferGeometry>();

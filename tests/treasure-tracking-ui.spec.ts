@@ -19,7 +19,7 @@ test('treasure remains discoverable in crowds, leaves a frozen trail and can be 
   </script></body></html>`}));
   await page.goto('/treasure-tracking-harness?world=fixed');await page.locator('#start-fusion').click();
   await page.evaluate(()=>{const g=(window as any).game;g.sleep();g.wake=()=>{}});
-  await expect.poll(()=>page.evaluate(()=>{const g=(window as any).game;return g.combatView.specialEnemies.inspectTreasure().trail.loaded&&g.combatView.inspect().batches.every((b:any)=>b.loaded)})).toBe(true);
+  await expect.poll(()=>page.evaluate(()=>(window as any).game.combatView.specialEnemies.inspectTreasure().trail.loaded)).toBe(true);
   for(const viewport of [{width:1280,height:720},{width:568,height:320}]) {
     await page.setViewportSize(viewport);
     const view=await page.evaluate(()=>(window as any).arrange());

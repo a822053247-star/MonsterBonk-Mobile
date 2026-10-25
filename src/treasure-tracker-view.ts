@@ -76,6 +76,18 @@ export class TreasureTrackerView {
   }
   render(alpha:number) {
     this.clear();if(this.disposed)return;
+    // One readable discovery prompt: prefer a visible runner, otherwise the nearest bearing.
+    let primary=0,best=Infinity,candidates=0;
+    for(const enemy of this.combat.enemies){
+      if(!enemy.active||enemy.spawnTime>0||enemy.kind!=='draft-treasure-runner')continue;
+      if(candidates++>=this.slots.length)break;
+      this.projected.set(THREE.MathUtils.lerp(enemy.previousX,enemy.x,alpha),0,
+        THREE.MathUtils.lerp(enemy.previousZ,enemy.z,alpha)).addScaledVector(this.up,this.enemyHeight(enemy.kind)*.5);
+      if(this.camera)this.projected.project(this.camera);
+      const visible=Math.abs(this.projected.x)<=.86&&Math.abs(this.projected.y)<=.63;
+      const score=(visible?0:10000)+Math.hypot(this.projected.x,this.projected.y);
+      if(score<best){best=score;primary=enemy.id;}
+    }
     let index=0;
     for(const enemy of this.combat.enemies) {
       if(!enemy.active||enemy.spawnTime>0||enemy.kind!=='draft-treasure-runner'||index>=this.slots.length)continue;
@@ -84,6 +96,7 @@ export class TreasureTrackerView {
         slot.id=enemy.id;slot.sampledAt=-1;slot.head=0;for(const point of slot.trail)point.time=-100;
       }
       slot.age=age;slot.group.visible=true;
+      slot.title.visible=enemy.id===primary;
       const x=THREE.MathUtils.lerp(enemy.previousX,enemy.x,alpha),z=THREE.MathUtils.lerp(enemy.previousZ,enemy.z,alpha);
       slot.group.position.set(x,0,z);
       const height=this.enemyHeight(enemy.kind),badgeHeight=Math.max(.8,28*this.worldPerPixel);
@@ -110,7 +123,7 @@ export class TreasureTrackerView {
         const fade=1-life/.7,size=Math.max(.17,4*this.worldPerPixel)*fade;
         this.stars.put(1,point.x,.2,point.z,size,size,fade*.8,'#ffda70',this.orientation,life*2);
       }
-      if(this.camera) {
+      if(this.camera&&enemy.id===primary) {
         this.projected.set(x,0,z).addScaledVector(this.up,height*.5).project(this.camera);
         if(Math.abs(this.projected.x)>.86||Math.abs(this.projected.y)>.63) {
           const dx=this.projected.x,dy=this.projected.y;
@@ -120,6 +133,7 @@ export class TreasureTrackerView {
           // Shift the marker into the gap, keeping its arrow's true bearing.
           const edgeY=edgeX<-.35?THREE.MathUtils.clamp(dy*t,-.03,.12):dy*t;
           slot.tracker.visible=true;slot.tracker.position.set(edgeX,edgeY,0).unproject(this.camera);
+          slot.title.visible=false;
           const arrowSize=Math.max(.75,26*this.worldPerPixel);
           const sx=dx*this.screenAspect;
           slot.arrow.scale.set(arrowSize,arrowSize,1);slot.arrow.material.rotation=Math.atan2(dy,sx);
@@ -135,6 +149,7 @@ export class TreasureTrackerView {
   clear() {for(const slot of this.slots){slot.group.visible=false;slot.tracker.visible=false;}this.stars.begin();}
   inspect() {
     return {runners:this.slots.filter(s=>s.group.visible).length,offscreen:this.slots.filter(s=>s.tracker.visible).length,
+      prompts:this.slots.filter(s=>s.group.visible&&s.title.visible).length+this.slots.filter(s=>s.tracker.visible).length,
       trail:this.stars.inspect(),markers:this.slots.filter(s=>s.group.visible).map(s=>({id:s.id,badgeHeight:s.title.scale.y,
         alwaysVisible:!s.title.material.depthTest,edge:s.tracker.visible?this.projected.copy(s.tracker.position).project(this.camera!).toArray():null}))};
   }
