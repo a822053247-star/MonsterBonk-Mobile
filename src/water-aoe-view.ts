@@ -9,7 +9,10 @@ export class WaterAtlas {
   private frames: THREE.InstancedBufferAttribute;
   private alpha: THREE.InstancedBufferAttribute;
   private pose = new THREE.Object3D();
-  private texture: THREE.Texture;
+  private texture = new THREE.Texture();
+  private started=false;
+  private retryTimer=0;
+  private load!:()=>void;
   loaded = false;
   failed = false;
   private disposed = false;
@@ -37,17 +40,29 @@ export class WaterAtlas {
     material.customProgramCacheKey = () => `water-atlas-alpha-${columns}-${rows}-${circular}`;
     this.mesh.name = `WaterAoe-${name}`; this.mesh.count = 0; this.mesh.frustumCulled = false; this.mesh.renderOrder = 1;
     this.mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
-    this.texture = new THREE.TextureLoader().load(`${import.meta.env.BASE_URL}assets/${root}/${name}.png`, texture => {
+    const load=(attempt:number)=>{
+      if(this.disposed)return;
+      this.texture.dispose();
+      this.texture = new THREE.TextureLoader().load(`${import.meta.env.BASE_URL}assets/${root}/${name}.png`, texture => {
       if (this.disposed) { texture.dispose(); return; }
       texture.colorSpace = THREE.SRGBColorSpace; texture.minFilter = texture.magFilter = smooth ? THREE.LinearFilter : THREE.NearestFilter;
       texture.generateMipmaps = false; material.map = texture; material.needsUpdate = true; this.loaded = true;
-    }, undefined, () => { if (!this.disposed) this.failed = true; });
+      }, undefined, () => {
+        if(this.disposed)return;
+        if(attempt===0)this.retryTimer=window.setTimeout(()=>load(1),250);else this.failed=true;
+      });
+    };
+    this.load=()=>{if(!this.started&&!this.disposed){this.started=true;load(0);}};
+    this.mesh.userData.assetKey=`${root}/${name}`;
+    this.mesh.userData.preload=this.load;
   }
+  preload(){this.load();}
   begin() { this.mesh.count = 0; }
   put(frame: number, x: number, z: number, size: number, alpha: number, rotation = 0, height = .08) {
     this.putRect(frame, x, z, size, size, alpha, rotation, height);
   }
   putRect(frame: number, x: number, z: number, width: number, depth: number, alpha: number, rotation = 0, height = .08) {
+    if(alpha>0&&width>0&&depth>0)this.load();
     if (!this.loaded || this.disposed || this.mesh.count >= this.mesh.instanceMatrix.count || alpha <= 0 || width <= 0 || depth <= 0) return;
     const index = this.mesh.count++;
     this.pose.position.set(x, height, z); this.pose.rotation.set(-Math.PI / 2, 0, rotation); this.pose.scale.set(width, depth, 1);
@@ -56,7 +71,7 @@ export class WaterAtlas {
   }
   finish() { this.mesh.instanceMatrix.needsUpdate = this.frames.needsUpdate = this.alpha.needsUpdate = true; }
   inspect() { return { loaded: this.loaded, failed: this.failed, count: this.mesh.count, capacity: this.mesh.instanceMatrix.count, frames: Array.from(this.frames.array.slice(0, this.mesh.count)) }; }
-  dispose() { this.disposed = true; this.mesh.count = 0; this.texture.dispose(); this.mesh.geometry.dispose(); this.mesh.material.dispose(); this.mesh.dispose(); }
+  dispose() { this.disposed = true;window.clearTimeout(this.retryTimer);this.mesh.count = 0; this.texture.dispose(); this.mesh.geometry.dispose(); this.mesh.material.dispose(); this.mesh.dispose(); }
 }
 
 /** Supplied water art only, without an extra ground circle; visuals never advance combat clocks. */

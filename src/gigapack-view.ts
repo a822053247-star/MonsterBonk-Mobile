@@ -17,6 +17,7 @@ export class GigapackView{
     if(!batch){const clip=GIGAPACK_CLIPS[id];batch=new FlameAtlasBatch(`${import.meta.env.BASE_URL}${clip.url}`,COMBAT_LIMITS.effects,1,1,clip);batch.mesh.name=`Gigapack-${id}`;this.batches.set(id,batch);this.group.add(batch.mesh);}
     return batch;
   }
+  preload(ids:readonly string[]){for(const id of ids){const clip=GIGAPACK_BINDINGS[id];if(clip)this.batch(clip);}}
   render(c:Combat,effects:readonly CombatEffect[]){
     this.clear();
     if(!c.usesRunBuild||c.hp<=0)return;

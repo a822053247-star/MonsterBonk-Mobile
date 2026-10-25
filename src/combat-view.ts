@@ -34,6 +34,7 @@ import { FUSION_ASSET_ROOT, elementalClip, clipFrame } from './fusion-pixels';
 import { VfxResolver, visualProgress } from './visuals/vfx-resolver';
 import { instanceOpacity } from './visuals/instance-opacity';
 import { CAPTURE_READY_SCALE, captureShimmer } from './capture-visuals';
+import { EFFECT_ATLASES } from './effect-preload';
 
 /** All enemies and effects use shared instanced batches: no per-kill GPU allocations. */
 export class CombatView {
@@ -88,6 +89,7 @@ export class CombatView {
   private pixelEnemies?: EnemyPixelView;
   private pixelsEnabled = false;
   private preloadedRoster?: object;
+  private buildAssetKey='';
   private firePixels?: FirePixelView;
   private fusionPixels?: FirePixelView;
   private feedback?: ParticleFeedbackView;
@@ -209,8 +211,21 @@ export class CombatView {
   }
 
   preloadEnemies(kinds: readonly EnemyKind[]) { this.pixelEnemies?.preload(kinds); }
+  preloadSkillAssets(ids:readonly string[]){
+    const keys=new Set(ids.flatMap(id=>EFFECT_ATLASES[id]??[]));
+    this.group.traverse(object=>{if(keys.has(object.userData.assetKey))object.userData.preload?.();});
+    this.gigapack.preload(ids);
+  }
+  preloadBuildAssets(){
+    if(!this.combat.usesRunBuild)return;
+    const ids=[...this.combat.runBuild.attacks.map(a=>`${a.attackId}-weapon`),
+      ...Object.entries(this.combat.progression.ranks).filter(([,rank])=>rank>0).map(([id])=>id)];
+    const key=ids.join('|');if(key===this.buildAssetKey)return;this.buildAssetKey=key;
+    this.preloadSkillAssets(ids);
+  }
 
   render(alpha: number, time: number, player: { x: number; z: number } = { x: this.combat.anchorX, z: this.combat.anchorZ }) {
+    this.preloadBuildAssets();
     const roster = this.combat.endlessRoster;
     if (roster !== this.preloadedRoster) {
       this.preloadedRoster = roster;

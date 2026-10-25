@@ -15,6 +15,7 @@ test('supplied blades render on the ground, keep atlas aspect, show HUD art and 
     g.position.set(0, 0, 0); g.previousPosition.copy(g.position); g.party.syncLeader(g.position, 0);
     document.getElementById('welcome')!.hidden = true;
     c.grantUpgrade('thorn-wheel-weapon'); c.grantUpgrade('tidal-blade-weapon');
+    g.combatView.preloadBuildAssets();
     for (let i = 0; i < 8; i++) { const e = c.spawn('normal', 5 + i % 3 * 2, (Math.floor(i / 3) - 1) * 3, 0); e.hp = 10000; }
     for (const a of c.runBuild.attacks) a.cooldown = a.attackId === 'spark' ? 10000 : 0;
     c.update(.01, g.position); c.blades.update(.28);
@@ -35,9 +36,9 @@ test('supplied blades render on the ground, keep atlas aspect, show HUD art and 
   expect(result.state.atlases[0].count).toBe(2); expect(result.state.atlases[1].count).toBeGreaterThan(0);
   for (const a of result.state.atlases) expect(a.count).toBeLessThanOrEqual(a.capacity);
   for (const id of ['thorn-wheel', 'tidal-blade']) {
-    const icon = page.locator(`#hud-extra-weapons img[src$="${id}-weapon.png"]`);
-    await expect(icon).toBeVisible();
-    expect(await icon.evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0)).toBe(true);
+    const icon = page.locator(`#build-weapons img[src$="${id}-weapon.webp"]`);
+    await expect(icon).toBeAttached();
+    await expect.poll(()=>icon.evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0)).toBe(true);
   }
   await page.screenshot({ path: 'artifacts/blade-weapons-topdown.png' });
   await page.setViewportSize({ width: 844, height: 390 });

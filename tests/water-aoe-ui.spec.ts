@@ -13,6 +13,7 @@ async function open(page: Page, failTextures = false) {
     document.getElementById('welcome')!.hidden = true;
     for (const attack of g.combat.runBuild.attacks) attack.cooldown = 10000;
     for (const id of ['azure-burst', 'star-tide', 'still-sea', 'returning-ring']) g.combat.grantUpgrade(id);
+    g.combatView.preloadBuildAssets();
     g.placeCamera(true); g.partyView.render(1, g.visualTime);
   });
   await page.waitForFunction(failed => (window as any).game.combatView.inspect().waterAoe.atlases.every((a: any) => failed ? a.failed : a.loaded), failTextures);
@@ -40,7 +41,9 @@ test('supplied water atlases animate four real attacks, preserve low-quality dam
     await page.screenshot({ path: `artifacts/water-${kind}.png` });
   }
   for (const id of ['azure-burst', 'star-tide', 'still-sea', 'returning-ring']) {
-    await expect(page.locator(`#hud-extra-weapons img[alt="${{ 'azure-burst': '苍蓝震爆', 'star-tide': '星潮脉冲', 'still-sea': '静海法阵', 'returning-ring': '回流水环' }[id]}"]`)).toBeVisible();
+    const image=page.locator(`#build-weapons img[src$="${id}.webp"]`);
+    await expect(image).toBeAttached();
+    await expect.poll(()=>image.evaluate((img:HTMLImageElement)=>img.complete&&img.naturalWidth>0)).toBe(true);
   }
   const result = await page.evaluate(() => {
     const g = (window as any).game, c = g.combat;

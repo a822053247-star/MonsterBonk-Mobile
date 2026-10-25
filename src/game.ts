@@ -10,6 +10,7 @@ import { newFeatureTest, prepareNewFeatureTest, addFeatureTestWeapon, type NewFe
 import { EndlessExploration, EXPLORATION_RULES, type ExplorationKind } from './endless-exploration';
 import { ExplorationView } from './exploration-view';
 import { AltarGuide } from './altar-guide';
+import { preloadEligibleUpgradeImages,inspectUpgradeImages } from './upgrade-art';
 import { WeaponExchangeDialog } from './weapon-exchange-dialog';
 import type { BaseAttackId } from './fusion';
 import { endlessShopPrice } from './balance';
@@ -72,6 +73,12 @@ export class Game {
   private startupStartedAt = 0;
   private startupFallback = false;
   private worldEntered = false;
+  private artWarmEpoch=0;
+  private preloadBuildArt(){
+    const epoch=++this.artWarmEpoch;
+    this.combatView.preloadBuildAssets();
+    void preloadEligibleUpgradeImages(this.combat.progression,()=>!this.disposed&&epoch===this.artWarmEpoch&&this.mode==='playing');
+  }
   private selectedSpecies: SpeciesId = 'yanrong';
   private prototypeVariant: 'sample' | 'fusion' | 'legacy-party' | 'infinite' | 'enemy-test' | 'capture-test' | 'item-test' = 'sample';
   private world: World;
@@ -839,6 +846,7 @@ export class Game {
     this.startupStartedAt = performance.now();
     this.startupFallback = false;
     this.worldEntered = false;
+    this.artWarmEpoch++;
     this.prototypeVariant = partyPrototype ? variant : 'sample';
     this.featureTestId = partyPrototype && variant === 'infinite' ? featureTestId : undefined;
     this.regionPractice=!!this.featureTestId?.startsWith('region-')&&this.featureTestId!=='region-choice'&&!this.featureTestId.endsWith('-combat');
@@ -1335,6 +1343,7 @@ export class Game {
     document.getElementById('upgrade-panel')!.classList.remove('choosing-pair');
       document.getElementById('weapon-pair-picker')!.hidden=true;document.getElementById('upgrade-cards')!.hidden=false;
     renderUpgradeCards(this.combat.progression, version);
+    this.combatView.preloadSkillAssets(this.combat.progression.offers);
     document.getElementById('upgrade-panel')!.focus({ preventScroll: true });
     // This UI-only delay blocks a tap already in progress or a rapid double tap
     // from consuming a new offer. Combat clocks stay completely stopped.
@@ -1360,6 +1369,7 @@ export class Game {
     } else {
       this.hideUpgrade();
       this.mode = 'playing';
+      this.preloadBuildArt();
       this.input.setEnabled(true);
       (document.activeElement as HTMLElement | null)?.blur();
       this.wake();
@@ -1748,6 +1758,7 @@ export class Game {
     }
     const enteringWorld = this.mode === 'playing' && !document.getElementById('world-loading')!.hidden;
     if (enteringWorld) {
+      if(!this.worldEntered)this.preloadBuildArt();
       this.input.setEnabled(true);
       this.audio.setActive(true);
       this.renderTime = 0;
@@ -1854,6 +1865,7 @@ export class Game {
   /** Read-only development diagnostics, omitted from production by main.ts. */
   inspect() {
     return {
+      assetLoading:{cards:inspectUpgradeImages()},
       mode: this.mode,
       loading: {map:this.world.loading,startupPending:this.startupPending,fallback:this.startupFallback,
         waiting:this.startupPending ? this.startupWaiting : []},

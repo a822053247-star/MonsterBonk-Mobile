@@ -12,7 +12,7 @@ import { ATTACKS, type RunBuild } from './run-build';
 import { flameSweepStats } from './flame-sweep';
 import { upgradePreview, type Progression, type SkillId } from './progression';
 import { FUSION_ASSET_ROOT, type ElementalFusionId } from './fusion-pixels';
-import { bindUpgradeArt, uiArtUrl, upgradeArt } from './upgrade-art';
+import { bindUpgradeArt, uiArtUrl, upgradeArt,preloadUpgradeImages,upgradeImageUrls } from './upgrade-art';
 import { WATER_AOE_IDS, WATER_NAMES, waterStats } from './water-aoe';
 import { POSITION_IDS, POSITION_NAMES, positionStats } from './position-aoe';
 import { ICE_SKILL_IDS, ICE_SKILL_NAMES, iceSkillStats } from './ice-skills';
@@ -184,6 +184,7 @@ export function renderEndlessBestResult(
 
 export function renderUpgradeCards(progression: Progression, version: number) {
   const offered = progression.offers;
+  void preloadUpgradeImages(upgradeImageUrls(progression,offered));
   document.getElementById('upgrade-level')!.textContent = `等级 ${String(progression.choiceLevel).padStart(2, '0')}`;
   document.getElementById('upgrade-instruction')!.textContent = offered.length < 3 ? `剩余 ${offered.length} 项可选` : '三选一';
   document.getElementById('upgrade-queue')!.textContent = progression.pendingChoices > 1 ? `待选 ${progression.pendingChoices} 次` : '选择后继续';

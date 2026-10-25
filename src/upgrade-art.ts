@@ -1,9 +1,10 @@
-import {PAIR_IDS,type PairSkillId} from './weapon-pair-fusion';
+import {PAIR_IDS,pairIcon,type PairSkillId} from './weapon-pair-fusion';
 import { factoryRelic, FACTORY_RELICS, type FactoryRelicId } from './content/relic-registry';
 import { relicIcon, generatedIcon } from './content/relic-icons';
 import type { RelicDefinition } from './content/content-types';
 import type { BaseAttackId } from './fusion';
 import type { SkillDefinition, SkillId } from './progression';
+import type { Progression } from './progression';
 import {cardArtUrl,cardArtImages} from './card-art';
 
 /** Presentation only. Categories and availability still come from Progression. */
@@ -104,17 +105,50 @@ export function upgradeArt(skill: Pick<SkillDefinition, 'id' | 'category'>, base
 }
 
 /** Small decoded-image cache for the actual upcoming offers, not the full catalog. */
-const warmedImages = new Map<string, HTMLImageElement>();
-export function preloadUpgradeImages(urls: readonly string[]) {
+type WarmImage={image:HTMLImageElement;ready:Promise<void>;state:'loading'|'ready'|'failed';started:number;loadMs?:number;decodeMs?:number};
+const warmedImages = new Map<string, WarmImage>();
+export function preloadUpgradeImages(urls: readonly string[],priority:'high'|'low'='high') {
+  const pending:Promise<void>[]=[];
   for (const url of new Set(urls)) {
-    if (!url || warmedImages.has(url)) continue;
+    if(!url)continue;
+    const cached=warmedImages.get(url);
+    if(cached&&cached.state!=='failed'){
+      if(priority==='high')cached.image.fetchPriority='high';
+      pending.push(cached.ready);continue;
+    }
     const image = new Image();
-    image.loading = 'eager'; image.fetchPriority = 'high'; image.decoding = 'async';
-    image.onload = () => { void image.decode().catch(() => {}); };
-    image.onerror = () => { if (warmedImages.get(url) === image) warmedImages.delete(url); };
-    warmedImages.set(url, image); image.src = url;
-    if (warmedImages.size > 16) warmedImages.delete(warmedImages.keys().next().value!);
+    image.loading='eager';image.fetchPriority=priority;image.decoding='async';
+    let settled!:()=>void,retries=0;
+    const ready=new Promise<void>(resolve=>{settled=resolve;});
+    const entry:WarmImage={image,ready,state:'loading',started:performance.now()};
+    image.onload=()=>{
+      entry.loadMs=performance.now()-entry.started;
+      const start=performance.now();
+      void image.decode().then(()=>{entry.state='ready';},()=>{entry.state='failed';}).finally(()=>{
+        entry.decodeMs=performance.now()-start;settled();
+      });
+    };
+    image.onerror=()=>{if(retries++===0)setTimeout(()=>{image.src=url;},250);else{entry.state='failed';settled();}};
+    warmedImages.set(url,entry);image.src=url;pending.push(ready);
+    if(warmedImages.size>48)for(const [key,value] of warmedImages){if(value.state!=='loading'){warmedImages.delete(key);break;}}
   }
+  return Promise.all(pending).then(()=>{});
+}
+export const inspectUpgradeImages=()=>[...warmedImages].map(([url,{state,loadMs,decodeMs}])=>({url,state,loadMs,decodeMs}));
+
+export function upgradeImageUrls(progression:Progression,ids:readonly SkillId[]){
+  return ids.flatMap(id=>{
+    const skill=progression.skills.find(s=>s.id===id);if(!skill)return [];
+    const art=upgradeArt(skill,progression.fusionBase,progression.build?.attacks.map(a=>a.attackId));
+    if(id==='weapon-pair-fusion'&&progression.build){const pair=progression.build.availablePairs()[0];if(pair)art.illustrations=[cardArtUrl(`${import.meta.env.BASE_URL}${pairIcon(pair)}`)];}
+    return [art.frame,art.gem,...art.illustrations];
+  });
+}
+
+/** Small legal pool, one low-priority card at a time; never rolls or modifies offers. */
+export async function preloadEligibleUpgradeImages(progression:Progression,valid:()=>boolean){
+  const ids=progression.skills.filter(s=>s.category!=='relic'&&s.category!=='evolution'&&progression.canGrant(s.id)).slice(0,18).map(s=>s.id);
+  for(const id of ids){if(!valid())return;await preloadUpgradeImages(upgradeImageUrls(progression,[id]),'low');}
 }
 
 /** Load state affects decoration only; never gates the card's input or offer. */
@@ -122,6 +156,7 @@ export function bindUpgradeArt(root: HTMLElement, definitions: readonly RelicDef
   root.querySelectorAll<HTMLImageElement>('img[data-upgrade-art]').forEach(image => {
     if (image.dataset.artBound === 'true') return;
     image.dataset.artBound = 'true';
+    const boundAt=performance.now();
     if(image.src.includes('/assets/ui/card-art/'))image.style.imageRendering='auto';
     if (image.dataset.upgradeArt === 'shop-illustration' || image.dataset.upgradeArt === 'illustration') {
       image.loading = 'eager'; image.fetchPriority = 'high';
@@ -133,6 +168,8 @@ export function bindUpgradeArt(root: HTMLElement, definitions: readonly RelicDef
     const sync = () => {
       const ready = image.complete && image.naturalWidth > 0;
       image.classList.toggle('art-loaded', ready);
+      image.dataset.artState=ready?'ready':image.dataset.iconFallback==='true'?'fallback':'loading';
+      if(ready)image.dataset.artDisplayMs=String(Math.round(performance.now()-boundAt));
       const parent = image.parentElement;
       const groupReady = parent?.classList.contains('shop-illustration')
         ? [...parent.querySelectorAll<HTMLImageElement>('img')].every(img => img.complete && img.naturalWidth > 0)
@@ -140,7 +177,7 @@ export function bindUpgradeArt(root: HTMLElement, definitions: readonly RelicDef
       parent?.classList.toggle('art-ready', groupReady);
       if (image.dataset.upgradeArt === 'frame') image.closest('.skill-card')?.classList.toggle('frame-ready', ready);
     };
-    image.addEventListener('load', sync, { once: true });
+    image.addEventListener('load', sync);
     const fallback = () => {
       const definition = definitions.find(d => image.src === new URL(cardArtUrl(relicIcon(d.art, import.meta.env.BASE_URL)), document.baseURI).href);
       if (definition && image.dataset.iconFallback !== 'true') { image.dataset.iconFallback = 'true'; image.src = generatedIcon(definition.art); }
@@ -149,8 +186,14 @@ export function bindUpgradeArt(root: HTMLElement, definitions: readonly RelicDef
       }
       sync();
     };
-    image.addEventListener('error', fallback, { once: true });
-    if (image.complete && image.naturalWidth === 0) fallback();
+    const retry=()=>{
+      if(image.dataset.artRetry!=='true'&&image.dataset.iconFallback!=='true'){
+        image.dataset.artRetry='true';const url=image.src;
+        setTimeout(()=>{if(image.isConnected)image.src=url;},250);
+      }else fallback();
+    };
+    image.addEventListener('error', retry);
+    if (image.complete && image.naturalWidth === 0) retry();
     sync();
   });
 }
