@@ -1,4 +1,4 @@
-const VERSION = '97c4be4d8422';
+const VERSION = 'e815b5a3fd06';
 const CACHE = 'monsterbonk-phone-' + VERSION;
 const ASSETS = 'monsterbonk-assets-v2';
 const ROOT = self.registration.scope;
@@ -62,8 +62,9 @@ async function downloadOffline() {
   })().finally(() => { downloading = undefined; if (stopped && !paused) return downloadOffline(); });
   return downloading;
 }
-self.addEventListener('install', event => event.waitUntil(caches.open(CACHE)));
-self.addEventListener('activate', event => event.waitUntil(self.clients.claim()));
+// Prepare both stores before any controlled navigation can fan out requests.
+self.addEventListener('install', event => event.waitUntil(Promise.all([caches.open(CACHE),caches.open(ASSETS)])));
+// Do not claim an in-flight first game. Normal next navigation takes control.
 self.addEventListener('message', event => {
   if (event.data?.type === 'pause-offline') { paused = true; event.waitUntil(notify({type:'offline-paused'})); }
   if (event.data?.type === 'download-offline') { paused = false; event.waitUntil(downloadOffline()); }
