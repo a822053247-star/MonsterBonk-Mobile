@@ -7,6 +7,15 @@ import { ENDLESS_REGIONS } from './endless-regions';
 export type ExplorationKind = 'sealed-chest' | 'lost-workshop';
 export type ExplorationState = 'available' | 'active' | 'completed' | 'abandoned' | 'expired' | 'failed';
 export const EXPLORATION_RULES = { duration: 20, radius: 3, leaveRadius: 7, arrivals: 6, arrivalInterval: 3 } as const;
+export function explorationPlacementCandidates(kind:ExplorationKind,player:{x:number;z:number},
+  view?:{x:number;z:number;halfWidth:number;halfDepth:number}){
+  const area=view??{...player,halfWidth:18,halfDepth:12};
+  // Shared by automatic events and the local feature-test entry points.
+  const margin=kind==='lost-workshop'?8:6;
+  return [{x:player.x,z:area.z-area.halfDepth-margin},
+    {x:area.x-area.halfWidth-margin,z:player.z},{x:area.x+area.halfWidth+margin,z:player.z},
+    {x:player.x,z:area.z+area.halfDepth+margin}];
+}
 export interface ExplorationEvent {
   kind: ExplorationKind; state: ExplorationState; wave: number; x: number; z: number;
   elapsed: number; arrivals: number; arrivalClock: number;
@@ -74,12 +83,8 @@ export class EndlessExploration {
     if(!ENDLESS_REGIONS[run.region].events.includes(kind))return;
     const wave = kind === 'sealed-chest' ? 2 : 4;
     if (run.waveInCycle !== wave || run.waveElapsed < 8 || run.waveElapsed > 18) return;
-    const offsets = [[5,0],[-5,0],[0,5],[0,-5],[4,4],[-4,-4]];
-    const area=view??{...player,halfWidth:18,halfDepth:12};
     // The chest and its 2.5m scenery clearing must start beyond the visible field.
-    const candidates=kind==='sealed-chest'?[{x:player.x,z:area.z-area.halfDepth-6},
-      {x:area.x-area.halfWidth-6,z:player.z},{x:area.x+area.halfWidth+6,z:player.z},
-      {x:player.x,z:area.z+area.halfDepth+6}]:offsets.map(([x,z])=>({x:player.x+x,z:player.z+z}));
+    const candidates=explorationPlacementCandidates(kind,player,view);
     const point = candidates.find(p=>
       obstacles.every(o=>Math.hypot(o.x-p.x,o.z-p.z)>o.radius+2)
       && combat.enemies.every(e=>!e.active||Math.hypot(e.x-p.x,e.z-p.z)>3));

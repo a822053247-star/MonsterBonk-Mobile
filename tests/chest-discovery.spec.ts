@@ -1,5 +1,29 @@
 import {test,expect} from '@playwright/test';
 
+test('local chest presets and the placement button use the same offscreen discovery as normal play',async({page})=>{
+  test.setTimeout(90000);
+  await page.setViewportSize({width:844,height:390});
+  await page.route('**/local-chest-harness',r=>r.fulfill({contentType:'text/html',body:`<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"></head><body><div id="app"></div><script type="module">
+    import '/src/style.css';import {createUI} from '/src/ui.ts';import {Game} from '/src/game.ts';
+    createUI(document.getElementById('app'));window.game=new Game();</script></body></html>`}));
+  await page.goto('/local-chest-harness');await page.locator('#start-infinite').waitFor();
+  const outside=()=>page.evaluate(()=>{
+    const g=(window as any).game,e=g.exploration.event,v=g.cameraFootprint();
+    return e?.kind==='sealed-chest'&&(Math.abs(e.x-v.x)>v.halfWidth+2.5||Math.abs(e.z-v.z)>v.halfDepth+2.5);
+  });
+  for(const id of ['sealed-chest','sealed-chest-low-health','event-lifecycle']){
+    await page.evaluate(id=>(window as any).game.start('classic',true,false,'infinite',id),id);
+    await expect(page.locator('#world-loading')).toBeHidden({timeout:20000});
+    expect(await outside()).toBe(true);
+    await expect(page.locator('.chest-guide')).toBeVisible();
+    await expect(page.locator('#exploration-interact')).toBeHidden();
+  }
+  await page.evaluate(()=>(window as any).game.start('classic',true,false,'infinite','region-meadow-combat'));
+  await expect(page.locator('#world-loading')).toBeHidden({timeout:20000});
+  await page.locator('#feature-test-region-chest').click();
+  expect(await outside()).toBe(true);await expect(page.locator('.chest-guide')).toBeVisible();
+});
+
 test('sealed chest guides discovery offscreen and explains its circle rule while opening',async({page})=>{
   test.setTimeout(60000);
   await page.setViewportSize({width:568,height:320});

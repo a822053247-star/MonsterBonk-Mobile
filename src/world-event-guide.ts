@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { guideBelowRunStatus } from './hud-notice-position';
 
 /** A single projected discovery marker shared by optional world events. */
 export class WorldEventGuide {
@@ -21,12 +22,15 @@ export class WorldEventGuide {
     const scale=edge?1/Math.max(Math.abs(x)/.74,Math.abs(y)/.48):1;
     const px=x*scale,py=px<-.35?THREE.MathUtils.clamp(y*scale,-.03,.12):y*scale;
     const inset=Math.min(130,innerWidth/2);
-    this.root.style.left=`${THREE.MathUtils.clamp((px+1)*innerWidth/2,inset,innerWidth-inset)}px`;
-    this.root.style.top=`${(1-py)*50}%`;
+    const distance=Math.round(Math.hypot(target.x-player.x,z-player.z));
+    const text=`${this.options.title} · ${distance>4?distance+'米':this.options.nearText}`;
+    if(this.label.textContent!==text)this.label.textContent=text;
+    const screenX=THREE.MathUtils.clamp((px+1)*innerWidth/2,inset,innerWidth-inset);
+    this.root.style.left=`${screenX}px`;
     this.arrow.hidden=!edge;
     this.arrow.style.transform=`rotate(${-Math.atan2(y*innerHeight,x*innerWidth)}rad)`;
-    const distance=Math.round(Math.hypot(target.x-player.x,z-player.z));
-    this.label.textContent=`${this.options.title} · ${distance>4?distance+'米':this.options.nearText}`;
+    const bounds=this.root.getBoundingClientRect();
+    this.root.style.top=`${guideBelowRunStatus(screenX,(1-py)*innerHeight/2,bounds.width,bounds.height)}px`;
   }
   hide(){this.root.hidden=true;}
   dispose(){this.root.remove();}

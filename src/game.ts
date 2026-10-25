@@ -7,7 +7,7 @@ import { StarSealCaptureSystem, type StarSealSession } from './visuals/star-seal
 import { EnemyTestMode } from './enemy-test-mode';
 import { ItemTestMode, ITEM_TEST_ALTAR, ITEM_TEST_OPTIONS, isItemTestSkill, itemTestRank, type ItemTestSkill } from './item-test-mode';
 import { newFeatureTest, prepareNewFeatureTest, addFeatureTestWeapon, type NewFeatureTestId } from './new-feature-test';
-import { EndlessExploration, EXPLORATION_RULES, type ExplorationKind } from './endless-exploration';
+import { EndlessExploration, EXPLORATION_RULES, explorationPlacementCandidates, type ExplorationKind } from './endless-exploration';
 import { ExplorationView } from './exploration-view';
 import { AltarGuide } from './altar-guide';
 import { WorldEventGuide } from './world-event-guide';
@@ -111,6 +111,7 @@ export class Game {
   private endlessAltar=new EndlessAltarEvent();
   private altarGuide=new AltarGuide();
   private chestGuide=new WorldEventGuide({title:'封印宝箱',nearText:'靠近开启',theme:'chest-guide'});
+  private workshopGuide=new WorldEventGuide({title:'元素工坊',nearText:'靠近使用',theme:'workshop-guide'});
   private altarReturn?:{x:number;z:number};
   private ensureAltar(){
     if(!this.itemTestAltar){this.itemTestAltar=new ItemTestAltarView();this.scene.add(this.itemTestAltar.group);}
@@ -338,9 +339,7 @@ export class Game {
     click('feature-test-region-chest',()=>{
       if(this.mode!=='playing'||!this.featureTestId?.startsWith('region-')||this.featureTestId==='region-choice'
         ||this.regionPractice||!this.run||this.sceneLoading||this.combat.progression.awaitingChoice||this.treasureDialog.active)return;
-      if(this.exploration.offer('sealed-chest',this.run,{x:this.position.x+3.5,z:this.position.z})){
-        this.syncExplorationView();this.updateHUD();
-      }
+      if(this.offerExplorationTestEvent('sealed-chest'))this.updateHUD();
     });
     click('region-choice-menu',()=>this.showMenu());
     click('region-choice-restart',()=>{if(this.featureTestId&&this.mode==='region-choice')this.start();});
@@ -768,6 +767,15 @@ export class Game {
     }
   }
 
+  private offerExplorationTestEvent(kind:ExplorationKind){
+    if(!this.run)return false;
+    this.placeCamera(true);
+    const point=explorationPlacementCandidates(kind,this.position,this.cameraFootprint())[0];
+    const offered=this.exploration.offer(kind,this.run,point);
+    if(offered)this.syncExplorationView();
+    return offered;
+  }
+
   private tryExploration() {
     if (this.mode !== 'playing' || !this.run?.endless || this.sceneLoading || this.altarTrial?.active
       || this.capture?.pending || this.combat.progression.awaitingChoice || this.treasureDialog.active
@@ -938,11 +946,11 @@ export class Game {
     this.combat.automaticSpawning = !this.run && !this.enemyTest && !this.itemTest;
     if (this.featureTestId && this.run) prepareNewFeatureTest(this.featureTestId, this.combat, this.run, this.position);
     else this.run?.prepare(this.combat,this.position);
+    let testExploration:ExplorationKind|undefined;
     if (this.featureTestId && this.run) {
       const id=this.featureTestId;
-      const eventKind: ExplorationKind | undefined = id==='lost-workshop' ? 'lost-workshop'
+      testExploration = id==='lost-workshop' ? 'lost-workshop'
         : id==='sealed-chest'||id==='sealed-chest-low-health'||id==='event-lifecycle' ? 'sealed-chest' : undefined;
-      if(eventKind){this.exploration.offer(eventKind,this.run,{x:this.position.x+3.5,z:this.position.z});this.syncExplorationView();}
       if(id==='shop-exchange'){
         this.run.phase='intermission';this.run.intermissionRemaining=.01;
         this.run.updateRest(.01,this.combat);
@@ -985,6 +993,8 @@ export class Game {
     this.syncItemTestSelection();
     this.accumulator = 0;
     this.placeCamera(true);
+    // Use the battle camera, not the narrower menu framing, for preset discovery.
+    if(testExploration)this.offerExplorationTestEvent(testExploration);
     this.world.update(this.position.x, this.position.z, this.cameraFootprint());
     this.updateHUD();
     this.wake();
@@ -994,6 +1004,7 @@ export class Game {
   private pause(reason: string) {
     this.altarGuide.hide();
     this.chestGuide.hide();
+    this.workshopGuide.hide();
     if (this.mode !== 'playing') return;
     this.mode = 'paused';this.altarTrial?.suspend();
     document.getElementById('item-test-controls')!.hidden=true;
@@ -1328,6 +1339,7 @@ export class Game {
   private openUpgrade() {
     this.altarGuide.hide();
     this.chestGuide.hide();
+    this.workshopGuide.hide();
     this.mode = 'upgrading';
     this.input.setEnabled(false);
     this.velocity.set(0, 0);
@@ -1739,12 +1751,17 @@ export class Game {
 
   private frame = (time: number) => {
     this.frameId = 0;
+    const altarNearby=this.endlessAltar.present&&Math.hypot(this.position.x-this.endlessAltar.position.x,this.position.z-this.endlessAltar.position.z)<=9;
     const chest=this.exploration.event;
+    this.workshopGuide.render(this.mode==='playing'&&chest?.kind==='lost-workshop'&&chest.state==='available'
+      &&chest.wave===this.run?.wave&&this.run.phase==='fighting'&&!this.sceneLoading&&!this.exploration.nearby(this.position)
+      &&!this.altarTrial?.active&&!this.capture?.pending&&!this.combat.progression.awaitingChoice&&!this.treasureDialog.active,
+      chest??this.position,this.position,this.camera);
     this.chestGuide.render(this.mode==='playing'&&chest?.kind==='sealed-chest'&&chest.state==='available'
       &&chest.wave===this.run?.wave&&this.run.phase==='fighting'&&!this.sceneLoading&&!this.exploration.nearby(this.position)
       &&!this.altarTrial?.active&&!this.capture?.pending&&!this.combat.progression.awaitingChoice&&!this.treasureDialog.active,
       chest??this.position,this.position,this.camera);
-    this.altarGuide.render(this.mode==='playing'&&this.endlessAltar.present&&!this.altarTrial?.active
+    this.altarGuide.render(this.mode==='playing'&&this.endlessAltar.present&&!altarNearby&&!this.altarTrial?.active
       &&!this.sceneLoading&&!this.capture?.pending&&!this.combat.progression.awaitingChoice&&!this.treasureDialog.active,
       this.endlessAltar.position,this.position,this.camera);
     if (this.disposed || document.hidden || this.portrait || this.contextLost || (this.mode !== 'menu' && this.mode !== 'playing' && this.mode !== 'shop' && this.mode !== 'dying')) return;
@@ -1828,7 +1845,7 @@ export class Game {
     if(!captureActive)this.monster.animate(renderDt * speed, Math.min(1, this.velocity.length() / 4.6), this.dashRemaining > 0, this.visualTime, THREE.MathUtils.lerp(this.previousJump, this.jumpHeight, this.accumulator / STEP), this.combat.hurtFlash / 0.25);
       this.placeCamera(false, captureActive ? 0 : renderDt * speed);
       this.monster.root.visible = this.mode !== 'menu' && (!this.partyPrototype || !this.partyView.hasPixelLeader);
-      this.altarTrial?.render((!!this.itemTest||this.endlessAltar.present||!!this.altarTrial?.hasNotice)&&this.mode==='playing',this.combat,this.position,alpha,this.camera.quaternion,this.quality.particles);
+      this.altarTrial?.render((!!this.itemTest||altarNearby||!!this.altarTrial?.active||!!this.altarTrial?.hasNotice)&&this.mode==='playing',this.combat,this.position,alpha,this.camera.quaternion,this.quality.particles);
       if((this.itemTest||this.endlessAltar.present)&&this.altarTrial)this.itemTestAltar?.setColor(this.altarTrial.color);
       const onAltar=this.mode==='playing'&&!!this.itemTestAltar?.group.visible&&!!this.altarTrial?.isOnAltar(this.position);
       this.altarCharacterLayer.apply(onAltar?(this.partyPrototype&&this.partyView.leaderBody?this.partyView.leaderBody:this.monster.body):undefined);
@@ -1934,7 +1951,7 @@ export class Game {
     this.monster.dispose();
     this.partyView.dispose();
     this.capture?.cancel();this.captureVfx?.dispose(); this.captureHUD?.dispose();this.prison?.dispose();this.collection.flush();this.captureSpawns.flush(); this.captureAnchor.removeFromParent();
-    this.combatView.dispose();this.itemTestAltar?.dispose();this.altarTrial?.dispose();this.altarGuide.dispose();this.chestGuide.dispose();
+    this.combatView.dispose();this.itemTestAltar?.dispose();this.altarTrial?.dispose();this.altarGuide.dispose();this.chestGuide.dispose();this.workshopGuide.dispose();
     this.audio.dispose();
     this.world.dispose();
     const geometries = new Set<THREE.BufferGeometry>();

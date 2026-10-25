@@ -8,6 +8,7 @@ import { PLAYER_COLLISION_RADIUS } from './arena-boundary';
 import { ALTAR_FLOOR, ALTAR_OUTLINE, insideAltarPolygon, crossesAltarGate, resolveAltarWalls } from './altar-layout';
 import { upgradeArt } from './upgrade-art';
 import { AltarTrialProjectileView, type AltarTrialProjectile } from './altar-trial-projectile-view';
+import { positionHudNotice } from './hud-notice-position';
 
 type Point={x:number;z:number};
 type Shot=AltarTrialProjectile;
@@ -209,6 +210,7 @@ export class AltarTrial {
     if(this.label.textContent!==text)this.label.textContent=text;
     this.button.hidden=this.active||!this.reward||this.noticeRemaining>0;this.button.disabled=!close;
     this.button.textContent=close?'E 开启躲避试炼':'从下方台阶登上祭坛';
+    positionHudNotice(this.root);
     this.projectiles.render(this.shots,alpha,billboard,detail);
     const points:THREE.Vector3[]=[];
     if(this.row){const r=this.row,axis=r.axis==='x',bound=axis?this.halfWidth:this.halfDepth,origin=axis?this.centerX:this.centerZ;

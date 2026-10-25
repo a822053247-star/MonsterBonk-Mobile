@@ -42,5 +42,5 @@ test('altar starts outside the viewport with a guide; runner prompts stay unique
   expect(result.cleared.prompts).toBe(0);
   await page.locator('#exploration-controls').evaluate(el=>{el.hidden=false;el.classList.add('is-countdown');});
   await page.locator('#exploration-detail').evaluate(el=>{el.hidden=false;el.textContent='打开宝箱仅剩 20 秒';});
-  expect(await page.locator('#exploration-detail').evaluate(el=>parseFloat(getComputedStyle(el).fontSize))).toBeGreaterThanOrEqual(18);
+  expect(await page.locator('#exploration-detail').evaluate(el=>parseFloat(getComputedStyle(el).fontSize))).toBeGreaterThanOrEqual(22);
 });

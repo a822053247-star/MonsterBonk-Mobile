@@ -4,6 +4,7 @@ import {EnemyCapture, SEAL_SECONDS, SEAL_WINDOW, SEAL_EXCELLENT_WINDOW, SEAL_RES
 import {ENEMY_PIXEL_HEIGHTS} from './enemy-pixel-view';
 import './capture.css';
 import {CAPTURE_READY_SCALE} from './capture-visuals';
+import {positionHudNotice} from './hud-notice-position';
 
 export class CaptureHUD {
   readonly root=document.createElement('div');
@@ -96,9 +97,11 @@ export class CaptureHUD {
     this.notice.hidden=this.noticeTime<=0;
     const elapsed=3.6-this.noticeTime;
     this.notice.style.setProperty('--notice-visibility',String(Math.max(0,Math.min(1,elapsed/.18,this.noticeTime/.4))));
+    if(!this.notice.hidden)positionHudNotice(this.notice,'.altar-trial:not([hidden])');
   }
   render(c:EnemyCapture|undefined,combat:Combat,player:{x:number;z:number},camera:THREE.Camera,playing:boolean) {
     this.root.hidden=!c || !playing;if(!c||!playing)return;
+    if(this.noticeTime>0)positionHudNotice(this.notice,'.altar-trial:not([hidden])');
     const p=c.pending,target=c.nearest(combat,player);
     this.minigame.hidden=!p;this.orb.hidden=!p || p.success!==true;
     if(p){
