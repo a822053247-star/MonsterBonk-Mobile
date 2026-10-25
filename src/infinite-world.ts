@@ -97,6 +97,10 @@ export function createInfiniteWorld(initialSeed: string, onChange = () => {}, on
   let art: { texture: THREE.Texture; aspect: number }[] = [];
   let spriteMaterials: THREE.MeshBasicMaterial[] = [];
   let artReady = false, enabled = false;
+  const scenerySettled = new Set<EndlessRegionId>(['meadow']);
+  const sceneryLoading = new Set<EndlessRegionId>();
+  const artTimers = new Set<number>();
+  const sceneryReady = () => artReady && scenerySettled.has(region);
   let ruinsAtlas = false;
   let snowAtlas = false;
   let volcanoAtlas = false;
@@ -227,7 +231,7 @@ export function createInfiniteWorld(initialSeed: string, onChange = () => {}, on
     if (!enabled || disposed) return;
     // Only this callback installs chunks, at most once per animation frame.
     const installable = (key: string) => prepared.has(key) && !chunks.has(key);
-    const finished = artReady ? nearest(focus, installable) ?? nearest(required, installable) : undefined;
+    const finished = sceneryReady() ? nearest(focus, installable) ?? nearest(required, installable) : undefined;
     if (finished) {
       const result = prepared.get(finished[0])!; prepared.delete(finished[0]);
       try { install(result); } catch (error) {
@@ -252,7 +256,7 @@ export function createInfiniteWorld(initialSeed: string, onChange = () => {}, on
         });
       }
     }
-    if (artReady && [...required.keys()].some(key => prepared.has(key))) schedule();
+    if (sceneryReady() && [...required.keys()].some(key => prepared.has(key))) schedule();
   };
   const neighborhood = (cx: number, cz: number) => {
     const result = new Map<string, Coordinate>();
@@ -299,46 +303,43 @@ export function createInfiniteWorld(initialSeed: string, onChange = () => {}, on
     for (const [key, result] of prepared) if (!isWanted(key)) { releaseTerrainImage(result.image); prepared.delete(key); }
     schedule(); return neighborhoodChanged || !playable();
   };
-  // Scenery resources may load eagerly, but terrain jobs require explicit enablement.
-  const ruinImage = new Promise<HTMLImageElement|null>(resolve=>{
-    new THREE.ImageLoader().load(import.meta.env.BASE_URL+'assets/scenery/ruins-props-atlas.png',resolve,undefined,()=>resolve(null));
-  });
-  const snowImage = new Promise<HTMLImageElement|null>(resolve=>{
-    new THREE.ImageLoader().load(import.meta.env.BASE_URL+'assets/scenery/snowfield-props-atlas.png',resolve,undefined,()=>resolve(null));
-  });
-  const volcanoImage = new Promise<HTMLImageElement|null>(resolve=>{
-    new THREE.ImageLoader().load(import.meta.env.BASE_URL+'assets/scenery/volcano/volcano-atlas.png',resolve,undefined,()=>resolve(null));
-  });
-  const ready = Promise.all([new Promise<HTMLImageElement>((resolve, reject) => {
+  // Only the selected region may gate entry. Late art replaces placeholders in place.
+  const ensureRegionArt = () => {
+    if (!enabled || !artReady || disposed || sceneryLoading.has(region) || scenerySettled.has(region)) return;
+    const selected = region;
+    sceneryLoading.add(selected);
+    const type = selected === 'ruins' ? 7 : selected === 'snowfield' ? 8 : 9;
+    const path = selected === 'volcano' ? 'volcano/volcano-atlas.png' : `${selected === 'ruins' ? 'ruins' : 'snowfield'}-props-atlas.png`;
+    const finish = () => {
+      window.clearTimeout(timer); artTimers.delete(timer);
+      if (disposed) return;
+      scenerySettled.add(selected); schedule(); onChange();
+    };
+    const timer = window.setTimeout(finish, 8000);
+    artTimers.add(timer);
+    new THREE.ImageLoader().load(import.meta.env.BASE_URL + 'assets/scenery/' + path, image => {
+      if (disposed) return;
+      const texture = new THREE.Texture(image);
+      texture.colorSpace = THREE.SRGBColorSpace;
+      texture.magFilter = texture.minFilter = THREE.NearestFilter;
+      texture.generateMipmaps = false; texture.needsUpdate = true;
+      const previous = art[type].texture;
+      art[type] = { texture, aspect: 1 };
+      spriteMaterials[type].map = texture; spriteMaterials[type].needsUpdate = true;
+      if (selected === 'ruins') ruinsAtlas = true;
+      else if (selected === 'snowfield') snowAtlas = true;
+      else volcanoAtlas = true;
+      for (const chunk of chunks.values()) place(chunk);
+      previous.dispose(); finish();
+    }, undefined, finish);
+  };
+  const ready = new Promise<HTMLImageElement>((resolve, reject) => {
     new THREE.ImageLoader().load(import.meta.env.BASE_URL + 'assets/world/Tileset/Decorations/trees.png', resolve, undefined, reject);
-  }),ruinImage,snowImage,volcanoImage]).then(([image,ruins,snow,volcano]) => {
+  }).then(image => {
     if (disposed) return;
     art = [[0, 0], [32, 32], [32, 64], [64, 0]].map(([x, y]) => crop(image, x, y, 32));
     art.push(meadowDetail('flower'), meadowDetail('grass')); art.push(crop(image, 32, 0, 32));
-    ruinsAtlas=!!ruins;
-    if(ruins){
-      const texture=new THREE.Texture(ruins);
-      texture.colorSpace=THREE.SRGBColorSpace;
-      texture.magFilter=texture.minFilter=THREE.NearestFilter;
-      texture.generateMipmaps=false;texture.needsUpdate=true;
-      art.push({texture,aspect:1});
-    }else art.push(ruinPillarArt());
-    snowAtlas=!!snow;
-    if(snow){
-      const texture=new THREE.Texture(snow);
-      texture.colorSpace=THREE.SRGBColorSpace;
-      texture.magFilter=texture.minFilter=THREE.NearestFilter;
-      texture.generateMipmaps=false;texture.needsUpdate=true;
-      art.push({texture,aspect:1});
-    }else art.push(ruinPillarArt());
-    volcanoAtlas=!!volcano;
-    if(volcano){
-      const texture=new THREE.Texture(volcano);
-      texture.colorSpace=THREE.SRGBColorSpace;
-      texture.magFilter=texture.minFilter=THREE.NearestFilter;
-      texture.generateMipmaps=false;texture.needsUpdate=true;
-      art.push({texture,aspect:1});
-    }else art.push(volcanoFallbackArt());
+    art.push(ruinPillarArt(), ruinPillarArt(), volcanoFallbackArt());
     spriteMaterials = art.map(a => new THREE.MeshBasicMaterial({
       map: a.texture, transparent: true, alphaTest: .1, toneMapped: false, fog: false,
     }));
@@ -354,7 +355,7 @@ export function createInfiniteWorld(initialSeed: string, onChange = () => {}, on
         '#include <alphatest_fragment>\ndiffuseColor.a *= vRuinOpacity;');
     };
     }
-    artReady = true; schedule();
+    artReady = true; ensureRegionArt(); schedule();
   });
   return {
     group, obstacles, ready,
@@ -363,7 +364,7 @@ export function createInfiniteWorld(initialSeed: string, onChange = () => {}, on
     get sceneryFallback() { return artReady&&region==='volcano'&&!volcanoAtlas; },
     get chunkCount() { return chunks.size; },
     get complete() { return complete(); },
-    get playable() { return playable(); },
+    get playable() { return sceneryReady() && playable(); },
     setEventClearing(area:{x:number;z:number;radius:number}|null){
       if(disposed||(!area&&!eventClearing))return;
       eventClearing=area?{...area}:null;
@@ -374,6 +375,7 @@ export function createInfiniteWorld(initialSeed: string, onChange = () => {}, on
       if (disposed || enabled === next) return;
       enabled = next;
       if (!enabled) cancel();
+      else ensureRegionArt();
     },
     setSeed(nextSeed: string) {
       if (disposed || seed === nextSeed) return;
@@ -383,12 +385,15 @@ export function createInfiniteWorld(initialSeed: string, onChange = () => {}, on
       if (disposed || region === next && seed === nextSeed) return;
       cancel();region=next;seed=nextSeed;release();
       group.name=next==='meadow'?'无尽草场':ENDLESS_REGIONS[next].title;
+      ensureRegionArt();
       onChange();
     },
     update,
     dispose() {
       if (disposed) return;
       disposed = true; cancel(); release();
+      for (const timer of artTimers) window.clearTimeout(timer);
+      artTimers.clear();
       for (const chunk of recycled) {
         chunk.instances.forEach((mesh,type) => {mesh.dispose();if(type>=7)mesh.geometry.dispose();});
         releaseTerrainImage(chunk.groundTexture.image as PreparedTerrain['image']);

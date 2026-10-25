@@ -17,3 +17,5 @@ npm run publish:pages
 本次用户明确要求可玩的正式发布，因此执行必要生产构建和定向验证，覆盖此前扩展阶段“不构建/不测试”的相应限制，不开展无关全量回归。定向验证：`npx playwright test tests/game-speed.spec.ts --project=chromium`；打包后运行本地静态预览并执行 `node scripts/smoke-public-release.mjs [预览URL]`，核对正式页入口隐藏、旧设置限制、四地区加载及计时。
 
 PWA更新时联网导航优先当前HTML，离线仍回退缓存；资源按哈希版本缓存，新worker不强制中断正在进行的游戏。曾打开旧版的用户如仍见旧界面，应关闭该站点的旧标签页/主屏幕App后重新打开，让等待中的更新接管。
+
+无尽进入加载：`src/infinite-world.ts`只请求当前选中地区的障碍物图集，避免草甸被雪原/火山等无关图集的慢请求阻塞。当前地区图集8秒未返回时使用既有占位布景；真实图集随后完成会更新共享材质及实例UV/锚点，地形生成和碰撞就绪仍是开战条件。回归见`tests/endless-startup-assets.spec.ts`，覆盖无关图集挂起与火山图集超时后恢复。
