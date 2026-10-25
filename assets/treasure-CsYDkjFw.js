@@ -1,4 +1,4 @@
-import"./modulepreload-polyfill-P2Xu9kJm.js";import{t as e}from"./treasure-dialog-DqVPcC9x.js";import{n as t,xt as n}from"./combat-BYFLjvU4.js";var r=document.createElement(`style`);r.textContent=`
+import"./modulepreload-polyfill-P2Xu9kJm.js";import{t as e}from"./treasure-dialog-DHNJ68Nr.js";import{n as t,xt as n}from"./combat-BYFLjvU4.js";var r=document.createElement(`style`);r.textContent=`
 body{margin:0;background:radial-gradient(ellipse at center,#394337,#111d24);min-height:100dvh}
 .treasure-preview-controls{position:fixed;z-index:170;top:max(8px,env(safe-area-inset-top));left:50%;transform:translateX(-50%);display:flex;gap:6px;padding:5px 10px;background:#17182deb;border:1px solid #b39357;border-radius:10px;white-space:nowrap;color:#fff5d9;align-items:center;font:600 14px system-ui}
 .treasure-preview-controls button{min-height:44px;min-width:44px;padding:4px 10px;border:1px solid #9b845c;background:#303451;color:#fff5d9;border-radius:6px;font:inherit;cursor:pointer}
