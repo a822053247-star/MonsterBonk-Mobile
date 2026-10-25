@@ -24,9 +24,11 @@ test('worker installs without bulk downloads, reuses content hashes and supports
     await page.goto(base);
     await page.evaluate(async()=>{
       await navigator.serviceWorker.register('sw.js');await navigator.serviceWorker.ready;
-      if(!navigator.serviceWorker.controller)await new Promise<void>(resolve=>navigator.serviceWorker.addEventListener('controllerchange',()=>resolve(),{once:true}));
     });
     expect(counts['a.txt']??0).toBe(0);expect(counts['b.txt']??0).toBe(0);
+    expect(await page.evaluate(()=>!!navigator.serviceWorker.controller)).toBe(false);
+    await page.reload();
+    await page.waitForFunction(()=>!!navigator.serviceWorker.controller);
     expect(await page.evaluate(async()=>await(await fetch('a.txt')).text())).toBe('same asset');
     await expect.poll(()=>page.evaluate(async key=>!!await(await caches.open('monsterbonk-assets-v2')).match(key),base+'__asset/'+hashes['a.txt'])).toBe(true);
     // A new release can reuse the exact bytes without another request.
