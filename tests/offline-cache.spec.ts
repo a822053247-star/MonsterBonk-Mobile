@@ -6,6 +6,8 @@ import {createHash} from 'node:crypto';
 test('worker installs without bulk downloads, reuses content hashes and supports explicit offline play',async({page,context})=>{
   const counts:Record<string,number>={};
   const files:Record<string,string>={'index.html':'<!doctype html><title>Offline fixture</title>','a.txt':'same asset','b.txt':'second asset','c.txt':'last asset'};
+  files['worker.js']='self.onmessage=()=>self.postMessage("ready")';
+  files['pixel.svg']='<svg xmlns="http://www.w3.org/2000/svg" width="8" height="8"><rect width="8" height="8" fill="red"/></svg>';
   let releaseB!:()=>void;
   const heldB=new Promise<void>(resolve=>{releaseB=resolve;});
   const hashes=Object.fromEntries(Object.entries(files).map(([path,body])=>[path,createHash('sha256').update(body).digest('hex')]));
@@ -15,7 +17,7 @@ test('worker installs without bulk downloads, reuses content hashes and supports
     const path=req.url!.split('?')[0].slice(1)||'index.html';
     counts[path]=(counts[path]??0)+1;
     res.setHeader('Cache-Control','no-store');
-    res.setHeader('Content-Type',path==='sw.js'?'application/javascript':path==='index.html'?'text/html':'text/plain');
+    res.setHeader('Content-Type',path.endsWith('.js')?'application/javascript':path==='index.html'?'text/html':path.endsWith('.svg')?'image/svg+xml':'text/plain');
     if(path==='sw.js')res.end(source);else if(path==='b.txt')void heldB.then(()=>res.end(files[path]));else if(path in files)res.end(files[path]);else{res.statusCode=404;res.end();}
   });
   await new Promise<void>(resolve=>server.listen(0,'127.0.0.1',resolve));
@@ -29,6 +31,10 @@ test('worker installs without bulk downloads, reuses content hashes and supports
     expect(await page.evaluate(()=>!!navigator.serviceWorker.controller)).toBe(false);
     await page.reload();
     await page.waitForFunction(()=>!!navigator.serviceWorker.controller);
+    expect(await page.evaluate(async()=>{
+      const image=new Image();image.src='pixel.svg';await image.decode();
+      return await new Promise(resolve=>{const worker=new Worker('worker.js');worker.onmessage=e=>{worker.terminate();resolve(e.data)};worker.postMessage('start');});
+    })).toBe('ready');
     expect(await page.evaluate(async()=>await(await fetch('a.txt')).text())).toBe('same asset');
     await expect.poll(()=>page.evaluate(async key=>!!await(await caches.open('monsterbonk-assets-v2')).match(key),base+'__asset/'+hashes['a.txt'])).toBe(true);
     // A new release can reuse the exact bytes without another request.

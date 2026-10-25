@@ -897,6 +897,7 @@ export class Game {
     this.intermissionHudSecond = -1;
     this.treasureDialog.reset();
     this.combat.reset(ruleset);
+    this.combatView.preloadBuildAssets();
     this.world.update(0, 0);
     this.combat.refreshWorld(0, 0, this.world.revision);
     this.enemyTest = partyPrototype && (variant === 'enemy-test' || variant === 'capture-test') ? new EnemyTestMode(variant === 'capture-test') : undefined;

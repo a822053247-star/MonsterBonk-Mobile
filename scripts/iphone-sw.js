@@ -92,7 +92,9 @@ self.addEventListener('fetch', event => {
       if (document) return document;
     }
     const cached = await cachedAsset(key); if (cached) return cached;
-    const response = await fetch(request);
+    // A fresh static-resource request avoids retaining the intercepted image/Worker
+    // request's client and destination while its original loader is still pending.
+    const response = await fetch(key,{credentials:'same-origin',cache:'default'});
     event.waitUntil(storeAsset(key,response.clone()).catch(()=>{})); return response;
   })());
 });
