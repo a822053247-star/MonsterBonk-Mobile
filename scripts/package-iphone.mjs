@@ -2,9 +2,12 @@ import { readdir, readFile, writeFile, mkdir, copyFile, stat } from 'node:fs/pro
 import { resolve, dirname, join } from 'node:path';
 import { createHash } from 'node:crypto';
 import { spawnSync } from 'node:child_process';
+import { releaseAssets } from './release-assets.mjs';
+import { checkReleaseAssets } from './check-release-assets.mjs';
 
 // Ship existing runtime resources; original artwork/source packs stay in the repository.
 function runtime(path) {
+  if (releaseAssets.has(path)) return true;
   if (!path.startsWith('assets/')) return ['index.html','favicon.svg','manifest.webmanifest','install.html','THIRD_PARTY_LICENSES.txt'].includes(path);
   if (!path.slice(7).includes('/')) return /\.(js|css)$/.test(path);
   if (path.startsWith('assets/audio/')) return /\.(mp3|ogg|txt|md)$/.test(path);
@@ -42,6 +45,7 @@ for (const path of files) {
   const destination = join(site,path); await mkdir(dirname(destination),{recursive:true});
   await copyFile(join('dist',path),destination); bytes += (await stat(destination)).size;
 }
+await checkReleaseAssets(site);
 const worker = (await readFile('scripts/iphone-sw.js','utf8')).replace('__VERSION__',version)
   .replace('__FILES__',JSON.stringify(files.map(path=>path.split('/').map(encodeURIComponent).join('/'))));
 await writeFile(join(site,'sw.js'),worker);
